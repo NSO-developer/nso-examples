@@ -1,0 +1,40 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>website-service</name>
+  <package-version>1.0</package-version>
+  <description>Website example service</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>lb-nc-1.0</name>
+  </required-package>
+  <required-package>
+    <name>webserver-nc-1.0</name>
+  </required-package>
+  <component>
+    <name>web-site-service</name>
+    <callback>
+      <java-class-name>
+        com.example.websiteservice.websiteservice.WebSiteServiceRFS
+      </java-class-name>
+    </callback>
+  </component>
+  <component>
+    <name>website stats</name>
+    <callback>
+      <java-class-name>
+        com.example.websiteservice.websiteservice.InitTransactionCb
+      </java-class-name>
+      <java-class-name>
+        com.example.websiteservice.websiteservice.PropStatsDataCb
+      </java-class-name>
+    </callback>
+  </component>
+  <component>
+    <name>props subscriber</name>
+    <application>
+      <java-class-name>
+        com.example.websiteservice.websiteservice.CdbUpdateHandler
+      </java-class-name>
+    </application>
+  </component>
+
+</ncs-package>

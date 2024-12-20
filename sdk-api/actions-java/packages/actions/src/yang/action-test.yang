@@ -1,0 +1,79 @@
+module action-test {
+  yang-version 1.1;
+  namespace "http://example.com/actions";
+  prefix a;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "A small test module to illustrate how to implement
+               user defined actions";
+
+  container action-test {
+    container system {
+      leaf sys-name {
+        type string;
+        default tst;
+      }
+      action reboot {
+        tailf:actionpoint reboot-point;
+      }
+      action verify {
+        tailf:actionpoint verify-point;
+        output {
+          leaf consistent {
+            type boolean;
+            mandatory true;
+          }
+        }
+      }
+      action restart {
+        tailf:actionpoint reboot-point;
+        input {
+          leaf mode {
+            type string;
+            mandatory true;
+          }
+          leaf debug {
+            type empty;
+          }
+          container data {
+            presence "";
+            leaf debug {
+              type empty;
+            }
+          }
+        }
+        output {
+          leaf time {
+            type string;
+            mandatory true;
+          }
+        }
+      }
+    }
+    list server {
+      key name;
+      max-elements 64;
+      leaf name {
+        type string;
+      }
+      action reset {
+        tailf:actionpoint reboot-point;
+        input {
+          leaf when {
+            type string;
+            mandatory true;
+          }
+        }
+        output {
+          leaf time {
+            type string;
+            mandatory true;
+          }
+        }
+      }
+    }
+  }
+}

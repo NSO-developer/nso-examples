@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>device-actions</name>
+  <package-version>1.0</package-version>
+  <description>Support package for device migration</description>
+  <ncs-min-version>4.4</ncs-min-version>
+  <component>
+    <name>device_action</name>
+    <application>
+      <python-class-name>DeviceAction</python-class-name>
+    </application>
+  </component>
+</ncs-package>

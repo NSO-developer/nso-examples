@@ -1,0 +1,16 @@
+vrf definition volvo
+ rd 65101:1
+ route-target export 65101:1
+ route-target import 65101:1
+!
+interface GigabitEthernet0/1
+ description Link to CE router
+ ip address 10.1.1.2 255.255.255.252
+exit
+router bgp 100
+ address-family ipv4 unicast vrf volvo
+  neighbor 10.1.1.1 remote-as 65101
+  neighbor 10.1.1.1 activate
+  neighbor 10.1.1.1 as-override
+  exit-address-family
+ !

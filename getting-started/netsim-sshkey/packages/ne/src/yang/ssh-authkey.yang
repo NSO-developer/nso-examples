@@ -1,0 +1,30 @@
+module ssh-authkey {
+  yang-version 1.1;
+  namespace "http://example.com/ssh-authkey";
+  prefix sa;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-aaa {
+    prefix aaa;
+  }
+
+  description
+    "List of SSH authorized public keys";
+
+  revision 2023-02-02 {
+    description
+      "Initial revision.";
+  }
+
+  augment "/aaa:aaa/aaa:authentication/aaa:users/aaa:user" {
+    list authkey {
+      key pubkey-data;
+      leaf pubkey-data {
+        type string;
+      }
+    }
+  }
+}

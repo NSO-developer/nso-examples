@@ -1,0 +1,58 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$VDEVICE}</name>
+      <config>
+        <?if-ned-id zbfw-router-nc-1.0:zbfw-router-nc-1.0?>
+        <sys xmlns="http://example.com/router">
+          <zbfw>
+            <object-group when="{$ACL_REQUIRED = 'true' and $NETWORK = 'true'}">
+              <network when="{string-length($SEQUENCE_NUMBER)&gt;0
+                       and string-length($NAME)&gt;0
+                       and string-length($IP)&gt;0}">
+               <name>{$NAME}-seq-{$SEQUENCE_NAME}-network-{$SRC_DEST}-og_</name>
+                <obj-Mode-config-network-group>
+                  <network_address when="{not($MASK = '255.255.255.255')
+                                   and string-length($IP)&gt;0}">
+                    <ipv4_addr>{$IP}</ipv4_addr>
+                    <ipv4_mask>{$MASK}</ipv4_mask>
+                  </network_address>
+                  <host when="{$MASK = '255.255.255.255'
+                        and string-length($IP)&gt;0}">
+                    <ipv4-host>{$IP}</ipv4-host>
+                  </host>
+                </obj-Mode-config-network-group>
+              </network>
+              <network when="{string-length($NAME)&gt;0
+                       and not(string-length($SEQUENCE_NUMBER)&gt;0)}">
+                <name>{$NAME}</name>
+                <obj-Mode-config-network-group
+                       foreach="{lists/data-prefix-list[name=$NAME]/ip-prefix}">
+                  <network_address when="{not(netmask = '255.255.255.255')}">
+                    <ipv4_addr>{ipaddress}</ipv4_addr>
+                    <ipv4_mask>{netmask}</ipv4_mask>
+                  </network_address>
+                  <host when="{netmask = '255.255.255.255'">
+                    <ipv4-host>{ipaddress}</ipv4-host>
+                  </host>
+                </obj-Mode-config-network-group>
+              </network>
+              <network when="{string-length($NAME)&gt;0
+                       and not(string-length($SEQUENCE_NUMBER)&gt;0)
+                       and string-length($SEQUENCE_NAME)&gt;0
+                       and string-length($SRC_DEST)&gt;0  and $METHOD='NEW'}">
+               <name>primary-seq-{$SEQUENCE_NAME}-network-{$SRC_DEST}-og_</name>
+                <obj-Mode-config-network-group>
+                  <group-objects>
+                    <network-group>{$NAME}</network-group>
+                  </group-objects>
+                </obj-Mode-config-network-group>
+              </network>
+            </object-group>
+          </zbfw>
+        </sys>
+        <?end?>
+      </config>
+    </device>
+  </devices>
+</config-template>

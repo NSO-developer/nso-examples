@@ -1,0 +1,28 @@
+module acme-dns {
+  namespace "http://com/example/acmedns";
+  prefix acme-dns;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container acme-dns {
+    presence true;
+
+    uses ncs:service-data;
+    ncs:servicepoint "acme-dns";
+
+    leaf-list devices {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf default-search-domain {
+      type inet:host;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>actions</name>
+  <package-version>1.0</package-version>
+  <description>How to implement a user defined action and how to
+  invoke an action from Java code
+  </description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>actions</name>
+    <callback>
+      <java-class-name>com.example.actions.ActionCb</java-class-name>
+      <java-class-name>
+      com.example.actions.AbortableVerifyAction</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

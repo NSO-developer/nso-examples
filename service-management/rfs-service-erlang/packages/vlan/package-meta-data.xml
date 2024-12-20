@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>vlan_service</name>
+  <package-version>1.0</package-version>
+  <description>Create a vlan interface on all routers</description>
+  <ncs-min-version>5.0</ncs-min-version>
+</ncs-package>

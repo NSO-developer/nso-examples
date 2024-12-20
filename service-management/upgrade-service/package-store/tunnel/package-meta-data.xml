@@ -1,0 +1,21 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>tunnel</name>
+  <package-version>1.0</package-version>
+  <description>Create a tunnel interface on all routers</description>
+  <ncs-min-version>5.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+  <component>
+    <name>tunnel</name>
+    <callback>
+      <java-class-name>com.example.tunnel.TunnelServiceRFS</java-class-name>
+    </callback>
+  </component>
+  <component>
+    <name>upgrade-service</name>
+    <upgrade>
+      <java-class-name>com.example.tunnel.UpgradeService</java-class-name>
+    </upgrade>
+  </component>
+</ncs-package>

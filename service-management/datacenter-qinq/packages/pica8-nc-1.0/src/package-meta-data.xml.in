@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>pica8</name>
+  <package-version>1.0</package-version>
+  <description>pica8.org package</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>pica8</name>
+    <ned>
+      <netconf/>
+      <device>
+        <vendor>pica8.org</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

@@ -1,0 +1,17 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>lb</name>
+  <package-version>1.0</package-version>
+  <description>The loadbalancer NED in the Website example</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>lb</name>
+    <ned>
+      <netconf>
+        <net-id>to be replaced by build</net-id>
+      </netconf>
+      <device>
+        <vendor>Acme Inc.</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

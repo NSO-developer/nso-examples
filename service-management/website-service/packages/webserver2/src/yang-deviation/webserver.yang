@@ -1,0 +1,100 @@
+module webserver {
+  namespace "http://acme.com/ws";
+  prefix ws;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  description "Typical webserver config data";
+
+  //This is version 1
+  revision 2009-12-06 {
+    description "Initial revision.";
+  }
+
+  container wsConfig {
+    container global {
+      leaf ServerRoot {
+        type string;
+        default "/etc/webserver";
+      }
+
+      leaf Timeout {
+        type uint32;
+        default 300;
+        description "The number of seconds before receives and "+
+        "sends time out";
+      }
+      leaf KeepAlive {
+        type enumeration {
+          enum On;
+          enum Off;
+        }
+        default On;
+      }
+      leaf MaxKeepAliveRequests {
+        type uint32;
+        default 100;
+      }
+      leaf KeepAliveTimeout {
+        type uint32;
+        default 13;
+      }
+    }
+    list listener {
+      key "ip port";
+      leaf ip {
+        type inet:ipv4-address;
+      }
+      leaf port {
+        type inet:port-number;
+        description "Port number to bind to";
+
+      }
+      leaf backlog {
+        type uint32;
+        default 5;
+        description "The length of the TCP linger queue";
+      }
+      list virthost {
+        key servername;
+        leaf servername {
+          type string;
+          description "The hostname of this virtual server";
+        }
+
+        leaf docroot {
+          type string;
+          description "Document root where all contents for this " +
+          " virtual server resides";
+          mandatory true;
+        }
+        container rhost {
+          presence "Local redirect address";
+          leaf host {
+            type string;
+            description "This  forces  all  local redirects issued "+
+            " by the server to go to host";
+            mandatory true;
+          }
+          leaf port {
+            type uint16;
+            description "Optional redirect port ";
+          }
+        }
+        leaf access-log {
+          type boolean;
+          description "Turn on/off access logging in Common " +
+            "Log format for this virt server ";
+          default true;
+        }
+        leaf deflate {
+          type boolean;
+          description "Turn on/off deflate support for the virtserver";
+          default true;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,320 @@
+module l3vpn {
+
+  namespace "http://com/example/l3vpn";
+  prefix l3vpn;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+    // DSCP type
+  typedef dscp-type {
+    type union {
+      type uint16 {
+        range "0..63";
+        tailf:info "<0-63>;;Differentiated services codepoint value";
+      }
+      type enumeration {
+        enum af11 {
+          tailf:info "Match packets with AF11 dscp (001010)";
+        }
+        enum af12 {
+          tailf:info "Match packets with AF12 dscp (001100)";
+        }
+        enum af13 {
+          tailf:info "Match packets with AF13 dscp (001110)";
+        }
+        enum af21 {
+          tailf:info "Match packets with AF21 dscp (010010)";
+        }
+        enum af22 {
+          tailf:info "Match packets with AF22 dscp (010100)";
+        }
+        enum af23 {
+          tailf:info "Match packets with AF23 dscp (010110)";
+        }
+        enum af31 {
+          tailf:info "Match packets with AF31 dscp (011010)";
+        }
+        enum af32 {
+          tailf:info "Match packets with AF32 dscp (011100)";
+        }
+        enum af33 {
+          tailf:info "Match packets with AF33 dscp (011110)";
+        }
+        enum af41 {
+          tailf:info "Match packets with AF41 dscp (100010)";
+        }
+        enum af42 {
+          tailf:info "Match packets with AF42 dscp (100100)";
+        }
+        enum af43 {
+          tailf:info "Match packets with AF43 dscp (100110)";
+        }
+        enum cs1 {
+          tailf:info "Match packets with CS1(precedence 1) dscp"+
+            " (001000)";
+        }
+        enum cs2 {
+          tailf:info "Match packets with CS2(precedence 2) dscp"+
+            " (010000)";
+        }
+        enum cs3 {
+          tailf:info "Match packets with CS3(precedence 3) dscp"+
+            " (011000)";
+        }
+        enum cs4 {
+          tailf:info "Match packets with CS4(precedence 4) dscp"+
+            " (100000)";
+        }
+        enum cs5 {
+          tailf:info "Match packets with CS5(precedence 5) dscp"+
+            " (101000)";
+        }
+        enum cs6 {
+          tailf:info "Match packets with CS6(precedence 6) dscp"+
+            " (110000)";
+        }
+        enum cs7 {
+          tailf:info "Match packets with CS7(precedence 7) dscp"+
+            " (111000)";
+        }
+        enum "default" {
+          tailf:code-name "dscp_default";
+          tailf:info "Match packets with default dscp (000000)";
+        }
+        enum ef {
+          tailf:info "Match packets with EF dscp (101110)";
+        }
+      }
+    }
+  }
+
+  typedef protocol-type {
+    type enumeration {
+      enum icmp;
+      enum igmp;
+      enum ipip;
+      enum tcp;
+      enum egp;
+      enum udp;
+      enum rsvp;
+      enum gre;
+      enum esp;
+      enum ah;
+      enum icmp6;
+      enum ospf;
+      enum pim;
+      enum sctp;
+    }
+  }
+
+  typedef qos-match-type {
+    type union {
+      type tailf:ipv4-address-and-prefix-length;
+      type enumeration {
+        enum any;
+      }
+    }
+  }
+
+  grouping connection-grouping {
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+    leaf interface {
+      type string;
+    }
+    leaf ip-address {
+      type tailf:ipv4-address-and-prefix-length;
+    }
+  }
+
+  grouping qos-match-grouping {
+    leaf source-ip {
+      type qos-match-type;
+    }
+    leaf destination-ip {
+      type qos-match-type;
+    }
+    leaf port-start {
+      tailf:info "Destination IP port";
+      type inet:port-number;
+    }
+    leaf port-end {
+      tailf:info "Destination IP port";
+      type inet:port-number;
+    }
+
+    leaf protocol {
+      tailf:info "Source IP protocol";
+      type protocol-type;
+    }
+  }
+
+  container topology {
+    list role {
+      key "role";
+      tailf:cli-compact-syntax;
+      leaf role {
+        type enumeration {
+          enum ce;
+          enum pe;
+          enum p;
+        }
+      }
+
+      leaf-list device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+    }
+
+    list connection {
+      key "name";
+      leaf name {
+        type string;
+      }
+      container endpoint-1 {
+        tailf:cli-compact-syntax;
+        uses connection-grouping;
+      }
+      container endpoint-2 {
+        tailf:cli-compact-syntax;
+        uses connection-grouping;
+      }
+      leaf link-vlan {
+        type uint32;
+      }
+    }
+  }
+
+  container qos {
+
+    list qos-policy {
+      key "name";
+      leaf name {
+        type string;
+      }
+      list class {
+        key "qos-class";
+        leaf qos-class {
+          type leafref {
+            path "/qos/qos-class/name";
+          }
+        }
+        leaf bandwidth-percentage {
+          type uint32;
+        }
+        leaf priority {
+          type empty;
+        }
+      }
+    }
+
+    list qos-class {
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf dscp-value {
+        type dscp-type;
+      }
+      list match-traffic {
+        key "name";
+        leaf name {
+          type string;
+        }
+        uses qos-match-grouping;
+      }
+    }
+  }
+
+  container vpn {
+
+    list l3vpn {
+      description "Layer3 VPN";
+
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+
+      uses ncs:service-data;
+      ncs:servicepoint l3vpn-servicepoint;
+
+      leaf as-number {
+        description "AS used within all VRF of the VPN";
+        tailf:info "MPLS VPN AS number.";
+        mandatory true;
+        type uint32;
+      }
+
+      list endpoint {
+        key "id";
+        leaf id{
+          tailf:info "Endpoint identifier";
+          type string;
+        }
+        leaf ce-device {
+          mandatory true;
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+
+        leaf ce-interface {
+          mandatory true;
+          type string;
+        }
+
+        leaf ip-network {
+          // the private IP network
+          mandatory true;
+          type inet:ip-prefix;
+        }
+        leaf bandwidth {
+          tailf:info "Bandwidth in bps";
+          mandatory true;
+          type uint32;
+        }
+      }
+      container qos {
+        leaf qos-policy {
+          type leafref {
+            path "/l3vpn:qos/qos-policy/name";
+          }
+        }
+        list custom-qos-match {
+          key "name";
+          leaf name {
+            type string;
+          }
+
+          leaf qos-class {
+            mandatory true;
+            type leafref {
+              path "/l3vpn:qos/qos-class/name";
+            }
+          }
+          uses qos-match-grouping;
+        }
+      }
+    }
+  }
+}

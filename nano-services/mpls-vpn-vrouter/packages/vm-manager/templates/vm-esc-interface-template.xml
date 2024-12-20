@@ -1,0 +1,33 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$ESC}</name>
+      <config>
+        <esc_datamodel xmlns="http://www.cisco.com/esc/esc">
+          <tenants tags="merge">
+            <tenant>
+              <name>{$TENANT}</name>
+              <services>
+                <service_definition>
+                  <deployment_name>{$DEPNAME}</deployment_name>
+                  <name>{$SERVICE_NAME}</name>
+                  <version>{$SERVICE_VERSION}</version>
+                  <vm_group>
+                    <name>{$VM_GROUP}</name>
+                    <interfaces>
+                      <interface>
+                        <nicid>{$INTERFACE_ID}</nicid>
+                        <network>{$NETWORK}</network>
+                        <ip_address>{$INTERFACE_IP_ADDRESS}</ip_address>
+                      </interface>
+                    </interfaces>
+                  </vm_group>
+                </service_definition>
+              </services>
+            </tenant>
+          </tenants>
+        </esc_datamodel>
+      </config>
+    </device>
+  </devices>
+</config-template>

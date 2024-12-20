@@ -1,0 +1,74 @@
+module iface {
+  yang-version 1.1;
+  namespace "http://com/example/iface";
+  prefix iface;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  typedef iface-status-type {
+    type enumeration {
+          enum up;
+          enum down;
+          enum unknown;
+    }
+  }
+
+  list iface {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "iface-servicepoint";
+
+    leaf name {
+      type string;
+    }
+
+    leaf device {
+      mandatory true;
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf interface {
+      mandatory true;
+      type string {
+        pattern "[0-9]/[0-9]+";
+      }
+    }
+
+    leaf ip-address {
+      mandatory true;
+      type inet:ipv4-address;
+    }
+
+    leaf cidr-netmask {
+      default 24;
+      type uint8 {
+        range "0..32";
+      }
+    }
+
+    leaf last-test-status {
+      config false;
+      type iface-status-type;
+    }
+
+    action test-enabled {
+      tailf:actionpoint iface-test-enabled;
+      output {
+        leaf status {
+          type iface-status-type;
+        }
+      }
+    }
+  }
+}

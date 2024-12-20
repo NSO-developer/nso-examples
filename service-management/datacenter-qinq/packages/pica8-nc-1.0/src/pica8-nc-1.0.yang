@@ -1,0 +1,13 @@
+module pica8-nc-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/pica8-nc-1.0";
+  prefix pica8-nc-1.0;
+
+  import pica8-nc {
+    prefix family;
+  }
+
+  identity pica8-nc-1.0 {
+    base family:pica8-nc;
+  }
+}

@@ -1,0 +1,16 @@
+interface GigabitEthernet 0/0/0/1
+ description link to PE
+ ipv4 address 10.1.1.1 255.255.255.252
+exit
+interface GigabitEthernet 0/0/0/4
+ ipv4 address 192.168.1.0 255.255.255.0
+exit
+router bgp 65101
+ address-family ipv4 unicast
+  redistribute connected
+ exit
+ neighbor 10.1.1.2
+  remote-as 100
+ exit
+exit
+

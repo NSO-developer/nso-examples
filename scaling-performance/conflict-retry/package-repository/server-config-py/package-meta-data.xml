@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>server-config-python</name>
+  <package-version>1.0</package-version>
+  <description>Server Python package</description>
+  <ncs-min-version>6.0</ncs-min-version>
+
+  <component>
+    <name>server-config-python</name>
+    <application>
+      <python-class-name>
+        server_config.serverconfigRFS.ServerApp
+      </python-class-name>
+    </application>
+  </component>
+</ncs-package>

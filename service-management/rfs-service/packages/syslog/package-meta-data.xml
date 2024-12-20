@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>syslog</name>
+  <package-version>1.0</package-version>
+  <description>A service ensuring we have the same syslog settings
+  on all hosts in the network</description>
+  <ncs-min-version>5.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+  <component>
+    <name>syslog</name>
+    <callback>
+      <java-class-name>com.example.syslog.SyslogServiceRFS</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

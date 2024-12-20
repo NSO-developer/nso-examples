@@ -1,0 +1,125 @@
+module web-site {
+  namespace "http://examples.com/web-site";
+  prefix wse;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-kicker {
+    prefix kicker;
+  }
+
+  import web-site-props {
+    prefix wsp;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-netconf-acm {
+    prefix nacm;
+  }
+
+
+  description "This YANG model implements a web-site service
+               using the pound load balancer.";
+
+  // This is version 1
+  revision 2010-02-09 {
+    description "Initial revision.";
+  }
+
+
+  augment /ncs:services {
+
+    list web-site {
+
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint websiteservice;
+
+      tailf:action self-test {
+        tailf:info "Perform self-test of the service";
+        tailf:actionpoint websiteselftest;
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf message {
+            type string;
+            description
+              "Free format message.";
+          }
+        }
+      }
+
+      leaf   description {
+        description "Short description of the site";
+        type string;
+      }
+
+      leaf url {
+        description "URL  of the site";
+        mandatory true;
+        type inet:uri;
+
+        must "count(/ncs:services/"+
+          "wse:web-site[wse:url = current()/../wse:url]) = 1"
+        {
+          error-message "The given URL is not unique";
+        }
+      }
+
+      leaf ip {
+        description "IP address to e used by the URL pattern";
+        mandatory true;
+        type inet:ipv4-address;
+
+        must "count(/ncs:services/"+
+          "wse:web-site[wse:ip = current()/../wse:ip]) = 1"
+        {
+          error-message "The IP address must be globally unique";
+        }
+      }
+      leaf port {
+        description "UDP port to bind to.";
+        mandatory true;
+        type inet:port-number;
+
+      }
+
+      leaf lb-profile {
+        description "The load balancer to use.";
+        mandatory true;
+        type leafref {
+          path
+            "/ncs:services/ncs:properties/wsp:web-site/wsp:profile/wsp:name";
+        }
+
+      }
+    }
+
+    container actions {
+      tailf:action diffcheck {
+        tailf:actionpoint diffcheck;
+        input {
+          uses kicker:action-input-params;
+        }
+        output {
+        }
+      }
+    }
+
+  }
+}

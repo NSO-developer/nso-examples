@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>extern-db</name>
+  <package-version>1.0</package-version>
+  <description>How to store data outside of CDB</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>External DB</name>
+    <callback>
+      <java-class-name>com.example.extdb.App</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

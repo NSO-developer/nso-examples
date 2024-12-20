@@ -1,0 +1,157 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <?save-context service?>
+    <?foreach {/endpoint}?>
+      <?save-context endpoint?>
+      <?set CE={ce-device}?>
+      <?set CE_LOCAL_INT_NAME={ce-interface}?>
+      <?set LOCAL_CE_ADR={ip-address}?>
+      <?set CE_MASK={ip-mask}?>
+      <?set LOCAL_CE_NET={substring-before(ip-network,'/')}?>
+      <?set CE_AS_NUM={as-number}?>
+      <?set BW={bandwidth}?>
+      <?set-root-node
+        {/topology/connection[endpoint-1/device=$CE or endpoint-2/device=$CE]}?>
+      <?set VLAN_ID={/link-vlan}?>
+      <?set-context-node
+        {/*[starts-with(local-name(),'endpoint-')][device=$CE]}?>
+      <?set CE_INT_NAME={interface}?>
+      <?set LINK_CE_ADR={substring-before(ip-address,'/')}?>
+      <?set LINK_PREFIX={substring-after(ip-address,'/')}?>
+      <?set LINK_MASK={ip-mask}?>
+      <?set-context-node
+        {/*[starts-with(local-name(),'endpoint-')][device!=$CE]}?>
+      <?set PE={device}?>
+      <?set PE_INT_NAME={interface}?>
+      <?set LINK_PE_ADR={substring-before(ip-address,'/')}?>
+      <?switch-context endpoint?>
+      <!-- PE device -->
+      <device>
+        <name>{$PE}</name>
+        <config>
+          <include xmlns="http://www.w3.org/2001/XInclude"
+                   href="pe-cisco-ios.xml.in"
+                   xpointer="xpointer(/config/*)"/>
+          <include xmlns="http://www.w3.org/2001/XInclude"
+                   href="pe-cisco-iosxr.xml.in"
+                   xpointer="xpointer(/config/*)"/>
+          <include xmlns="http://www.w3.org/2001/XInclude"
+                   href="pe-juniper-junos.xml.in"/>
+          <include xmlns="http://www.w3.org/2001/XInclude"
+                   href="pe-alu-sr.xml.in" xpointer="xpointer(/config/*)"/>
+        </config>
+      </device>
+      <!-- CE device -->
+      <device>
+        <name>{$CE}</name>
+        <config>
+          <include xmlns="http://www.w3.org/2001/XInclude"
+                   href="ce-cisco-ios.xml.in"
+                   xpointer="xpointer(/config/*)"/>
+        </config>
+      </device>
+      <?switch-context service?>
+      <?if {qos/qos-policy}?>
+        <?set POLICY_NAME={qos/qos-policy}?>
+        <?set-root-node {deref(qos/qos-policy)/..}?>
+        <?set CLASS_COUNTER=0?>
+        <?foreach {/class}?>
+          <?set CLASS_NAME={qos-class}?>
+          <?set CLASS_BW={bandwidth-percentage}?>
+          <?save-context policy-class?>
+          <?set-context-node {deref(qos-class)/..}?>
+          <?save-context class?>
+          <?set CLASS_PRIORITY=low?>
+          <?set CLASS_DSCP={dscp-value}?>
+          <?if {$CLASS_DSCP='ef' or $CLASS_DSCP='af31'}?>
+            <?set CLASS_PRIORITY=high?>
+          <?end?>
+          <?switch-context policy-class?>
+          <?if {priority}?>
+            <!-- QoS prio CE -->
+            <?switch-context endpoint?>
+            <device tags="nocreate">
+              <name>{$CE}</name>
+              <config>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="prio-qos-ce-cisco-ios.xml.in"
+                         xpointer="xpointer(/config/*)"/>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="prio-qos-ce-juniper-junos.xml.in"/>
+              </config>
+            </device>
+            <!-- QoS prio PE -->
+            <device tags="nocreate">
+              <name>{$PE}</name>
+              <config>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="prio-qos-pe-cisco-iosxr.xml.in"
+                         xpointer="xpointer(/config/*)"/>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="prio-qos-pe-juniper-junos.xml.in"/>
+              </config>
+            </device>
+          <?else?>
+            <!-- QoS CE -->
+            <?switch-context endpoint?>
+            <device tags="nocreate">
+              <name>{$CE}</name>
+              <config>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="noprio-qos-ce-cisco-ios.xml.in"
+                         xpointer="xpointer(/config/*)"/>
+              </config>
+            </device>
+            <!-- QoS PE -->
+            <device tags="nocreate">
+              <name>{$PE}</name>
+              <config>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="noprio-qos-pe-cisco-iosxr.xml.in"
+                         xpointer="xpointer(/config/*)"/>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="noprio-qos-pe-juniper-junos.xml.in"/>
+              </config>
+            </device>
+          <?end?>
+          <device tags="nocreate">
+            <name>{$PE}</name>
+            <config>
+              <include xmlns="http://www.w3.org/2001/XInclude"
+                       href="qos-pe-cisco-iosxr.xml.in"
+                       xpointer="xpointer(/config/*)"/>
+              <include xmlns="http://www.w3.org/2001/XInclude"
+                       href="qos-pe-juniper-junos.xml.in"/>
+            </config>
+          </device>
+          <?switch-context class?>
+          <?foreach {match-traffic}?>
+            <?set MATCH_ENTRY=GLOBAL-{name}?>
+            <device tags="nocreate">
+              <name>{$CE}</name>
+              <config>
+                <include xmlns="http://www.w3.org/2001/XInclude"
+                         href="class-map-cisco-ios.xml.in"
+                         xpointer="xpointer(/config/*)"/>
+              </config>
+            </device>
+          <?end?> <!-- end foreach {match-traffic} -->
+          <?set CLASS_COUNTER={$CLASS_COUNTER + 1}?>
+        <?end?> <!-- end foreach {class} -->
+        <?switch-context service?>
+        <?foreach {qos/custom-qos-match}?>
+          <?set CLASS_NAME={qos-class}?>
+          <?set MATCH_ENTRY={/name}-{name}?>
+          <device tags="nocreate">
+            <name>{$CE}</name>
+            <config>
+              <include xmlns="http://www.w3.org/2001/XInclude"
+                       href="custom-qos-cisco-ios.xml.in"
+                       xpointer="xpointer(/config/*)"/>
+            </config>
+          </device>
+        <?end?> <!-- end foreach {qos/custom-qos-match} -->
+      <?end?> <!-- end if {qos/qos-policy} -->
+    <?end?> <!-- end foreach {/endpoint} -->
+  </devices>
+</config-template>

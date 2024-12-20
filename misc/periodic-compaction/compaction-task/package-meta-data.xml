@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>compaction-task</name>
+  <package-version>1.0</package-version>
+  <description>Package for periodic compaction</description>
+  <ncs-min-version>6.1</ncs-min-version>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>compaction_task.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

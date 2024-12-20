@@ -1,0 +1,47 @@
+module commit-params-java {
+
+  namespace "http://example.com/commit-params-java";
+  prefix commit-params-java;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list commit-params-java {
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint commit-params-java-servicepoint;
+
+    leaf device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf if {
+      type string;
+    }
+
+    leaf if-speed {
+      type string;
+    }
+
+    tailf:action showcase-java {
+      tailf:actionpoint showcase-java;
+    }
+  }
+}

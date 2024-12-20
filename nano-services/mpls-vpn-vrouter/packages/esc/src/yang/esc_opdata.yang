@@ -1,0 +1,38 @@
+module esc_opdata {
+
+  /*
+   * This is the top level YANG module for ESC's operational data.
+     This imports other
+   * submodules as required.
+   */
+  namespace "http://www.cisco.com/esc/esc_opdata";
+
+  prefix "esc_opdata";
+
+  import esc_opdata_tenant { prefix "optenant"; }
+  import esc_opdata_devstats { prefix "opstats"; }
+  import esc_opdata_networks { prefix "opnetworks"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-08-06 {
+    description "Elastic Services Controller Module's operational data";
+  }
+
+  grouping esc_opdata {
+    leaf status {
+      description "Status of ESC";
+      type string;
+    }
+    /* ESC VM statstics */
+    uses opstats:esc_opdata_devstats;
+
+    /* Shared networks created at admin tenant */
+    uses opnetworks:esc_opdata_networks;
+
+    /* Opdata of the VNFs spun by ESC */
+    uses optenant:esc_opdata_tenant;
+  }
+}

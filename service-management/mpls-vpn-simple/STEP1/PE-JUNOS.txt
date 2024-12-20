@@ -1,0 +1,36 @@
+set configuration interfaces interface xe-0/0/2 no-traps
+set configuration interfaces interface xe-0/0/2 vlan-tagging
+set configuration interfaces interface xe-0/0/2 unit 0 family inet
+set configuration interfaces interface xe-0/0/2 unit 0 family inet \
+address 10.1.1.2/24
+set configuration policy-options policy-statement volvo-EXP from \
+protocol [ bgp ]
+set configuration policy-options policy-statement volvo-EXP then community \
+add volvo-comm-exp
+set configuration policy-options policy-statement volvo-EXP then accept
+set configuration policy-options policy-statement volvo-IMP from \
+protocol [ bgp ]
+set configuration policy-options policy-statement volvo-IMP from \
+community [ volvo-comm-imp ]
+set configuration policy-options policy-statement volvo-IMP then accept
+set configuration policy-options community volvo-comm-exp \
+members [ target:65101:1 ]
+set configuration policy-options community volvo-comm-imp \
+members [ target:65101:1 ]
+set configuration routing-instances instance volvo instance-type vrf
+set configuration routing-instances instance volvo interface xe-0/0/2.101
+set configuration routing-instances instance volvo route-distinguisher \
+rd-type 65101:1
+set configuration routing-instances instance volvo vrf-import [ volvo-IMP ]
+set configuration routing-instances instance volvo vrf-export [ volvo-EXP ]
+set configuration routing-instances instance volvo vrf-table-label
+set configuration routing-instances instance volvo protocols bgp group volvo \
+local-address 10.1.1.2
+set configuration routing-instances instance volvo protocols bgp group volvo \
+peer-as 65101
+set configuration routing-instances instance volvo protocols bgp group volvo \
+local-as
+set configuration routing-instances instance volvo protocols bgp group volvo \
+local-as as-number 100
+set configuration routing-instances instance volvo protocols bgp group volvo \
+neighbor 10.1.1.1

@@ -1,0 +1,59 @@
+module link {
+  namespace "http://com/example/link";
+  prefix link;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list link {
+    description "Link service setting up a VPN link";
+    uses ncs:service-data;
+    ncs:servicepoint link-servicepoint;
+
+    key name;
+    leaf name {
+      type string;
+    }
+    leaf unit {
+      mandatory true;
+      type uint32;
+    }
+
+    leaf vlan-id {
+      mandatory true;
+      type uint32;
+    }
+
+    list endpoints {
+      max-elements 1;
+      key "a-device a-interface b-device b-interface";
+      leaf a-device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf a-interface {
+        type string;
+      }
+      leaf b-device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf b-interface {
+        type string;
+      }
+      leaf test-passed {
+        type boolean;
+        default false;
+      }
+    }
+  }
+}

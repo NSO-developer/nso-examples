@@ -1,0 +1,61 @@
+module add-devices-action {
+  namespace "http://example.com/add-devices";
+  prefix "lc";
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  organization "Acme Inc";
+
+  description
+    " This module contains a action which exemplifies the steps
+     needed to add managed device through the Maapi API.
+     This is only an example module and is NOT part of
+     the core yang modules of NCS";
+
+  container example {
+    tailf:info "Example MAAPI collection ";
+    description
+      "A small module to add device through the Maapi API";
+
+    tailf:action add-devices-and-sync {
+      tailf:actionpoint add-devices-and-sync;
+      description
+        "The action creates 3 devices ex0-ex3 in the device
+      tree through the Maapi API if the devices does not exists.
+      The action also calls the check-sync action which checks
+      if all the devices are in sync using the tailf-netconf-monitoring
+      YANG module. If the devieces are not in sync with the NCS Cdb
+      the action calls sync-from action which pulls configuration
+      data trough the device.";
+      tailf:cli-configure-mode;
+      input {
+      }
+
+      output {
+        list device-info {
+          leaf dev-name {
+            type string;
+          }
+          leaf dev-state {
+            type enumeration {
+              enum added;
+              enum exists;
+              enum error;
+            }
+          }
+          leaf sync-info {
+            type enumeration {
+              enum in-sync ;
+              enum error;
+            }
+          }
+          leaf info {
+            type string;
+          }
+        }
+      }
+    }
+  }
+}

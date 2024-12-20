@@ -1,0 +1,567 @@
+submodule router-zbfw {
+  yang-version 1.1;
+  belongs-to router {
+    prefix r;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  description
+    "Simplified zone-based firewall example";
+
+  revision 2022-11-24 {
+    description
+      "Initial revision.";
+  }
+
+  typedef acl-port-type {
+    type union {
+      type uint16;
+      type string;
+    }
+  }
+
+  grouping zbfw {
+    container zone {
+      list security {
+        key "id";
+        leaf id {
+          type string;
+        }
+        list vpn {
+          key "id";
+          leaf id {
+            type uint32;
+          }
+        }
+      }
+    }
+    container zone-pair {
+      list security {
+        key "id";
+        leaf id {
+          type string;
+        }
+        leaf source {
+          mandatory true;
+          type leafref {
+            path "../../../zone/security/id";
+            require-instance "false";
+          }
+        }
+        leaf destination {
+          mandatory true;
+          type leafref {
+            path "../../../zone/security/id";
+            require-instance "false";
+          }
+        }
+        container service-policy {
+          container type {
+            leaf inspect {
+              type string;
+            }
+          }
+        }
+      }
+    }
+    container policy {
+      list policy-map {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf type {
+          type enumeration {
+            enum "inspect";
+          }
+        }
+        list class {
+          key "name";
+          ordered-by user;
+          leaf name {
+            type string;
+          }
+          container policy {
+            leaf action {
+              type enumeration {
+                enum "cxsc";
+                enum "drop";
+                enum "inspect";
+                enum "pass";
+              }
+            }
+            leaf log {
+              when "../action = 'drop' or ../action = 'pass'";
+              type empty;
+            }
+          }
+        }
+      }
+      list class-map {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf type {
+          type enumeration {
+            enum "inspect";
+          }
+        }
+        leaf prematch {
+          type enumeration {
+            enum "match-all";
+            enum "match-any";
+            enum "match-none";
+          }
+          mandatory true;
+        }
+        container match {
+          container access-group {
+            leaf-list name {
+              type string;
+            }
+          }
+          container protocol {
+            list protocols-list {
+              key "protocols";
+              leaf protocols {
+                type string;
+              }
+            }
+          }
+          leaf-list class-map {
+            type leafref {
+              path "../../../class-map/name";
+            }
+          }
+        }
+      }
+    }
+    container ip {
+      container access-list {
+        list extended {
+          key "name";
+          leaf name {
+            type union {
+              type uint16;
+              type string {
+                pattern "[a-zA-Z].*";
+              }
+            }
+          }
+          list access-list-seq-rule {
+            key "sequence";
+            leaf sequence {
+              type uint64;
+            }
+            container ace-rule {
+              leaf action {
+                type enumeration {
+                  enum deny;
+                  enum permit;
+                }
+              }
+              leaf protocol {
+                type string;
+              }
+              leaf object-group-str {
+                type leafref {
+                  path "../../../../../../object-group/service/name";
+                }
+              }
+              choice source-choice {
+                case any-case {
+                  leaf any {
+                    type empty;
+                  }
+                }
+                case object-group-case {
+                  leaf object-group {
+                    type leafref {
+                      path "../../../../../../object-group/network/name";
+                    }
+                  }
+                }
+              }
+              choice destination-choice {
+                case any-case {
+                  leaf dst-any {
+                    type empty;
+                  }
+                }
+                case object-group-case {
+                  leaf dst-object-group {
+                    type leafref {
+                      path "../../../../../../object-group/network/name";
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    container object-group {
+      list network {
+        key "name";
+        leaf name {
+          type string;
+        }
+        container obj-Mode-config-network-group {
+          list network_address {
+            key "ipv4_addr ipv4_mask";
+            leaf ipv4_addr {
+              type inet:ipv4-address;
+            }
+            leaf ipv4_mask {
+              type inet:ipv4-address;
+            }
+          }
+          list group-objects {
+            key "network-group";
+            leaf network-group {
+              type leafref {
+                path "../../../../network/name";
+              }
+            }
+          }
+          list host {
+            key "ipv4-host";
+            leaf ipv4-host {
+              type inet:host;
+            }
+          }
+        }
+      }
+      list service {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf-list protocol-number {
+          type uint8;
+        }
+        container tcp-udp {
+          list tcp-udp-port-list {
+            key "tcp-udp-port";
+            leaf tcp-udp-port {
+              type union {
+                type uint16;
+                type string;
+              }
+            }
+          }
+          container tcp-udp-range-port-list {
+            list range {
+              key "tcp-udp-min-port tcp-udp-max-port";
+              leaf tcp-udp-min-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-max-port {
+                type acl-port-type;
+              }
+            }
+          }
+          container tcp-udp-src-port-list {
+            list source {
+              key "tcp-udp-port";
+              leaf tcp-udp-port {
+                type acl-port-type;
+              }
+            }
+          }
+          container tcp-udp-src-dst-port-list {
+            list source {
+              key "tcp-udp-src-port tcp-udp-dst-port";
+              leaf tcp-udp-src-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-port {
+                type acl-port-type;
+              }
+            }
+          }
+          container tcp-udp-src-range-port-list {
+            container source {
+              list range {
+                key "tcp-udp-min-port tcp-udp-max-port";
+                leaf tcp-udp-min-port {
+                  type union {
+                    type uint16;
+                    type string;
+                  }
+                }
+                leaf tcp-udp-max-port {
+                  type union {
+                    type uint16;
+                    type string;
+                  }
+                }
+              }
+            }
+          }
+          container tcp-udp-src-range-dst-port-list {
+            list source {
+              key "tcp-udp-src-min-port tcp-udp-src-max-port tcp-udp-dst-port";
+              leaf tcp-udp-src-min-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-src-max-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-port {
+                type acl-port-type;
+              }
+            }
+          }
+          container tcp-udp-src-dst-range-port-list {
+            list source {
+              key "tcp-udp-src-port tcp-udp-dst-min-port tcp-udp-dst-max-port";
+              leaf tcp-udp-src-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-min-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-max-port {
+                type acl-port-type;
+              }
+            }
+          }
+          container tcp-udp-src-range-dst-range-port-list {
+            list source {
+              key "tcp-udp-src-min-port tcp-udp-src-max-port" +
+                  " tcp-udp-dst-min-port tcp-udp-dst-max-port";
+              leaf tcp-udp-src-min-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-src-max-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-min-port {
+                type acl-port-type;
+              }
+              leaf tcp-udp-dst-max-port {
+                type acl-port-type;
+              }
+            }
+          }
+        }
+        leaf tcp {
+          type empty;
+        }
+        container tcp-conf {
+          container tcp {
+            list tcp-port-list {
+              key "tcp-port";
+              leaf tcp-port {
+                type acl-port-type;
+              }
+            }
+            container tcp-range-port-list {
+              list range {
+                key "tcp-min-port tcp-max-port";
+                leaf tcp-min-port {
+                  type acl-port-type;
+                }
+                leaf tcp-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container tcp-src-port-list {
+              list source {
+                key "tcp-port";
+                leaf tcp-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container tcp-src-range-port-list {
+              container source {
+                list range {
+                  key "tcp-min-port tcp-max-port";
+                  leaf tcp-min-port {
+                    type acl-port-type;
+                  }
+                  leaf tcp-max-port {
+                    type acl-port-type;
+                  }
+                }
+              }
+            }
+            container tcp-src-dst-port-list {
+              list source {
+                key "tcp-src-port tcp-dst-port";
+                leaf tcp-src-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container tcp-src-range-dst-port-list {
+              list source {
+                key "tcp-src-min-port tcp-src-max-port tcp-dst-port";
+                leaf tcp-src-min-port {
+                  type acl-port-type;
+                }
+                leaf tcp-src-max-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container tcp-src-dst-range-port-list {
+              list source {
+                key "tcp-src-port tcp-dst-min-port tcp-dst-max-port";
+                leaf tcp-src-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-min-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container tcp-src-range-dst-range-port-list {
+              list source {
+                key "tcp-src-min-port tcp-src-max-port tcp-dst-min-port" +
+                    " tcp-dst-max-port";
+                leaf tcp-src-min-port {
+                  type acl-port-type;
+                }
+                leaf tcp-src-max-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-min-port {
+                  type acl-port-type;
+                }
+                leaf tcp-dst-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+          }
+        }
+        leaf udp {
+          type empty;
+        }
+        container udp-conf {
+          container udp {
+            list udp-port-list {
+              key "udp-port";
+              leaf udp-port {
+                type acl-port-type;
+              }
+            }
+            container udp-range-port-list {
+              list range {
+                key "udp-min-port udp-max-port";
+                leaf udp-min-port {
+                  type acl-port-type;
+                }
+                leaf udp-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container udp-src-port-list {
+              list source {
+                key "udp-port";
+                leaf udp-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container udp-src-range-port-list {
+              container source {
+                list range {
+                  key "udp-min-port udp-max-port";
+                  leaf udp-min-port {
+                    type acl-port-type;
+                  }
+                  leaf udp-max-port {
+                    type acl-port-type;
+                  }
+                }
+              }
+            }
+            container udp-src-dst-port-list {
+              list source {
+                key "udp-src-port udp-dst-port";
+                leaf udp-src-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container udp-src-range-dst-port-list {
+              list source {
+                key "udp-src-min-port udp-src-max-port udp-dst-port";
+                leaf udp-src-min-port {
+                  type acl-port-type;
+                }
+                leaf udp-src-max-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container udp-src-dst-range-port-list {
+              list source {
+                key "udp-src-port udp-dst-min-port udp-dst-max-port";
+                leaf udp-src-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-min-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+            container udp-src-range-dst-range-port-list {
+              list source {
+                key "udp-src-min-port udp-src-max-port udp-dst-min-port" +
+                    " udp-dst-max-port";
+                leaf udp-src-min-port {
+                  type acl-port-type;
+                }
+                leaf udp-src-max-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-min-port {
+                  type acl-port-type;
+                }
+                leaf udp-dst-max-port {
+                  type acl-port-type;
+                }
+              }
+            }
+          }
+        }
+        leaf icmp {
+          type empty;
+        }
+        leaf ip {
+          type empty;
+        }
+      }
+    }
+  }
+}

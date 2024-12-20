@@ -1,0 +1,13 @@
+<clispec xmlns="http://tail-f.com/ns/clispec/1.0" style="c">
+  <operationalMode>
+    <modifications>
+      <delete src="file"/>
+      <delete src="cd"/>
+    </modifications>
+  </operationalMode>
+  <pipeCmds>
+    <modifications>
+      <delete src="save"/>
+    </modifications>
+  </pipeCmds>
+</clispec>

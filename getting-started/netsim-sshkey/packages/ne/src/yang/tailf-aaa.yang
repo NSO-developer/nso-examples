@@ -1,0 +1,28 @@
+module tailf-aaa {
+  namespace "http://tail-f.com/ns/aaa/1.1";
+  prefix aaa;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description
+    "This module defines a minimal subset of the Tail-f AAA data model.";
+
+  container aaa {
+    tailf:info "AAA management";
+    container authentication {
+      tailf:info "User management";
+      container users {
+        tailf:info "List of local users";
+        list user {
+          key name;
+          leaf name {
+            type string;
+            tailf:info "Login name of the user";
+          }
+        }
+      }
+    }
+  }
+}

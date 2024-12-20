@@ -1,0 +1,618 @@
+module router {
+  namespace "http://example.com/router";
+  prefix r;
+
+  yang-version 1.1;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  organization "Tail-f";
+  description
+    "An example module describing some common components typically found
+      on routers
+
+       interfaces - configuration and status of network interfaces
+       routes     - configuration of static routes
+       syslog     - configuration of logging to remote syslog servers
+       dns        - configuration of the DNS resolver
+       ntp        - configuration and status of the NTP daemon
+     ";
+
+  revision 2020-02-27 {
+    description
+      "Initial revision.";
+  }
+
+  typedef prefixLengthIPv4 {
+    type int32 {
+      range "0..32";
+    }
+  }
+
+  typedef prefixLengthIPv6 {
+    type int32 {
+      range "0..128";
+    }
+  }
+
+  typedef interfaceName {
+    type string {
+      length "1..30";
+      pattern "[A-Za-z][^/:.]*";
+    }
+  }
+
+  typedef interfaceLogicalUnit {
+    type int32 {
+      range "0..9999";
+    }
+  }
+
+  typedef interfaceSpeed {
+    type enumeration {
+      enum "ten" {
+        value 10;
+      }
+      enum "hundred" {
+        value 100;
+      }
+      enum "thousand" {
+        value 1000;
+      }
+    }
+  }
+
+  typedef interfaceDuplex {
+    type enumeration {
+      enum "half";
+      enum "full";
+    }
+  }
+
+  typedef syslogLevel {
+    type enumeration {
+      enum "emerg";
+      enum "alert";
+      enum "crit";
+      enum "err";
+      enum "warning";
+      enum "notice";
+      enum "info";
+      enum "debug";
+      enum "none";
+      enum "all";
+    }
+  }
+
+  typedef syslogFacility {
+    type enumeration {
+      enum "auth";
+      enum "authpriv";
+      enum "cron";
+      enum "daemon";
+      enum "ftp";
+      enum "kern";
+      enum "lpr";
+      enum "mail";
+      enum "news";
+      enum "security";
+      enum "syslog";
+      enum "user";
+      enum "uucp";
+      enum "local0";
+      enum "local1";
+      enum "local2";
+      enum "local3";
+      enum "local4";
+      enum "local5";
+      enum "local6";
+      enum "local7";
+      enum "all";
+    }
+  }
+
+  typedef ntpState {
+    type enumeration {
+      enum "reject";
+      enum "falsetick";
+      enum "excess";
+      enum "outlyer";
+      enum "candidate";
+      enum "selected";
+      enum "syspeer";
+      enum "ppspeer";
+      enum "unknown";
+    }
+  }
+
+  typedef ntpStratum {
+    type uint8 {
+      range "0..15";
+    }
+  }
+
+  typedef ntpDecimal {
+    type int32;
+    units "milliseconds";
+  }
+
+  typedef ntpRestrictName {
+    type union {
+      type enumeration {
+        enum "default";
+      }
+      type inet:host;
+    }
+  }
+
+  typedef ntpRestrictMask {
+    type union {
+      type enumeration {
+        enum "default";
+      }
+      type inet:ip-address;
+    }
+  }
+
+  typedef ntpRestrictFlag {
+    type enumeration {
+      enum "ignore";
+      enum "kod";
+      enum "limited";
+      enum "lowpriotrap";
+      enum "nomodify";
+      enum "nopeer";
+      enum "noquery";
+      enum "noserve";
+      enum "notrap";
+      enum "notrust";
+      enum "ntpport";
+      enum "version";
+    }
+  }
+
+  typedef ntpKeyValue {
+    type string {
+      pattern "[!-~]{1,32}";
+    }
+  }
+
+  grouping commonPacketsCounters {
+    leaf bytes {
+      type yang:counter64;
+    }
+    leaf packets {
+      type yang:counter64;
+    }
+    leaf errors {
+      type yang:counter32;
+    }
+    leaf dropped {
+      type yang:counter32;
+    }
+  }
+
+  grouping txPacketsCounters {
+    uses commonPacketsCounters;
+    leaf collisions {
+      type yang:counter32;
+    }
+  }
+
+  grouping interfaces {
+    list interface {
+      key "name";
+      leaf name {
+        type interfaceName;
+      }
+      leaf description {
+        type string;
+      }
+      leaf enabled {
+        type empty;
+      }
+      leaf speed {
+        type interfaceSpeed;
+        description
+          "not supported for all types of interfaces";
+      }
+      leaf duplex {
+        type interfaceDuplex;
+        description
+          "not supported for all types of interfaces";
+      }
+      leaf mtu {
+        type int16 {
+          range "68..1500";
+        }
+      }
+      leaf mac {
+        type yang:mac-address;
+      }
+      container status {
+        config false;
+        leaf link {
+          type enumeration {
+            enum "up";
+            enum "down";
+          }
+        }
+        leaf speed {
+          type interfaceSpeed;
+        }
+        leaf duplex {
+          type interfaceDuplex;
+        }
+        leaf mtu {
+          type int32;
+        }
+        leaf mac {
+          type yang:mac-address;
+        }
+        container receive {
+          uses commonPacketsCounters;
+        }
+        container transmit {
+          uses txPacketsCounters;
+        }
+      }
+      list unit {
+        key "name";
+        leaf name {
+          type interfaceLogicalUnit;
+        }
+        leaf enabled {
+          type boolean;
+        }
+        leaf description {
+          type string;
+        }
+        leaf vlan-id {
+          type uint16;
+        }
+
+        leaf-list arp {
+          type enumeration {
+            enum no-gratuitous-arp-reply;
+            enum no-gratuitous-arp-request;
+          }
+        }
+
+        container status {
+          config false;
+          container receive {
+            uses commonPacketsCounters;
+          }
+          container transmit {
+            uses txPacketsCounters;
+          }
+        }
+        container family {
+          choice family {
+            case c1 {
+              container inet {
+                list address {
+                  key "name";
+                  leaf name {
+                    type inet:ipv4-address;
+                  }
+                  leaf prefix-length {
+                    type prefixLengthIPv4;
+                  }
+                  leaf broadcast {
+                    type inet:ipv4-address;
+                  }
+                }
+              }
+            }
+            case c2 {
+              container inet6 {
+                list address {
+                  key "name";
+                  leaf name {
+                    type inet:ipv6-address;
+                  }
+                  leaf prefix-length {
+                    type prefixLengthIPv6;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping routes {
+    container inet {
+      list route {
+        key "name prefix-length";
+        leaf name {
+          type inet:ipv4-address;
+        }
+        leaf prefix-length {
+          type prefixLengthIPv4;
+        }
+        leaf description {
+          type string;
+        }
+        leaf enabled {
+          type boolean;
+          default "true";
+        }
+        leaf type {
+          type enumeration {
+            enum "next-hop";
+            enum "reject";
+            enum "discard";
+            enum "prohibit";
+          }
+          default "next-hop";
+        }
+        list next-hop {
+          key "name";
+          unique "metric";
+          max-elements "16";
+          leaf name {
+            type inet:ipv4-address;
+            description
+              "must not be a multicast address";
+          }
+          leaf metric {
+            type int32;
+            default "0";
+          }
+        }
+      }
+    }
+    container inet6 {
+      list route {
+        key "name prefix-length";
+        leaf name {
+          type inet:ipv6-address;
+        }
+        leaf prefix-length {
+          type prefixLengthIPv6;
+        }
+        leaf description {
+          type string;
+        }
+        leaf enabled {
+          type boolean;
+          default "true";
+        }
+        leaf type {
+          type enumeration {
+            enum "next-hop";
+            enum "reject";
+          }
+          default "next-hop";
+        }
+        list next-hop {
+          key "name";
+          unique "metric";
+          max-elements "16";
+          leaf name {
+            type inet:ipv6-address;
+            description
+              "must not be a multicast address";
+          }
+          leaf metric {
+            type int32;
+            default "1024";
+          }
+          leaf interface {
+            type interfaceName;
+          }
+          leaf unit {
+            type interfaceLogicalUnit;
+          }
+        }
+      }
+    }
+  }
+
+  grouping syslog {
+    list server {
+      key "name";
+      leaf name {
+        type inet:host;
+      }
+      leaf enabled {
+        type boolean;
+      }
+      list selector {
+        key "name";
+        leaf name {
+          type int32;
+        }
+        leaf negate {
+          type boolean;
+        }
+        leaf comparison {
+          type enumeration {
+            enum "same-or-higher";
+            enum "same";
+          }
+        }
+        leaf level {
+          type syslogLevel;
+        }
+        leaf-list facility {
+          type syslogFacility;
+          min-elements 1;
+          max-elements "8";
+        }
+      }
+      leaf administrator {
+        type string;
+      }
+    }
+  }
+
+  grouping ntpStatus {
+    leaf state {
+      type ntpState;
+    }
+    leaf stratum {
+      type ntpStratum;
+    }
+    leaf reach {
+      type string;
+    }
+    leaf delay {
+      type ntpDecimal;
+    }
+    leaf offset {
+      type ntpDecimal;
+    }
+    leaf jitter {
+      type ntpDecimal;
+    }
+  }
+
+  grouping ntp {
+
+    list server {
+      key "name";
+      leaf name {
+        type inet:host;
+      }
+      leaf enabled {
+        type boolean;
+        default "true";
+      }
+      leaf peer {
+        type boolean;
+        default "false";
+      }
+      leaf iburst {
+        type empty;
+      }
+      leaf version {
+        type int8 {
+          range "1..4";
+        }
+        default "4";
+      }
+      leaf key {
+        type leafref {
+          path "../../key/name";
+        }
+      }
+      container status {
+        config false;
+        uses ntpStatus;
+      }
+    }
+    container local-clock {
+      leaf enabled {
+        type boolean;
+        default "true";
+      }
+      leaf stratum {
+        type ntpStratum;
+        default "10";
+      }
+      container status {
+        config false;
+        uses ntpStatus;
+      }
+    }
+    list restrict {
+      key "name mask";
+      max-elements "64";
+      leaf name {
+        type ntpRestrictName;
+      }
+      leaf mask {
+        type ntpRestrictMask;
+      }
+      leaf-list flag {
+        type ntpRestrictFlag;
+      }
+    }
+    list key {
+      key "name";
+      max-elements "64";
+      leaf name {
+        type uint8 {
+          range "1..max";
+        }
+      }
+      leaf value {
+        type ntpKeyValue;
+      }
+      leaf trusted {
+        type boolean;
+        default "true";
+      }
+    }
+    leaf requestkey {
+      type leafref {
+        path "../key/name";
+      }
+    }
+    leaf controlkey {
+      type leafref {
+        path "../key/name";
+      }
+    }
+  }
+
+  grouping dns {
+    list search {
+      key "name";
+      max-elements "3";
+      leaf name {
+        type int32;
+      }
+      leaf domain {
+        type inet:host;
+      }
+    }
+    list server {
+      key "address";
+      ordered-by user;
+      leaf address {
+        type inet:ip-address;
+      }
+    }
+    container options {
+      leaf ndots {
+        type uint8;
+      }
+      leaf timeout {
+        type uint8;
+      }
+      leaf attempts {
+        type uint8;
+      }
+    }
+  }
+
+  container sys {
+    container interfaces {
+      uses interfaces;
+    }
+    container routes {
+      uses routes;
+    }
+    container syslog {
+      uses syslog;
+    }
+    container ntp {
+      uses ntp;
+    }
+    container dns {
+      uses dns;
+    }
+  }
+}

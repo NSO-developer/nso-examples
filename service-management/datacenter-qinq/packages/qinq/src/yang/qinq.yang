@@ -1,0 +1,123 @@
+module qinq {
+
+  namespace "http://com/example/qinq";
+  prefix q;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  augment /ncs:services/ncs:service/ncs:type/ncs:service-type-choice {
+    case qinq {
+
+      container qinq {
+        presence "Setting the qinq service";
+        uses ncs:service-data;
+        ncs:servicepoint qinqservice;
+
+        description "This is an RFS template service";
+
+        leaf s-vlan {
+          mandatory true;
+          type uint32 {
+            range 1..4094;
+          }
+        }
+
+        //must "not (/ncs:services/ncs:service"+
+        //  "[ncs:object-id != current()/../../ncs:object-id]/"+
+        //  "ncs:type/q:qinq"+
+        //  "[s-vlan = current()/q:s-vlan])"
+        must "count(/ncs:services/ncs:service/ncs:type/q:qinq"+
+             "[s-vlan = current()/q:s-vlan]) = 1"
+        {
+          error-message "The S-VLAN must be unique within the "+
+            "network";
+        }
+
+
+
+        leaf status {
+          config false;
+
+          tailf:cdb-oper {
+            tailf:persistent true;
+          }
+
+          type enumeration {
+            enum undefined;
+            enum cleared;
+            enum alarm;
+          }
+
+          default undefined;
+        }
+
+
+        list edge-switch {
+          key "switch";
+          leaf switch {
+            type leafref {
+              path /ncs:devices/ncs:device/ncs:name;
+            }
+          }
+          list edge-interface {
+            key "interface";
+            leaf interface {
+              type string;
+              must "(count(/ncs:services/ncs:service/ncs:type/q:qinq"+
+                   "/q:edge-switch[q:switch = current()/../../switch]"+
+                   "/q:edge-interface[q:interface = current()]) = 1) "+
+                   "and "+
+                   "(not (../../../core-switch/trunk-interface[. = current()]))"
+
+              //must "not (/ncs:services/ncs:service"+
+              //"[ncs:object-id != current()/../../../../../ncs:object-id]/"+
+              //"ncs:type/q:qinq"+
+              //"/q:edge-switch[q:switch = current()/../../switch]"+
+              //"/q:edge-interface[q:interface = current()])"
+
+              {
+                error-message "Edge interface must be unique";
+              }
+
+            }
+            leaf-list c-vlan {
+              type uint32 {
+                range 1..4094;
+              }
+            }
+          }
+          leaf-list trunk-interface{
+            min-elements 1;
+            type string;
+          }
+        }
+
+        list core-switch {
+          key "switch";
+          leaf switch {
+            type leafref {
+              path /ncs:devices/ncs:device/ncs:name;
+            }
+          }
+          leaf-list trunk-interface {
+            min-elements 1;
+            type string;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+

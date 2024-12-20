@@ -1,0 +1,96 @@
+module move-device {
+  namespace "http://example.com/move-device";
+  prefix md;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description "A small test module to support device migration";
+
+
+  container move-device {
+    tailf:action move {
+      tailf:actionpoint move-device-point;
+      input {
+        leaf src-nso {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+          mandatory true;
+        }
+        leaf read-from-db {
+          type empty;
+        }
+        leaf dest-nso {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+          mandatory true;
+        }
+        leaf device-name {
+          type string;
+          mandatory true;
+        }
+      }
+      output {
+      }
+    }
+    tailf:action rebalance {
+      tailf:actionpoint move-device-point;
+      input {
+        leaf dry-run {
+          type empty;
+        }
+        leaf read-from-db {
+          type empty;
+        }
+        leaf-list nodes {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+          tailf:info "Optionally specify node set to re-balance."
+            +"Will use all LSA nodes if not specified.";
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+    tailf:action evacuate {
+      tailf:actionpoint move-device-point;
+      input {
+        leaf node {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+          mandatory true;
+        }
+        leaf dry-run {
+          type empty;
+        }
+        leaf read-from-db {
+          type empty;
+        }
+        leaf-list dest-nodes {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+          tailf:info "Optionally specify destination nodes. "
+            +"Will use all LSA nodes if not specified.";
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  }
+}

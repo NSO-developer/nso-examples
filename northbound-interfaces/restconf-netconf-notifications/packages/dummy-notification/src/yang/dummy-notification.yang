@@ -1,0 +1,16 @@
+module dummy-notification {
+  yang-version 1.1;
+  namespace "urn:dummy";
+  prefix dummy;
+
+  revision 2024-06-27 {
+    description
+      "Initial revision.";
+  }
+
+  notification dummy-notif {
+    leaf dummy-value {
+      type string;
+    }
+  }
+}

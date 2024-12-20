@@ -1,0 +1,316 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$VDEVICE}</name>
+      <config>
+        <?if-ned-id zbfw-router-nc-1.0:zbfw-router-nc-1.0?>
+        <sys xmlns="http://example.com/router">
+          <zbfw>
+            <object-group when="{$ACL_REQUIRED = 'true'}">
+              <service when="{string-length($SEQUENCE_NUMBER)&gt;0
+                              and string-length($NAME)&gt;0}">
+                <name>{$NAME}-seq-{$SEQUENCE_NAME}-service-og_</name>
+                <protocol-number when="{number($PROTOCOL)=$PROTOCOL}"
+                                                  >{$PROTOCOL}</protocol-number>
+                <tcp-udp when="{not(string-length($PROTOCOL)&gt;0)
+                               and (zone-based-policy[name=$NAME]/sequence[
+                               seq-value=$SEQUENCE_NUMBER]/match/source-port
+                               or zone-based-policy[name=$NAME]/sequence[
+                               seq-value=
+                               $SEQUENCE_NUMBER]/match/destination-port
+                               or zone-based-policy[name=$NAME]/sequence[
+                               seq-value=
+                               $SEQUENCE_NUMBER]/match/source-port-list
+                               or zone-based-policy[name=$NAME]/sequence[
+                               seq-value=
+                               $SEQUENCE_NUMBER]/match/destination-port-list)
+                               and ($SVC_OG_REQUIRED = 'true')}">
+                  <tcp-udp-src-range-dst-range-port-list
+                      when="{contains($SPORT, '-') and contains($DPORT, '-')}">
+                    <source>
+                      <tcp-udp-src-min-port
+                         >{substring-before($SPORT, '-')}</tcp-udp-src-min-port>
+                      <tcp-udp-src-max-port
+                          >{substring-after($SPORT, '-')}</tcp-udp-src-max-port>
+                      <tcp-udp-dst-min-port
+                         >{substring-before($DPORT, '-')}</tcp-udp-dst-min-port>
+                      <tcp-udp-dst-max-port
+                          >{substring-after($DPORT, '-')}</tcp-udp-dst-max-port>
+                    </source>
+                  </tcp-udp-src-range-dst-range-port-list>
+                  <tcp-udp-src-range-dst-port-list when="{contains($SPORT, '-')
+                                              and string-length($DPORT)&gt;0
+                                              and not(contains($DPORT, '-'))}">
+                    <source>
+                      <tcp-udp-src-min-port
+                         >{substring-before($SPORT, '-')}</tcp-udp-src-min-port>
+                      <tcp-udp-src-max-port
+                          >{substring-after($SPORT, '-')}</tcp-udp-src-max-port>
+                      <tcp-udp-dst-port>{$DPORT}</tcp-udp-dst-port>
+                    </source>
+                  </tcp-udp-src-range-dst-port-list>
+                  <tcp-udp-src-range-port-list when="{contains($SPORT, '-')
+                                         and not(string-length($DPORT)&gt;0)}">
+                    <source>
+                      <range>
+                        <tcp-udp-min-port
+                             >{substring-before($SPORT, '-')}</tcp-udp-min-port>
+                        <tcp-udp-max-port
+                              >{substring-after($SPORT, '-')}</tcp-udp-max-port>
+                      </range>
+                    </source>
+                  </tcp-udp-src-range-port-list>
+                  <tcp-udp-src-port-list
+                          when="{string-length($SPORT)&gt;0
+                            and not(contains($SPORT, '-'))
+                            and not(string-length($DPORT)&gt;0)}">
+                    <source>
+                      <tcp-udp-port>{$SPORT}</tcp-udp-port>
+                    </source>
+                  </tcp-udp-src-port-list>
+                  <tcp-udp-src-dst-range-port-list
+                          when="{(string-length($SPORT)&gt;0)
+                            and not(contains($SPORT, '-'))
+                            and contains($DPORT, '-')}">
+                    <source>
+                      <tcp-udp-src-port>{$SPORT}</tcp-udp-src-port>
+                      <tcp-udp-dst-min-port
+                         >{substring-before($DPORT, '-')}</tcp-udp-dst-min-port>
+                      <tcp-udp-dst-max-port
+                          >{substring-after($DPORT, '-')}</tcp-udp-dst-max-port>
+                    </source>
+                  </tcp-udp-src-dst-range-port-list>
+                  <tcp-udp-src-dst-port-list
+                          when="{((string-length($SPORT)&gt;0)
+                            and (not(contains($SPORT, '-')))
+                            and (string-length($DPORT)&gt;0)
+                            and (not(contains($DPORT, '-'))))}">
+                    <source>
+                      <tcp-udp-src-port>{$SPORT}</tcp-udp-src-port>
+                      <tcp-udp-dst-port>{$DPORT}</tcp-udp-dst-port>
+                    </source>
+                  </tcp-udp-src-dst-port-list>
+                  <tcp-udp-port-list
+                          when="{not(string-length($SPORT)&gt;0)
+                            and (string-length($DPORT)&gt;0
+                            and not(contains($DPORT, '-')))}">
+                    <tcp-udp-port>{$DPORT}</tcp-udp-port>
+                  </tcp-udp-port-list>
+                  <tcp-udp-range-port-list
+                          when="{not(string-length($SPORT)&gt;0)
+                            and string-length($DPORT)&gt;0
+                            and contains($DPORT, '-')}">
+                    <range>
+                      <tcp-udp-min-port
+                             >{substring-before($DPORT, '-')}</tcp-udp-min-port>
+                      <tcp-udp-max-port
+                              >{substring-after($DPORT, '-')}</tcp-udp-max-port>
+                    </range>
+                  </tcp-udp-range-port-list>
+                </tcp-udp>
+                <tcp when="{$PROTOCOL='tcp' and
+                  not (zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/source-port
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/destination-port
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/source-port-list
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/destination-port-list)
+                  and ($SVC_OG_REQUIRED = 'true')}"/>
+                <tcp-conf>
+                  <tcp when="{$PROTOCOL='tcp'}">
+                    <tcp-src-range-dst-range-port-list
+                     when="{contains($SPORT, '-') and contains($DPORT, '-')}">
+                      <source>
+                        <tcp-src-min-port
+                             >{substring-before($SPORT, '-')}</tcp-src-min-port>
+                        <tcp-src-max-port
+                              >{substring-after($SPORT, '-')}</tcp-src-max-port>
+                        <tcp-dst-min-port
+                             >{substring-before($DPORT, '-')}</tcp-dst-min-port>
+                        <tcp-dst-max-port
+                              >{substring-after($DPORT, '-')}</tcp-dst-max-port>
+                      </source>
+                    </tcp-src-range-dst-range-port-list>
+                    <tcp-src-range-dst-port-list
+                      when="{contains($SPORT, '-') and
+                      string-length($DPORT)&gt;0 and
+                      not(contains($DPORT, '-'))}">
+                      <source>
+                        <tcp-src-min-port
+                             >{substring-before($SPORT, '-')}</tcp-src-min-port>
+                        <tcp-src-max-port
+                              >{substring-after($SPORT, '-')}</tcp-src-max-port>
+                        <tcp-dst-port>{$DPORT}</tcp-dst-port>
+                      </source>
+                    </tcp-src-range-dst-port-list>
+                    <tcp-src-range-port-list
+                      when="{contains($SPORT, '-') and
+                            not(string-length($DPORT)&gt;0)}">
+                      <source>
+                        <range>
+                          <tcp-min-port
+                                 >{substring-before($SPORT, '-')}</tcp-min-port>
+                          <tcp-max-port
+                                  >{substring-after($SPORT, '-')}</tcp-max-port>
+                        </range>
+                      </source>
+                    </tcp-src-range-port-list>
+                    <tcp-src-port-list
+                      when="{string-length($SPORT)&gt;0 and
+                        not(contains($SPORT, '-')) and
+                        not(string-length($DPORT)&gt;0)}">
+                      <source>
+                        <tcp-port>{$SPORT}</tcp-port>
+                      </source>
+                    </tcp-src-port-list>
+                    <tcp-src-dst-range-port-list
+                      when="{(string-length($SPORT)&gt;0) and
+                        not(contains($SPORT, '-')) and contains($DPORT, '-')}">
+                      <source>
+                        <tcp-src-port>{$SPORT}</tcp-src-port>
+                        <tcp-dst-min-port
+                             >{substring-before($DPORT, '-')}</tcp-dst-min-port>
+                        <tcp-dst-max-port
+                              >{substring-after($DPORT, '-')}</tcp-dst-max-port>
+                      </source>
+                    </tcp-src-dst-range-port-list>
+                    <tcp-src-dst-port-list
+                      when="{((string-length($SPORT)&gt;0)
+                        and (not(contains($SPORT, '-')))
+                        and (string-length($DPORT)&gt;0)
+                        and (not(contains($DPORT, '-'))))}">
+                      <source>
+                        <tcp-src-port>{$SPORT}</tcp-src-port>
+                        <tcp-dst-port>{$DPORT}</tcp-dst-port>
+                      </source>
+                    </tcp-src-dst-port-list>
+                    <tcp-port-list
+                      when="{not(string-length($SPORT)&gt;0)
+                        and (string-length($DPORT)&gt;0
+                        and not(contains($DPORT, '-')))}">
+                      <tcp-port>{$DPORT}</tcp-port>
+                    </tcp-port-list>
+                    <tcp-range-port-list
+                      when="{not(string-length($SPORT)&gt;0)
+                        and string-length($DPORT)&gt;0
+                        and contains($DPORT, '-')}">
+                      <range>
+                        <tcp-min-port
+                                 >{substring-before($DPORT, '-')}</tcp-min-port>
+                        <tcp-max-port
+                                  >{substring-after($DPORT, '-')}</tcp-max-port>
+                      </range>
+                    </tcp-range-port-list>
+                  </tcp>
+                </tcp-conf>
+                <udp when="{$PROTOCOL='udp' and
+                  not (zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/source-port
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/destination-port
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/source-port-list
+                  or zone-based-policy[name=$NAME]/sequence[
+                  seq-value=$SEQUENCE_NUMBER]/match/destination-port-list)
+                  and ($SVC_OG_REQUIRED = 'true')}"/>
+                <udp-conf>
+                  <udp when="{$PROTOCOL='udp'}">
+                    <udp-src-range-dst-range-port-list
+                      when="{contains($SPORT, '-') and contains($DPORT, '-')}">
+                      <source>
+                        <udp-src-min-port
+                             >{substring-before($SPORT, '-')}</udp-src-min-port>
+                        <udp-src-max-port
+                              >{substring-after($SPORT, '-')}</udp-src-max-port>
+                        <udp-dst-min-port
+                             >{substring-before($DPORT, '-')}</udp-dst-min-port>
+                        <udp-dst-max-port
+                              >{substring-after($DPORT, '-')}</udp-dst-max-port>
+                      </source>
+                    </udp-src-range-dst-range-port-list>
+                    <udp-src-range-dst-port-list
+                      when="{contains($SPORT, '-')
+                      and string-length($DPORT)&gt;0
+                      and not(contains($DPORT, '-'))}">
+                      <source>
+                        <udp-src-min-port
+                             >{substring-before($SPORT, '-')}</udp-src-min-port>
+                        <udp-src-max-port
+                              >{substring-after($SPORT, '-')}</udp-src-max-port>
+                        <udp-dst-port>{$DPORT}</udp-dst-port>
+                      </source>
+                    </udp-src-range-dst-port-list>
+                    <udp-src-range-port-list
+                      when="{contains($SPORT, '-')
+                      and not(string-length($DPORT)&gt;0)}">
+                      <source>
+                        <range>
+                          <udp-min-port
+                                 >{substring-before($SPORT, '-')}</udp-min-port>
+                          <udp-max-port
+                                  >{substring-after($SPORT, '-')}</udp-max-port>
+                        </range>
+                      </source>
+                    </udp-src-range-port-list>
+                    <udp-src-port-list
+                      when="{string-length($SPORT)&gt;0
+                        and not(contains($SPORT, '-'))
+                        and not(string-length($DPORT)&gt;0)}">
+                      <source>
+                        <udp-port>{$SPORT}</udp-port>
+                      </source>
+                    </udp-src-port-list>
+                    <udp-src-dst-range-port-list
+                      when="{(string-length($SPORT)&gt;0)
+                        and not(contains($SPORT, '-'))
+                        and contains($DPORT, '-')}">
+                      <source>
+                        <udp-src-port>{$SPORT}</udp-src-port>
+                        <udp-dst-min-port
+                             >{substring-before($DPORT, '-')}</udp-dst-min-port>
+                        <udp-dst-max-port
+                              >{substring-after($DPORT, '-')}</udp-dst-max-port>
+                      </source>
+                    </udp-src-dst-range-port-list>
+                    <udp-src-dst-port-list
+                      when="{((string-length($SPORT)&gt;0)
+                        and (not(contains($SPORT, '-')))
+                        and (string-length($DPORT)&gt;0)
+                        and (not(contains($DPORT, '-'))))}">
+                      <source>
+                        <udp-src-port>{$SPORT}</udp-src-port>
+                        <udp-dst-port>{$DPORT}</udp-dst-port>
+                      </source>
+                    </udp-src-dst-port-list>
+                    <udp-port-list
+                      when="{not(string-length($SPORT)&gt;0)
+                        and (string-length($DPORT)&gt;0
+                        and not(contains($DPORT, '-')))}">
+                      <udp-port>{$DPORT}</udp-port>
+                    </udp-port-list>
+                    <udp-range-port-list
+                      when="{not(string-length($SPORT)&gt;0)
+                        and string-length($DPORT)&gt;0
+                        and contains($DPORT, '-')}">
+                      <range>
+                        <udp-min-port
+                                 >{substring-before($DPORT, '-')}</udp-min-port>
+                        <udp-max-port
+                                  >{substring-after($DPORT, '-')}</udp-max-port>
+                      </range>
+                    </udp-range-port-list>
+                  </udp>
+                </udp-conf>
+                <icmp when="{$PROTOCOL='icmp'}"/>
+                <ip when="{$SVC_OG_REQUIRED = 'false'}"/>
+              </service>
+            </object-group>
+          </zbfw>
+        </sys>
+      <?end?>
+    </config>
+    </device>
+  </devices>
+</config-template>

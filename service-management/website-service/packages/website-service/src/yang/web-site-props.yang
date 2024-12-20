@@ -1,0 +1,73 @@
+module web-site-props {
+  namespace "http://examples.com/web-site-props";
+  prefix wsp;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+
+  description "This YANG model implements a web-site service
+               using the pound load balancer.";
+
+  // This is version 1
+  revision 2010-02-09 {
+    description "Initial revision.";
+  }
+
+  augment /ncs:services/ncs:properties {
+    container web-site {
+      description "Profiles used by the web-site service.";
+
+      list profile {
+        key name;
+
+        leaf name {
+          description "Unique key";
+          type string;
+        }
+
+        leaf description {
+          description "Short description of the profile";
+          type string;
+        }
+
+        leaf lb {
+          description "The load balancer to use.";
+          mandatory true;
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+
+        list backend {
+          key name;
+          leaf name {
+            description
+              "A backend to use. The backend must support the webserver
+               module.";
+            type leafref {
+              path "/ncs:devices/ncs:device/ncs:name";
+            }
+          }
+          leaf drop-ratio {
+            description "Number of dropped packets per 1000 recieved";
+            config false;
+            tailf:callpoint ws-stats;
+            type uint32;
+          }
+        }
+
+      }
+
+    }
+  }
+}
+
+
+
+

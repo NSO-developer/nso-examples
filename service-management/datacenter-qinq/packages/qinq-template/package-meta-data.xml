@@ -1,0 +1,8 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>qinq-template</name>
+  <package-version>1.0</package-version>
+  <description>Qinq service implemented with template</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+</ncs-package>

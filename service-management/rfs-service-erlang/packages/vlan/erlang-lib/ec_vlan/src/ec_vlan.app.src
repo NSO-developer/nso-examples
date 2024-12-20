@@ -1,0 +1,12 @@
+%% This is an -*- erlang -*- file
+
+{application, ec_vlan,
+ [
+  {description, "Application skeleton"},
+  {vsn, "%VSN%"},
+  {modules, [%MODULES%]},
+  {mod, {ec_vlan, []}},
+  {registered, [ec_vlan_server]},
+  {applications, [stdlib, kernel]},
+  {env, [{ncs_start_phase, phase2}]}
+ ]}.

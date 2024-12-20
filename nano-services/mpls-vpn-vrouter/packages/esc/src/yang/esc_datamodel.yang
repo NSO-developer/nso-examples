@@ -1,0 +1,184 @@
+submodule esc_datamodel {
+  /*
+   * include all the components of the datamodel
+   */
+  belongs-to "esc" {
+    prefix "dm";
+  }
+
+  import esc_policies { prefix "policies"; }
+  import esc_network { prefix "network"; }
+  import esc_volume { prefix "volume"; }
+  import esc_flavor { prefix "flavor"; }
+  import esc_disk { prefix "disk"; }
+  import esc_interface { prefix "interface"; }
+  import esc_kpi { prefix "kpi"; }
+  import esc_rules { prefix "rules"; }
+  import esc_config_data { prefix "cfg"; }
+  import esc_port_forwarding { prefix "pf"; }
+  import esc_scaling { prefix "scaling"; }
+  import esc_types { prefix "types"; }
+  import tailf-common { prefix "tailf"; }
+
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-06-23 {
+    description "ESC Datamodel";
+  }
+
+  grouping misc_params {
+    container misc {
+      description "Some miscelaneous configurations.";
+      container watchdog {
+        description "Watch Dog";
+        leaf hardware {
+          description "Watchdog device to be used. i6300esb or ib700";
+          type  types:wd_hardware;
+        }
+
+        leaf action {
+          description "Action when watchdog fires:
+                       reset|shutdown|poweroff|pause|debug|none";
+          type types:wd_action;
+        }
+      }
+    }
+  }
+
+  grouping datamodel {
+
+    uses policies:esc_policies;
+    uses network:esc_network;
+    uses volume:esc_volume_template;
+
+    list vm_group {
+      description
+        "This section allows one to define propoerties such as number of
+         interfaces, type of
+         monitoring, monitoring frequency, type of eventing, scaling
+         mechanism, elasiticiy properties, etc for each VM in this
+         group. This represnts a type of VM.  For example, if one
+         needs two Webservers in a deployment, only one VM instance is
+         defined and number of instances is set to 2 in the scaling
+         section. If there are two types of VMs, for example a
+         Webserver and a Database server, then such a service will
+         have two vm_groups: one for Webserver and another for
+         Database server";
+      key "name";
+      min-elements 1;
+      leaf name {
+        description "A name for the VM group";
+        type types:escname;
+        mandatory true;
+      }
+      leaf bootup_time {
+        description
+          "Time in seconds that this VM takes to perform a cold boot. This will
+           be the time that ESC waits before deciding that the VM is
+           un-bootable.";
+        type types:escint32;
+        mandatory true;
+      }
+      leaf recovery_wait_time {
+        description
+          "Time in seconds that this VM takes to perform a normal warm
+           reboot. This will be used to avoid premature VM recovery in
+           case VM becomes unresponsive due to operator reboot. This
+           is important as VM recovery will results in loss of data
+           that is stored on root disk. If speedy recovery is more
+           important than the data on the root disk, this value can be
+           optionally set to 0.";
+        type types:escint32;
+        mandatory true;
+      }
+
+      uses misc_params;
+      uses volume:esc_volume_deployment;
+      uses interface:esc_interface;
+      uses kpi:esc_kpi;
+      uses rules:esc_rules;
+      uses cfg:esc_config_data;
+        uses pf:esc_port_forwarding;
+      uses scaling:esc_scaling;
+      uses policies:intra_vm_group_placement;
+      uses policies:intra_vm_group_properties;
+    }
+  }
+
+  grouping svc_datamodel {
+    container services {
+      list service_definition {
+        key "name version";
+        description "List of services";
+        leaf name {
+          description "Name of the service";
+          type types:escname;
+          mandatory true;
+        }
+        leaf version {
+          description "Version of the service";
+          type types:escversion;
+          mandatory true;
+        }
+        list vm_group {
+          description
+          "This section allows one to define properties such as disk, number of
+          CPUs, amount of memory";
+          key "name";
+          min-elements 1;
+          leaf name {
+            description "A name for the VM group";
+            type types:escname;
+            mandatory true;
+          }
+          uses disk:esc_disk;
+          uses flavor:esc_flavor;
+        }
+      }
+    }
+  }
+
+  grouping tenant_datamodel {
+    container services {
+      list service_definition {
+        key "deployment_name name version";
+        description "List of services requested by the user";
+        leaf deployment_name {
+          description
+            "User specified name. One can have multiple deployments of the
+             same service, but have to provide a unique name for each
+             deployment";
+          type types:escname;
+          mandatory true;
+        }
+        leaf name {
+          description "Name of the service";
+          /*
+           * A tenant can only deploy a service that an admin has
+             already registered
+           */
+          type leafref {
+            path "/esc_datamodel/services/service_definition/name";
+          }
+          mandatory true;
+        }
+        leaf version {
+          description "Version of the service";
+          /*
+           * Only the version of the service that is specified
+             above can be chosen
+           */
+          type leafref {
+            path "/esc_datamodel/services/service_definition[name = current()/"
+               + "../name]/version";
+          }
+          mandatory true;
+        }
+        uses datamodel;
+      }
+    }
+  }
+}

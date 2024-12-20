@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <saml2-auth xmlns="http://tail-f.com/ns/cisco-nso-saml2-auth">
+    <identity-provider>
+      <entity-id>http://localhost:8000/saml/metadata.xml</entity-id>
+      <metadata>&lt;?xml version="1.0"?&gt;
+    &lt;md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" entityID="http://localhost:8000/saml/metadata.xml"&gt;
+      &lt;md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"&gt;
+        &lt;md:KeyDescriptor use="signing"&gt;
+          &lt;ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"&gt;
+            &lt;ds:X509Data&gt;
+              &lt;ds:X509Certificate&gt;@IDP_CERTIFICATE@&lt;/ds:X509Certificate&gt;
+            &lt;/ds:X509Data&gt;
+          &lt;/ds:KeyInfo&gt;
+        &lt;/md:KeyDescriptor&gt;
+        &lt;md:KeyDescriptor use="encryption"&gt;
+          &lt;ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"&gt;
+            &lt;ds:X509Data&gt;
+              &lt;ds:X509Certificate&gt;@IDP_CERTIFICATE@&lt;/ds:X509Certificate&gt;
+            &lt;/ds:X509Data&gt;
+          &lt;/ds:KeyInfo&gt;
+        &lt;/md:KeyDescriptor&gt;
+        &lt;md:NameIDFormat&gt;urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified&lt;/md:NameIDFormat&gt;
+        &lt;md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8000/saml/login/"/&gt;
+        &lt;md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8000/saml/logout/"/&gt;
+      &lt;/md:IDPSSODescriptor&gt;
+    &lt;/md:EntityDescriptor&gt;</metadata>
+    </identity-provider>
+    <service-provider>
+      <base-url>http://localhost:8080/sso</base-url>
+      <entity-id>http://localhost:8080/sso/saml/metadata/</entity-id>
+      <metadata>&lt;?xml version="1.0"?&gt;
+&lt;md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://localhost:8080/sso/saml/metadata/"&gt;
+    &lt;md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"&gt;
+        &lt;md:KeyDescriptor use="signing"&gt;
+            &lt;ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"&gt;
+                &lt;ds:X509Data&gt;
+                    &lt;ds:X509Certificate&gt;@SP_CERTIFICATE@&lt;/ds:X509Certificate&gt;
+                &lt;/ds:X509Data&gt;
+            &lt;/ds:KeyInfo&gt;
+        &lt;/md:KeyDescriptor&gt;
+        &lt;md:KeyDescriptor use="encryption"&gt;
+            &lt;ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"&gt;
+                &lt;ds:X509Data&gt;
+                  &lt;ds:X509Certificate&gt;@SP_CERTIFICATE@&lt;/ds:X509Certificate&gt;
+                &lt;/ds:X509Data&gt;
+            &lt;/ds:KeyInfo&gt;
+        &lt;/md:KeyDescriptor&gt;
+        &lt;md:NameIDFormat&gt;&lt;/md:NameIDFormat&gt;
+        &lt;md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://localhost:8080/sso/saml/logout/"/&gt;
+        &lt;md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://localhost:8080/sso/saml/acs/" index="1"/&gt;
+    &lt;/md:SPSSODescriptor&gt;
+&lt;/md:EntityDescriptor&gt;</metadata>
+      <signature-algorithm>rsa-sha256</signature-algorithm>
+      <private-key-encryption>$0$@SP_PRIVKEY@</private-key-encryption>
+      <private-key-signing>$0$@SP_PRIVKEY@</private-key-signing>
+    </service-provider>
+  </saml2-auth>
+</config>

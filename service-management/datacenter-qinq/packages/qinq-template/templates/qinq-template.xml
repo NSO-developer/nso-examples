@@ -1,0 +1,139 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="sp-qinq-template">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <?foreach {core-switch}?>
+    <device tags="nocreate">
+      <name>{switch}</name>
+      <config>
+        <vlan xmlns="urn:ios" tags="merge"  >
+          <vlan-list>
+            <id>{/s-vlan}</id>
+          </vlan-list>
+        </vlan>
+        <interface xmlns="urn:ios" tags="merge" annotation="Cisco">
+          <FastEthernet>
+            <name>{trunk-interface}</name>
+            <switchport tags="merge">
+              <mode>
+                <trunk/>
+              </mode>
+              <trunk>
+                <allowed>
+                  <vlan>
+                    <vlans>{/s-vlan}</vlans>
+                  </vlan>
+                </allowed>
+              </trunk>
+            </switchport>
+          </FastEthernet>
+        </interface>
+      </config>
+    </device>
+    <?end?>
+    <?foreach {edge-switch}?>
+    <device tags="nocreate">
+      <name>{switch}</name>
+      <config>
+        <vlan xmlns="urn:ios" tags="merge">
+          <vlan-list>
+            <id>{/s-vlan}</id>
+          </vlan-list>
+        </vlan>
+        <interface xmlns="urn:ios">
+          <?foreach {edge-interface}?>
+          <FastEthernet>
+            <name>{interface}</name>
+            <spanning-tree tags="merge">
+              <bpduguard>
+                <enable/>
+              </bpduguard>
+              <portfast>
+              </portfast>
+            </spanning-tree>
+            <switchport tags="merge">
+              <access>
+                <vlan>{/s-vlan}</vlan>
+              </access>
+              <mode>
+                <dot1q-tunnel/>
+              </mode>
+            </switchport>
+          </FastEthernet>
+          <?end?>
+          <FastEthernet>
+            <name>{trunk-interface}</name>
+            <switchport tags="merge">
+              <mode>
+                <trunk/>
+              </mode>
+              <trunk>
+                <allowed>
+                  <vlan>
+                    <vlans>{/s-vlan}</vlans>
+                  </vlan>
+                </allowed>
+              </trunk>
+            </switchport>
+          </FastEthernet>
+        </interface>
+        <vlans xmlns="http://pica8.org/yang" tags="merge" annotation="Pica">
+          <vlan-id>
+            <id>{/s-vlan}</id>
+          </vlan-id>
+        </vlans>
+        <interface xmlns="http://pica8.org/yang">
+          <aggregate-ethernet>
+            <name>{trunk-interface}</name>
+            <family tags="merge">
+              <ethernet-switching>
+                <port-mode>trunk</port-mode>
+                <vlan>
+                  <members>
+                    <vlanid>{/s-vlan}</vlanid>
+                  </members>
+                </vlan>
+              </ethernet-switching>
+            </family>
+          </aggregate-ethernet>
+          <?foreach {edge-interface}?>
+          <gigabit-ethernet>
+            <name>{interface}</name>
+            <family tags="merge">
+              <ethernet-switching>
+                <port-mode>trunk</port-mode>
+                <vlan>
+                  <members>
+                    <vlanid>{/s-vlan}</vlanid>
+                  </members>
+                </vlan>
+                <qinq>
+                  <mode>internal</mode>
+                  <ingress>
+                    <cvid>
+                      <id>{c-vlan}</id>
+                      <qvid>
+                        <id>{/s-vlan}</id>
+                      </qvid>
+                    </cvid>
+                  </ingress>
+                  <egress>
+                    <cvid>
+                      <id>{c-vlan}</id>
+                      <qvid>
+                        <id>{/s-vlan}</id>
+                        <tag-action>one</tag-action>
+                        <set-qvid>0</set-qvid>
+                      </qvid>
+                    </cvid>
+                  </egress>
+                </qinq>
+              </ethernet-switching>
+            </family>
+          </gigabit-ethernet>
+          <?end?>
+        </interface>
+      </config>
+    </device>
+    <?end?>
+  </devices>
+</config-template>

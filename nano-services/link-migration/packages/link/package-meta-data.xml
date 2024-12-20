@@ -1,0 +1,9 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>link</name>
+  <package-version>1.0</package-version>
+  <description>Nano service example package</description>
+  <ncs-min-version>4.3</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+</ncs-package>

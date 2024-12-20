@@ -1,0 +1,26 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="rfs-vlan">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+
+    <device>
+      <name>{/router}</name>
+      <config>
+        <sys xmlns="http://example.com/router">
+          <interfaces>
+            <interface>
+              <name>{iface}</name>
+              <enabled/>
+              <unit>
+                <name>{/unit}</name>
+                <enabled>true</enabled>
+                <description>{/description}</description>
+                <vlan-id>{vid}</vlan-id>
+              </unit>
+            </interface>
+          </interfaces>
+        </sys>
+      </config>
+    </device>
+
+  </devices>
+</config-template>

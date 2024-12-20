@@ -1,0 +1,38 @@
+module dns {
+
+  namespace "http://examples.com/dns";
+  prefix dns;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  augment /ncs:services {
+    container dns {
+      presence "Setting the dns server on all managed devices";
+
+      uses ncs:service-data;
+      ncs:servicepoint dnsservice;
+
+      description "This is the DNS service, we can have at most one
+                  of the DNS services instantiated in the system.
+                  It's purpose it to set the DNS settings on all
+                  managed devices in the system";
+
+
+      leaf search {
+        mandatory true;
+        type string;
+      }
+      leaf nameserver {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+    }
+  }
+}

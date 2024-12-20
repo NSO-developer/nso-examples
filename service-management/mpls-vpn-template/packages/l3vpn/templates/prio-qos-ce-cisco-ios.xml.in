@@ -1,0 +1,23 @@
+<config>
+  <policy-map xmlns="urn:ios" tags="merge">
+    <name>{/name}</name>
+    <class>
+      <name>class-default</name>
+      <service-policy>{$POLICY_NAME}</service-policy>
+    </class>
+  </policy-map>
+  <policy-map xmlns="urn:ios" tags="merge">
+    <name>{$POLICY_NAME}</name>
+    <class>
+      <name>{$CLASS_NAME}</name>
+      <priority>
+        <percent>{$CLASS_BW}</percent>
+      </priority>
+      <set>
+        <ip>
+          <dscp>{$CLASS_DSCP}</dscp>
+        </ip>
+      </set>
+    </class>
+  </policy-map>
+</config>

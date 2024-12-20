@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>t3</name>
+  <package-version>1.0</package-version>
+  <description>Concurrency example</description>
+  <ncs-min-version>6.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>t3</name>
+    <callback>
+      <java-class-name>
+        com.example.t3.T3Perf
+      </java-class-name>
+    </callback>
+  </component>
+</ncs-package>

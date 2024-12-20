@@ -1,0 +1,157 @@
+module esc {
+  /*
+   * This is the top level YANG module. This imports the datamodel
+   * module and that import the rest of YANG modules.
+   */
+  namespace "http://www.cisco.com/esc/esc";
+  prefix "esc";
+
+  import tailf-common { prefix "tailf"; }
+  import esc_opdata { prefix "op"; }
+  import esc_types { prefix "types"; }
+  import esc_network { prefix "network"; }
+
+  include "esc_notifications";
+  include "esc_datamodel";
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "YANG version of the Elastic Service Controller.  This is a complete
+     service orchestration module that can dynamically expand and
+     reduce your service capacity based on your description of
+     LOAD. This module guarantees that the services will be online
+     until you tear it down.  This module enables your to: (config it)
+     -> (deploy it) -> (forget it)";
+
+  revision 2014-06-23 {
+    description "Elastic Services Controller Module";
+  }
+
+  container esc_datamodel {
+
+    description
+      "Top-level container for all ESC database objects.";
+
+    leaf pong {
+      type uint32;
+      description "Used to trigger sending of licensing notifications
+                   This is for test purposes.";
+    }
+
+    leaf version {
+      type types:escversion;
+      config false;
+      mandatory true;
+      description "ESC version";
+    }
+
+    /*
+     * This contains services and associated definitions of the VMs
+     * for the service.  This information is editable only by admin,
+     * but readable by all tenants
+     */
+    uses svc_datamodel;
+
+    /*
+     * This is editable by admin and tenants.
+     * Tenant-A will not be able to read or write any configs of Tenant-B
+     * Configs specified by the tenants are merged with the ones specified
+     * by the admin. The values specified by the admin takes presidence.
+     */
+
+    container tenants {
+      list tenant {
+        key "name";
+        description "List of tenants";
+        leaf name {
+          type types:escname;
+          mandatory true;
+        }
+        uses tenant_datamodel;
+      }
+    }
+
+    /*
+     * This represents the external networks that are shared among all
+     * the tenants. This is typically created by the admin of the
+     * data center typically as part of infrastructure setup.
+     * During deployment, the names of the network created here are
+     * specified in the interfaces section to associate interfaces
+     * wih these networks.
+     */
+    uses network:esc_network;
+
+    container opdata {
+      presence "Indicates that ESC has exported some operational data";
+      description
+        "This contains all the operational data of the services that have been
+         registered and/or instantiated. This is operational data,
+         means it is READ-ONLY. Subtrees under this will inherit
+         READ-ONLY property, thereby entire subtree becomes READ-ONLY";
+      config false;
+      //tailf:callpoint opdata;
+      uses op:esc_opdata;
+    } /* END opdata */
+  }
+
+  rpc serviceAction {
+    description
+      "Service actions including stop, start, reboot, disable-monitor and enable
+       monitor.";
+    tailf:actionpoint escrpc;
+    input {
+      leaf actionType {
+        mandatory true;
+        description "Service action type";
+        type types:action_types;
+      }
+      leaf tenantName {
+        mandatory true;
+        description "Tenant Name";
+        type types:escname;
+      }
+      leaf depName {
+        mandatory true;
+        description "Deployment Name";
+        type types:escname;
+      }
+      leaf serviceName {
+        mandatory true;
+        description "Service Name";
+        type types:escname;
+      }
+      leaf serviceVersion {
+        mandatory true;
+        description "Service Version";
+        type types:escname;
+      }
+    }
+  }
+
+  rpc vmAction {
+    description
+      "VM actions including stop, start, reboot, disable-monitor and enable
+       monitor.";
+    tailf:actionpoint escrpc;
+    input {
+      leaf actionType {
+        mandatory true;
+        description "VM action type";
+        type types:action_types;
+      }
+      leaf vmName {
+        mandatory true;
+        description "VM Name";
+        type types:escname;
+      }
+      leaf force {
+        default false;
+        description "Force VM action";
+        type boolean;
+      }
+    }
+  }
+}

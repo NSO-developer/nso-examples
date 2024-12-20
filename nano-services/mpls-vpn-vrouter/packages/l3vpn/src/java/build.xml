@@ -1,0 +1,19 @@
+<project name="l3vpn" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml" />
+
+  <property name="vmmanager.dir" value="../../../vm-manager/shared-jar"/>
+
+  <augment id="core-libs">
+    <fileset dir="${ncs.dir}">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="../../../esc/shared-jar">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${vmmanager.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </augment>
+</project>

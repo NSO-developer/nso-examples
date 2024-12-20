@@ -1,0 +1,10 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <interface xmlns="http://tail-f.com/ned/cisco-nx">
+  <loopback>
+    <name>0</name>
+    <ip>
+      <address>11.4.4.4/32</address>
+    </ip>
+  </loopback>
+  </interface>
+</config>

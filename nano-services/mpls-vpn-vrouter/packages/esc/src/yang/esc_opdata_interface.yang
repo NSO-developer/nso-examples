@@ -1,0 +1,61 @@
+module esc_opdata_interface {
+
+  /*
+   * This represents operational data of the interfaces of the VM
+   */
+
+  namespace "http://www.cisco.com/esc/esc_opdata_interface";
+
+  prefix "esc_opdata_interface";
+
+  import ietf-yang-types { prefix "ietf-yang-types"; }
+  import ietf-inet-types { prefix "ietf-inet-types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-12-03 {
+    description "Added NIC ID to the interface and changed the key";
+  }
+
+  revision 2014-08-06 {
+    description "Elastic Services Controller Module's tenant's interface's
+                operational data";
+  }
+
+  grouping esc_opdata_interface {
+    description
+      "This contains all the operational data of the interface for each VM";
+    container interfaces {
+      list interface {
+        key "nicid";
+        description "Interface running information";
+        leaf nicid {
+          description "ID of the interface specified during configuration";
+          type int8;
+        }
+        leaf port_id {
+          description "Name of the service";
+          type ietf-yang-types:uuid;
+        }
+        leaf network {
+          description "UUID of the network";
+          type ietf-yang-types:uuid;
+        }
+        leaf subnet {
+          description "Sub Network to which this interface is attached";
+          type ietf-yang-types:uuid;
+        }
+        leaf ip_address {
+          description "IP address for this interface";
+          type ietf-inet-types:ip-address;
+        }
+        leaf mac_address {
+          description "MAC address for this interface";
+          type ietf-yang-types:mac-address;
+        }
+      }
+    }
+  }
+}

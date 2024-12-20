@@ -1,0 +1,317 @@
+module vm-manager {
+  namespace "http://com/example/vm-manager";
+  prefix "vmm";
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import esc {
+    prefix esc;
+  }
+
+  grouping vm-grouping {
+    leaf name {
+      type string;
+    }
+
+    leaf deployment-name {
+      type string;
+    }
+
+    leaf vm-device {
+      type string;
+    }
+
+    leaf tenant {
+      type string;
+    }
+
+    leaf service-name {
+      type string;
+    }
+
+    leaf service-version {
+      type string;
+    }
+
+    leaf vm-type {
+      type string;
+    }
+
+    leaf vm-group {
+      type string;
+    }
+
+    leaf mgmt-ip-address {
+      type inet:ip-address;
+    }
+
+    leaf day0-url {
+      type string;
+    }
+
+    list interface {
+      key id;
+
+      leaf id {
+        type string;
+      }
+
+      leaf name {
+        type string;
+      }
+
+      leaf ip {
+        type inet:ip-address;
+      }
+    }
+
+    leaf scaling-min {
+      type uint32;
+    }
+
+    leaf scaling-max {
+      type uint32;
+    }
+
+    list scaling-pool {
+      key name;
+
+      leaf name {
+        type string;
+      }
+
+      list address {
+        key ip;
+
+        leaf ip {
+          type inet:ip-address;
+        }
+      }
+    }
+  }
+
+  container vm-manager {
+    list start {
+      key name;
+
+      description
+        "CDB interface to vm-service. Used from a service in order to
+       get staged delete of the VM. Ie, when we don't want to tell
+       the gabbleduck to remove the VM in the same transaction as we
+       are removing the config on the VM itself.";
+
+      uses ncs:nano-plan-data;
+      uses ncs:service-data;
+      ncs:servicepoint vm-servicepoint;
+
+      uses vm-grouping;
+
+      list allocators {
+        key name;
+
+        leaf name {
+          type instance-identifier {
+            require-instance false;
+          }
+        }
+      }
+
+      list device {
+        description
+          "List of devices that has been added and should be
+         removed when the vm-manager/start instance is removed";
+
+        config false;
+
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+
+        key name;
+
+        leaf name {
+          type string;
+        }
+      }
+
+      leaf error-status {
+        config false;
+
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+
+        type string;
+      }
+    }
+  }
+
+  augment "/ncs:devices/ncs:device" {
+    leaf ready {
+      config false;
+
+      tailf:cdb-oper {
+        tailf:persistent true;
+      }
+      type boolean;
+    }
+  }
+
+  // Nano service specifics
+  identity init-vm {
+    base ncs:plan-state;
+  }
+
+  identity vm-initialized {
+    base ncs:plan-state;
+  }
+
+  identity device-created {
+    base ncs:plan-state;
+  }
+
+  identity device-ready {
+    base ncs:plan-state;
+  }
+
+  identity device-keys {
+    base ncs:plan-state;
+  }
+
+  identity device-synced {
+    base ncs:plan-state;
+  }
+
+  ncs:plan-outline vm-plan {
+    description
+      "Stacked esc service plan";
+
+    ncs:component-type "ncs:self" {
+      ncs:state "ncs:init" {
+        ncs:create {
+          // Invoke a Java program to set its initial properties and use a
+          // service template to configure NSO to listen for NETCONF
+          // notifications from the ESC device
+          ncs:nano-callback;
+        }
+        ncs:delete {
+          ncs:pre-condition {
+            // Wait for the ESC device to send a VM_UNDEPLOYED notification for
+            // the deleted VM (netsim network element)
+            ncs:monitor "/ncs:devices/ncs:device[ncs:name='esc0']/" +
+            "ncs:notifications/ncs:received-notifications" {
+              ncs:trigger-expr "notification/data" +
+              "/esc:escEvent[esc:depname=$DEPNAME]/esc:event/esc:type = " +
+              "'VM_UNDEPLOYED'";
+            }
+          }
+        }
+      }
+      ncs:state "vmm:init-vm" {
+        ncs:create {
+          // Invoke a Java program to configure the ESC device using several
+          // service templates
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "vmm:vm-initialized" {
+        ncs:create {
+          // Invoke a Java program that configure virtual device using a
+          // service template
+          ncs:nano-callback;
+          // Have the states after this state wait until the configuration has
+          // been committed.
+          ncs:force-commit;
+          // Wait for the VM_ALIVE notification from ESC before configuring
+          // the virtual device
+          ncs:pre-condition {
+            ncs:monitor "/ncs:devices/ncs:device[ncs:name='esc0']/" +
+            "ncs:notifications/ncs:received-notifications" {
+              ncs:trigger-expr "notification/data" +
+              "/esc:escEvent[esc:depname=$DEPNAME]/esc:event/esc:type = " +
+              "'VM_ALIVE'";
+            }
+          }
+        }
+      }
+      ncs:state "vmm:device-created" {
+        ncs:create {
+          // Set the device ready flag
+          ncs:nano-callback;
+          ncs:pre-condition {
+            // Wait for the device configuration to be committed
+            ncs:monitor "/ncs:devices/ncs:device[name=$DEVNAME_EXPR]" {
+              ncs:trigger-expr "authgroup = 'default'";
+            }
+          }
+        }
+      }
+      ncs:state "vmm:device-ready" {
+        ncs:create {
+          // Invoke a Java program that set the device ready property
+          ncs:nano-callback;
+          // Fetch the host keys from the new virtual device
+          ncs:post-action-node "/ncs:devices/device[name=$DEVNAME_EXPR]/ssh" {
+            ncs:action-name "fetch-host-keys";
+            ncs:result-expr "not(result = 'failed')";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "vmm:device-keys" {
+        ncs:create {
+          // Sync the virtual device configuration
+          ncs:post-action-node "/ncs:devices/device[name=$DEVNAME_EXPR]" {
+            ncs:action-name "sync-from";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "vmm:device-synced" {
+        ncs:create {
+          // Set the device ready flag to indicate to the L3VPN service that it
+          // can proceed
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "ncs:ready" {
+        ncs:create {
+          // Done when the device ready flag is set
+          ncs:pre-condition {
+            ncs:monitor "/ncs:devices/ncs:device[name=$DEVNAME_EXPR]" {
+              ncs:trigger-expr "vmm:ready = 'true'";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ncs:service-behavior-tree vm-servicepoint {
+    description
+      "Stacked esc service";
+
+    ncs:plan-outline-ref "vmm:vm-plan";
+
+    ncs:selector {
+      // Deployment name variable used when checking ESC notifications
+      ncs:variable "DEPNAME" {
+        ncs:value-expr "current()/deployment-name";
+      }
+      ncs:create-component "'self'" {
+        ncs:component-type-ref "ncs:self";
+      }
+    }
+  }
+}

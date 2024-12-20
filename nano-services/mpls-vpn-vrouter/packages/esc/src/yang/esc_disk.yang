@@ -1,0 +1,88 @@
+module esc_disk {
+
+  namespace "http://www.cisco.com/esc/esc_disk";
+  prefix "esc_disk";
+
+
+  import esc_types { prefix "types"; }
+  import tailf-common { prefix "tailf"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's disk descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Disk";
+  }
+
+  /****************************************************************************/
+
+
+  grouping esc_disk {
+    container disk {
+      description
+        "Disk properties are described in this section";
+      /*
+       * The when constructs in each of the leaf ensures that these are not
+       * specified during deployment and can be specified only during
+       * registration.
+       */
+      leaf src {
+        description
+          "URL of the VM image from where it can be downloaded by ESC";
+        type types:escuri;
+        mandatory true;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf size {
+        description
+          "Size of the image specified by URL above. If unsure, leave it blank";
+        type types:escint32;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+
+      leaf sizeunit {
+        description "Size unit. MiB/GiB/TiB/PiB/EiB";
+        type types:szunits;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf disk_format {
+        description "Format of the disk: qcow2, raw, vmdk";
+        type types:disk_formats;
+        mandatory true;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf container_format {
+        description "";
+        type string;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf serial_console {
+        description "";
+        type types:escbool;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf e1000_net {
+        description "True if image has e1000 drivers";
+        type types:escbool;
+        default false;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf virtio_net {
+        description "True if image has VIRTIO drivers";
+        type types:escbool;
+        default true;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+      leaf disk_bus {
+        description "Root disk bus: ide, scsi, virtio";
+        type types:iobus;
+        mandatory true;
+        when "../../../../..[local-name() = 'esc_datamodel']";
+      }
+    }
+  }
+}

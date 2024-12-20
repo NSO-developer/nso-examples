@@ -1,0 +1,20 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>dns-service</name>
+  <package-version>1.0</package-version>
+  <description>Website example Dns service</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>lb-nc-1.0</name>
+  </required-package>
+  <required-package>
+    <name>webserver-nc-1.0</name>
+  </required-package>
+  <component>
+    <name>DNS service</name>
+    <callback>
+      <java-class-name>
+        com.example.websiteservice.dnsservice.DnsServiceRFS
+      </java-class-name>
+    </callback>
+  </component>
+</ncs-package>

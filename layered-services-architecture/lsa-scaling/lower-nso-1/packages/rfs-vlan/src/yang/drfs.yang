@@ -1,0 +1,17 @@
+module drfs {
+  namespace "http://com/tail-f/drfs";
+  prefix drfs;
+
+  description
+    "Container for device specific RFSs. Using this structure makes it easy
+     to extract all services for a given device.";
+
+  container dRFS {
+    list device {
+      key name;
+      leaf name {
+        type string;
+      }
+    }
+  }
+}

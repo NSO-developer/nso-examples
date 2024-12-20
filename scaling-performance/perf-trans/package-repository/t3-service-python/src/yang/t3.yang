@@ -1,0 +1,70 @@
+module t3 {
+  yang-version 1.1;
+  namespace "http://example.com/t3";
+  prefix t3;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Bla bla...";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  container t3s {
+    list t3 {
+      key id;
+
+      uses ncs:service-data;
+      ncs:servicepoint t3-servicepoint; /*{
+        ncs:conflicts-with t3-servicepoint;
+      } */
+
+      leaf id {
+        tailf:info "Unique service id";
+        type uint32;
+      }
+      leaf value {
+        tailf:validate t3-valpoint {
+          tailf:dependency '.';
+        }
+        type string;
+      }
+    }
+    container t3-settings {
+      leaf nwork {
+        type uint32;
+        default 3;
+      }
+      leaf nfactorial {
+        config false;
+        type uint32;
+        default 50000;
+      }
+      leaf ndtrans {
+        type uint8;
+      }
+    }
+    container dev-settings {
+      presence "";
+      uses ncs:service-data;
+      ncs:servicepoint devs-servicepoint;
+      leaf dev-delay {
+        type uint32;
+      }
+    }
+    action calibrate-cpu-time {
+      tailf:actionpoint t3-cputime;
+    }
+  }
+}

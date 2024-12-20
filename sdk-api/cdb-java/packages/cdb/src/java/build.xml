@@ -1,0 +1,33 @@
+<project name="cdb" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml" />
+
+  <property name="device.pkg.dir" value="../../../router-nc-1.0"/>
+  <property name="device.pkg.shared-jar" value="${device.pkg.dir}/shared-jar"/>
+
+  <augment id="core-libs">
+    <fileset dir="${device.pkg.shared-jar}">
+      <include name="*.jar"/>
+    </fileset>
+  </augment>
+
+  <!-- ant stats -Dop=CREATE -Dkey=k1 -->
+
+  <target name="stats" depends="compile"
+          description="Create/delete stats entry /test/stats-entry[k=$key]
+                       -Dop=(CREATE|DELETE) -Dkey=(key)  ">
+     <java classname="com.example.cdb.CreateOperData"
+           fork="true">
+       <classpath refid="core-libs" />
+       <classpath location="${ncs.java.dir}/ncs.jar"/>
+       <classpath location="${ncs.java.dir}/conf-api.jar"/>
+       <classpath location="${ncs.java.dir}/log4j-api.jar"/>
+       <classpath location="${ncs.java.dir}/log4j-core.jar"/>
+       <classpath location="build/classes"/>
+       <classpath location="../../../.."/>
+       <arg line="${op}" />
+       <arg line="${key}" />
+     </java>
+   </target>
+</project>

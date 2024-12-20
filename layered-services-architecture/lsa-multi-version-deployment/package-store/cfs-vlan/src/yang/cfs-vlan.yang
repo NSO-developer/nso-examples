@@ -1,0 +1,49 @@
+module cfs-vlan {
+  namespace "http://com/example/cfsvlan";
+  prefix cfs-vlan;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+description
+    "This service creates a vlan iface/unit on all routers
+     owned by a lower-nso ";
+
+  revision 2017-01-03 {
+    description
+      "Initial revision.";
+  }
+
+  list cfs-vlan {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "cfs-vlan";
+
+    leaf name {
+      type string;
+    }
+
+    leaf a-router {
+      type string;
+      mandatory true;
+    }
+    leaf z-router {
+      type string;
+      mandatory true;
+    }
+    leaf iface {
+      type string;
+      mandatory true;
+    }
+    leaf unit {
+      type int32;
+      mandatory true;
+    }
+    leaf vid {
+      type uint16;
+      mandatory true;
+    }
+  }
+}

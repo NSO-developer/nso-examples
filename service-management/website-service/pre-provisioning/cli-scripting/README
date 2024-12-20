@@ -1,0 +1,6 @@
+This script illustrates how to interact with NCS through a cli script.
+To run, start the website service example above and just run the script
+as e.g
+
+./new-website.sh --lbprofile gold --ip 1.2.3.4 --port 80 --servicename foo
+

@@ -1,0 +1,24 @@
+<configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm" tags="merge">
+  <class-of-service>
+    <classifiers>
+      <dscp>
+        <name>{$POLICY_NAME}-{$CE}</name>
+        <import>default</import>
+        <forwarding-class>
+          <name>{$CLASS_NAME}</name>
+          <loss-priority>
+            <name>low</name>
+            <code-points>{$CLASS_DSCP}</code-points>
+          </loss-priority>
+        </forwarding-class>
+      </dscp>
+    </classifiers>
+    <forwarding-classes>
+      <queue>
+        <name>{$CLASS_COUNTER}</name>
+        <class-name>{$CLASS_NAME}</class-name>
+        <priority>{$CLASS_PRIORITY}</priority>
+      </queue>
+    </forwarding-classes>
+  </class-of-service>
+</configuration>

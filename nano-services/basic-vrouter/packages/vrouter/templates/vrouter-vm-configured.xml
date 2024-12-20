@@ -1,0 +1,9 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="vrouter-servicepoint"
+                 componenttype="vr:vrouter"
+                 state="vr:vm-configured">
+  <vm-instance xmlns="http://com/example/basic-vrouter/vrouter">
+    <name>{name}</name>
+    <address>198.51.100.1</address>
+  </vm-instance>
+</config-template>

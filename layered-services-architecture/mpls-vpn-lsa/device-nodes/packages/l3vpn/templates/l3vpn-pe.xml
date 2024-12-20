@@ -1,0 +1,389 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$PE}</name>
+      <config tags="merge">
+
+        <!-- Cisco ios -->
+        <vrf xmlns="urn:ios">
+          <definition>
+            <name>{/name}</name>
+            <rd>{/route-distinguisher}:1</rd>
+            <address-family>
+              <ipv4>
+                <route-target>
+                  <export>
+                    <asn-ip>{/route-distinguisher}:1</asn-ip>
+                  </export>
+                  <import>
+                    <asn-ip>{/route-distinguisher}:1</asn-ip>
+                  </import>
+                </route-target>
+              </ipv4>
+            </address-family>
+          </definition>
+        </vrf>
+        <?if {starts-with($PE_INT_NAME,'GigabitEthernet')}?>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet>
+            <name>{substring($PE_INT_NAME,16)}.{$VLAN_ID}</name>
+            <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+            <encapsulation>
+              <dot1Q>
+                <vlan-id>{$VLAN_ID}</vlan-id>
+              </dot1Q>
+            </encapsulation>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LINK_PE_ADR}</address>
+                  <mask>{$LINK_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+            <ip-vrf>
+              <ip>
+                <vrf>
+                  <forwarding>{/name}</forwarding>
+                </vrf>
+              </ip>
+            </ip-vrf>
+          </GigabitEthernet>
+        </interface>
+        <?end?>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>100</as-no>
+            <address-family>
+              <with-vrf>
+                <ipv4>
+                  <af>unicast</af>
+                  <vrf>
+                    <name>{/name}</name>
+                    <neighbor>
+                      <id>{$LINK_CE_ADR}</id>
+                      <remote-as>{/route-distinguisher}</remote-as>
+                      <activate/>
+                      <as-override>
+                      </as-override>
+                    </neighbor>
+                  </vrf>
+                </ipv4>
+              </with-vrf>
+            </address-family>
+          </bgp>
+        </router>
+
+        <!-- Cisco ios xr -->
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>{/name}</name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{/route-distinguisher}:1</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{/route-distinguisher}:1</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{/name}-{$CE}</name>
+          <class>
+            <class-default>
+              <map>class-default</map>
+              <shape>
+                <average>
+                  <rate>{$BW}</rate>
+                  <rate-unit>bps</rate-unit>
+                </average>
+              </shape>
+            </class-default>
+          </class>
+        </policy-map>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {starts-with($PE_INT_NAME,'GigabitEthernet')}?>
+          <GigabitEthernet-subinterface>
+            <GigabitEthernet>
+              <id>{substring($PE_INT_NAME,16)}.{$VLAN_ID}</id>
+              <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+              <ipv4>
+                <address>
+                  <ip>{$LINK_PE_ADR}</ip>
+                  <mask>{$LINK_MASK}</mask>
+                </address>
+              </ipv4>
+              <vrf>{/name}</vrf>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{$VLAN_ID}</vlan-id>
+                </dot1q>
+              </encapsulation>
+              <service-policy>
+                <output>
+                  <name>{/name}-{$CE}</name>
+                </output>
+              </service-policy>
+            </GigabitEthernet>
+          </GigabitEthernet-subinterface>
+          <?end?>
+          <?if {starts-with($PE_INT_NAME,'TenGigE')}?>
+          <TenGigE-subinterface>
+            <TenGigE>
+              <id>{substring($PE_INT_NAME,8)}.{$VLAN_ID}</id>
+              <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+              <ipv4>
+                <address>
+                  <ip>{$LINK_PE_ADR}</ip>
+                  <mask>{$LINK_MASK}</mask>
+                </address>
+              </ipv4>
+              <vrf>{/name}</vrf>
+              <encapsulation>
+                <dot1q>
+                  <vlan-id>{$VLAN_ID}</vlan-id>
+                </dot1q>
+              </encapsulation>
+              <service-policy>
+                <output>
+                  <name>{/name}-{$CE}</name>
+                </output>
+              </service-policy>
+            </TenGigE>
+          </TenGigE-subinterface>
+          <?end?>
+        </interface>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{/name}</name>
+            <value>pass</value>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>100</id>
+              <vrf>
+                <name>{/name}</name>
+                <rd>{/route-distinguisher}:1</rd>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{$LINK_CE_ADR}</id>
+                  <remote-as>{$CE_AS_NUM}</remote-as>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <route-policy>
+                          <direction>in</direction>
+                          <name>{/name}</name>
+                        </route-policy>
+                        <route-policy>
+                          <direction>out</direction>
+                          <name>{/name}</name>
+                        </route-policy>
+                        <as-override>
+                        </as-override>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+
+        <!-- Juniper junos -->
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <interfaces>
+            <interface tags="nocreate">
+              <name>{$PE_INT_NAME}</name>
+              <no-traps tags="merge"></no-traps>
+              <vlan-tagging tags="merge"></vlan-tagging>
+              <unit tags="merge">
+                <name>{$VLAN_ID}</name>
+                <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+                <vlan-id>{$VLAN_ID}</vlan-id>
+                <family>
+                  <inet>
+                    <address>
+                      <name>{$LINK_PE_ADR}/{$LINK_PREFIX}</name>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+          <routing-instances>
+            <instance>
+              <name>{/name}</name>
+              <instance-type>vrf</instance-type>
+              <interface>
+                <name>{$PE_INT_NAME}.{$VLAN_ID}</name>
+              </interface>
+              <route-distinguisher>
+                <rd-type>{/route-distinguisher}:1</rd-type>
+              </route-distinguisher>
+              <vrf-import>{/name}-IMP</vrf-import>
+              <vrf-export>{/name}-EXP</vrf-export>
+              <vrf-table-label>
+              </vrf-table-label>
+              <protocols>
+                <bgp>
+                  <group>
+                    <name>{$CE}-{/name}</name>
+                    <local-address>{$LINK_PE_ADR}</local-address>
+                    <peer-as>{$CE_AS_NUM}</peer-as>
+                    <local-as>
+                      <as-number>100</as-number>
+                    </local-as>
+                    <neighbor>
+                      <name>{$LINK_CE_ADR}</name>
+                    </neighbor>
+                  </group>
+                </bgp>
+              </protocols>
+            </instance>
+          </routing-instances>
+          <policy-options>
+            <policy-statement>
+              <name>{/name}-EXP</name>
+              <from>
+                <protocol>bgp</protocol>
+              </from>
+              <then>
+                <community>
+                  <key1>add</key1>
+                  <community-name>{/name}-comm-exp</community-name>
+                </community>
+                <accept/>
+              </then>
+            </policy-statement>
+            <policy-statement>
+              <name>{/name}-IMP</name>
+              <from>
+                <protocol>bgp</protocol>
+                <community>{/name}-comm-imp</community>
+              </from>
+              <then>
+                <accept/>
+              </then>
+            </policy-statement>
+            <community>
+              <name>{/name}-comm-imp</name>
+              <members>target:{/route-distinguisher}:1</members>
+            </community>
+            <community>
+              <name>{/name}-comm-exp</name>
+              <members>target:{/route-distinguisher}:1</members>
+            </community>
+          </policy-options>
+          <class-of-service>
+            <interfaces>
+              <interface>
+                <name>{$PE_INT_NAME}</name>
+                <unit>
+                  <name>{$VLAN_ID}</name>
+                  <shaping-rate>
+                    <rate>{$BW}</rate>
+                  </shaping-rate>
+                </unit>
+              </interface>
+            </interfaces>
+          </class-of-service>
+        </configuration>
+
+        <!-- Alcatel Lucent - SROS -->
+        <qos xmlns="http://tail-f.com/ned/alu-sr">
+          <sap-egress>
+            <policy-id>{$CE_AS_NUM}</policy-id>
+            <queue>
+              <queue-id>1</queue-id>
+              <rate>
+                <cir>{round($BW div 1000)}</cir>
+                <pir-rate>{round($BW div 1000)}</pir-rate>
+              </rate>
+            </queue>
+          </sap-egress>
+        </qos>
+        <router xmlns="http://tail-f.com/ned/alu-sr">
+          <router-name>Base</router-name>
+          <policy-options>
+            <begin>
+              <policy-statement>
+                <name>{/name}</name>
+                <entry>
+                  <id>10</id>
+                  <from>
+                    <protocol>bgp-vpn</protocol>
+                  </from>
+                  <action>
+                    <other>
+                      <action>accept</action>
+                    </other>
+                  </action>
+                  <to>
+                    <protocol>bgp</protocol>
+                  </to>
+                </entry>
+              </policy-statement>
+            </begin>
+          </policy-options>
+        </router>
+        <service xmlns="http://tail-f.com/ned/alu-sr">
+          <vprn>
+            <service-id>{$CE_AS_NUM}</service-id>
+            <customer>1</customer>
+            <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+            <interface>
+              <ip-int-name>{/name}-{$CE}</ip-int-name>
+              <address>{$LINK_PE_ADR}/{$LINK_PREFIX}</address>
+              <sap>
+                <sap-id>{$PE_INT_NAME}:{$VLAN_ID}</sap-id>
+                <egress>
+                  <qos>{$CE_AS_NUM}</qos>
+                </egress>
+              </sap>
+            </interface>
+            <autonomous-system>100</autonomous-system>
+            <bgp>
+              <router-id>{$LINK_PE_ADR}</router-id>
+              <group>
+                <name>{/name}-{$CE}</name>
+                <neighbor>
+                  <address>{$LINK_CE_ADR}</address>
+                  <family>ipv4</family>
+                </neighbor>
+                <peer-as>{$CE_AS_NUM}</peer-as>
+                <export>vpnbgp-to-bgp</export>
+                <type>external</type>
+              </group>
+            </bgp>
+            <?set-context-node {/route-distinguisher}?>
+            <route-distinguisher>{.}:{$VLAN_ID}</route-distinguisher>
+            <vrf-target>
+              <import>target:{.}:1</import>
+              <export>target:{.}:1</export>
+            </vrf-target>
+            <auto-bind>ldp</auto-bind>
+          </vprn>
+        </service>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,18 @@
+module webserver-deviation {
+  namespace "http://acme.com/ws-dev";
+  prefix ws-dev;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import webserver {
+    prefix ws;
+  }
+
+  deviation /ws:wsConfig/ws:listener/ws:ip {
+    deviate replace {
+      type inet:ipv6-address;
+    }
+  }
+}

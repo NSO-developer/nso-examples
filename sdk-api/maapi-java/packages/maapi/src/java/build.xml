@@ -1,0 +1,187 @@
+<project name="maapi" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml" />
+
+  <augment id="core-libs">
+    <fileset dir="../../../router-nc-1.0/shared-jar">
+        <include name="*.jar"/>
+    </fileset>
+    <pathelement location="${sharedjar.dir}/java-getopt-1.0.13.jar" />
+  </augment>
+
+  <condition property="ipc.path" value="${env.NCS_IPC_PATH}" else="">
+    <isset property="env.NCS_IPC_PATH" />
+  </condition>
+
+
+  <target name="compile" depends="ncs-package.compile,compile-test">
+    <!-- External log4j2.xml configuration needed for ant targets bellow -->
+    <copy tofile="${classes.dir}/log4j2.xml" file="src/log4j2.xml" />
+  </target>
+
+  <!--
+       ********************************************************
+        Below is run targets NOT deployed to NCS JVM examplify
+        some aspects of Navu/Maapi API
+        ********************************************************
+  -->
+  <!--
+       Set values to example yang module maai-types.yang which is
+       NOT a NCS core yang module
+  -->
+  <target name="setelems"
+          depends="compile"
+          description="Maapi.setElem() examples for different types">
+    <java classname="com.example.maapi.SetElem"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+  <!--
+      Set different types values to the examples model maapi-types.yang
+      which is NOT a NCS core yang module using Maapi.setValues()
+  -->
+  <target name="setvalues"
+          depends="compile"
+          description="Maapi setValues() examples">
+    <java classname="com.example.maapi.SetValues"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+
+  <!--
+       Prints a tree representation of schema information
+       starting from /ncs:ncs/devices/device{ex0}/config
+       and corresponding values using MaapiSchemas/Navu.
+  -->
+  <target name="printdevschema"
+          depends="compile"
+          description="Prints tree structure over schema nodes and values">
+    <java classname="com.example.maapi.SchemaTree"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+  <!--
+      Set values to the device tree using Maapi.setValues()
+  -->
+  <target name="valtodevices"
+          depends="compile"
+          description="Set values to devices using Navu/Maapi and PreparedXML">
+    <java classname="com.example.maapi.SetValuesToDevice"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+  <!--
+      Set values to the example maapi-types.yang through Maapi/Navu
+      PreparedXMLStatement.
+  -->
+  <target name="prepset"
+          depends="compile"
+          description="Setting values to devices using Navu and PreparedXML">
+    <java classname="com.example.maapi.PrepSetTest"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+  <!--
+       Prints XML representation of the device configuration
+       using Navu encode.
+  -->
+  <target name="xmlshow"
+          depends="compile"
+          description="Shows values in XML-format for devices">
+    <java classname="com.example.maapi.EncodeSubtree"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+  <!--
+       Example how to use cursor to extract values from
+       devices
+  -->
+  <target name="cursor"
+          depends="compile"
+          description="Examplify use of Maapi Cursor">
+    <java classname="com.example.maapi.ExampleMaapiCursor"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+    <arg line="${ipc.path}" />
+    </java>
+  </target>
+
+  <!--
+      Example how to use Query API cursor to extract values from
+      devices
+  -->
+  <target name="query"
+          description="XPathQuery (usage:
+  ant query -Darg=&quot;'&lt;Query&gt;:XPath-expr'
+  '&lt;selects&gt;:node0,node1...,nodeN' -n '&lt;num&gt;:result-iterations'
+  -c '&lt;chunksize&gt;:num' -o '&lt;offset&gt;:1..N' -x
+  '&lt;initial-context&gt;:QueryCTX(default '/')'
+  -r &lt;[t:ConfXMLParam|v:KeyPath and
+  ConfValue|p:KeyPath|s:String]&gt;'&quot;)"
+          depends="compile">
+    <java classname="com.example.maapi.Query"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <classpath location="build/classes"/>
+      <arg line="${arg}" />
+    </java>
+  </target>
+
+  <!--
+      Example how to use navu to move lits entries with attribute
+      ordered by user
+  -->
+  <target name="dns"
+          description="list, add, remove and move dns servers of a device"
+          depends="compile">
+    <java classname="com.example.maapi.Dns"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <classpath location="build/classes"/>
+      <arg line="${arg}" />
+    </java>
+  </target>
+
+  <target name="simplequery1"
+          description="Simple XPath Query 1"
+          depends="compile">
+    <java classname="com.example.maapi.SimpleQuery1"
+          failonerror="true"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <arg line="${ipc.path}" />
+    </java>
+  </target>
+</project>

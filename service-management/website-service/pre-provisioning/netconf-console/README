@@ -1,0 +1,9 @@
+This script illustrates how to interact with NCS through the simple
+Python based NETCONF client called netconf-client. This NETCONF
+client is part of the NCS distribution.
+
+To run, start the website service example above and just run the script
+as e.g
+
+./new-device.sh --devname foobar --devport 7890
+

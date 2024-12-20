@@ -1,0 +1,54 @@
+module interfaces-stats {
+  namespace "http://example.com/xmlrpcdevice/xmlrpc/if-stats";
+  prefix ifstats;
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+  container stats {
+    config false;
+
+    container receive {
+      leaf bytes {
+        type uint32;
+        mandatory true;
+      }
+      leaf packets {
+        type uint32;
+        mandatory true;
+      }
+      leaf errors {
+        type uint32;
+        mandatory true;
+      }
+      leaf dropped {
+        type uint32;
+        mandatory true;
+      }
+    }
+    container transmit {
+      leaf bytes {
+        type uint32;
+        mandatory true;
+      }
+      leaf packets {
+        type uint32;
+        mandatory true;
+      }
+      leaf errors {
+        type uint32;
+        mandatory true;
+      }
+      leaf dropped {
+        type uint32;
+        mandatory true;
+      }
+      leaf collisions {
+        type uint32;
+        mandatory true;
+      }
+    }
+  }
+}
+

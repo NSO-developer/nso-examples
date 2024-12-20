@@ -1,0 +1,84 @@
+module qinq-template {
+
+  namespace "http://com/example/qinq-template";
+  prefix qt;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list qinq-template {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint  "sp-qinq-template";
+
+    leaf name {
+      type string;
+    }
+
+    //perhaps some customer description or a reference to the
+    //customer list?
+
+    leaf s-vlan {
+      mandatory true;
+      type uint32 {
+        range 1..4094;
+      }
+    }
+
+    must
+      "not (/qt:qinq-template[name != current()/name]"+
+      "[s-vlan = current()/s-vlan])"
+    {
+      error-message "The s-vlan must be unique within the network";
+    }
+
+    list edge-switch {
+      key "switch";
+      leaf switch {
+        type leafref {
+          path /ncs:devices/ncs:device/ncs:name;
+        }
+      }
+      list edge-interface {
+        key "interface";
+        leaf interface {
+          type string;
+          must
+            "not (/qt:qinq-template"+
+            "[name != current()/../../../name]/"+
+            "/edge-switch[switch = current()/../../switch]"+
+            "/edge-interface[interface = current()])"
+              {
+                error-message "Edge interface must be unique";
+              }
+        }
+        leaf-list c-vlan {
+          type uint32 {
+            range 1..4094;
+          }
+        }
+      }
+      leaf-list trunk-interface {
+        min-elements 1;
+        type string;
+      }
+    }
+    list core-switch {
+      key "switch";
+      leaf switch {
+        type leafref {
+          path /ncs:devices/ncs:device/ncs:name;
+        }
+      }
+      leaf-list trunk-interface {
+        min-elements 1;
+        type string;
+      }
+    }
+  }
+}

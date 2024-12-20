@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration>
+  <Appenders>
+    <File name="A1" fileName="log4j2.log" append="false">
+      <PatternLayout
+      pattern="&#60;%-4p&#62; %d{dd-MMM-yyyy::HH:mm:ss.SSS} %C{1} %t: - %m%n"/>
+    </File>
+
+    <Console name="A2" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss,SSS} %-4p [%t] (%c)(%M) - %m%n"/>
+    </Console>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="org" level="info"/>
+    <Logger name="com.tailf" level="info"/>
+
+    <Root level="info">
+      <AppenderRef ref="A1"/>
+      <AppenderRef ref="A2"/>
+    </Root>
+  </Loggers>
+</Configuration>

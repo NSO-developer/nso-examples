@@ -1,0 +1,132 @@
+module esc_opdata_tenant {
+
+  /*
+   * This is the top level YANG module for ESC's tenant operational data.
+   */
+
+  namespace "http://www.cisco.com/esc/esc_opdata_tenant";
+
+  prefix "esc_opdata_tenant";
+
+  import esc_opdata_interface { prefix "opinterface"; }
+  import esc_opdata_networks { prefix "opnetworks"; }
+  import esc_opdata_state_machines { prefix "opstatemachines"; }
+  import ietf-yang-types { prefix "ietf-yang-types"; }
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-08-06 {
+    description "Elastic Services Controller Module's tenant operational data";
+  }
+
+  grouping esc_opdata_tenant {
+    description
+      "This contains all the operational data of the services that
+       have been registered and/or instantiated";
+    container tenants {
+      presence "Indicates that the service is running";
+      list tenant {
+        key "name";
+        description "List of tenants";
+        leaf name {
+          type types:escname;
+        }
+        leaf tenant_id {
+          description "External tenant ID for the tenant";
+          type string;
+        }
+
+        /* Networks for this tenant */
+        uses opnetworks:esc_opdata_networks;
+
+        list deployments {
+          key "deployment_name service_name service_version";
+          description "List of deployments";
+          leaf deployment_name {
+            description "Name of the deployment";
+            type types:escname;
+          }
+          leaf service_name {
+            description "Name of the service";
+            type types:escname;
+          }
+          leaf service_version {
+            description "Version of the service";
+            type types:escversion;
+          }
+          leaf deployment_id {
+            description "Internal Deployment ID for the service";
+            type string;
+          }
+          leaf service_id {
+            description "Internal Service ID for the service";
+            type string;
+          }
+          list vm_group {
+            key "name";
+            leaf name {
+              description "Group Name";
+              type types:escname;
+            }
+            list vm_instance {
+              description "List of running VMs in this group";
+              /*
+               * Technically the key can be combination of hostid and
+               * vmid as same vmid can be on different host. However,
+               * currently vmid is unique globally. Therefore, just
+               * vmid is made as key
+               */
+              key "vm_id";
+
+              leaf name {
+                description "A name of the VM";
+                type types:escname;
+              }
+              leaf vm_id {
+                description "UUID of the VM";
+                type ietf-yang-types:uuid;
+              }
+              leaf host_id {
+                description "ID of the host where this VM is running";
+                type string;
+              }
+              leaf hostname {
+                description
+                  "Hostname where this VM is running. This is sometimes referred
+                   to a hypervisor name.";
+                type string;
+              }
+              /* Interfaces for this VM */
+              uses opinterface:esc_opdata_interface;
+
+              /* Any VNF statistics will be pulled directly from the VNF
+                 for now esc_opdata_devstats to be used later */
+            }
+
+            list shared_ip {
+              description
+                "Shared Ip is the ip address that is shared by all the VM in the
+                 vm_group on a particular nidid";
+              key "nicid";
+              leaf nicid {
+                  description
+                    "Interface where the static_ip property is applied.";
+                  type types:escint8;
+                  mandatory true;
+              }
+              leaf ip_address {
+                description "shared IP address for this interface";
+                type types:escipaddr;
+              }
+            }
+          }
+          /* State Machine for deployment */
+          uses opstatemachines:esc_opdata_state_machines;
+        }
+      }
+    }
+  }
+}

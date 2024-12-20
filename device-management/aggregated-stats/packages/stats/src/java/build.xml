@@ -1,0 +1,5 @@
+<project name="stats" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml"/>
+</project>

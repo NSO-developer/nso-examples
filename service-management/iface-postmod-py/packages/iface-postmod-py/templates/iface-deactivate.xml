@@ -1,0 +1,24 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$DEVICE}</name>
+      <config>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet tags="merge">
+            <name>{$INTERFACE}</name>
+            <description>Unused</description>
+            <shutdown/>
+            <switchport>
+              <access>
+                <vlan>2</vlan>
+              </access>
+              <mode>
+                <access/>
+              </mode>
+            </switchport>
+          </GigabitEthernet>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

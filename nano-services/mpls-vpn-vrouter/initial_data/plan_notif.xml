@@ -1,0 +1,16 @@
+<services xmlns="http://tail-f.com/ns/ncs">
+  <plan-notifications>
+    <subscription>
+      <name>nano1</name>
+      <service-type>/l3vpn:vpn/l3vpn:l3vpn</service-type>
+      <component-type>self</component-type>
+      <operation>modified</operation>
+    </subscription>
+    <subscription>
+      <name>nano2</name>
+      <service-type>/l3vpn:vpn/l3vpn:l3vpn</service-type>
+      <component-type>self</component-type>
+      <operation>deleted</operation>
+    </subscription>
+  </plan-notifications>
+</services>

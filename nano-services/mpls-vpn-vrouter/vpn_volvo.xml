@@ -1,0 +1,30 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <vpn xmlns="http://com/example/l3vpn">
+    <l3vpn>
+      <name>volvo</name>
+      <as-number>12345</as-number>
+      <endpoint>
+        <id>head-office</id>
+        <ce-device>ce2</ce-device>
+        <ce-interface>GigabitEthernet0/1</ce-interface>
+        <ip-network>192.168.3.0/24</ip-network>
+        <bandwidth>1000000</bandwidth>
+        <esc_service>
+          <name>vbranch-csr-service</name>
+          <version>1.0</version>
+          <vm_group>CSR</vm_group>
+        </esc_service>
+      </endpoint>
+      <endpoint>
+        <id>branch-office</id>
+        <ce-device>ce0</ce-device>
+        <ce-interface>GigabitEthernet0/1</ce-interface>
+        <ip-network>192.168.1.0/24</ip-network>
+        <bandwidth>10000000</bandwidth>
+      </endpoint>
+      <qos>
+        <qos-policy>GOLD</qos-policy>
+      </qos>
+    </l3vpn>
+  </vpn>
+</config>

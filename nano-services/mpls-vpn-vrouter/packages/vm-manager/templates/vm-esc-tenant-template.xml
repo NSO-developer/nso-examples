@@ -1,0 +1,63 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$ESC}</name>
+      <config>
+        <esc_datamodel xmlns="http://www.cisco.com/esc/esc">
+          <tenants tags="merge">
+            <tenant>
+              <name>{$TENANT}</name>
+              <services>
+                <service_definition>
+                  <deployment_name>{$DEPNAME}</deployment_name>
+                  <name>{$SERVICE_NAME}</name>
+                  <version>{$SERVICE_VERSION}</version>
+                  <vm_group>
+                    <name>{$VM_GROUP}</name>
+                    <bootup_time>600</bootup_time>
+                    <recovery_wait_time>0</recovery_wait_time>
+                    <kpi_data>
+                      <kpi>
+                        <event_name>VM_ALIVE</event_name>
+                        <metric_value>60</metric_value>
+                        <metric_cond>GT</metric_cond>
+                        <metric_type>UINT32</metric_type>
+                        <metric_collector>
+                          <type>ICMPPing</type>
+                          <nicid>0</nicid>
+                          <poll_frequency>3</poll_frequency>
+                          <polling_unit>seconds</polling_unit>
+                          <continuous_alarm>false</continuous_alarm>
+                        </metric_collector>
+                      </kpi>
+                    </kpi_data>
+                    <rules>
+                      <admin_rules>
+                        <rule>
+                          <event_name>VM_ALIVE</event_name>
+                          <action>'ALWAYS log'</action>
+                          <action>'TRUE servicebooted.sh'</action>
+                        </rule>
+                      </admin_rules>
+                    </rules>
+                    <config_data>
+                      <configuration>
+                        <dst>{$DAY0_FILENAME}</dst>
+                        <file>{$DAY0_URL}</file>
+                      </configuration>
+                    </config_data>
+                    <scaling>
+                      <min_active>{$SCALING_MIN}</min_active>
+                      <max_active>{$SCALING_MAX}</max_active>
+                      <elastic>true</elastic>
+                    </scaling>
+                  </vm_group>
+                </service_definition>
+              </services>
+            </tenant>
+          </tenants>
+        </esc_datamodel>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,24 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>vrouter</name>
+  <package-version>1.0</package-version>
+  <description>Nano services netsim virtual router example</description>
+  <ncs-min-version>5.7</ncs-min-version>
+  <python-package>
+    <callpoint-model>multiprocessing</callpoint-model>
+  </python-package>
+  <templates>vrouter-configured</templates>
+  <template-loading-mode>strict</template-loading-mode>
+  <supported-ned-id xmlns:id="http://tail-f.com/ns/ned-id/router-nc-1.1"
+    >id:router-nc-1.1</supported-ned-id>
+  <required-package>
+    <name>router-nc-1.1</name>
+    <min-version>1.1</min-version>
+  </required-package>
+  <component>
+    <name>nano-app</name>
+    <description>Nano service callback and post-actions example</description>
+    <application>
+      <python-class-name>vrouter.nano_app.NanoApp</python-class-name>
+    </application>
+  </component>
+</ncs-package>

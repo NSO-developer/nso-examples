@@ -1,0 +1,25 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs" tags="merge">
+    <authgroups>
+      <group>
+        <name>{authgroup-name}</name>
+        <umap>
+          <local-user>{local-user}</local-user>
+          <remote-name>{remote-name}</remote-name>
+          <public-key>
+            <private-key>
+              <file>
+                <name>{$CWD}/{local-user}_ed25519</name>
+                <passphrase>{passphrase}</passphrase>
+              </file>
+            </private-key>
+          </public-key>
+        </umap>
+      </group>
+    </authgroups>
+    <device>
+      <name>{ne-name}</name>
+      <authgroup>{authgroup-name}</authgroup>
+    </device>
+  </devices>
+</config-template>

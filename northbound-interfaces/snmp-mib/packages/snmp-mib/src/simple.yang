@@ -1,0 +1,140 @@
+module simple {
+  namespace "http://tail-f.com/ns/simple";
+  prefix simple;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  typedef nameType {
+    type string {
+      length "min .. 255";
+    }
+  }
+
+  tailf:snmp-mib-module-name TAIL-F-TEST-MIB;
+
+  container simpleObjects {
+    leaf numberOfServers {
+      type uint16;
+      mandatory true;
+      tailf:snmp-name numberOfServers;
+    }
+
+    leaf numberOfHosts {
+      type uint16;
+      mandatory true;
+      tailf:snmp-name numberOfHosts;
+    }
+
+    leaf maxNumberOfServers {
+      type uint16;
+      mandatory true;
+      tailf:snmp-name maxNumberOfServers;
+    }
+
+    leaf maxNumberOfHosts {
+      type uint16;
+      mandatory true;
+      tailf:snmp-name maxNumberOfHosts;
+    }
+
+    container hosts {
+      list host {
+        key name;
+        max-elements 64;
+        tailf:sort-order snmp;
+        tailf:snmp-name hostTable;
+        tailf:snmp-row-status-column 4;
+
+        leaf name {
+          type nameType;
+        }
+
+        leaf enabled {
+          type boolean;
+          mandatory true;
+          tailf:snmp-name hostEnabled;
+        }
+
+        leaf numberOfServers {
+          type uint16;
+          mandatory true;
+          tailf:snmp-name hostNumberOfServers;
+        }
+
+        container servers {
+          list server {
+            key name;
+            unique "ip port";
+            max-elements 64;
+            tailf:sort-order snmp;
+            tailf:snmp-name serverTable;
+            tailf:snmp-row-status-column 4;
+
+            leaf name {
+              type nameType;
+              tailf:snmp-name serverName;
+            }
+
+            leaf ip {
+              type inet:ipv4-address;
+              mandatory true;
+              tailf:snmp-oid .2;
+            }
+
+            leaf port {
+              type inet:port-number {
+                range "1..max";
+              }
+              mandatory true;
+              tailf:snmp-oid .3;
+            }
+          }
+        }
+      }
+    }
+
+    container services {
+      list service {
+        key "address portNumber";
+        max-elements 64;
+        tailf:snmp-name serviceTable;
+
+        leaf address {
+          type inet:ipv4-address;
+          tailf:snmp-oid .1;
+        }
+
+        leaf portNumber {
+          type inet:port-number {
+            range "1..max";
+          }
+          tailf:snmp-name servicePortNumber;
+          tailf:snmp-oid .2;
+        }
+
+        leaf hostName {
+          type nameType;
+          mandatory true;
+          tailf:snmp-oid .3;
+        }
+
+        leaf serverName {
+          type nameType;
+          mandatory true;
+          tailf:snmp-oid .4;
+        }
+      }
+    }
+
+    leaf descr {
+      type nameType;
+      default "test description";
+      tailf:snmp-name extraDescr;
+    }
+  }
+}

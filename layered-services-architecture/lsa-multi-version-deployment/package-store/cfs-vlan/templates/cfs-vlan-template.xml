@@ -1,0 +1,31 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="cfs-vlan">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <!-- Do this for the two leafs a-router and z-router -->
+    <?foreach {a-router|z-router}?>
+    <?save-context service?>
+    <?set-root-node {/}?>
+    <device>
+      <!--
+      Pick up the name of the rfs-node from the lsa-node itself
+      -->
+      <name>{/ncs:devices/device/config/devices/device[name = current()]/../../../name}</name>
+      <?switch-context service?>
+      <config>
+        <services xmlns="http://com/example/rfsvlan">
+          <vlan>
+            <!-- We do not want to change the current context here either -->
+            <name>{string(/name)}</name>
+            <!-- current() is still a-router or z-router -->
+            <router>{current()}</router>
+            <iface>{/iface}</iface>
+            <unit>{/unit}</unit>
+            <vid>{/vid}</vid>
+            <description>Interface owned by CFS: {/name}</description>
+          </vlan>
+        </services>
+      </config>
+    </device>
+    <?end?>
+  </devices>
+</config-template>

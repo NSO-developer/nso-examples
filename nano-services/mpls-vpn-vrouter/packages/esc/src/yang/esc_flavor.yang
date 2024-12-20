@@ -1,0 +1,80 @@
+module esc_flavor {
+
+
+  namespace "http://www.cisco.com/esc/esc_flavor";
+  prefix "esc_flavor";
+
+  import esc_types { prefix "types"; }
+  import tailf-common { prefix "tailf"; }
+
+    organization "Cisco Systems";
+
+    contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+    description
+          "ESC's flavor descriptions'";
+
+    revision 2014-06-23 {
+        description "ESC Flavor";
+    }
+
+    grouping esc_flavor {
+      container vm_flavor {
+        description "CPU and Memory properties";
+        /*
+         * The when constructs in each of the leaf ensures that these are not
+         * specified during deployment and can be specified only during
+         * registration.
+         */
+        leaf vcpus {
+          description "Number of virtual CPUs per VM instance";
+          type types:escint8;
+          mandatory true;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf sockets {
+          description "Number of sockets per VM instance";
+          type types:escint8;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf cores {
+          description "Number of cores per VM instance";
+          type types:escint8;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf threads {
+          description "Number of threads per VM instance";
+          type types:escint8;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf memory_mb {
+          description "Amount of memory in Mega Bytes per VM instance";
+          type types:escint32;
+          mandatory true;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf root_disk_mb {
+          description
+            "Virtual root disk size in gigabytes. This is an ephemeral disk the
+             base image is copied into. You don't use it when you boot from a
+             persistent volume. The 0 size is a special case that uses the
+             native base image size as the size of the ephemeral root volume";
+          type types:escint32;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf ephemeral_disk_mb {
+          description
+            "Specifies the size of a secondary ephemeral data disk. This is an
+             empty, unformatted disk and exists only for the life of the
+             instance";
+          type types:escint32;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+        leaf swap_disk_mb {
+          description "Optional swap space allocation for the instance.";
+          type types:escint32;
+          when "../../../../..[local-name() = 'esc_datamodel']";
+        }
+      }
+    }
+}

@@ -1,0 +1,163 @@
+module server-config {
+  yang-version 1.1;
+  namespace "http://example.com/server-config";
+  prefix sc;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  revision 2022-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  container dns-configs {
+    list dns-config {
+      description "DNS server name config service";
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint dns-config-servicepoint;
+
+      leaf-list device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf server {
+        type leafref {
+          path "/sc:servers/sc:server/sc:name";
+        }
+      }
+    }
+  }
+
+  container ntp-configs {
+    list ntp-config {
+      description "NTP server name config service";
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint ntp-config-servicepoint {
+        ncs:conflicts-with "dns-config-servicepoint";
+      }
+
+      leaf-list device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf server {
+        type leafref {
+          path "/sc:servers/sc:server/sc:name";
+        }
+      }
+    }
+  }
+
+  container servers {
+    list server {
+      description "Mapping between name and IP address for dual purpose NTP" +
+                  "and DNS servers";
+      key name;
+      leaf name {
+        type string;
+      }
+      leaf ip {
+        type inet:ip-address;
+      }
+      leaf description {
+        type string;
+        when "../ip";
+      }
+      leaf extended-description {
+        type string;
+        when "../description";
+      }
+    }
+
+    action acquire-sem {
+      description "Acquire q seemaphore which only purpose is to enable" +
+                  "simulating a config update conflict";
+      tailf:actionpoint acquire-sem;
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action release-sem {
+      description "Release q seemaphore which only purpose is to enable" +
+                  "simulating a config update conflict";
+      tailf:actionpoint release-sem;
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action update-ntp {
+      description "Run an application that updates the NTP server" +
+                  "configuration on a device without retry if there is a" +
+                  "conflict";
+      tailf:actionpoint update-ntp;
+      input {
+        leaf device {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+        leaf server {
+          type leafref {
+            path "/sc:servers/sc:server/sc:name";
+          }
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+    action update-ntp-retry {
+      description "Run an application that updates the NTP server" +
+                  "configuration on a device with retry if there is a" +
+                  "conflict";
+      tailf:actionpoint update-ntp-retry;
+      input {
+        leaf device {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+        leaf server {
+          type leafref {
+            path "/sc:servers/sc:server/sc:name";
+          }
+        }
+      }
+      output {
+        leaf result {
+          type boolean;
+        }
+      }
+    }
+  }
+}

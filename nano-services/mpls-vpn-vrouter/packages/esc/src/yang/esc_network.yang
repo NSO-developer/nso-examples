@@ -1,0 +1,99 @@
+module esc_network {
+
+  namespace "http://www.cisco.com/esc/esc_network";
+  prefix "esc_network";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's Network descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Networks";
+  }
+
+/*
+ * This represents the network definitions for the service
+ * created by the admin.
+ */
+  grouping esc_network {
+    container networks {
+      description "These are the 'Ephemeral' networks that will be created
+                   and destroyed during deployment. Usually these are internal
+                   network for that service which may be used for
+                   communication between VMs in this service.";
+      list network {
+        key "name";
+        leaf name {
+          description
+            "Name of the network to be created.
+             The name will be appended with the
+             deployment id during actual creation during deployment to
+             maintain uniqueness. These are given before vm_group so
+             that ESC can create the network before actually deploying
+             any VMs on the network in one pass.";
+          type types:escnetname;
+          mandatory true;
+        }
+        leaf shared {
+          description "Whether the network is shared among other tenants";
+          type types:escbool;
+          default true;
+        }
+        leaf admin_state {
+          description
+            "Specifies whether the admin state is up or down. Set to true for up
+             and false for down. If down, the network does not forward
+             packets.";
+          type types:escbool;
+          default true;
+        }
+        leaf vlanid {
+          description "VLAN-ID of the network";
+          type types:escvlanid;
+          default 0;
+        }
+        list subnet {
+          key "name";
+          leaf name {
+            description "Name of the subnet";
+            type types:escnetname;
+            mandatory true;
+          }
+          leaf ipversion {
+            description "Size of the Volume";
+            type types:ipversion_t;
+            default ipv4;
+          }
+          leaf dhcp {
+            description
+              "Are IP address for the VMs on this network are
+               to be allocated by DHCP";
+            type types:escbool;
+            default true;
+          }
+          leaf address {
+            description "Subnet address for this network. Eg: 10.4.4.0";
+            type types:escipaddr;
+            mandatory true;
+          }
+          leaf netmask {
+            description "Netmask for the network";
+            type types:escipaddr;
+            mandatory true;
+          }
+          leaf gateway {
+            description
+              "Default GW for the network. If un specified ESC will try
+               to determine the gateway for the network.";
+            type types:escipaddr;
+          }
+        }
+      }
+    }
+  }
+}

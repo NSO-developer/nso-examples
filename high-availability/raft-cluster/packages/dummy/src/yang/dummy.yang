@@ -1,0 +1,36 @@
+module dummy {
+  namespace "http://com/example/dummy";
+  prefix dummy;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container dummies {
+  list dummy {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "dummy";
+
+    leaf name {
+      type string;
+    }
+
+    // may replace this with other ways of refering to the devices.
+    leaf-list device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    // replace with your own stuff here
+    leaf dummy {
+      type inet:ipv4-address;
+    }
+  }
+  } // container dummies {
+}

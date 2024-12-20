@@ -1,0 +1,8 @@
+<get-data xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores"
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda">
+  <datastore>ds:operational</datastore>
+  <subtree-filter>
+    <hardware xmlns="urn:ietf:params:xml:ns:yang:ietf-hardware"/>
+  </subtree-filter>
+  <with-origin/>
+</get-data>

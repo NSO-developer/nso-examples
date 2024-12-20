@@ -1,0 +1,197 @@
+module esc_scaling {
+
+  namespace "http://www.cisco.com/esc/esc_scaling";
+  prefix "esc_scaling";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's scaling descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Scaling Rules";
+  }
+
+  grouping esc_scaling {
+    container scaling {
+      description
+        "This section can be used to specify how many instances of a particular
+         type of VM needs to be instantiated and whether elastic
+         scale-out and scale-in is desired. Is one wishes to have a 2
+         static VMs, it can be achieved by specifying min_active =
+         max_active = 2.";
+      leaf min_active {
+        description
+          "Minimum number of VMs in the deployment.  Irrespective of what the
+           load is on these VMs, ESC ensures at least the minimum
+           number of service VMs will always be running.";
+        type types:escint16;
+        mandatory true;
+      }
+      leaf min_standby {
+        description
+          "Minimum number of standby VMs in the deployment. Irrespective of what
+           ratio is specified, ESC ensures at least the minimum number
+           of service VMs will always be running.";
+        type types:escint16;
+        mandatory false;
+      }
+      leaf max_active {
+        description
+          "As the load increases if elastic mode is enabled, then new VMs are
+           instantiated. At most max_active number of VMs will be
+           instantiated by ESC.";
+        type types:escint16;
+        mandatory true;
+      }
+      leaf max_standby {
+        description
+          "As the load increases if elastic mode is enabled, then new VMs are
+           instantiated. At most max_active number of VMs will be
+           instantiated regardless of the ratio specified.";
+        type types:escint16;
+        mandatory false;
+      }
+      leaf standby_ratio {
+        description
+          "As the load increases if elastic mode is enabled, then new VMs are
+           instantiated. This value determines when additional standby
+           VMs will be created as scaling events occur.";
+        type types:escratio;
+        mandatory false;
+      }
+      leaf elastic {
+        description "Request elastic scale-out and scale-in";
+        type types:escbool;
+        default true;
+      }
+      list static_mac_address_pool {
+        key "network";
+        description
+          "If static MAC addresses are required for the VMs that are
+           instantiated during scale-out, it can be specified here.
+           ESC manages this
+           pool of MAC and determintes which VM gets what MAC address.";
+        leaf network {
+          description
+            "This can be a name or UUID of the network to
+             which the MAC addresses specified below belong to.";
+          type types:escnetname;
+          mandatory true;
+        }
+        list mac_address_range {
+          key "start end";
+          description
+            "Contiguous block of MAC address can be specified using range.";
+          leaf start {
+            description "Starting MAC address in the range";
+            type types:escmacaddr;
+          }
+          leaf end {
+            description "Ending MAC address in the range";
+            type types:escmacaddr;
+          }
+        }
+        leaf-list mac_address {
+          description "Non-contigeous individual random MAC addresses.";
+          type types:escmacaddr;
+        }
+      }
+      container static_license_pool {
+        list license {
+            key "license_key_value";
+            description
+              "If VMs need a license to be applied, you can specify the
+               key-license_data map so that it's applied when the VM becomes
+               alive.";
+            leaf license_key_value {
+              description
+                "The key for this license, this can be a MAC address for
+                 example.";
+              type types:license_key_value;
+              mandatory true;
+            }
+            leaf license_key_type {
+              description
+                "The type of key for the license, this can be MAC addr,
+                 IP addr... For now only support MAC";
+              type types:license_key_type;
+              mandatory true;
+            }
+            /* Use choice as only one of file or data can be specified */
+            choice input_method {
+              case license_file {
+                leaf license_file {
+                  description
+                    "ESC downloads the file specified by the URL.
+                     This field and 'data are mutually
+                     exclusive.";
+                  type types:escuri;
+                }
+              }
+              case license_data {
+                leaf license_data {
+                  description
+                    "Instead of specifying a URL, this allows to
+                     use inline text. This and 'file' element are
+                     mutually exclusive.";
+                  type types:escbigdata;
+                }
+              }
+            }
+        }
+      }
+      list static_ip_address_pool {
+        key "network";
+        description
+          "If static IP addresses are required for the VMs that are instantiated
+           during scale-out, it can be specified here. ESC manages this
+           pool of IP and determintes which VM gets what IP address.";
+        leaf network {
+          description
+            "This can be a name or UUID of the network to
+             which the IP addresses specified below belong to.";
+          type types:escnetname;
+          mandatory true;
+        }
+        leaf gateway {
+          description
+            "Default gateway of the network. If left unspecified, ESC should
+             determine this information by querying the underlying
+             infrastructure.";
+          type types:escipaddr;
+        }
+        leaf netmask {
+          description
+            "Netmask for the network. If left unspecified, ESC should determine
+             this information by querying the underlying
+             infrastructure.";
+          type types:escipaddr;
+        }
+        list ip_address_range {
+          key "start end";
+          description
+            "Contigeous block of IP address can be specified using range.";
+          leaf start {
+            description "Starting IP address in the range";
+            type types:escipaddr;
+            mandatory true;
+          }
+          leaf end {
+            description "Ending IP address in the range";
+            type types:escipaddr;
+            mandatory true;
+          }
+        }
+        leaf-list ip_address {
+          description "Non-contigeous individual random IP addresses.";
+          type types:escipaddr;
+        }
+      }
+    }
+  }
+}

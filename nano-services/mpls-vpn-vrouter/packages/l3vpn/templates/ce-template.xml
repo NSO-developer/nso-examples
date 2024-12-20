@@ -1,0 +1,69 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$CE}</name>
+      <config>
+        <interface xmlns="urn:ios" tags="merge">
+          <GigabitEthernet
+              when="{starts-with($CE_INT_NAME,'GigabitEthernet')}">
+            <name>{substring($CE_INT_NAME,16)}.{$VLAN_ID}</name>
+            <description>Link to PE / {$PE} - {$PE_INT_NAME}</description>
+            <encapsulation>
+              <dot1Q>
+                <vlan-id>{$VLAN_ID}</vlan-id>
+              </dot1Q>
+            </encapsulation>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LINK_CE_ADR}</address>
+                  <mask>{$LINK_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+             <service-policy>
+              <output>{/name}</output>
+            </service-policy>
+          </GigabitEthernet>
+          <GigabitEthernet
+               when="{starts-with($CE_LOCAL_INT_NAME,'GigabitEthernet')}">
+            <name>{substring($CE_LOCAL_INT_NAME,16)}</name>
+            <description>{/name} local network</description>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LOCAL_CE_ADR}</address>
+                  <mask>{$CE_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+          </GigabitEthernet>
+        </interface>
+        <policy-map xmlns="urn:ios" tags="merge">
+          <name>{/name}</name>
+          <class>
+            <name>class-default</name>
+            <shape>
+              <average>
+                <bit-rate>{$BW}</bit-rate>
+              </average>
+            </shape>
+          </class>
+        </policy-map>
+        <router xmlns="urn:ios" tags="merge">
+          <bgp>
+            <as-no>{/as-number}</as-no>
+            <neighbor>
+              <id>{$LINK_PE_ADR}</id>
+              <remote-as>100</remote-as>
+              <activate/>
+            </neighbor>
+            <network>
+              <number>{$LOCAL_CE_NET}</number>
+            </network>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

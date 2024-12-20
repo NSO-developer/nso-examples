@@ -1,0 +1,90 @@
+module l3vpn {
+
+  namespace "http://com/example/l3vpn";
+  prefix l3vpn;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+grouping endpoint-grouping {
+    leaf interface-name {
+      tailf:info "Interface name. For example FastEthernet.";
+      type string;
+    }
+
+    leaf interface-number {
+      tailf:info "Interface number. For example 0 or 1/0";
+      type string;
+    }
+    leaf ip-address {
+      tailf:info "Local interface address.";
+      type inet:ipv4-address;
+    }
+  }
+
+  container vpn {
+
+    list l3vpn {
+      description "Layer3 VPN";
+
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint  "l3vpn-template";
+
+      list endpoint {
+        key "id";
+        leaf id{
+          tailf:info "Endpoint identifier";
+          type string;
+        }
+        leaf as-number {
+          description "AS used within all VRF of the VPN";
+          tailf:info "MPLS VPN AS number.";
+          mandatory true;
+          type uint32;
+        }
+        container ce {
+          leaf device {
+            mandatory true;
+            type leafref {
+              path "/ncs:devices/ncs:device/ncs:name";
+            }
+          }
+          container local {
+            uses endpoint-grouping;
+          }
+          container link {
+            uses endpoint-grouping;
+          }
+        }
+
+        container pe {
+          leaf device {
+            mandatory true;
+            type leafref {
+              path "/ncs:devices/ncs:device/ncs:name";
+            }
+          }
+          container link {
+            uses endpoint-grouping;
+          }
+        }
+      }
+    }
+  }
+}

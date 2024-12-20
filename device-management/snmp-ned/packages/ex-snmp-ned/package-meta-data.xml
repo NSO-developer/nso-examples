@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ex-snmp-ned</name>
+  <package-version>1.0</package-version>
+  <description>Basic example snmp NED package</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>ex-snmp-ned</name>
+    <ned>
+      <snmp/>
+      <device>
+        <vendor>Example Inc.</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

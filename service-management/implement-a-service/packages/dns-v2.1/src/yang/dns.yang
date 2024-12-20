@@ -1,0 +1,36 @@
+module dns {
+  namespace "http://com/example/dns";
+  prefix dns;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list dns {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "dns";
+
+    leaf name {
+      type string;
+    }
+
+    leaf target-device {
+      mandatory true;
+      type string {
+        length "2";
+        pattern "c[0-2]";
+      }
+    }
+
+    leaf dns-server-ip {
+      type inet:ipv4-address {
+        pattern "192\\.0\\.2\\..*";
+      }
+    }
+  }
+}

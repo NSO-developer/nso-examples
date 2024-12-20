@@ -1,0 +1,301 @@
+BASIC-CONFIG-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    SnmpAdminString
+        FROM SNMP-FRAMEWORK-MIB
+    Integer32, MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, 
+    Unsigned32, experimental
+        FROM SNMPv2-SMI
+    RowStatus, TestAndIncr
+        FROM SNMPv2-TC;
+
+basic-config MODULE-IDENTITY
+    LAST-UPDATED "201111160000Z"
+    ORGANIZATION 
+        "Tail-f Systems AB"
+    CONTACT-INFO 
+        "support@tail-f.com"
+    DESCRIPTION 
+        "This MIB is used for NCS SNMP NED examples.
+         It illustrates common SNMP configuration scenarios."
+    REVISION    "201111160000Z"
+    DESCRIPTION 
+        "Initial version of this MIB module."
+    ::= { experimental 4 }
+
+
+bscObjects	OBJECT IDENTIFIER ::= { basic-config 1 }
+bscButtons	OBJECT IDENTIFIER ::= { bscObjects 1 }
+bscActions	OBJECT IDENTIFIER ::= { bscObjects 2 }
+bscTables	OBJECT IDENTIFIER ::= { bscObjects 3 }
+
+-- Scenario 3 :  protected scalars
+-- bscAdminState -> locked, change bscControlState, bscAdminState -> locked
+
+bscAdminState OBJECT-TYPE
+    SYNTAX      INTEGER { locked(1), unlocked(2) }
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This object needs to be locked in order to change controlStates."
+    ::= { bscButtons 3 }
+
+bscControlState OBJECT-TYPE
+    SYNTAX      INTEGER { foo(1), fee(2), foe(3) }
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Can only be changed when bscAdminState is locked. Change will only
+         take effect when unlocked again. "
+    ::= { bscButtons 4 }
+
+-- Scenario 4 : above with SpinLock
+bscControlSpinLock OBJECT-TYPE
+    SYNTAX      TestAndIncr
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Use to protect from multiple managers when changing controlState "
+    ::= { bscButtons 5 }
+
+-- Scenario 4 : scalars with order dependency
+bscSetMe1 OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Must be set before SetMe2"
+    ::= { bscButtons 6 }
+
+bscSetMe2 OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Must be set before SetMe3"
+    ::= { bscButtons 7 }
+
+bscSetMe3 OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Must be set after SetMe2"
+    ::= { bscButtons 8 }
+
+-- Scenario 5 : Table with AdminState
+-- Need to set 'down' to change
+
+bscActTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BscActEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscActions 1 }
+
+bscActEntry OBJECT-TYPE
+    SYNTAX      BscActEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    INDEX       { bscActIndex }
+    ::= { bscActTable 1 }
+
+BscActEntry ::= SEQUENCE {
+    bscActIndex          Unsigned32,
+    bscActOwner          SnmpAdminString,
+    bscActAdminState     INTEGER,
+    bscActFlow           Integer32,
+    bscActStatus         RowStatus
+}
+
+bscActIndex OBJECT-TYPE
+    SYNTAX      Unsigned32 (0..100)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscActEntry 1 }
+
+bscActOwner OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscActEntry 2 }
+
+bscActAdminState OBJECT-TYPE
+    SYNTAX      INTEGER { locked(1), unlocked(2) }
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscActEntry 3 }
+
+bscActFlow OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "Can only be changed when admin state is locked."
+    ::= { bscActEntry 4 }
+
+bscActStatus OBJECT-TYPE
+    SYNTAX      RowStatus
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscActEntry 5 }
+
+bscBaseTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BscBaseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscTables 1 }
+
+bscBaseEntry OBJECT-TYPE
+    SYNTAX      BscBaseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    INDEX       { bscBaseIndex }
+    ::= { bscBaseTable 1 }
+
+BscBaseEntry ::= SEQUENCE {
+    bscBaseIndex    Unsigned32,
+    bscBaseStr      SnmpAdminString,
+    bscBaseErr      Integer32,
+    bscBaseStatus   RowStatus
+}
+
+bscBaseIndex OBJECT-TYPE
+    SYNTAX      Unsigned32 (1..100)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscBaseEntry 1 }
+
+bscBaseStr OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscBaseEntry 2 }
+
+bscBaseErr OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "Used to test different error cases.
+         Setting this object to a non-zero value will result in an error."
+    DEFVAL      { 0 }
+    ::= { bscBaseEntry 3 }
+
+bscBaseStatus OBJECT-TYPE
+    SYNTAX      RowStatus
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscBaseEntry 4 }
+
+-- AUGEMENTing table
+
+bscBaseXTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BscBaseXEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscTables 2 }
+
+bscBaseXEntry OBJECT-TYPE
+    SYNTAX      BscBaseXEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    AUGMENTS    { bscBaseEntry }
+    ::= { bscBaseXTable 1 }
+
+BscBaseXEntry ::= SEQUENCE {
+    bscBaseXInt     Integer32,
+    bscBaseXStr     SnmpAdminString
+}
+
+bscBaseXInt OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscBaseXEntry 1 }
+
+bscBaseXStr OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscBaseXEntry 2 }
+
+-- Table with foreign index
+
+bscAddrTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BscAddrEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscTables 3 }
+
+bscAddrEntry OBJECT-TYPE
+    SYNTAX      BscAddrEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    INDEX       { bscBaseIndex, bscAddrIndex }
+    ::= { bscAddrTable 1 }
+
+BscAddrEntry ::= SEQUENCE {
+    bscAddrIndex    Unsigned32,
+    bscAddrStr      SnmpAdminString,
+    bscAddrStatus   RowStatus
+}
+
+bscAddrIndex OBJECT-TYPE
+    SYNTAX      Unsigned32 (1..100)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscAddrEntry 1 }
+
+bscAddrStr OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscAddrEntry 2 }
+
+bscAddrStatus OBJECT-TYPE
+    SYNTAX      RowStatus
+    MAX-ACCESS  read-create
+    STATUS      current
+    DESCRIPTION 
+        "..."
+    ::= { bscAddrEntry 3 }
+
+END

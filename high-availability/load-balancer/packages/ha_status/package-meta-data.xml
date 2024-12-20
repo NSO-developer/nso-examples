@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ha_status</name>
+  <package-version>1.0</package-version>
+  <description>NSO HA Status</description>
+  <ncs-min-version>5.4</ncs-min-version>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>ha_status.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

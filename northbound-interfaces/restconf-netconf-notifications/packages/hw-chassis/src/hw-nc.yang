@@ -1,0 +1,18 @@
+module hw-nc {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/hw-nc";
+  prefix hw-nc;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  identity hw-nc {
+    tailf:abstract;
+    base ned:netconf-ned-id;
+  }
+}

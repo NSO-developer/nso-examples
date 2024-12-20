@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ppp-accounting</name>
+  <package-version>1.0</package-version>
+  <description>Examplify kickers</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+  <component>
+    <name>kicker-service</name>
+    <callback>
+      <java-class-name>com.example.kicker.KickerServiceRFS</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

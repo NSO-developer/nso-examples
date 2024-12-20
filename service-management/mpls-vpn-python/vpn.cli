@@ -1,0 +1,15 @@
+vpn {
+  l3vpn volvo {
+    as-number 6510;
+    endpoint main-office {
+        ce-device    ce0;
+        ce-interface GigabitEthernet0/11;
+        ip-network   10.10.1.0/24;
+        bandwidth    12000000;
+    }
+    qos {
+        qos-policy GOLD;
+    }
+  }
+}
+

@@ -1,0 +1,45 @@
+module kicker-service {
+  namespace "http://example.com/kicker-service";
+  prefix kicker-service;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "This Reactive Fastmap Service illustrates the use of kickers";
+
+  revision 2016-10-30 {
+    description
+      "Initial revision.";
+  }
+
+  list ppp-accounting {
+
+    uses ncs:service-data;
+    ncs:servicepoint kickerspnt;
+
+    key "interface";
+    leaf interface {
+      type string;
+    }
+  }
+
+  list ppp-accounting-data {
+    description "This is helper data, created by the service code for
+                 /ppp-accounting";
+
+    key "interface";
+    leaf interface {
+      type string;
+    }
+    leaf accounting {
+      description "populated externally";
+      type string;
+    }
+  }
+}

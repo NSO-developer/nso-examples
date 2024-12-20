@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>esc</name>
+  <package-version>1.0</package-version>
+  <description>netconf package for ESC</description>
+  <ncs-min-version>2.2</ncs-min-version>
+  <component>
+    <name>esc</name>
+    <ned>
+      <netconf/>
+      <device>
+        <vendor>Cisco</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

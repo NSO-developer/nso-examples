@@ -1,0 +1,27 @@
+   <host-settings xmlns="http://tail-f.com/sys">
+      <syslog>
+        <server>
+          <name>18.4.5.6</name>
+          <enabled>true</enabled>
+          <selector>
+            <name>1</name>
+          </selector>
+        </server>
+      </syslog>
+      <dns>
+        <search>
+          <name>1</name>
+          <domain>acme.com</domain>
+        </search>
+        <server>
+          <name>1</name>
+          <address>18.4.5.6</address>
+        </server>
+      </dns>
+      <ntp>
+        <server>
+          <name>18.4.5.6</name>
+        </server>
+        <local-clock/>
+      </ntp>
+   </host-settings>

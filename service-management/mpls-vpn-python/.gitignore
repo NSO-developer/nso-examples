@@ -1,0 +1,11 @@
+*.sw[a-z]
+ncs-cdb
+netsim
+logs
+state
+_tmp_ncs*
+README.ncs
+README.netsim
+packages/cisco-ios-cli-3.0
+packages/cisco-iosxr-cli-3.0
+packages/juniper-junos-nc-3.0

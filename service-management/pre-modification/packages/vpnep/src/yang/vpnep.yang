@@ -1,0 +1,70 @@
+module vpnep {
+
+  namespace "http://com/example/vpnep";
+  prefix vep;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container vpn-endpoints {
+    list vpn-endpoint {
+      description "Example vpn endpoint";
+
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint vpnep-servicepoint;
+
+      tailf:action self-test {
+        tailf:info "Perform self-test of the service";
+        tailf:actionpoint vpnep-self-test;
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf message {
+            type string;
+            description
+              "Free format message.";
+          }
+        }
+      }
+
+      leaf-list router {
+        min-elements 1;
+        type leafref {
+          path /ncs:devices/ncs:device/ncs:name;
+        }
+      }
+      leaf iface {
+        type string;
+        mandatory true;
+      }
+      leaf unit {
+        type int32;
+        mandatory true;
+      }
+      leaf vid {
+        type uint16;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+      }
+    }
+  }
+}

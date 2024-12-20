@@ -1,0 +1,25 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <service-progress-monitoring xmlns="http://tail-f.com/ns/ncs">
+    <policy>
+      <name>service-ready</name>
+      <violation-timeout>1200</violation-timeout>
+      <jeopardy-timeout>600</jeopardy-timeout>
+      <condition>
+        <name>self-ready</name>
+        <component-type>
+          <!-- The actual component name is specified in self_trigger.xml -->
+          <type>component-name</type>
+          <what>at-least-one</what>
+          <plan-state>ready</plan-state>
+          <status>reached</status>
+        </component-type>
+      </condition>
+      <action>
+        <action-path xmlns:myserv="http://com/tailf/examples/myserv">
+          /myserv:timeout-test/myserv:timeout
+        </action-path>
+        <always-call>true</always-call>
+      </action>
+    </policy>
+  </service-progress-monitoring>
+</config>

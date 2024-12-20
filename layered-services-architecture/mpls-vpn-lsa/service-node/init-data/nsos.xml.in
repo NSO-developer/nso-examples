@@ -1,0 +1,57 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <global-settings>
+      <use-lsa/>
+    </global-settings>
+    <device>
+      <name>nso-1</name>
+      <address>127.0.0.1</address>
+      <port>2223</port>
+      <authgroup>default</authgroup>
+      <device-type>
+        <netconf xmlns:ned="http://tail-f.com/ns/ncs-ned">
+          <ned-id
+              xmlns:id="http://tail-f.com/ns/ned-id/%%MNAME%%"
+              >id:%%MNAME%%</ned-id>
+        </netconf>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+
+    <device>
+      <name>nso-2</name>
+      <address>127.0.0.1</address>
+      <port>2226</port>
+      <authgroup>default</authgroup>
+      <device-type>
+        <netconf xmlns:ned="http://tail-f.com/ns/ncs-ned">
+          <ned-id
+              xmlns:id="http://tail-f.com/ns/ned-id/%%MNAME%%"
+              >id:%%MNAME%%</ned-id>
+        </netconf>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+
+    <device>
+      <name>nso-3</name>
+      <address>127.0.0.1</address>
+      <port>2225</port>
+      <authgroup>default</authgroup>
+      <device-type>
+        <netconf xmlns:ned="http://tail-f.com/ns/ncs-ned">
+          <ned-id
+              xmlns:id="http://tail-f.com/ns/ned-id/%%MNAME%%"
+              >id:%%MNAME%%</ned-id>
+        </netconf>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+  </devices>
+</config>

@@ -1,0 +1,160 @@
+module esc_kpi {
+
+  namespace "http://www.cisco.com/esc/esc_kpi";
+  prefix "esc_kpi";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's KPI descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC KPI";
+  }
+
+  grouping esc_kpi {
+    container kpi_data {
+      description
+        "In this section one can specify the monitoring rules that will be used
+         to configure the monitor module with in ESC.";
+      leaf enabled {
+        description
+          "This field is used to specify if the KPIs defined here are enabled or
+           disabled. Currently there is the 'enabled' flag is not per
+           KPI but rather refers to all KPIs for a VM. If all the VMs
+           in the service needs to be disabled and they are part of
+           different VM groups, then this flag needs to be specified
+           on for each of them.";
+        type types:escbool;
+        default true;
+      }
+      list kpi {
+        key "event_name";
+        description
+          "This block will be sent to monitor module during deployment and
+           defines parameters that are required for monitoring VMs and
+           its events thereoff";
+        leaf event_name {
+          description
+            "A user defined event name. Corresponding event name should exist in
+             the rules section. Monitor module informs the event
+             generator when eventing situation has occured inside the
+             VM.";
+          type types:escname;
+          mandatory true;
+        }
+        leaf metric_value {
+          description
+            "Threshold value that should be checked by monitor module";
+          type string;
+          mandatory true;
+        }
+        leaf metric_cond {
+          description "Supported Conditions: 'GT', 'LT', 'EQ', 'GE', 'LE'";
+          type types:conditions;
+          mandatory true;
+        }
+        leaf metric_type {
+          description
+            "Supported Types: 'INT8', 'UINT8','INT16', 'UINT16',
+                              'INT32', 'UINT32', 'FLOAT', 'DOUBLE', 'STRING'";
+          type types:metric_types;
+          mandatory true;
+        }
+        leaf metric_occurrences_true {
+          description
+            "Number of successive polling cycles monitoring module finds the
+             condition to be true before sending an event to the
+             eventing";
+          type types:escint16;
+        }
+        leaf metric_occurrences_false {
+          description
+            "Number of successive polling cycles monitoring module finds the
+             condition to be false before sending an event to the
+             eventing";
+          type types:escint16;
+        }
+        leaf metric_proxy {
+          description
+            "This field contains the IP address/host name of the proxy node that
+             WILL be contacted to retrieve the status information of
+             the secondaries that the node is monitoring. This field is
+             typically used when we have a primary node that manages
+             other secondary nodes that are not accessible by ESC. ESC
+             therefore has to contact the primary to rertrieve the
+             status information of the secondaries. This field is used by
+             the primary to specify the proxy ip address that should be
+             contacted by ESC to get the status information of the
+             secondaries.";
+          type string;
+        }
+        container metric_collector {
+          description
+            "This section provides information about the metrics that needs
+             to be monitored and at what frequency should the monitoring
+             happen";
+          leaf "type" {
+            description
+              "Type that monitor module should monitor. Examople: ICMP_Ping.
+               These are the types that are supported by the monitor
+               module. List of all supported names is momitor module
+               dependent and the reader is adviced to refer to the
+               documentation of the monitor module used in a specific
+               implementation.";
+            type string;
+            mandatory true;
+          }
+          leaf nicid {
+            description
+              "Interface that should be used to monitor the metric.
+               This is used when proxy is not used. Ensure that interface
+               with this ID is specified earlier";
+            type leafref {
+              path "../../../../interfaces/interface/nicid";
+            }
+            mandatory true;
+          }
+          leaf proxy {
+            description
+              "This field contains the IP address/host name of the proxy
+               node that SHOULD be contacted to retrieve the status information
+               of the secondary node. This field is used by the secondary to
+               specify the proxy address that the primary has exposed
+               to get its status information. Typically the proxy IP
+               of the primary is specified in metric_proxy above and an
+               xpath is used here to refer to that above proxy
+               address. This field is used instead of the network as
+               the IP address on the private network will not be
+               accessible.";
+            type string;
+          }
+          leaf poll_frequency {
+            description
+              "Frequency with which the metric should be polled
+               by the monitor module";
+            type types:escint32;
+            mandatory true;
+          }
+          leaf polling_unit {
+            description "Units of poll frequency: seconds or minutes";
+            type types:pollunits;
+            mandatory true;
+          }
+          leaf continuous_alarm {
+            description
+              "Continuous events needs to be generated or is it a one time
+               event. One time event:
+               Example VM booted. Contineous event: Load is high";
+            type types:escbool;
+            mandatory true;
+          }
+        }
+      }
+    }
+  }
+}

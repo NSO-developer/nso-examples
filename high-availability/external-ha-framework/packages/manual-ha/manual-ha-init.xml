@@ -1,0 +1,10 @@
+  <ha-config xmlns="http://tailf.com/ha">
+    <nodes>
+      <n1-name>n1</n1-name>
+      <n1-address>127.0.0.1</n1-address>
+      <n2-name>n2</n2-name>
+      <n2-address>127.0.0.2</n2-address>
+    </nodes>
+    <cluster-id>xxx</cluster-id>
+  </ha-config>
+

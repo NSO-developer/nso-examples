@@ -1,0 +1,21 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$CE}</name>
+      <config>
+        <ip xmlns="urn:ios" tags="merge">
+          <access-list>
+            <extended>
+              <ext-named-acl>
+                <name>{$ACL_NAME}</name>
+                <ext-access-list-rule>
+                  <rule>permit {$PROTOCOL} {$SOURCE_IP_ADR} {$SOURCE_WMASK} {$DEST_IP_ADR} {$DEST_WMASK} range {$PORT_START} {$PORT_END}</rule>
+                </ext-access-list-rule>
+              </ext-named-acl>
+            </extended>
+          </access-list>
+        </ip>
+      </config>
+    </device>
+  </devices>
+</config-template>

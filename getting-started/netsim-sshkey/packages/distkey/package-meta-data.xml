@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>distkey</name>
+  <package-version>1.0</package-version>
+  <description>
+    Nano services SSH public key authentication setup example
+  </description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <component>
+    <name>distkey_app</name>
+    <description>Nano service callback and post-actions</description>
+    <application>
+      <python-class-name>distkey.distkey_app.DistKeyApp</python-class-name>
+    </application>
+  </component>
+</ncs-package>

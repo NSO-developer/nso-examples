@@ -1,0 +1,151 @@
+module qinq-alarm {
+
+  namespace "http://com/example/qinq/alarm";
+  prefix qal;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs-alarms {
+    prefix al;
+  }
+
+
+
+  identity qinq-alarm {
+    base al:alarm-type;
+  }
+
+  identity communications-alarm {
+    base qinq-alarm;
+  }
+
+  identity quality-of-service-alarm {
+    base qinq-alarm;
+  }
+
+  identity processing-error-alarm {
+    base qinq-alarm;
+  }
+
+  identity equipment-alarm {
+    base qinq-alarm;
+  }
+
+  identity environmental-alarm {
+    base qinq-alarm;
+  }
+
+
+
+  identity spanning-tree-alarm {
+    base communications-alarm;
+  }
+
+  identity unidirectional-alarm {
+    base communications-alarm;
+  }
+
+
+  augment /al:alarms {
+
+
+    container qinq {
+
+
+      tailf:action generate_alarm {
+        tailf:actionpoint generate-alarm;
+
+        description "Generate an NCS alarm";
+
+        input {
+
+          leaf device {
+            description "The name of the device the alarm should occur on.
+                         The device is one of the devices: /ncs:devices/device.
+                         In this example it would be one of ex0, ex1 or ex2.";
+            type string;
+
+            mandatory true;
+          }
+
+          leaf object {
+            description "The specific interface on the device which generated
+                         the alarm. In this example it could be one of eth0,
+                         eth1. The alarming object within the device.";
+            type string;
+            mandatory true;
+          }
+
+          leaf alarm-type {
+            description "Alarm type correspond to the X.733 alarm standard
+                         triplet, event type, probable cause, specific
+                         problem.";
+            type identityref {
+              base al:alarm-type;
+            }
+
+            mandatory true;
+          }
+
+          leaf perceived-severity {
+            type al:severity-t;
+            mandatory true;
+          }
+
+          leaf specific-problem {
+            description "The specific problem on the managed object.";
+            type string;
+            mandatory true;
+          }
+
+          leaf alarm-text {
+            description "Text to be presented to the operator.";
+            type string;
+            mandatory true;
+          }
+
+          list impacted-objects {
+            key i-obj;
+
+            leaf i-obj {
+              type string;
+            }
+          }
+
+
+          list root-cause-objects {
+            key rc-obj;
+
+            leaf rc-obj {
+              type string;
+            }
+          }
+
+        }
+
+        output {
+
+          leaf result {
+            type boolean;
+          }
+
+          leaf info {
+            type string;
+            description "Contains additional information about the result";
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+
+

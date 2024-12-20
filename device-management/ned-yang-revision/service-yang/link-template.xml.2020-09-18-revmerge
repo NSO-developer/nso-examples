@@ -1,0 +1,31 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="link-servicepoint">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <?foreach {endpoints}?>
+      <?foreach {a-device|b-device}?>
+        <?set IFNAME={substring(local-name(), 1, 1)}-interface?>
+        <device>
+          <name>{.}</name>
+          <config>
+            <sys xmlns="http://example.com/router">
+              <interfaces>
+                <interface tags="merge">
+                  <name>{string(*[local-name()=$IFNAME])}</name>
+                  <?set-context-node {..}?>
+                  <type>ethernetCsmacd</type>
+                  <enabled-new>true</enabled-new>
+                  <enabled/>
+                  <unit>
+                    <name>{unit}</name>
+                    <enabled>true</enabled>
+                    <vlan-id>{vlan-id}</vlan-id>
+                  </unit>
+                </interface>
+              </interfaces>
+            </sys>
+          </config>
+        </device>
+      <?end?>
+    <?end?>
+  </devices>
+</config-template>

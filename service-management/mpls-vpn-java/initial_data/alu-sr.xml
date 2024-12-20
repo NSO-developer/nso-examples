@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <service xmlns="http://tail-f.com/ned/alu-sr">
+    <customer>
+      <customer-id>1</customer-id>
+    </customer>
+  </service>
+  <router xmlns="http://tail-f.com/ned/alu-sr">
+    <router-name>Base</router-name>
+  </router>
+    <card xmlns="http://tail-f.com/ned/alu-sr">
+    <slot-number>1</slot-number>
+    <card-type>iom3-xp</card-type>
+    <mda>
+      <mda-slot>1</mda-slot>
+      <mda-type>m2-10gb-xp-xfp</mda-type>
+    </mda>
+    <mda>
+      <mda-slot>2</mda-slot>
+      <mda-type>m2-10gb-xp-xfp</mda-type>
+    </mda>
+  </card>
+  <card xmlns="http://tail-f.com/ned/alu-sr">
+    <slot-number>3</slot-number>
+    <card-type>iom3-xp</card-type>
+    <mda>
+      <mda-slot>1</mda-slot>
+      <mda-type>m2-10gb-xp-xfp</mda-type>
+    </mda>
+  </card>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>1/1/1</port-id>
+    <ethernet>
+      <mode>access</mode>
+      <encap-type>dot1q</encap-type>
+      <mtu>9196</mtu>
+    </ethernet>
+  </port>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>1/1/2</port-id>
+  </port>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>1/2/1</port-id>
+  </port>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>1/2/2</port-id>
+  </port>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>3/1/1</port-id>
+    <ethernet>
+      <mtu>9194</mtu>
+    </ethernet>
+  </port>
+  <port xmlns="http://tail-f.com/ned/alu-sr">
+    <port-id>3/1/2</port-id>
+    <ethernet>
+      <mode>access</mode>
+      <encap-type>dot1q</encap-type>
+      <mtu>9196</mtu>
+    </ethernet>
+
+  </port>
+  <qos xmlns="http://tail-f.com/ned/alu-sr">
+    <sap-ingress>
+      <policy-id>2000</policy-id>
+      <queue>
+        <queue-id>1</queue-id>
+      </queue>
+      <queue>
+        <queue-id>11</queue-id>
+        <multipoint/>
+      </queue>
+    </sap-ingress>
+  </qos>
+  <router xmlns="http://tail-f.com/ned/alu-sr">
+    <router-name>Base</router-name>
+  </router>
+  <system xmlns="http://tail-f.com/ned/alu-sr">
+    <name>pe3</name>
+    <time>
+      <sntp>
+        <shutdown>true</shutdown>
+      </sntp>
+      <zone>
+        <name>UTC</name>
+      </zone>
+    </time>
+    <security>
+      <per-peer-queuing/>
+      <snmp>
+        <community>
+          <name>Lla.RtAyRW2</name>
+          <type>hash2</type>
+          <access-parameters>r</access-parameters>
+          <version>both</version>
+        </community>
+      </snmp>
+      <cpu-protection>
+        <policy>
+          <policy-id>254</policy-id>
+        </policy>
+        <policy>
+          <policy-id>255</policy-id>
+        </policy>
+      </cpu-protection>
+    </security>
+  </system>
+</config>

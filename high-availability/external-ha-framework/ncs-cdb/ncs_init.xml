@@ -1,0 +1,14 @@
+<config:config xmlns:config="http://tail-f.com/ns/config/1.0"
+               xmlns="http://tail-f.com/ns/ncs">
+
+  <ha-config xmlns="http://tailf.com/ha">
+    <nodes>
+      <n1-name>n1</n1-name>
+      <n1-address>127.0.0.1</n1-address>
+      <n2-name>n2</n2-name>
+      <n2-address>127.0.0.1</n2-address>
+    </nodes>
+    <cluster-id>clid</cluster-id>
+  </ha-config>
+
+</config:config>

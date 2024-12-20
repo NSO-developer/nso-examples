@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<config:config xmlns:config="http://tail-f.com/ns/config/1.0"
+               xmlns="http://tail-f.com/ns/ncs">
+
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <mib-group xmlns="http://tail-f.com/ns/ncs">
+      <name>basic</name>
+      <mib-module>BASIC-CONFIG-MIB</mib-module>
+    </mib-group>
+    <mib-group >
+      <name>snmp</name>
+      <mib-module>SNMP*</mib-module>
+    </mib-group>
+
+    <device>
+      <name>r0</name>
+      <address>127.0.0.1</address>
+      <!-- SNMP listen port -->
+      <port>11022</port>
+      <device-type>
+        <snmp>
+          <version>v1</version>
+          <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned">id:snmp</ned-id>
+          <snmp-authgroup>default</snmp-authgroup>
+          <mib-group>basic</mib-group>
+        </snmp>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+    <device>
+      <name>r1</name>
+      <address>127.0.0.1</address>
+      <!-- SNMP listen port -->
+      <port>11023</port>
+      <device-type>
+        <snmp>
+          <version>v2c</version>
+          <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned">id:snmp</ned-id>
+          <snmp-authgroup>default</snmp-authgroup>
+          <!-- no mib-group; means this device implements all known mibs -->
+        </snmp>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+    <device>
+      <name>r2</name>
+      <address>127.0.0.1</address>
+      <!-- SNMP listen port -->
+      <port>11024</port>
+      <device-type>
+        <snmp>
+          <version>v3</version>
+          <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned">id:snmp</ned-id>
+          <snmp-authgroup>default</snmp-authgroup>
+          <mib-group>basic</mib-group>
+          <mib-group>snmp</mib-group>
+        </snmp>
+      </device-type>
+      <state>
+        <admin-state>unlocked</admin-state>
+      </state>
+    </device>
+
+    <global-settings>
+      <trace>raw</trace>
+      <trace-dir>logs</trace-dir>
+    </global-settings>
+
+    <authgroups>
+      <snmp-group>
+        <name>default</name>
+        <default-map>
+          <community-name>public</community-name>
+        </default-map>
+        <umap>
+          <local-user>admin</local-user>
+          <usm>
+            <remote-name>admin</remote-name>
+            <security-level>auth-priv</security-level>
+            <auth>
+              <sha>
+                <remote-password>$0$admin</remote-password>
+              </sha>
+            </auth>
+            <priv>
+              <aes>
+                <remote-password>$0$admin</remote-password>
+              </aes>
+            </priv>
+          </usm>
+        </umap>
+      </snmp-group>
+    </authgroups>
+  </devices>
+</config:config>

@@ -1,0 +1,17 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>rfs-acl</name>
+  <package-version>1.0</package-version>
+  <description>Example Python package</description>
+  <ncs-min-version>5.7</ncs-min-version>
+
+  <python-package>
+    <callpoint-model>multiprocessing</callpoint-model>
+  </python-package>
+
+  <component>
+    <name>rfs-acl</name>
+    <application>
+      <python-class-name>rfs_acl.rfs_acl.RfsAclApplication</python-class-name>
+    </application>
+  </component>
+</ncs-package>

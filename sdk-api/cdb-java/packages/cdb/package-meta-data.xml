@@ -1,0 +1,31 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>cdb-examples</name>
+  <package-version>1.0</package-version>
+  <description>A collection of CDB subscribers and writers</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.0</name>
+  </required-package>
+
+  <component>
+    <name>Plain CDB Subscriber</name>
+    <application>
+      <java-class-name>com.example.cdb.PlainCdbSub</java-class-name>
+    </application>
+  </component>
+
+  <component>
+    <name>CdbCfgSubscriber</name>
+    <application>
+      <java-class-name>com.example.cdb.ConfigCdbSub</java-class-name>
+    </application>
+  </component>
+
+  <component>
+    <name>OperSubscriber</name>
+    <application>
+      <java-class-name>com.example.cdb.OperCdbSub</java-class-name>
+    </application>
+  </component>
+
+</ncs-package>

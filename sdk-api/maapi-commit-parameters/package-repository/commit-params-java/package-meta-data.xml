@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>commit-params-java</name>
+  <package-version>1.0</package-version>
+  <description>Java example package</description>
+  <ncs-min-version>6.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>RFSSkeleton</name>
+    <callback>
+      <java-class-name>
+      com.example.commitparamsjava.commitparamsjavaRFS
+      </java-class-name>
+    </callback>
+  </component>
+</ncs-package>

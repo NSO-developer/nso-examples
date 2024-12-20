@@ -1,0 +1,12 @@
+<action xmlns="http://tail-f.com/ns/netconf/actions/1.0">
+  <data>
+    <devices xmlns="http://tail-f.com/ns/ncs">
+      <device>
+        <name>ex1</name>
+        <apply-template>
+          <template-name>servers-expr</template-name>
+        </apply-template>
+      </device>
+    </devices>
+  </data>
+</action>

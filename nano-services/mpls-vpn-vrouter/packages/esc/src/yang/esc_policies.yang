@@ -1,0 +1,231 @@
+module esc_policies {
+
+  namespace "http://www.cisco.com/esc/esc_policies";
+  prefix "esc_policies";
+
+  import esc_types { prefix "types"; }
+  import tailf-common { prefix "tailf"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's Policy descriptions. This refers to external_dependency Policy
+     or VM placement policy or if a service has multiple VMs, then it
+     may be start-up policy that determines the sequence in which the
+     VMs are started.";
+
+  revision 2014-06-23 {
+    description "ESC Dependencies";
+  }
+
+  grouping svc_dependency {
+    container service_dependency {
+      description
+        "These are the services that needs to be running. Eg dns, syslog";
+      list service {
+        key "service_name service_version";
+        leaf service_name {
+          description "Dependent Service Name";
+          type types:escname; /* Probably should have some leafrefs */
+          mandatory true;
+        }
+        leaf service_version {
+          description "Version of the dependent service";
+          type types:escversion;
+          mandatory true;
+        }
+      }
+    }
+  }
+
+  grouping net_dependency {
+    container network_dependency {
+      description
+        "Existance of these networks are checked but are not created if it does
+         not. If the dependency is not met, registration of the
+         service fails. This is a list. One can speciy as may network
+         dependencies as required. For example, external or management
+         network. These networks has to be pre-created and when
+         specifying the interfaces, the network to which its has to be
+         connected is specified.";
+      leaf-list network {
+        description "Name of the dependent networks";
+        type types:escnetname;
+      }
+    }
+  }
+
+  grouping inter_vm_group_placement {
+    list placement {
+      description
+        "Placement policy specification. Specifying it as a list allows us to
+         define different placement policies among different
+         combination of vm_groups";
+      key "target_vm_group_ref";
+      leaf target_vm_group_ref {
+        description
+          "Name of the group whose VMs will be subjected to the placement
+           rules specified below";
+        type leafref {
+          path "../../../vm_group/name";
+        }
+      }
+      leaf type {
+        description "affinity or anti_affinity";
+        type types:placement_type;
+        mandatory true;
+      }
+      leaf enforcement {
+        description "Strict or Loose enforcement";
+        type types:enforcement;
+        mandatory true;
+      }
+
+      leaf-list vm_group_ref {
+        /* FROM yang-rfc 6020: The values in a leaf-list MUST be unique. */
+        type leafref {
+          path "../../../vm_group/name";
+        }
+        must "not (current() = current()/../target_vm_group_ref)" {
+          error-message "Circular group dependency !";
+        }
+        min-elements 1;
+      }
+    }
+  } /* End inter-vm-group placement */
+
+  grouping intra_vm_group_placement {
+    list placement {
+      description "Placement policy within a VM group. keying off of
+                   type as we cannot have same rule multiple times within
+                   the group.";
+      key "type";
+      leaf type {
+        description "affinity or anti_affinity";
+        type types:placement_type;
+        mandatory true;
+      }
+      leaf enforcement {
+        description "Strict or Loose enforcement";
+        type types:enforcement;
+        mandatory true;
+      }
+      leaf-list host {
+        description
+          "Host on which the affinity rules specified above
+           should be applied against the VMs of group specified above.";
+        type types:escname;
+        min-elements 0;
+        max-elements 1;
+      }
+    }
+  } /* End intra-vm-group placement */
+
+  grouping intra_vm_group_properties {
+    list shared_ip {
+      description
+        "Shared Ip is the ip address that is assigned to the vm_group";
+      key "nicid";
+      leaf nicid {
+          description
+            "Interface where the static_ip property is applied.
+             Ensure that interface with this ID is specified earlier";
+          type leafref {
+            path "../../interfaces/interface/nicid";
+          }
+          mandatory true;
+      }
+      leaf static {
+         description "Is the shared_ip static";
+         type types:escbool;
+         default false;
+      }
+      leaf ip_address {
+        description "Static IP address for this interface";
+        type types:escipaddr;
+      }
+    }
+
+    container properties {
+      description
+        "List of key value pair to be passed to esc to configure the vmgroup
+         properties. For example, key is NOTIFY_EXTERNAL_MONITOR and the value
+         is ENABLED";
+      list property {
+        key "prop_key";
+        leaf prop_key {
+          description "key for the property";
+          type types:vm_group_properties;
+        }
+        leaf prop_value {
+          description "value of the property";
+          type types:escbigdata;
+        }
+      }
+    }
+  }
+
+  grouping esc_policies {
+    container policies {
+      description
+        "Describes different policies that can be specified that will affect
+         the way VMs are broungh up.";
+      container external_dependencies {
+        description
+          "Any dependencies such as service dependencies or network dependencies
+           are listed in this section. If the dependencies are not
+           met, then registration is rejected. This is used to check
+           for the existance of service or network but will not be
+           created if the services or network is not present.";
+        uses svc_dependency;
+        uses net_dependency;
+      }
+
+      uses inter_vm_group_placement;
+
+      list startup {
+        description
+          "Start up sequence specification. This is achieved at the granularity
+           of vm group. It allows one to specify start up of a
+           particular group of VMs depends on which other groups. When
+           do we say that the dependent group have succfully brought
+           up ? This is achieved by waiting for an event that is
+           specified. Can be collection of events too.";
+        key "target_vm_group_ref";
+        leaf target_vm_group_ref {
+          description
+            "Name of the group whose VMs will be subjected to the placement
+             rules specified below";
+          type leafref {
+            path "../../../vm_group/name";
+          }
+        }
+        list depends_on {
+          key "vm_group_ref";
+          leaf vm_group_ref {
+            type leafref {
+              path "../../../../vm_group/name";
+            }
+            must "not (current() = current()/../../target_vm_group_ref)" {
+              error-message "Circular group dependency !";
+            }
+            mandatory true;
+          }
+          leaf-list kpi_event_ref {
+            description
+              "Here max and min elements is set to 1 as currently
+               support only one event.";
+            type leafref {
+              path "../../../../vm_group[name = " +
+                "current()/../vm_group_ref]/kpi_data/kpi/event_name";
+            }
+            min-elements 1;
+            max-elements 1;
+          }
+        }
+      }
+    }
+  }
+}

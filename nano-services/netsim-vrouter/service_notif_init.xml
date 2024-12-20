@@ -1,0 +1,15 @@
+<services xmlns="http://tail-f.com/ns/ncs">
+  <commit-queue-notifications>
+    <subscription>
+      <name>nano</name>
+      <service-type>/vr:vrouters/vr:vrouter</service-type>
+    </subscription>
+  </commit-queue-notifications>
+  <plan-notifications>
+    <subscription>
+      <name>nano1</name>
+      <service-type>/vr:vrouters/vr:vrouter</service-type>
+      <component-type>self</component-type>
+    </subscription>
+  </plan-notifications>
+</services>

@@ -1,0 +1,82 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$CE}</name>
+      <config>
+        <!-- Cisco ios -->
+        <interface xmlns="urn:ios">
+          <?if {starts-with($CE_INT_NAME,'GigabitEthernet')}?>
+          <GigabitEthernet>
+            <name>{substring($CE_INT_NAME,16)}.{$VLAN_ID}</name>
+            <description>Link to PE / {$PE} - {$PE_INT_NAME}</description>
+            <encapsulation>
+              <dot1Q>
+                <vlan-id>{$VLAN_ID}</vlan-id>
+              </dot1Q>
+            </encapsulation>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LINK_CE_ADR}</address>
+                  <mask>{$LINK_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+             <service-policy>
+              <output>{/name}</output>
+            </service-policy>
+          </GigabitEthernet>
+          <?end?>
+          <?if {starts-with($CE_LOCAL_INT_NAME,'GigabitEthernet')}?>
+          <GigabitEthernet tags="nocreate">
+            <name>{substring($CE_LOCAL_INT_NAME,16)}</name>
+            <description tags="merge">{/name} local network</description>
+            <ip tags="merge">
+              <address>
+                <primary>
+                  <address>{$LOCAL_CE_ADR}</address>
+                  <mask>{$CE_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+          </GigabitEthernet>
+          <?end?>
+        </interface>
+        <policy-map xmlns="urn:ios">
+          <name>{/name}</name>
+          <class>
+            <name>class-default</name>
+            <shape>
+              <average>
+                <bit-rate>{$BW}</bit-rate>
+              </average>
+            </shape>
+          </class>
+        </policy-map>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>{$CE_AS_NUM}</as-no>
+            <neighbor>
+              <id>{$LINK_PE_ADR}</id>
+              <remote-as>100</remote-as>
+              <activate/>
+            </neighbor>
+           <address-family>
+            <ipv4>
+              <af>unicast</af>
+                <neighbor>
+                  <id>{$LINK_PE_ADR}</id>
+                    <activate/>
+                </neighbor>
+                <network>
+                  <number>{$LOCAL_CE_NET}</number>
+                  <mask>{$CE_MASK}</mask>
+                </network>
+            </ipv4>
+           </address-family>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

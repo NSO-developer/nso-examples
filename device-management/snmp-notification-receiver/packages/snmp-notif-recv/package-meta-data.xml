@@ -1,0 +1,14 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>snmp-notif-recv</name>
+  <package-version>1.0</package-version>
+  <description>Snmp notification receiver example</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>notifRec</name>
+    <application>
+      <java-class-name>
+        com.example.snmpnotificationreceiver.App
+      </java-class-name>
+    </application>
+  </component>
+</ncs-package>

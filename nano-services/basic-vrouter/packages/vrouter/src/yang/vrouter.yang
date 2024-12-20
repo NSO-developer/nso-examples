@@ -1,0 +1,114 @@
+module vrouter {
+  namespace "http://com/example/basic-vrouter/vrouter";
+  prefix vr;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  organization "Tail-f";
+  description
+     "An example Nano service module that create virtual routers instances and
+      configure them. The vrouter instances could be implemented as containers
+      or VMs, but are here represented by a simple list in the service YANG
+      model itself for simulating interaction with a virtualization
+      infrastructure.";
+
+  revision 2021-10-13 {
+    description
+      "Initial revision.";
+  }
+
+  // Service model
+  list vrouter {
+    key name;
+
+    uses ncs:nano-plan-data;
+    uses ncs:service-data;
+    ncs:servicepoint "vrouter-servicepoint";
+
+    leaf name {
+      type string;
+    }
+
+    leaf vm-up-and-running {
+      type boolean;
+      config false;
+    }
+  }
+
+  // Nano service specifics
+  identity vm-requested {
+    base ncs:plan-state;
+  }
+
+  identity vm-configured {
+    base ncs:plan-state;
+  }
+
+  identity vrouter {
+    base ncs:plan-component-type;
+  }
+
+  ncs:plan-outline vrouter-plan {
+    description "Plan for configuring a VM-based router";
+
+    ncs:component-type "vr:vrouter" {
+      ncs:state "ncs:init";
+      ncs:state "vr:vm-requested" {
+        ncs:create {
+          // Invoke a Python callback to create a vrouter instance
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "vr:vm-configured" {
+        ncs:create {
+          // Invoke a service template to configure the vrouter
+          ncs:nano-callback;
+          ncs:pre-condition {
+            // Wait for a state to become true
+            ncs:monitor "$SERVICE" {
+              ncs:trigger-expr "vm-up-and-running = 'true'";
+            }
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+
+  ncs:service-behavior-tree vrouter-servicepoint {
+    description "A static, single component behavior tree";
+    ncs:plan-outline-ref "vr:vrouter-plan";
+    ncs:selector {
+      ncs:create-component "'vrouter'" {
+        ncs:component-type-ref "vr:vrouter";
+      }
+    }
+  }
+
+  // Example model for simulating interaction
+  // with virtualization infrastructure
+  list vm-instance {
+    key name;
+
+    leaf name {
+      type string;
+    }
+
+    leaf type {
+      mandatory true;
+      type enumeration {
+        enum csr-small;
+        enum csr-large;
+      }
+    }
+
+    leaf address {
+      type inet:ipv4-address;
+    }
+  }
+}

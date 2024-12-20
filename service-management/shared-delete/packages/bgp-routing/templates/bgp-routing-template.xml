@@ -1,0 +1,44 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="bgp-routing">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>64512</as-no>
+            <!--
+              This pre-configured neighbor would interfere with our service,
+              so we need to remove it as part of service provisioning.
+
+              If not using shared delete, delete the 1.2.3.4 neighbor directly.
+              This is NOT a good practice; implemented to compare approaches.
+              -->
+            <?if {/use-shared-delete='false'} ?>
+            <neighbor tags="delete">
+              <id>1.2.3.4</id>
+            </neighbor>
+            <?end?>
+
+            <!-- And this is some config the service provisions. -->
+            <neighbor>
+              <id>{/peer}</id>
+              <remote-as>1</remote-as>
+              <activate/>
+            </neighbor>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+
+  <!--
+    A best-practice alternative to delete above is a helper service
+    that removes the extra neighbor from device.
+    -->
+  <?if {/use-shared-delete='true'} ?>
+  <bgp-clean xmlns="http://com/example/bgpclean">
+    <device>{/device}</device>
+  </bgp-clean>
+  <?end?>
+</config-template>

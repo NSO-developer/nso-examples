@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>qinq-java-template</name>
+  <package-version>1.0</package-version>
+  <description>Qinq service implemented by Java and template</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>QinqJavaTemplateService</name>
+    <callback>
+      <java-class-name>com.example.qinq.QinqJavaTemplate</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

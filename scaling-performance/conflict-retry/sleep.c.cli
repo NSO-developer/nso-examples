@@ -1,0 +1,23 @@
+<clispec xmlns="http://tail-f.com/ns/clispec/1.0" style="c">
+  <configureMode>
+    <cmd name="sleep">
+      <info>Sleep seconds</info>
+      <help>Suspend execution for an interval of time</help>
+      <callback>
+        <exec>
+          <osCommand>sleep</osCommand>
+          <options>
+            <noInput/>
+          </options>
+        </exec>
+      </callback>
+      <params>
+        <param>
+          <type>
+            <simpleType namespace="" name="uint8"/>
+          </type>
+        </param>
+      </params>
+    </cmd>
+  </configureMode>
+</clispec>

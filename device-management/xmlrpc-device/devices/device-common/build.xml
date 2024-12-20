@@ -1,0 +1,159 @@
+<project name="device-common" basedir="." default="compile">
+
+  <property environment="env" />
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="lib.dir" value="lib" />
+  <property name="src.dir" value="src" />
+  <property name="rsc.dir" value="src/main/resources" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+  <property name="common.jars" value="../../packages/common/shared-jar" />
+  <property name="doc.dir" value="${build.dir}/javadoc" />
+  <property name="ncs.topdir" value="${env.NCS_DIR}" />
+  <property name="ncs.java.dir" value="${ncs.topdir}/java/jar" />
+
+  <!-- Retrieving compilation compability parameters from NCS
+       Remove the following row if this is not desired  -->
+  <property file="${env.NCS_DIR}/etc/ncs/java.properties" />
+  <!-- Set defaults if not set, if the above directive is removed
+       or the property file is missing these values will be used -->
+  <property name="ncs_java_source_ver" value="17" />
+  <property name="ncs_java_target_ver" value="17" />
+
+
+  <path id="common-libs">
+    <fileset dir="${common.jars}">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <path id="core-libs">
+    <fileset dir="${ncs.java.dir}">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+
+  <target name="examples-common" depends="compile">
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/device-model.jar"
+      basedir="${classes.dir}"
+      includes="com/example/xmlrpcdevice/model/**" />
+  </target>
+
+  <target name="xmlrpc-device" depends="compile">
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/xmlrpc-device.jar"
+      basedir="${classes.dir}"
+      excludes="com/example/xmlrpcdevice/model/**"
+      includes="com/example/xmlrpcdevice/**" />
+  </target>
+
+
+  <target name="all" depends="xmlrpc-device,examples-common">
+    <copy file="${jar.dir}/device-model.jar"
+      tofile="${common.jars}/device-model.jar" />
+  </target>
+
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete file="${common.jars}/device-model.jar" />
+  </target>
+
+  <!-- Utility targets -->
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}"
+      includeantruntime="false"
+      destdir="${classes.dir}"
+      source="${ncs_java_source_ver}"
+      target="${ncs_java_target_ver}"
+      debug="on"
+      debuglevel="lines,vars,source">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+    </javac>
+  </target>
+
+  <!-- Start the NcsMux -->
+  <target name="start-device1"
+    description="Start XMLRpcServer 1 in background">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer1"
+      fork="true"
+      spawn="true">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+  <target name="start-device1_dbg"
+    description="Start XMLRpcServer 1 in foreground">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer1"
+      fork="true"
+      spawn="false">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+  <target name="start-device2"
+    description="Start XMLRpcServer 2 in background">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer2"
+      fork="true"
+      spawn="true">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+  <target name="start-device2_dbg"
+    description="Start XMLRpcServer 2 in foreground">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer2"
+      fork="true"
+      spawn="false">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+  <target name="start-device3"
+    description="Start XMLRpcServer 3 in background">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer3"
+      fork="true"
+      spawn="true">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+  <target name="start-device3_dbg"
+    description="Start XMLRpcServer 3 in foreground">
+    <java classname="com.example.xmlrpcdevice.servers.XMLRpcServer3"
+      fork="true"
+      spawn="false">
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+
+  <target name="test-device"
+    description="Query device for its values params ( -Dhost=host -Dport=port)">
+    <java classname="com.example.xmlrpcdevice.servers.Client1" fork="true">
+      <arg line="${host}" />
+      <arg line="${port}" />
+      <classpath refid="core-libs" />
+      <classpath refid="common-libs" />
+      <classpath location="build/classes" />
+    </java>
+  </target>
+
+</project>

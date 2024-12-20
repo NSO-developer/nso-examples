@@ -1,0 +1,21 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>nc-notif-rec-pkg</name>
+  <package-version>1.0</package-version>
+  <description>NETCONF NOTIFICATION Receiver</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>lb-nc-1.0</name>
+  </required-package>
+  <required-package>
+    <name>webserver-nc-1.0</name>
+  </required-package>
+
+  <component>
+    <name>NcNotifRec</name>
+    <application>
+      <java-class-name>
+        com.example.ncnotifreceiver.NcNotifSubscriber
+      </java-class-name>
+    </application>
+  </component>
+</ncs-package>

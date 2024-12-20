@@ -1,0 +1,35 @@
+module aggregate {
+  namespace "http://example.com/aggregate";
+  prefix a;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  description "This model is used as a simple example model
+               illustrating how to have runtime/statistics data
+               that comes from a set of managed devices be
+               aggregated inside ncs";
+
+
+  revision 2012-07-02 {
+    description "Initial revision.";
+  }
+
+  container aggregate-stats {
+    config false;
+    tailf:callpoint aggregate-stats;
+    list device-group {
+      key name;
+      leaf name {
+        type string;
+      }
+
+      leaf packet-errors {
+        type uint32;
+      }
+      leaf packet-dropped {
+        type uint32;
+      }
+    }
+  }
+}

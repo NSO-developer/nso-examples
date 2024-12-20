@@ -1,0 +1,21 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>slowsrv</name>
+  <package-version>1.0</package-version>
+  <description>Skeleton for a java-based resource facing service</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+
+  <component>
+    <name>Slow service</name>
+    <callback>
+      <java-class-name>com.example.slowsrv.slowsrvRFS</java-class-name>
+    </callback>
+  </component>
+  <component>
+    <name>Slow trans</name>
+    <callback>
+      <java-class-name>com.example.slowsrv.slowTrans</java-class-name>
+    </callback>
+  </component>
+
+</ncs-package>

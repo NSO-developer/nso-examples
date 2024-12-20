@@ -1,0 +1,18 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="acme-dns">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/devices}</name>
+      <config>
+        <sys xmlns="http://example.com/router">
+          <dns tags="replace">
+            <server>
+              <address>10.1.2.3</address>
+            </server>
+            <domain>{/default-search-domain}</domain>
+          </dns>
+        </sys>
+      </config>
+    </device>
+  </devices>
+</config-template>

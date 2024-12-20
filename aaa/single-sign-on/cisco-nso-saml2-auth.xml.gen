@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# extract cert data
+idp_certificate=$(sed 's/.*CERTIFICATE-*\(.*\)-*.*$/\1/g' keys/idp.crt \
+               | tr -d ' \n')
+sp_certificate=$(sed 's/.*CERTIFICATE-*\(.*\)-*.*$/\1/g' keys/sp.crt \
+               | tr -d ' \n')
+sp_privkey="$(cat keys/idp.key)"
+
+# replace placeholders
+sed "s#@IDP_CERTIFICATE@#$idp_certificate#g" cisco-nso-saml2-auth.xml.in \
+| sed "s#@SP_CERTIFICATE@#$sp_certificate#g" \
+| gawk -v r="$sp_privkey" '{gsub(/@SP_PRIVKEY@/,r)}1' \
+> cisco-nso-saml2-auth.xml

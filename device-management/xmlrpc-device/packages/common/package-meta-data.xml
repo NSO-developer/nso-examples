@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>common</name>
+  <package-version>1.0</package-version>
+  <description>XML-RPC 3 Part libs</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <!--
+  <component>
+    <name>common-libs</name>
+    <library/>
+  </component>
+  -->
+</ncs-package>

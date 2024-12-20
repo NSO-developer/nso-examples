@@ -1,0 +1,19 @@
+<project name="vmmanager" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml" />
+
+  <target name="package" depends="compile">
+    <jar destfile="${sharedjar.dir}/${package}-ns.jar"
+         basedir="${classes.dir}"
+         includes="**/*.class"/>
+    <jar destfile="${privatejar.dir}/${package}.jar"
+         basedir="${classes.dir}"
+         excludes="**/namespaces/*.class"
+         includes="**/*.class"/>
+    <jar update="true"
+         destfile="${privatejar.dir}/${package}.jar"
+         basedir="../.."
+         includes="package-meta-data.xml"/>
+  </target>
+</project>

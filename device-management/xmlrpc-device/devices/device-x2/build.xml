@@ -1,0 +1,68 @@
+<project name="device-x2" basedir="." default="compile">
+
+  <property environment="env"/>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="lib.dir" value="../../common"/>
+  <property name="lib.device" value="../device-common/build/jar" />
+  <property name="common.jars" value="../../packages/common/shared-jar" />
+  <property name="src.dir" value="src"/>
+  <property name="jar.dir" value="${build.dir}/jar"/>
+  <property name="apache.xmlrpc.jars" value="../lib" />
+  <property name="doc.dir" value="${build.dir}/javadoc"/>
+  <property name="ncs.topdir" value="${env.NCS_DIR}"/>
+  <property name="ncs.java.dir" value="${ncs.topdir}/java/jar"/>
+
+  <!-- Retrieving compilation compability parameters from NCS
+       Remove the following row if this is not desired  -->
+  <property file="${env.NCS_DIR}/etc/ncs/java.properties" />
+  <!-- Set defaults if not set, if the above directive is removed
+       or the property file is missing these values will be used -->
+  <property name="ncs_java_source_ver" value="17"/>
+  <property name="ncs_java_target_ver" value="17"/>
+
+
+  <path id="common-libs">
+    <fileset dir="${common.jars}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}"
+           includeantruntime="false"
+           destdir="${classes.dir}"
+           source="${ncs_java_source_ver}"
+           target="${ncs_java_target_ver}"
+           debug="on"
+           debuglevel="lines,vars,source"  >
+      <classpath location="${lib.device}/device-model.jar"/>
+      <classpath location="${lib.device}/xmlrpc-device.jar"/>
+      <classpath location="${ncs.java.dir}/log4j-api.jar"/>
+      <classpath location="${ncs.java.dir}/log4j-core.jar"/>
+      <classpath refid="common-libs" />
+    </javac>
+
+  </target>
+
+ <target name="test-device"
+    description="Query device for its values params ( -Dhost=host -Dport=port)">
+    <java classname="org.example.xmlrpcdevice.servers.Client1" fork="true">
+      <arg line="${host}" />
+      <arg line="${port}" />
+      <classpath location="${ncs.java.dir}/ncs.jar"/>
+      <classpath refid="xmlrpc-libs" />
+      <classpath location="${ncs.java.dir}/log4j-api.jar"/>
+      <classpath location="${ncs.java.dir}/log4j-core.jar"/>
+      <classpath location="build/classes"/>
+
+    </java>
+  </target>
+
+
+</project>

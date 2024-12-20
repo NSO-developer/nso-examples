@@ -1,0 +1,13 @@
+module ne-nc-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/ne-nc-1.0";
+  prefix ne-nc-1.0;
+
+  import ne-nc {
+    prefix family;
+  }
+
+  identity ne-nc-1.0 {
+    base family:ne-nc;
+  }
+}

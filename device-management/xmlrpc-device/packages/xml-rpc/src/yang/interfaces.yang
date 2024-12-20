@@ -1,0 +1,90 @@
+module interfaces {
+  namespace "http://example.com/xmlrpcdevice/xmlrpc/if";
+  prefix if;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  grouping ifdata {
+    leaf ipv4-address {
+      type inet:ipv4-address;
+    }
+    leaf ipv4-mask {
+      type inet:ipv4-address;
+    }
+  }
+
+  container commands {
+    tailf:action idle-timeout {
+      tailf:actionpoint ncsinternal {
+        tailf:internal;
+      }
+      input {
+        leaf time {
+          type int32;
+        }
+      }
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  }
+
+
+
+  list interface {
+    key name;
+    leaf name {
+      type string;
+    }
+    leaf macaddr {
+      type yang:mac-address;
+      mandatory true;
+    }
+    uses ifdata;
+    leaf status {
+      type enumeration {
+        enum Up;
+        enum Down;
+      }
+      default Up;
+    }
+    leaf mtu {
+      type uint32;
+    }
+
+    list alias {
+      key number;
+      leaf number {
+        type uint16;
+      }
+      uses ifdata;
+    }
+    leaf speed {
+      type uint32;
+      default 1000000;
+    }
+
+    leaf txqueuelen {
+      type int32;
+    }
+  }
+
+  typedef macAddressType {
+    type string {
+      length 17;
+      pattern "([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])";
+    }
+  }
+  }
+

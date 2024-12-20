@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>vrouter</name>
+  <package-version>1.0</package-version>
+  <description>Nano Services basic virtual router example</description>
+  <ncs-min-version>5.7</ncs-min-version>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>vrouter.nano_app.NanoApp</python-class-name>
+    </application>
+  </component>
+</ncs-package>

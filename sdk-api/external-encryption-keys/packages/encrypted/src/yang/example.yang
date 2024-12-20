@@ -1,0 +1,23 @@
+module example {
+  namespace "http://tail-f.com/ns/example";
+  prefix ex;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container strings {
+    list string {
+      key id;
+
+      leaf id {
+        type int32;
+      }
+
+      leaf secret {
+        type tailf:aes-256-cfb-128-encrypted-string;
+        mandatory true;
+      }
+    }
+  }
+}

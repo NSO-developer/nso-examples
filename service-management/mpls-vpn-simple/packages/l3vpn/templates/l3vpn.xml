@@ -1,0 +1,186 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+  servicepoint="l3vpn-template">
+  <?macro GbEth name='{interface-number}' desc mask='255.255.255.252'?>
+  <GigabitEthernet tags="nocreate">
+    <name>$name</name>
+    <description tags="merge">$desc</description>
+    <ip tags="merge">
+      <address>
+        <primary>
+          <address>{ip-address}</address>
+          <mask>$mask</mask>
+        </primary>
+      </address>
+    </ip>
+  </GigabitEthernet>
+  <?endmacro?>
+
+  <?macro GbEthWithVrf name='{interface-number}'
+      mask=255.255.255.252 desc forwarding?>
+    <?expand GbEth name=$name desc='$desc' mask=$mask?>
+    <GigabitEthernet tags="nocreate">
+      <name>$name</name>
+      <vrf tags="merge">
+        <forwarding>$forwarding</forwarding>
+      </vrf>
+    </GigabitEthernet>
+  <?endmacro?>
+
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <?foreach {endpoint/ce}?>
+    <device tags="nocreate">
+      <name>{device}</name>
+      <config tags="merge">
+        <!-- CE template for Cisco IOS routers -->
+        <interface xmlns="urn:ios">
+          <?foreach {link}?>
+            <?expand GbEth desc='Link to PE'?>
+          <?end?>
+          <?foreach {local}?>
+            <?expand GbEth desc = 'Local network' mask='255.255.255.0'?>
+          <?end?>
+        </interface>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>{../as-number}</as-no>
+            <neighbor>
+              <id>{pe/link/ip-address}</id>
+              <remote-as>100</remote-as>
+              <activate/>
+            </neighbor>
+            <redistribute>
+              <connected>
+              </connected>
+            </redistribute>
+          </bgp>
+        </router>
+      </config>
+    </device>
+    <?end?>
+    <?foreach {endpoint/pe}?>
+    <device tags="nocreate">
+      <name>{device}</name>
+      <config tags="merge">
+        <!-- PE template for Cisco IOS routers -->
+        <vrf xmlns="urn:ios">
+          <definition>
+            <name>{string(/name)}</name>
+            <?set-context-node {..}?>
+            <rd>{as-number}:1</rd>
+            <route-target>
+              <export>
+                <asn-ip>{as-number}:1</asn-ip>
+              </export>
+              <import>
+                <asn-ip>{as-number}:1</asn-ip>
+              </import>
+            </route-target>
+          </definition>
+        </vrf>
+        <interface xmlns="urn:ios" tags="nocreate">
+          <?foreach {link}?>
+          <?expand GbEthWithVrf desc = 'Link to CE router'
+            forwarding = '{string(/name)}'?>
+          <?end?>
+        </interface>
+        <router xmlns="urn:ios" tags="merge">
+          <bgp>
+            <as-no>100</as-no>
+            <address-family>
+              <with-vrf>
+                <ipv4>
+                  <unicast-multicast>unicast</unicast-multicast>
+                  <vrf tags="merge">
+                    <name>{string(/name)}</name>
+                    <neighbor>
+                      <id>{../ce/link/ip-address}</id>
+                      <remote-as>{../as-number}</remote-as>
+                      <activate/>
+                      <as-override>
+                      </as-override>
+                    </neighbor>
+                  </vrf>
+                </ipv4>
+              </with-vrf>
+            </address-family>
+          </bgp>
+        </router>
+
+
+        <!-- PE template for Cisco IOS-XR routers -->
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>{string(/name)}</name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <?set-context-node {..}?>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{as-number}:1</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{as-number}:1</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="nocreate">
+          <?foreach {link}?>
+          <GigabitEthernet>
+            <id>{interface-number}</id>
+            <description tags="merge">link to CE</description>
+            <ipv4 tags="merge">
+              <address>
+                <ip>{ip-address}</ip>
+                <mask>255.255.255.252</mask>
+              </address>
+            </ipv4>
+            <vrf tags="merge">{string(/name)}</vrf>
+          </GigabitEthernet>
+          <?end?>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+          <bgp>
+            <bgp-no-instance>
+              <id>100</id>
+              <vrf tags="merge">
+                <name>{string(/name)}</name>
+                <?set-context-node {..}?>
+                <rd>{as-number}:1</rd>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{ce/link/ip-address}</id>
+                  <remote-as>{../../as-number}</remote-as>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <as-override>
+                        </as-override>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+      </config>
+    </device>
+    <?end?>
+  </devices>
+</config-template>

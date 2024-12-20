@@ -1,0 +1,26 @@
+<devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>c0</name>
+      <description>Edge-SW1, Cisco</description>
+    </device>
+    <device>
+      <name>c1</name>
+      <description>Core-SW1, Cisco</description>
+    </device>
+    <device>
+      <name>c2</name>
+      <description>Core-SW2, Cisco</description>
+    </device>
+    <device>
+      <name>p0</name>
+      <description>Edge-SW2, Pica8</description>
+    </device>
+    <device>
+      <name>p1</name>
+      <description>Edge-SW3, Pica8</description>
+    </device>
+    <device>
+      <name>p2</name>
+      <description>Edge-SW4, Pica8</description>
+    </device>
+</devices>

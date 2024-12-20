@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+   <system xmlns="http://pica8.org/yang">
+      <login>
+        <announcement/>
+      </login>
+      <hostname>Edge-SW-4</hostname>
+      <services>
+        <telnet>
+          <connection-limit>15</connection-limit>
+          <disable>false</disable>
+        </telnet>
+        <ssh>
+          <protocol-version>v2</protocol-version>
+          <connection-limit>5</connection-limit>
+          <rate-limit>60</rate-limit>
+          <disable>false</disable>
+        </ssh>
+      </services>
+      <ntp-server-ip>192.168.10.100</ntp-server-ip>
+      <inband>
+        <enable>false</enable>
+      </inband>
+      <aaa>
+        <tacacs-plus>
+          <disable>true</disable>
+          <authorization>true</authorization>
+          <accounting>true</accounting>
+          <key>keystring</key>
+          <auth-type>ascii</auth-type>
+        </tacacs-plus>
+      </aaa>
+      <log-level>warning</log-level>
+      <log-facility>0</log-facility>
+      <timezone>PST8PDT</timezone>
+    </system>
+</config>

@@ -1,0 +1,13 @@
+module zbfw-router-nc-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/zbfw-router-nc-1.0";
+  prefix zbfw-router-nc-1.0;
+
+  import zbfw-router-nc {
+    prefix family;
+  }
+
+  identity zbfw-router-nc-1.0 {
+    base family:zbfw-router-nc;
+  }
+}

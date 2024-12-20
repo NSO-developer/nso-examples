@@ -1,0 +1,33 @@
+module dp {
+  yang-version 1.1;
+  namespace "http://com/example/dp";
+  prefix dp;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container test-stats {
+    config false;
+    tailf:callpoint "test-stats-cp";
+    list item {
+      key name;
+      leaf name {
+        type string;
+      }
+      leaf i {
+        type int32;
+      }
+    }
+  }
+  container test-action {
+    action sleep {
+      tailf:actionpoint test-action;
+      input {
+        leaf secs {
+          type int32;
+        }
+      }
+    }
+  }
+}

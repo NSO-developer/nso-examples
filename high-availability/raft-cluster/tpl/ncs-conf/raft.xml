@@ -1,0 +1,16 @@
+  <!-- :add:/ncs-config -->
+  <ha-raft>
+    <enabled>true</enabled>
+    <cluster-name>stockholm</cluster-name>
+    <listen>
+      <node-address>ncsd~{ID}@127.0.0.1</node-address>
+    </listen>
+    <seed-nodes>
+      <seed-node>ncsd2@127.0.0.1</seed-node>
+    </seed-nodes>
+    <ssl>
+      <ca-cert-file>ca.crt</ca-cert-file>
+      <cert-file>ncsd~{ID}.crt</cert-file>
+      <key-file>ncsd~{ID}.key</key-file>
+    </ssl>
+  </ha-raft>

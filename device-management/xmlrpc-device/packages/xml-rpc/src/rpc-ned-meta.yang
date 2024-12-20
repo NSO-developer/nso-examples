@@ -1,0 +1,35 @@
+module rpc-ned-meta {
+  namespace "http://example.com/xmlrpcdevice/xmlrpc/meta";
+  prefix xmeta;
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import interfaces {
+    prefix if;
+  }
+
+  augment "/ncs:devices/ncs:device" {
+    when "ncs:device-type/ncs:generic/ncs:ned-id = 'if:genxmlrpc'";
+    leaf extra-address {
+      description "This is an example of how to augment the device
+                   data model with additional data. NETCONF and CLI
+                   NEDs require an ssh/telnet address to connect to. A
+                   generic NED may need additional data. This is the way to
+                   augment the device data model to allow the NED to
+                   have arbitrary data. The NED java code must (over Maapi)
+                   read this data on every connection attempt";
+      type inet:ip-address;
+    }
+  }
+}
+

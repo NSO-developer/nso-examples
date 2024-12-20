@@ -1,0 +1,39 @@
+module bgp-routing {
+  namespace "http://com/example/bgprouting";
+  prefix bgp-routing;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list bgp-routing {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "bgp-routing";
+
+    leaf name {
+      type string;
+    }
+
+    leaf device {
+      mandatory true;
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf peer {
+      mandatory true;
+      type inet:ipv4-address;
+    }
+
+    leaf use-shared-delete {
+      type boolean;
+      default true;
+    }
+  }
+}

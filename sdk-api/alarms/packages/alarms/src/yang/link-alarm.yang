@@ -1,0 +1,24 @@
+module link-alarm {
+  namespace "http://example.com/link-alarm";
+  prefix link-al;
+
+  import tailf-ncs-alarms {
+    prefix al;
+  }
+
+  identity link-alarm {
+    description "Exemplify how the alarm types can be extended to include
+                 new types in a hierarchical structure.";
+      base al:alarm-type;
+  }
+
+  identity link-down {
+    description "The link is down";
+      base link-alarm;
+  }
+
+  identity link-sync {
+    description "The link has detected synchronization problems.";
+      base link-alarm;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "sub": "admin",
+  "http://tail-f.com/ns/ncs-jwt": {
+    "groups": "admin wheel",
+    "uid": "1000",
+    "gid": "1000",
+    "supplementary_gids": "1000 100",
+    "HOME": "/tmp"
+  }
+}

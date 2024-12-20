@@ -1,0 +1,80 @@
+module ha {
+
+  namespace "http://tailf.com/ha";
+  prefix ha;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  revision 2010-09-26 {
+    description "Initial revision.";
+  }
+
+  typedef ha-port-no {
+    type uint16 {
+      range "5757 | 5758";
+    }
+  }
+
+  container ha-config {
+
+    container nodes {
+      leaf n1-name {
+        type string;
+      }
+      leaf n1-address {
+        type inet:ipv4-address;
+      }
+      leaf n2-name {
+        type string;
+      }
+      leaf n2-address {
+        type inet:ipv4-address;
+      }
+    }
+    leaf cluster-id {
+      type string;
+    }
+
+
+    tailf:action be-primary {
+      tailf:actionpoint ha-point;
+      input {
+      }
+      output {
+      }
+    }
+
+    tailf:action be-secondary {
+      tailf:actionpoint ha-point;
+      input {
+      }
+      output {
+      }
+    }
+
+    tailf:action be-none {
+      tailf:actionpoint ha-point;
+      input {
+      }
+      output {
+      }
+    }
+
+
+    tailf:action status {
+      tailf:actionpoint ha-point;
+      input {
+      }
+      output {
+        leaf status {
+          type string;
+        }
+      }
+    }
+  }
+}

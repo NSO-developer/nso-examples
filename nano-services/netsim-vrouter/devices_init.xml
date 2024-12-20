@@ -1,0 +1,5 @@
+<devices xmlns="http://tail-f.com/ns/ncs">
+  <global-settings>
+    <trace>pretty</trace>
+  </global-settings>
+</devices>

@@ -1,0 +1,20 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <servers xmlns="http://example.com/server-config">
+    <server>
+      <name>server1</name>
+      <ip>1.1.1.1</ip>
+    </server>
+  </servers>
+  <servers xmlns="http://example.com/server-config">
+    <server>
+      <name>server2</name>
+      <ip>2.2.2.2</ip>
+    </server>
+  </servers>
+  <servers xmlns="http://example.com/server-config">
+    <server>
+      <name>server3</name>
+      <ip>3.3.3.3</ip>
+    </server>
+  </servers>
+</config>

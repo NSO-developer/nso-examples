@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+
+  <name>vm-manager</name>
+  <package-version>1.0</package-version>
+  <description>VM manager interface package</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <component>
+    <name>escStartService</name>
+    <callback>
+      <java-class-name> com.cisco.vmmanager.escstart</java-class-name>
+    </callback>
+  </component>
+
+</ncs-package>

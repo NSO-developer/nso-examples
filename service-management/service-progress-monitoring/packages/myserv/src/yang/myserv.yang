@@ -1,0 +1,135 @@
+module myserv {
+  namespace "http://com/tailf/examples/myserv";
+  prefix myserv;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  identity router {
+    base ncs:plan-component-type;
+  }
+
+  identity extended {
+    base ncs:plan-component-type;
+  }
+
+  identity dns-initialized {
+    base ncs:plan-state;
+  }
+  identity ntp-initialized {
+    base ncs:plan-state;
+  }
+  identity syslog-initialized {
+    base ncs:plan-state;
+  }
+  identity interfaces-initialized {
+    base ncs:plan-state;
+  }
+
+  container timeout-test {
+    uses ncs:service-progress-monitoring-trigger-action {
+      refine timeout {
+        tailf:actionpoint myserv-timeout-point;
+      }
+    }
+  }
+
+  list myserv {
+    description "Simple SPM plan service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    // may replace this with other ways of refering to the devices.
+    leaf-list device {
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    uses ncs:plan-data;
+    uses ncs:service-progress-monitoring-data;
+    uses ncs:service-data;
+    ncs:servicepoint myserv-servicepoint;
+
+    tailf:action self-test {
+      tailf:info "Perform self-test of the service";
+      tailf:actionpoint myserv-self-test;
+      input {
+        leaf dns {
+          type boolean;
+        }
+        leaf ntp {
+          type boolean;
+        }
+        leaf syslog {
+          type boolean;
+        }
+        leaf interfaces {
+          type boolean;
+        }
+      }
+      output {
+        leaf success {
+          type boolean;
+        }
+        leaf message {
+          type string;
+          description
+            "Free format message.";
+        }
+      }
+    }
+
+    // replace with your own stuff here
+    leaf dummy {
+      type inet:ipv4-address;
+    }
+    leaf extended {
+      type boolean;
+      default false;
+    }
+    leaf fail-state {
+      type string;
+    }
+    leaf router2ready {
+      type boolean;
+      default false;
+    }
+  }
+
+  list myoper {
+    config false;
+    key name;
+    leaf name {
+      type string;
+    }
+    leaf dns {
+      type boolean;
+      default false;
+    }
+    leaf ntp {
+      type boolean;
+      default false;
+    }
+    leaf syslog {
+      type boolean;
+      default false;
+    }
+    leaf interfaces {
+      type boolean;
+      default false;
+    }
+  }
+}

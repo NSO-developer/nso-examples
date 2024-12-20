@@ -1,0 +1,120 @@
+module esc_interface {
+
+  namespace "http://www.cisco.com/esc/esc_interface";
+  prefix "esc_interface";
+
+  import esc_types { prefix "types"; }
+  import tailf-common { prefix "tailf"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's interface descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Interface";
+  }
+
+/*
+ * This represents the interfaces definitions for the service.
+ */
+  grouping esc_interface {
+    container interfaces {
+      description
+        "Specification of number of interfaces and properties for each
+         interface. The order of the interfaces specified here does
+         not correspond to the order of the interfaces in the VM.";
+      list interface {
+        key "nicid";
+        leaf nicid {
+          description
+            "ID for the interfaces. This determines the order
+             in which interfaces are presented to the guest VM";
+          type types:escint8;
+          /* nicid is zero or it is one greater than previous one */
+          must "current() = 0 or (current() = " +
+            "(../../interface[nicid = current() - 1]/nicid) + 1)" {
+            error-message "NICID Sequence Error !";
+          }
+          mandatory true;
+        }
+        leaf "type" {
+          description "Interface Type: virtual/passthru";
+          type types:iface_type;
+          default virtual;
+        }
+        leaf model {
+          description
+            "In case of vitrual: e1000 or virtio. In case of passthrough:
+             Model of the NIC. This will be specific to the data center. Data
+             centers may have NICs that support virtual functions from
+             different vendors, like Intel, Cisco etc. Passthrough is
+             not currently supported therefore, not exposing the
+             models relavent to PASSTHROUGH as identities";
+          type types:iface_model;
+          default virtio;
+        }
+        leaf network {
+          description "Network to which this interface needs to be attached.";
+          type types:escnetname;
+          mandatory true;
+        }
+        leaf anycast_address {
+          description "Anycast address corresponding to this interface";
+          type types:escipaddr;
+        }
+        leaf ip_address {
+          description "Static IP address for this interface";
+          type types:escipaddr;
+        }
+        leaf mac_address {
+          description "Static MAC address for this interface";
+          type types:escmacaddr;
+        }
+        container bandwidth {
+          leaf min {
+            description "Minimum bandwidth required for this interface in Mbps";
+            type types:escint32;
+            default 100;
+          }
+          leaf max {
+            description
+              "Maximum bandwidth required for this interface in Mbps";
+            type types:escint32;
+            default 1000;
+          }
+        }
+
+       container allowed_address_pairs{
+          description "The allowed address is allows one to specify
+           arbitrary mac_address/ip_address(cidr) pairs that are
+           allowed to pass through a port regardless of subnet.";
+          list network{
+              key "name";
+              description "Network allowed on this interface";
+              leaf name {
+                description "Network name or uuid";
+              type types:escnetname;
+              mandatory true;
+              }
+          }
+          list address{
+              key "ip_address";
+              description "Allowed address on this interface";
+              leaf ip_address {
+                description "Ip address or Subnet address for this network.";
+              type types:escipaddr;
+              mandatory true;
+              }
+              leaf netmask {
+                description "Netmask for the subnet";
+                type types:escipaddr;
+              }
+          }
+        }
+      }
+    }
+  }
+}

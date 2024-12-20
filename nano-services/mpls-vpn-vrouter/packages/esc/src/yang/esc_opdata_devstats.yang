@@ -1,0 +1,235 @@
+module esc_opdata_devstats {
+
+  /*
+   * This represents statistics of a device, in our case it is a VM (VNF)
+   */
+
+  namespace "http://www.cisco.com/esc/esc_opdata_devstats";
+
+  prefix "esc_opdata_devstats";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-09-17 {
+    description "VM's operational statistics";
+  }
+
+  grouping esc_opdata_devstats {
+    description
+      "This contains VM statistics such as CPU load, Memory, Packets-in
+       and out of interfaces, disk usage etc.";
+    container stats {
+      leaf hostname {
+        description "Host name of the system";
+        type string;
+      }
+      leaf os_name {
+        description "Operating System Type. (uname -o)";
+        type string;
+      }
+      leaf os_release {
+        description "Kernel release of any unix based OS (uname -r)";
+        type string;
+      }
+      leaf arch {
+        description "Machine architecture: i386, x86_64, sparc (uname -m)";
+        type string;
+      }
+      leaf uptime {
+        description
+          "Time since system is running in seconds;
+           cat /proc/uptime | awk '{print $1}'";
+        type uint64;
+      }
+      container load {
+        description "Average load on the system. Typical UNIX style averages";
+        leaf loadone {
+          description "One Minute Load Average";
+          type types:escfloat;
+        }
+        leaf loadfive {
+          description "Five Minutes Load Average";
+          type types:escfloat;
+        }
+        leaf loadfifteen {
+          description "Fifteen Minutes Load Average";
+          type types:escfloat;
+        }
+      }
+
+      container cpu {
+        description "CPU information";
+        leaf sockets {
+          description "Number of CPU Sockets";
+          type uint8;
+        }
+        leaf cores {
+          description "Number of CPU Cores";
+          type uint8;
+        }
+        leaf threads {
+          description "Number of CPU hardware threads";
+          type uint8;
+        }
+        leaf cpu_num {
+          description "Number of CPUs in the system. Cores x Sockets x Threads";
+          type uint32;
+        }
+        leaf cpu_wio {
+          description
+            "Percentage of time that the CPU or CPUs were idle during
+             system had an outstanding disk I/O request";
+          type types:escfloat;
+        }
+        leaf cpu_speed {
+          description "CPU Speed in terms of MHz";
+          type uint32;
+        }
+        leaf cpu_idle {
+          description
+            "Percentage of time that the CPU or CPUs were idle and the system
+             did not have an outstanding disk I/O request";
+          type types:escfloat;
+        }
+        leaf cpu_user {
+          description "Percentage of CPU utilization that occurred while
+                       executing at the user level";
+          type types:escfloat;
+        }
+        leaf cpu_system {
+          description "Percentage of CPU utilization that occurred while
+                       executing at the system level";
+          type types:escfloat;
+        }
+        leaf cpu_aidle {
+          description "Percent of time since boot idle CPU";
+          type types:escfloat;
+        }
+      }
+
+      container memory {
+        description "Memory statistics of the system";
+        leaf mem_total {
+          description "Total amount of memory displayed in KB";
+          type types:escfloat;
+        }
+        leaf mem_free {
+          description "Amount of available memory";
+          type types:escfloat;
+        }
+        leaf memory_cached {
+          description "Amount of cached memory";
+          type types:escfloat;
+        }
+        leaf mem_buffered {
+          description "Amount of buffered memory";
+          type types:escfloat;
+        }
+        leaf mem_shared {
+          description "Amount of shared memory";
+          type types:escfloat;
+        }
+        leaf swap_total {
+          description "Total amount of swap space displayed in KB";
+          type types:escfloat;
+        }
+        leaf swap_free {
+          description "Amount of available swap memory";
+          type types:escfloat;
+        }
+      }
+
+      container disk {
+        description "Disk statistics of the system";
+        list disks {
+          description
+            "A system can have multiple disks.G et information
+                                        of all the disks in the system";
+          key "device";
+          leaf device {
+            description "Name of the block device. sda, sdb1 etc";
+            type string;
+          }
+          leaf mount {
+            description "Mount point of the device if mounted and available";
+            type string;
+          }
+          leaf disk_total {
+            description "Amount of disk space displayed in GB";
+            type uint32;
+          }
+          leaf disk_used {
+            description "Amount of disk space used in GB";
+            type uint32;
+          }
+        }
+      }
+
+      container netif {
+        description "Network Interface statistics of the system";
+        list interfaces {
+          description "A system can have multiple interfaces. Get information
+                                        of each interface";
+          key "device";
+          leaf device {
+            description "Name of the network device: eth0, eth1 etc";
+            type string;
+          }
+          leaf status_flag {
+            description
+"Status of the device.
+ifconfig -s eth3
+Iface   MTU Met RX-OK RX-ERR RX-DRP RX-OVR TX-OK TX-ERR TX-DRP TX-OVR Flg
+eth3   1500 0  23501398      0      1 0      98153686      0      0      0 BMPRU
+
+         The last column lets us know the flags.
+         B: BROADCAST
+         M: MULTICAST
+         P: PROMISC
+         R: RUNNING              Connected
+         U: UP                   Interface is up.
+         If the interface is down then flags 'RU' will be missing.
+         If the interface is up but is not connected, then 'R' will be missing";
+            type string;
+          }
+          leaf pkts_rx {
+            description "Number of packets received";
+            type uint64;
+          }
+          leaf pkts_rx_err {
+            description "Number of receive packet errors";
+            type uint64;
+          }
+          leaf pkts_rx_dropped {
+            description "Number of received packets dropped";
+            type uint64;
+          }
+          leaf bytes_rx {
+            description "Amount of bytes received";
+            type uint64;
+          }
+          leaf pkts_tx {
+            description "Number of packets transmitted";
+            type uint64;
+          }
+          leaf pkts_tx_err {
+            description "Number of transmit packet errors";
+            type uint64;
+          }
+          leaf pkts_tx_dropped {
+            description "Number of transmitted packets dropped";
+            type uint64;
+          }
+          leaf bytes_tx {
+            description "Amount of bytes transmitted";
+            type uint64;
+          }
+        }
+      }
+    }
+  }
+}

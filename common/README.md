@@ -1,0 +1,1 @@
+Common items used by the examples.

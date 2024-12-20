@@ -1,0 +1,196 @@
+module vrouter {
+  yang-version 1.1;
+  namespace "http://com/example/vrouter";
+  prefix vr;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import router {
+    prefix r;
+  }
+
+  organization "Tail-f";
+  description
+     "An example Nano service module that deploy, add interface configuration,
+      and undeploy virtual routers that could be implemented as containers or
+      VMs, but here represented by netsim, ConfD NETCONF enabled, instances.";
+
+  revision 2021-10-13 {
+    description
+      "Initial revision.";
+  }
+
+  // Service model
+  container vrouters {
+    list vrouter {
+      key name;
+
+      uses ncs:nano-plan-data;
+      uses ncs:service-data;
+      ncs:servicepoint "vrouter-servicepoint";
+
+      leaf name {
+        type string;
+      }
+      leaf iface {
+        type string;
+      }
+      leaf unit {
+        type int32;
+      }
+      leaf vid {
+        type uint16;
+      }
+      leaf description {
+        type string;
+      }
+
+      action create-vrouter {
+        tailf:actionpoint create-vrouter;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
+      action delete-vrouter {
+        tailf:actionpoint delete-vrouter;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
+    }
+  }
+
+  // Nano service specifics
+  identity requested {
+    base ncs:plan-state;
+  }
+
+  identity onboarded {
+    base ncs:plan-state;
+  }
+
+  identity configured {
+    base ncs:plan-state;
+  }
+
+  identity deployed {
+    base ncs:plan-state;
+  }
+
+  identity vrouter {
+    base ncs:plan-component-type;
+  }
+
+  identity vrouter-day1 {
+    base ncs:plan-component-type;
+  }
+
+  ncs:plan-outline vrouter-plan {
+    description "Plan for deploying a virtual router";
+
+    ncs:component-type "vr:vrouter-day1" {
+      ncs:state "ncs:init";
+      ncs:state "vr:configured" {
+        ncs:create {
+          // Wait for the onboarding to complete
+          ncs:pre-condition {
+            ncs:monitor  "$SERVICE/plan/component[type='vr:vrouter']" +
+                         "[name=$D0NAME]/state[name='vr:onboarded']" {
+              ncs:trigger-expr "post-action-status = 'create-reached'";
+            }
+          }
+          // Invoke a service template to configure the vrouter
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "vr:deployed" {
+        ncs:create {
+          // Wait for a NETCONF link='up' notification from the vrouter.
+          ncs:pre-condition {
+            ncs:monitor "/ncs:devices/ncs:device[ncs:name=$NAME]/" +
+                        "ncs:notifications/ncs:received-notifications" {
+              ncs:trigger-expr "notification[count(/devices" +
+                               "/device[name=$NAME]/notifications" +
+                               "/received-notifications/notification)]/data" +
+                               "/r:link-status[name=/vr:vrouters" +
+                               "/vrouter[name=$NAME]/iface][status='up']";
+            }
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+
+    ncs:component-type "vr:vrouter" {
+      ncs:state "ncs:init";
+      ncs:state "vr:requested" {
+        ncs:create {
+          // Call a Python action to create and start a netsim vrouter
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "create-vrouter";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+        ncs:delete {
+          // Call a Python action to stop and delete a netsim vrouter
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "delete-vrouter";
+            ncs:result-expr "result = 'true'";
+          }
+        }
+      }
+      ncs:state "vr:onboarded" {
+        ncs:create {
+          // Invoke a Python callback to initialize the netsim vrouter,
+          // then do a sync-from
+          ncs:nano-callback;
+          ncs:post-action-node "/ncs:devices/device[name=$NAME]" {
+            ncs:action-name "sync-from";
+            ncs:result-expr "result = 'true'";
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+
+  ncs:service-behavior-tree vrouter-servicepoint {
+    description "One component per vrouter behavior tree";
+    ncs:plan-outline-ref "vr:vrouter-plan";
+    ncs:selector {
+      // vrouter name
+      ncs:variable "NAME" {
+        ncs:value-expr "current()/name";
+      }
+      // vrouter component name
+      ncs:variable "D0NAME" {
+        ncs:value-expr "concat(current()/name, '-day0')";
+      }
+      // vrouter day1 component name
+      ncs:variable "D1NAME" {
+        ncs:value-expr "concat(current()/name, '-day1')";
+      }
+      // vrouter component for starting a netsim vrouter
+      ncs:create-component "$D0NAME" {
+        ncs:component-type-ref "vr:vrouter";
+      }
+      // vrouter-deployed component for day 1 config and
+      // verifying that the configuration was successfully set
+      ncs:create-component "$D1NAME" {
+        ncs:component-type-ref "vr:vrouter-day1";
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <!-- Part for device with the cisco-ios NED -->
+        <interface xmlns="urn:ios">
+          <GigabitEthernet>
+            <name>{/interface}</name>
+            <ip>
+              <address>
+                <primary>
+                  <address>{/ip-address}</address>
+                  <mask>{$NETMASK}</mask>
+                </primary>
+              </address>
+
+              <!-- Part for device with the exact version of NED -->
+              <?if-ned-id cisco-ios-cli-3.0:cisco-ios-cli-3.0?>
+                <dhcp>
+                  <snooping>
+                    <trust/>
+                  </snooping>
+                </dhcp>
+              <?end?>
+            </ip>
+          </GigabitEthernet>
+        </interface>
+
+        <!-- Part for device with the router-nc NED -->
+        <sys xmlns="http://example.com/router">
+          <interfaces>
+            <interface>
+              <name>ge-0/{/interface}</name>
+              <unit>
+                <name>0</name>
+                <family>
+                  <inet>
+                    <address>
+                      <name>{/ip-address}</name>
+                      <prefix-length>{/cidr-netmask}</prefix-length>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+        </sys>
+      </config>
+    </device>
+  </devices>
+</config-template>

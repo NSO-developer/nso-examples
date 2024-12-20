@@ -1,0 +1,13 @@
+#!/bin/sh
+
+NODE=$1
+KEY="/high-availability/status/connected-secondary{${NODE}}/address"
+
+printf "Waiting for %s to connect: " "$NODE"
+
+until [ $(ncs_cmd -c "mexists $KEY") = "yes" ]; do
+    printf .
+    sleep 1
+done
+
+echo ''

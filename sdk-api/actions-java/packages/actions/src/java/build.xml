@@ -1,0 +1,17 @@
+<project name="actions" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml"/>
+
+  <target name="compile" depends="ncs-package.compile,compile-test">
+    <copy tofile="${classes.dir}/log4j2.xml" file="log4j2.xml" />
+  </target>
+
+  <target name="call-reboot" description="Call builtin actions from Java">
+    <java classname="com.example.actions.Reboot" fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+      <classpath path="../../private-jar/actions.jar" />
+    </java>
+  </target>
+</project>

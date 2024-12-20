@@ -1,0 +1,54 @@
+<config:config xmlns:config="http://tail-f.com/ns/config/1.0"
+               xmlns="http://tail-f.com/ns/ncs">
+
+    <!--
+        Configure a dummy device.  In this example, we'll never
+        talk to this device.  We will however fake that this device
+        sends SNMP notifications.
+    -->
+    <devices>
+      <device>
+        <name>r1</name>
+        <address>127.0.0.1</address>
+        <state>
+          <admin-state>unlocked</admin-state>
+        </state>
+        <authgroup>default</authgroup>
+        <device-type>
+          <netconf>
+            <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned"
+                    >id:netconf</ned-id>
+          </netconf>
+        </device-type>
+      </device>
+    </devices>
+
+    <!--
+        Start the SNMP notification receiver.
+    -->
+    <snmp-notification-receiver>
+      <enabled>true</enabled>
+      <listen>
+        <udp>
+          <ip>127.0.0.1</ip>
+          <port>8000</port>
+        </udp>
+      </listen>
+      <usm>
+        <user>
+          <name>ncs</name>
+          <auth>
+            <sha>
+              <password>$0$authpass</password>
+            </sha>
+          </auth>
+          <priv>
+            <aes>
+              <password>$0$privpass</password>
+            </aes>
+          </priv>
+        </user>
+      </usm>
+    </snmp-notification-receiver>
+
+</config:config>

@@ -1,0 +1,8 @@
+<services xmlns="http://tail-f.com/ns/ncs">
+  <commit-queue-notifications>
+    <subscription>
+      <name>zbfw</name>
+      <service-type>/zbfw:policy-templates/zbfw:policy-template</service-type>
+    </subscription>
+  </commit-queue-notifications>
+</services>

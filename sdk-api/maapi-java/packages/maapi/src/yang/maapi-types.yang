@@ -1,0 +1,412 @@
+//Testing module for Maapi tests.
+module maapi-types {
+  namespace "http://examples.com/maapi";
+  prefix mt;
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-xsd-types {
+    prefix xs;
+
+  }
+
+  description "This model is used as a simple example model
+               illustrating some aspects of Maapi operations";
+
+  revision 2012-08-04 {
+    description "Initial revision.";
+  }
+
+  typedef managed-object-t {
+    type union {
+      type instance-identifier {
+        require-instance false;
+      }
+      type string;
+    }
+  }
+
+
+  typedef myFlags {
+    type bits {
+      bit turboMode {
+        position 0;
+      }
+      bit enableQOS {
+        position 1;
+      }
+      bit enableMAA {
+        position 2;
+      }
+      bit strongEncryption {
+        position 7;
+      }
+    }
+  }
+  typedef enum_test {
+    type enumeration {
+      enum 15-mins;
+      enum 30-mins;
+    }
+  }
+  container maapi-types {
+    container bintest {
+      list bindata {
+        key "binkey1 binkey2 binkey3";
+        leaf binkey1 {
+          type tailf:hex-list;
+        }
+        leaf binkey2 {
+          type tailf:hex-list;
+        }
+        leaf binkey3 {
+          type tailf:hex-list;
+        }
+      }
+    }
+    container iptest {
+      list ipdata {
+        key "ipkey1 ipkey2 ipkey3";
+        leaf ipkey1 {
+          type inet:ipv4-address;
+        }
+        leaf ipkey2 {
+          type inet:ipv4-address;
+        }
+        leaf ipkey3 {
+          type inet:ipv4-address;
+        }
+      }
+    }
+    container mtypes {
+      leaf-list ilist {
+        type uint32;
+      }
+      leaf-list slist {
+        type string;
+      }
+      leaf firstname {
+        type string;
+        default George;
+      }
+      leaf a_number {
+        type int64;
+        default 42;
+      }
+      leaf b_number {
+        type int64;
+        default 7;
+      }
+      container indexes {
+        list index {
+          key x;
+          tailf:indexed-view;
+          max-elements 20;
+          leaf x {
+            type uint16;
+          }
+          leaf port {
+            type int64;
+            default 110;
+          }
+        }
+      }
+      container otest {
+      list otestl {
+        key "first oref";
+        leaf first {
+          type string;
+        }
+        leaf oref {
+          type managed-object-t;
+        }
+      }
+    }
+    container twokey {
+      list twokeyl {
+        key "key1 key2";
+        leaf key1 {
+          type string;
+        }
+        leaf key2 {
+          type string;
+        }
+      }
+    }
+
+    container aggetest {
+      list serviceagge {
+        key "kzz";
+        leaf kzz {
+          type string;
+        }
+        container agge {
+          choice service-type-choice {
+            description "augument your stuff here";
+          }
+        }
+      }
+    }
+    container movables {
+      list movable {
+        key "a b";
+        max-elements 64;
+        leaf a {
+          type uint16;
+        }
+        leaf b {
+          type uint16;
+        }
+      }
+    }
+    container servers {
+      list server {
+        key srv-name;
+        max-elements 64;
+        leaf srv-name {
+          type string;
+        }
+        leaf ip {
+          type inet:host;
+        }
+        leaf port {
+          type inet:port-number;
+          default 80;
+        }
+
+        container foo {
+          list foo-bar {
+            key bar;
+            leaf bar {
+              type int64;
+              default 42;
+            }
+            leaf baz {
+              type int64;
+              default 7;
+            }
+            leaf-list bas {
+              type string;
+            }
+            leaf bak {
+              type string;
+            }
+          }
+        }
+        container interfaces {
+          list interface {
+            key if-name;
+            max-elements 8;
+            leaf if-name {
+              type string;
+            }
+            leaf UP {
+              type empty;
+            }
+            leaf NOARP {
+              type empty;
+            }
+            leaf BROADCAST {
+              type empty;
+            }
+            leaf MULTICAST {
+              type empty;
+            }
+            leaf LOOPBACK {
+              type empty;
+            }
+            leaf NOTRAILERS {
+              type empty;
+            }
+            leaf mtu {
+              type int64;
+              default 1500;
+            }
+          }
+        }
+      }
+    }
+
+    container food {
+      choice snack {
+        case sports-arena {
+          container case1{
+            leaf pretzel {
+              type string;
+            }
+            leaf beer {
+              type string;
+            }
+          }
+        }
+        case late-night {
+          container case2 {
+            leaf chocolate {
+              type enumeration {
+                enum dark;
+                enum milk;
+                enum first-available;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    container dks {
+      list dk {
+        key "dk-name ip";
+        max-elements 888;
+        leaf dk-name {
+          type string;
+        }
+        leaf ip {
+          type inet:host;
+        }
+        leaf luckyday {
+          type xs:date;
+        }
+        container dkz {
+          list dz {
+            key "dz-name ip";
+            leaf dz-name {
+              type string;
+            }
+            leaf ip {
+              type inet:host;
+            }
+            leaf fuckeday {
+              type xs:date;
+            }
+          }
+        }
+      }
+    }
+    container forest {
+      list tree {
+        key tree-name;
+        max-elements 1024;
+        leaf tree-name {
+          type string;
+        }
+        leaf type {
+          type string;
+        }
+      }
+      list flower {
+        key flower-name;
+        max-elements 1024;
+        leaf flower-name {
+          type string;
+        }
+        leaf type {
+          type string;
+        }
+        leaf color {
+          type string;
+        }
+      }
+    }
+    container types {
+      leaf c_int8 {
+        type int8;
+      }
+      leaf c_int16 {
+        type int16;
+      }
+      leaf c_int32 {
+        type int32;
+      }
+      leaf c_int64 {
+        type int64;
+      }
+      leaf c_uint8 {
+        type uint8;
+      }
+      leaf c_uint16 {
+        type uint16;
+      }
+      leaf c_uint32 {
+        type uint32;
+      }
+      leaf c_uint64 {
+        type uint64;
+      }
+      leaf b {
+        type boolean;
+      }
+      leaf f {
+        type xs:float;
+      }
+      leaf c_ipv4 {
+        type inet:ipv4-address;
+      }
+      leaf c_ipv6 {
+        type inet:ipv6-address;
+      }
+      leaf datetime {
+        type yang:date-and-time;
+      }
+      leaf date {
+        type xs:date;
+      }
+      leaf duration {
+        type xs:duration;
+      }
+      leaf enum {
+        type enum_test;
+      }
+      leaf objectref {
+        type instance-identifier;
+      }
+      leaf bits {
+        type myFlags;
+      }
+      leaf ipv4Prefix {
+        type inet:ipv4-prefix;
+      }
+      leaf ipv6Prefix {
+        type inet:ipv6-prefix;
+      }
+      leaf mac{
+        type yang:mac-address;
+      }
+    }
+    container ints {
+      list int {
+        key i;
+        max-elements 888;
+        leaf i {
+          type int64;
+        }
+        leaf type {
+          type string;
+          default foo;
+        }
+        leaf color {
+          type string;
+          default bar;
+        }
+      }
+    }
+    container oper {
+      config false;
+      tailf:cdb-oper;
+      list list1 {
+        leaf l1 {
+          type string;
+        }
+        leaf l2 {
+          type string;
+        }
+      }
+    }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<config>
+  <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+    <name>{/name}-{$CE}</name>
+    <class>
+      <class-default>
+        <map>class-default</map>
+        <service-policy>
+          <name>{$POLICY_NAME}</name>
+        </service-policy>
+      </class-default>
+    </class>
+  </policy-map>
+  <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+    <name>{$POLICY_NAME}</name>
+    <class>
+      <class-ref>
+        <map>{$CLASS_NAME}</map>
+        <bandwidth>
+          <percent>{$CLASS_BW}</percent>
+        </bandwidth>
+      </class-ref>
+    </class>
+  </policy-map>
+</config>

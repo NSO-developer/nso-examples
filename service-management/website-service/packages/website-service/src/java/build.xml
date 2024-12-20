@@ -1,0 +1,25 @@
+<project name="website-service" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml"/>
+
+  <augment id="core-libs">
+    <pathelement location="../../../lb/shared-jar/lb-ns.jar" />
+    <pathelement location="../../../webserver/shared-jar/webserver-ns.jar" />
+  </augment>
+
+  <target name="all" depends="package" />
+
+  <target name="compile" depends="ncs-package.compile">
+    <!-- External log4j2.xml configuration needed for ant targets bellow -->
+    <copy tofile="${classes.dir}/log4j2.xml" file="src/log4j2.xml" />
+  </target>
+
+  <target name="alarm" description="Generate a randomized alarm">
+    <java classname="com.example.websiteservice.websiteservice.WebserverOnFire"
+          fork="true">
+      <classpath refid="core-libs" />
+      <classpath location="build/classes"/>
+    </java>
+  </target>
+</project>

@@ -1,0 +1,36 @@
+module ntp {
+
+  namespace "http://examples.com/ntp";
+  prefix ntp;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  augment /ncs:services {
+    container ntp {
+      presence "Setting the ntp server on all managed devices";
+
+      uses ncs:service-data;
+      ncs:servicepoint ntpservice;
+
+      description "This is the NTP service, we can have at most one
+                   of the ntp services instantiated in the system.
+                   It's purpose it to set the ntp server on all
+                   managed devices in the system";
+
+      leaf ntp-server {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+    }
+  }
+}
+
+
+
+

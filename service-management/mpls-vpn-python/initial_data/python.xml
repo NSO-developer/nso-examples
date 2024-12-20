@@ -1,0 +1,7 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <python-vm xmlns="http://tail-f.com/ns/ncs">
+    <logging>
+      <level>level-debug</level>
+    </logging>
+  </python-vm>
+</config>

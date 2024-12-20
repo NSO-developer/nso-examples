@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>stats</name>
+  <package-version>1.0</package-version>
+  <description>Aggregating statistics from the network</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+  <component>
+    <name>stats</name>
+    <callback>
+      <java-class-name>com.example.stats.Stats</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

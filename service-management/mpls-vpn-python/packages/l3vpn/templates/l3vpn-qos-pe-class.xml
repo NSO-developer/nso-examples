@@ -1,0 +1,33 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$PE}</name>
+      <config>
+        <class-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+          <name>{$CLASS_NAME}</name>
+          <prematch>match-any</prematch>
+          <match>
+            <dscp>{$CLASS_DSCP}</dscp>
+          </match>
+        </class-map>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm" tags="merge">
+          <class-of-service>
+            <classifiers>
+              <dscp>
+                <name>{$POLICY_NAME}</name>
+                <import>default</import>
+                <forwarding-class>
+                  <name>{$CLASS_NAME}</name>
+                  <loss-priority>
+                    <name>low</name>
+                    <code-points>{$CLASS_DSCP}</code-points>
+                  </loss-priority>
+                </forwarding-class>
+              </dscp>
+            </classifiers>
+          </class-of-service>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

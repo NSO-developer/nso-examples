@@ -1,0 +1,61 @@
+<SNMP-VIEW-BASED-ACM-MIB
+    xmlns="http://tail-f.com/ns/mibs/SNMP-VIEW-BASED-ACM-MIB/200210160000Z">
+
+  <vacmSecurityToGroupTable>
+
+    <!-- The 'public' security name is mapped to the group 'all-rights' -->
+
+   <vacmSecurityToGroupEntry>
+      <vacmSecurityModel>1</vacmSecurityModel>
+      <vacmSecurityName>public</vacmSecurityName>
+      <vacmGroupName>all-rights</vacmGroupName>
+    </vacmSecurityToGroupEntry>
+
+    <vacmSecurityToGroupEntry>
+      <vacmSecurityModel>2</vacmSecurityModel>
+      <vacmSecurityName>public</vacmSecurityName>
+      <vacmGroupName>all-rights</vacmGroupName>
+    </vacmSecurityToGroupEntry>
+
+    <vacmSecurityToGroupEntry>
+      <vacmSecurityModel>3</vacmSecurityModel>
+      <vacmSecurityName>admin</vacmSecurityName>
+      <vacmGroupName>all-rights</vacmGroupName>
+    </vacmSecurityToGroupEntry>
+
+    <vacmSecurityToGroupEntry>
+      <vacmSecurityModel>3</vacmSecurityModel>
+      <vacmSecurityName>xadmin</vacmSecurityName>
+      <vacmGroupName>all-rights</vacmGroupName>
+    </vacmSecurityToGroupEntry>
+
+  </vacmSecurityToGroupTable>
+
+  <vacmAccessTable>
+
+    <!-- The group 'all-rights' has full access to everything -->
+
+    <vacmAccessEntry>
+      <vacmGroupName>all-rights</vacmGroupName>
+      <vacmAccessContextPrefix></vacmAccessContextPrefix>
+      <vacmAccessSecurityModel>0</vacmAccessSecurityModel>
+      <vacmAccessSecurityLevel>noAuthNoPriv</vacmAccessSecurityLevel>
+      <vacmAccessContextMatch>exact</vacmAccessContextMatch>
+      <vacmAccessReadViewName>internet</vacmAccessReadViewName>
+      <vacmAccessWriteViewName>internet</vacmAccessWriteViewName>
+      <vacmAccessNotifyViewName>internet</vacmAccessNotifyViewName>
+    </vacmAccessEntry>
+
+  </vacmAccessTable>
+
+  <vacmViewTreeFamilyTable>
+
+    <vacmViewTreeFamilyEntry>
+      <vacmViewTreeFamilyViewName>internet</vacmViewTreeFamilyViewName>
+      <vacmViewTreeFamilySubtree>1.3.6.1</vacmViewTreeFamilySubtree>
+      <vacmViewTreeFamilyMask></vacmViewTreeFamilyMask>
+      <vacmViewTreeFamilyType>included</vacmViewTreeFamilyType>
+    </vacmViewTreeFamilyEntry>
+
+  </vacmViewTreeFamilyTable>
+</SNMP-VIEW-BASED-ACM-MIB>

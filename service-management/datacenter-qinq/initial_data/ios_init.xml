@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <interface xmlns="urn:ios">
+    <FastEthernet>
+      <name>1/1</name>
+    </FastEthernet>
+    <FastEthernet>
+      <name>1/2</name>
+    </FastEthernet>
+    <FastEthernet>
+      <name>1/3</name>
+    </FastEthernet>
+    <FastEthernet>
+      <name>2/1</name>
+    </FastEthernet>
+    <FastEthernet>
+      <name>2/2</name>
+    </FastEthernet>
+  </interface>
+</config>

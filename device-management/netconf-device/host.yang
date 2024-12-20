@@ -1,0 +1,198 @@
+module host {
+  namespace "http://example.com/host";
+  prefix host;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  typedef vlan-id {
+    type int32 {
+      range "0 .. 4095";
+    }
+  }
+
+  typedef interface-duplex {
+    type enumeration {
+      enum half;
+      enum full;
+    }
+  }
+
+  typedef mtu-size {
+    type int32 {
+      range "68 .. 1500";
+    }
+  }
+
+  typedef interface-media {
+    type enumeration {
+      enum 10baseT;
+      enum 100baseT;
+      enum 1000baseT;
+    }
+  }
+
+  typedef interfaceLogicalUnit {
+    type int32 {
+      range "0 .. 9999";
+    }
+  }
+
+  typedef interface-name {
+    type string {
+      length "min .. 30";
+      pattern "[A-Za-z][^/:.]*";
+    }
+  }
+
+  typedef prefixLengthIPv4 {
+    type int32 {
+      range "0 .. 32";
+    }
+  }
+
+  typedef prefixLengthIPv6 {
+    type int32 {
+      range "0 .. 128";
+    }
+  }
+
+
+ container interfaces {
+    list interface {
+      key name;
+      max-elements 1024;
+      leaf name {
+        type interface-name;
+      }
+      leaf description {
+        type string;
+      }
+      leaf enabled {
+        type boolean;
+        default true;
+      }
+      leaf media {
+        type interface-media;
+      }
+      leaf duplex {
+        type interface-duplex;
+      }
+      leaf mtu {
+        type mtu-size;
+      }
+      leaf mac {
+        type yang:mac-address;
+      }
+      list unit {
+        key name;
+        max-elements 1024;
+        ordered-by user;
+        leaf name {
+          type interfaceLogicalUnit;
+        }
+        leaf enabled {
+          type boolean;
+          default true;
+        }
+        leaf description {
+          type string;
+        }
+        leaf vlan-id {
+          type vlan-id;
+          default 0;
+        }
+        container family {
+          container inet {
+            presence "";
+            list address {
+              key name;
+              max-elements 64;
+              leaf name {
+                type inet:ipv4-address;
+              }
+              leaf prefix-length {
+                type prefixLengthIPv4;
+                mandatory true;
+              }
+              leaf broadcast {
+                type inet:ipv4-address;
+              }
+            }
+          }
+          container inet6 {
+            presence "";
+            list address {
+              key name;
+              max-elements 64;
+              leaf name {
+                type inet:ipv6-address;
+              }
+              leaf prefix-length {
+                type prefixLengthIPv6;
+                default 64;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  container system {
+
+    container ntp {
+      list server {
+        key name;
+        max-elements 16;
+        leaf name {
+          type inet:host;
+        }
+        leaf enabled {
+          type boolean;
+          default true;
+        }
+        leaf peer {
+          type boolean;
+          default false;
+        }
+      }
+      container local-clock {
+        leaf enabled {
+          type boolean;
+          default false;
+        }
+        leaf stratum {
+          type uint8 {
+            range "0 .. 15";
+          }
+          default 10;
+        }
+      }
+    }
+
+    container dns {
+      list search {
+        key domain;
+        max-elements 6;
+        ordered-by user;
+        leaf domain {
+          type inet:domain-name;
+        }
+      }
+      list server {
+        key address;
+        max-elements 3;
+        ordered-by user;
+        leaf address {
+          type inet:ip-address;
+        }
+      }
+    }
+
+  }
+}

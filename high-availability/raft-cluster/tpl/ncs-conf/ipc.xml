@@ -1,0 +1,4 @@
+  <!-- :add:/ncs-config -->
+  <ncs-ipc-address>
+    <port>456~{ID}</port>
+  </ncs-ipc-address>

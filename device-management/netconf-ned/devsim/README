@@ -1,0 +1,222 @@
+Avoiding autoconfig issues exemplified by the IETF HW Management YANG model
+===========================================================================
+
+Many ConfD and other NETCONF/YANG server users often make the mistake to update
+the running datastore configuration without realizing the issues that follow.
+A node/device reconfigures itself when instead an operational state
+"config false" copy of the configuration should be changed.
+
+The result is that the manager, for example NSO, gets out of sync with the
+server as it reconfigures itself when, for example as in this example, the
+hardware setup changes at run-time.
+
+One common example is the line card and chassis example where a line card is
+inserted to or removed from a chassis where the operational state is
+auto-configured at runtime.
+
+When applications integrating with ConfD make the mistake of updating the
+running datastore configuration instead of an operational state "config false"
+copy of the configuration, the manager get out of sync with one of them, often
+many, nodes/devices where service configuration deployed on and need to be
+reconciled, which can be a complex and error-prone operation.
+
+By adopting NMDA, RFC 8342, supporting operational state data is enhanced and
+simplified. For the application, no extra copy of the YANG model for
+operational state is needed, and, using the RFC 8348 IETF hardware management
+YANG model, this simple example aim to show how a line card + chassis
+configuration can be implemented based on NMDA intended configuration stored in
+the CDB running datastore and operational state stored in the CDB operational
+datastore.
+
+Before NMDA we had to expose both the ietf-hardware.yang and
+the deprecated ietf-hardware-state.yang models to the manager/NETCONF client.
+With NMDA support, but without support for storing "config true" NMDA
+operational state data in the CDB operational datastore, the ietf-hardware.yang
+model no longer had to be exposed, and we could add a tailf:export "maapi"
+statement to the deprecated ietf-hardware-state.yang model to hide it from all
+northbound interfaces except the MAAPI interface. We then added a
+tailf:callpoint { tailf:operational; } statement to the ietf-hardware.yang
+model for config "true" data in the NMDA operational state, and also had to add
+a tailf:callpoint { tailf:config false; } statement for the operational state
+"config true" associated "config false" data.
+
+With ConfD support for storing "config true" NMDA operational state
+data in the CDB operational datastore we can completely remove the
+ietf-hardware-state.yang model from CDB. Thus, the data provider that map
+between the ietf-hardware.yang and ietf-hardware-state.yang models and the
+tailf:callpoint { tailf:config false; }, can then also be removed.
+The tailf:callpoint { tailf:operational; } is replaced with a
+tailf:cdb-oper { tailf:operational; } statement to indicate to ConfD that the
+operational state data will be stored in CDB.
+
+The key concept of the IETF hardware management, and the behavior of the
+implementation of the example is summarized nicely under the "component" list
+in the YANG model from RFC 8348:
+
+--8-<------8-<---
+
+When the server detects a new hardware component, it initializes a list entry
+in the operational state.
+
+Otherwise, this procedure is followed:
+
+  1. If there is an entry in the '/hardware/component' list in the intended
+     configuration with values for the nodes 'class', 'parent', and
+     'parent-rel-pos' that is equal to the detected values, then the list
+     entry in the operational state is initialized with the configured values,
+     including the 'name'.
+
+  2. Otherwise (i.e., there is no matching configuration entry), the list entry
+     in the operational state is initialized with values for all nodes as
+     detected by the implementation.
+
+If the '/hardware/component list in the intended configuration is modified,
+then the system MUST behave as if it re-initializes itself and follow the
+procedure in (1).";
+
+--8-<------8-<---
+
+A high level overview of the simulated hardware components in the example
+setup:
+
+---------------------------------------------------------------------------
+|                                                                         |
+|   NETCONF client - the netconf-console Python tool for this example     |
+---------------------------------------------------------------------------
+                                     |
+                                     |
+                                     |
+---------------------------------------------------------------------------
+|                                                                         |
+|   System Controller (cpu) - where ConfD would be running                |
+---------------------------------------------------------------------------
+                                     |
+                                     |
+                                     |
+---------------------------------------------------------------------------
+|                                                                         |
+|   L2 Switch (backplane)                                                 |
+---------------------------------------------------------------------------
+                                     |
+                                     |
+ Chassis/Rack (stack) 1              |
+ ---------------------------------------------------------------------------
+ |                                                                         |
+ |   Subrack (container) 1                                                 |
+ |   -------------------------------------------------------------------   |
+ |   |  S |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  l |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  o |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  t |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  1 | 2 |  3 | 4 |  5 |  6 | 7 |  8 |  9 | 1 |  1 |  1 |  1 |  1 |   |
+ |   |    |   |    |   |    |    |   |    |    | 0 |  1 |  2 |  3 |  4 |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   -------------------------------------------------------------------   |
+ |   Subrack 2                                                             |
+ |  -------------------------------------------------------------------    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  -------------------------------------------------------------------    |
+ |   Subrack 3                                                             |
+ |  -------------------------------------------------------------------    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  |                                                                 |    |
+ |  -------------------------------------------------------------------    |
+ |   Subrack 4                                                             |
+ |   -------------------------------------------------------------------   |
+ |   |  S |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  l |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  o |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  t |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  1 | 2 |  3 | 4 |  5 |  6 | 7 |  8 |  9 | 1 |  1 |  1 |  1 |  1 |   |
+ |   |    |   |    |   |    |    |   |    |    | 0 |  1 |  2 |  3 |  4 |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   -------------------------------------------------------------------   |
+ |   Subrack 5                                                             |
+ |   -------------------------------------------------------------------   |
+ |   |  S |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  l |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  o |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  t |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |  1 | 2 |  3 | 4 |  5 |  6 | 7 |  8 |  9 | 1 |  1 |  1 |  1 |  1 |   |
+ |   |    |   |    |   |    |    |   |    |    | 0 |  1 |  2 |  3 |  4 |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   |    |   |    |   |    |    |   |    |    |   |    |    |    |    |   |
+ |   ------------.------------------------------------------------------   |
+ |              / \                                                        |
+ --------------- |----------------------------------------------------------
+                 |
+              Rack (stack): 1
+           Subrack (container): 5
+              Slot (container): 3
+
+Starting the Example
+~~~~~~~~~~~~~~~~~~~~
+
+1. Build the necessary files and start ConfD by typing
+
+       $ make all start
+
+This will initialize the "chassis" which is managed by the "system controller"
+and register a "card" named "dummy" with rack 1 subrack 4 slot 1 port 4.
+
+2. To see what's happening inside ConfD, optionally tail the ConfD developer
+   log file and/or the system-controller and card log files.
+
+       $ tail -F ./devel.log ./system-controller.log card-*.log
+
+3. A few different pre-made read examples are available:
+
+       $ make start-card     # start a second card called "clone" in rack 1
+                             # subrack 4 slot 2 port 2
+       $ make nc-get         # NETCONF <get> the configuration and state data
+       $ make nc-get-datas   # NETCONF <get-data> with a <subtree-filter>
+       $ make nc-get-datax   # NETCONF <get-data> with an <xpath-filter>
+       $ make nc-sub-hwstate # Create a NETCONF subscription to the
+                               hardware_state last-change stream
+       $ make nc-cfg-card    # Change the name of the "dummy" card to "carbon"
+                               and add some additional configuration
+       $ make nc-rename-chassis # Change the name of the "chassis" rack to
+                                  "thething" and add some configuration
+Further Reading
+~~~~~~~~~~~~~~~
++ RFC 8348 A YANG Data Model for Hardware Management
++ RFC 8342 Network Management Datastore Architecture (NMDA)
++ RFC 8546 NETCONF Extensions to Support the Network Management Datastore
+  Architecture

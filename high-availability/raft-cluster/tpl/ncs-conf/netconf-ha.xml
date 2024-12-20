@@ -1,0 +1,5 @@
+<!-- :add:/ncs-config/netconf-north-bound/transport/ssh -->
+        <ha-primary-listen>
+          <ip>127.0.0.1</ip>
+          <port>2024</port>
+        </ha-primary-listen>

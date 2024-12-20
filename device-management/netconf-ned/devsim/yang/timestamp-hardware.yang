@@ -1,0 +1,23 @@
+module timestamp-hardware {
+  yang-version 1.1;
+  namespace "urn:example:timestamp-hardware";
+  prefix thw;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import ietf-hardware {
+    prefix hw;
+  }
+
+  revision 2023-11-10 {
+    description
+      "Initial revision.";
+  }
+
+  augment "/hw:hardware-state-change" {
+    leaf last-change {
+      type yang:date-and-time;
+    }
+  }
+}

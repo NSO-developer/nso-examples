@@ -1,0 +1,14 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$ESC}</name>
+      <notifications tags="merge">
+        <subscription>
+          <name>virtual_pe</name>
+          <stream>escEvent</stream>
+          <local-user>admin</local-user>
+        </subscription>
+      </notifications>
+    </device>
+  </devices>
+</config-template>

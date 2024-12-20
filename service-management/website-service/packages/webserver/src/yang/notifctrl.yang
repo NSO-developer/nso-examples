@@ -1,0 +1,31 @@
+module notifctrl {
+    namespace "http://tail-f.com/test/notifctrl";
+    prefix notifctrl;
+
+    import tailf-common {
+        prefix tailf;
+    }
+
+    description "Controlling what notifications to send";
+
+    revision 2018-09-12
+    {
+        description "Initial revision";
+    }
+
+    container ctrl
+    {
+        container notif-actions
+        {
+            tailf:action linkUp {
+                tailf:actionpoint send-point;
+                input {
+                    leaf notif_type {
+                        type string;
+                        mandatory true;
+                    }
+                }
+            }
+        }
+    }
+}

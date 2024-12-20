@@ -1,0 +1,10 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>dns</name>
+  <package-version>1.1</package-version>
+  <description>Template-based dns resource facing service</description>
+  <ncs-min-version>5.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+</ncs-package>

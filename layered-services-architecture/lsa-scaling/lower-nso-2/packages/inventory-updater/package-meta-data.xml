@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>inventory-updater</name>
+  <package-version>1.0</package-version>
+  <description>NED package for supporting updating inventory</description>
+  <ncs-min-version>4.4</ncs-min-version>
+</ncs-package>

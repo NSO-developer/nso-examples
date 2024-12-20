@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>nso-example-jwt-auth</name>
+  <package-version>1.0</package-version>
+  <description>Example JWT authentication package for NSO</description>
+  <ncs-min-version>6.1</ncs-min-version>
+</ncs-package>

@@ -1,0 +1,55 @@
+module cfs-t3 {
+  yang-version 1.1;
+  namespace "http://example.com/cfs-t3";
+  prefix cfs-t3;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Bla bla...";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  container cfs-t3s {
+    container t3-settings {
+      presence "";
+      uses ncs:service-data;
+      ncs:servicepoint cfs-t3-servicepoint;
+      leaf ntrans {
+        type uint32;
+        default 1;
+      }
+      leaf nwork {
+        type uint32;
+        default 3;
+      }
+      leaf ndtrans {
+        type uint8;
+        default 1;
+      }
+      leaf run-id {
+        type string;
+        default "default";
+      }
+    }
+    container dev-settings {
+      presence "";
+      uses ncs:service-data;
+      ncs:servicepoint cfs-devs-servicepoint;
+      leaf dev-delay {
+        type uint32;
+      }
+    }
+  }
+}

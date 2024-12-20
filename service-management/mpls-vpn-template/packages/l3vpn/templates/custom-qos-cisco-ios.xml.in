@@ -1,0 +1,31 @@
+<config>
+  <ip xmlns="urn:ios" tags="merge">
+    <access-list>
+      <extended>
+        <ext-named-acl>
+          <name>{$MATCH_ENTRY}</name>
+          <ext-access-list-rule>
+            <rule>{
+              normalize-space(concat(
+              'permit ', protocol, ' ',
+              substring-before(concat(source-ip,'/'),'/'), ' ',
+              source-mask, ' ',
+              substring-before(concat(destination-ip,'/'),'/'),
+              ' ', destination-mask, ' range ',
+              port-start, ' ', port-end))
+              }</rule>
+          </ext-access-list-rule>
+        </ext-named-acl>
+      </extended>
+    </access-list>
+  </ip>
+  <class-map xmlns="urn:ios" tags="merge">
+    <name>{$CLASS_NAME}</name>
+    <prematch>match-any</prematch>
+    <match>
+      <access-group>
+        <name>{$MATCH_ENTRY}</name>
+      </access-group>
+    </match>
+  </class-map>
+</config>

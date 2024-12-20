@@ -1,0 +1,78 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$ESC}</name>
+      <config>
+        <esc_datamodel xmlns="http://www.cisco.com/esc/esc">
+          <tenants tags="merge">
+            <tenant>
+              <name>{$TENANT}</name>
+              <services>
+                <service_definition>
+                  <deployment_name>{$DEPNAME}</deployment_name>
+                  <name>{$SERVICE_NAME}</name>
+                  <version>{$SERVICE_VERSION}</version>
+                  <vm_group>
+                    <name>{$VM_GROUP}</name>
+                    <kpi_data>
+                      <kpi>
+                        <event_name>VM_OVERLOADED</event_name>
+                        <metric_value>30</metric_value>
+                        <metric_cond>GT</metric_cond>
+                        <metric_type>UINT32</metric_type>
+                        <metric_occurrences_true>2</metric_occurrences_true>
+                        <metric_occurrences_false>4</metric_occurrences_false>
+                        <metric_collector>
+                          <type>CPU</type>
+                          <nicid>0</nicid>
+                          <poll_frequency>3</poll_frequency>
+                          <polling_unit>seconds</polling_unit>
+                          <continuous_alarm>false</continuous_alarm>
+                        </metric_collector>
+                      </kpi>
+                      <kpi>
+                        <event_name>VM_UNDERLOADED</event_name>
+                        <metric_value>20</metric_value>
+                        <metric_cond>LT</metric_cond>
+                        <metric_type>UINT32</metric_type>
+                        <metric_occurrences_true>2</metric_occurrences_true>
+                        <metric_occurrences_false>4</metric_occurrences_false>
+                        <metric_collector>
+                          <type>CPU</type>
+                          <nicid>0</nicid>
+                          <poll_frequency>3</poll_frequency>
+                          <polling_unit>seconds</polling_unit>
+                          <continuous_alarm>false</continuous_alarm>
+                        </metric_collector>
+                      </kpi>
+                    </kpi_data>
+                    <rules>
+                      <admin_rules>
+                        <rule>
+                          <event_name>VM_OVERLOADED</event_name>
+                          <action>ALWAYS log</action>
+                          <action>TRUE servicescaleup.sh</action>
+                        </rule>
+                        <rule>
+                          <event_name>VM_UNDERLOADED</event_name>
+                          <action>ALWAYS log</action>
+                          <action>TRUE servicescaledown.sh</action>
+                        </rule>
+                      </admin_rules>
+                    </rules>
+                    <scaling>
+                      <static_ip_address_pool>
+                        <network>{$SCALING_POOL}</network>
+                        <ip_address>{$IP_ADDRESS}</ip_address>
+                      </static_ip_address_pool>
+                    </scaling>
+                  </vm_group>
+                </service_definition>
+              </services>
+            </tenant>
+          </tenants>
+        </esc_datamodel>
+      </config>
+    </device>
+  </devices>
+</config-template>

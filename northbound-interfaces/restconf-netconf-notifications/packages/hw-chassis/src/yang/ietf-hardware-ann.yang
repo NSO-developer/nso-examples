@@ -1,0 +1,58 @@
+module ietf-hardware-ann {
+  namespace "urn:dummy";
+  prefix dummy;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  tailf:annotate-module "ietf-hardware" {
+    tailf:annotate-statement "container[name='hardware']" {
+      tailf:cdb-oper {
+        tailf:operational;
+      }
+    }
+    tailf:annotate-statement "typedef[name='admin-state']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='unknown']" {
+          tailf:code-name "admin-state-unknown";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='oper-state']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='unknown']" {
+          tailf:code-name "oper-state-unknown";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='usage-state']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='unknown']" {
+          tailf:code-name "usage-state-unknown";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='alarm-state']" {
+      tailf:annotate-statement "type[name='bits']" {
+        tailf:annotate-statement "bit[name='unknown']" {
+          tailf:code-name "alarm-state-unknown";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='standby-state']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='unknown']" {
+          tailf:code-name "standby-state-unknown";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='sensor-value-type']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='unknown']" {
+          tailf:code-name "sensor-value-type-unknown";
+        }
+      }
+    }
+  }
+}

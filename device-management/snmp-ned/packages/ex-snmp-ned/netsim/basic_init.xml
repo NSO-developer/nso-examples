@@ -1,0 +1,25 @@
+<BASIC-CONFIG-MIB
+ xmlns="http://tail-f.com/ns/mibs/BASIC-CONFIG-MIB/201111160000Z">
+  <bscBaseTable>
+    <bscBaseEntry>
+      <bscBaseIndex>1</bscBaseIndex>
+      <bscBaseStr>foo</bscBaseStr>
+    </bscBaseEntry>
+    <bscBaseEntry>
+      <bscBaseIndex>2</bscBaseIndex>
+      <bscBaseStr>bar</bscBaseStr>
+    </bscBaseEntry>
+  </bscBaseTable>
+  <bscAddrTable>
+    <bscAddrEntry>
+      <bscBaseIndex>1</bscBaseIndex>
+      <bscAddrIndex>2</bscAddrIndex>
+      <bscAddrStr>addr1</bscAddrStr>
+    </bscAddrEntry>
+    <bscAddrEntry>
+      <bscBaseIndex>1</bscBaseIndex>
+      <bscAddrIndex>4</bscAddrIndex>
+      <bscAddrStr>addr2</bscAddrStr>
+    </bscAddrEntry>
+  </bscAddrTable>
+</BASIC-CONFIG-MIB>

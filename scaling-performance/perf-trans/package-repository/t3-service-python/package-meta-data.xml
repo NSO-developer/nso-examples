@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>t3</name>
+  <package-version>1.0</package-version>
+  <description>Generated Python package</description>
+  <ncs-min-version>6.0</ncs-min-version>
+
+  <component>
+    <name>t3</name>
+    <application>
+      <python-class-name>t3.t3.T3Application</python-class-name>
+    </application>
+  </component>
+</ncs-package>

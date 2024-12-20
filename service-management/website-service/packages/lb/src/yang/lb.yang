@@ -1,0 +1,223 @@
+module lb {
+  namespace "http://pound/lb";
+  prefix lb;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "This YANG model mimics the configuration of the
+               pound loadbalancer, See http://www.apsis.ch/pound/ " ;
+
+  // This is version 1
+  revision 2006-11-05 {
+    description "Initial revision.";
+  }
+
+
+
+  container lbConfig {
+
+    leaf alive {
+      type int32;
+      description "backend healthcheck interval (seconds)";
+    }
+
+    leaf client {
+      type int32;
+      description "client timeout value";
+    }
+
+    leaf counter {
+      config false;
+      type int32;
+      tailf:cdb-oper  {
+        tailf:persistent false;
+      }
+    }
+
+
+    container system {
+      description "Setting for some simple system properties";
+      leaf ntp-server {
+        type inet:ipv4-address;
+      }
+      container resolver {
+        leaf search {
+          type string;
+        }
+        leaf nameserver {
+          type inet:ipv4-address;
+        }
+      }
+    }
+
+    list listener {
+      key "ip port";
+      leaf ip {
+        type inet:ipv4-address;
+      }
+      leaf port {
+        type inet:port-number;
+        description "Port number to bind to";
+
+      }
+      leaf-list xHTTP {
+        type enumeration {
+          enum default;
+          enum extended;
+          enum webdav;
+          enum msrpc;
+        }
+
+      }
+      leaf client {
+        type int32;
+        description "Override the global Client time-out value.";
+      }
+      leaf checkURL {
+        type string;
+        description "Define  a  pattern  that must be matched
+                     by each request sent to this listener";
+      }
+      leaf err414 {
+        type string;
+        description "text to be displayed if an Error 414 occurs.";
+        default "Request URI is too long.";
+      }
+      leaf err500 {
+        type string;
+        description "text to be displayed if  an  Error  500  occurs.";
+        default "An  internal  server error occurred. Please try again
+                 later.";
+      }
+      leaf err501 {
+        type string;
+        description "text to be displayed if  an  Error  501  occurs.";
+        default "This method may not be used.";
+      }
+      leaf err503 {
+        type string;
+        description "text to be displayed if  an  Error  503  occurs.";
+        default "The  service  is  not  available.  Please
+                 try  again later.";
+      }
+      leaf maxrequest {
+        type int32;
+        description "Request maximal size";
+      }
+      leaf headremove {
+        type string;
+        description "Remove incoming headers that match pattern";
+      }
+      leaf addheader {
+        type string;
+        description "add header to request for backend";
+      }
+      container https {
+        presence "HTTPS is enabled for this listener";
+        leaf certfile {
+          type string;
+          description "File containing the certificate";
+          mandatory true;
+        }
+        leaf clientcert {
+          type enumeration {
+            enum dont-ask;
+            enum ask;
+            enum ask-and-fail;
+            enum ask-no-verify;
+          }
+          description "Ask for client cert";
+          default dont-ask;
+        }
+        leaf ciphers {
+          type string;
+          description "SSL cipher list that are accepted by SSL conn";
+          default "DEFAULT";
+        }
+      }
+      list service {
+        key "name";
+        //unique "number";
+        leaf name {
+          type string;
+          description "The name of the service";
+        }
+        leaf number {
+          type int32;
+          description "The number of the service - services are tried
+                       in order ";
+          mandatory true;
+        }
+
+        leaf URL-pattern {
+          type string;
+          description "Match the incoming request - if fail - try
+                       next service ";
+        }
+        leaf-list head-require-pattern {
+          type string;
+          description "At least one header must match for this service
+                       to be chosen";
+        }
+        leaf-list head-deny {
+          type string;
+          description "If at least one header matches this pattern -
+                       this service is not choosen";
+        }
+        list backend {
+          key "ip port";
+          leaf ip {
+            type inet:ipv4-address;
+          }
+          leaf port {
+            type inet:port-number;
+          }
+          leaf priority {
+            type int32 {
+              range "1..9";
+            }
+            default 5;
+          }
+        }
+        container session {
+          leaf type {
+            type enumeration {
+              enum IP;
+              enum BASIC;
+              enum URL;
+              enum PARM;
+              enum COOKIE;
+              enum HEADER;
+            }
+            description
+              "What  kind  of  sessions  are  we  looking  for
+               IP (the client
+               address), BASIC (basic authentication), URL (a  request
+               parameter),  PARM  (a  URI  parameter),  COOKIE (a
+               certain cookie), or HEADER (a certain request header). ";
+               mandatory true;
+          }
+          leaf ttl {
+            type uint32;
+            description "ttl in seconds";
+          }
+          leaf ID {
+            type string;
+            description
+            "The  session  identifier.  This  directive is permitted
+            only for sessions of type URL (the name of the request
+            parameter we  need to  track),  COOKIE  (the  name  of
+            the cookie) and HEADER (the header name).";
+          }
+        }
+      }
+    }
+  }
+}

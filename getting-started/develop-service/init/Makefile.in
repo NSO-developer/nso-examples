@@ -1,0 +1,20 @@
+all:
+	$(MAKE) -C packages/router/src all
+	$(MAKE) netsim
+
+netsim:
+	ncs-netsim create-network ./packages/router 3 ex --dir ./netsim
+
+showcase-clean-start: clean all
+	-ncs-netsim -a stop
+	ncs-netsim -a start
+
+clean:
+	for f in packages/*/src; do \
+		$(MAKE) -C $$f clean || exit 1; \
+	done
+	rm -rf ./netsim  logs/* state/* ncs-cdb/*.cdb
+
+stop:
+	-ncs-netsim -a stop
+	-ncs --stop

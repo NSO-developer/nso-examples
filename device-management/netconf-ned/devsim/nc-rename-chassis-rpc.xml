@@ -1,0 +1,34 @@
+<edit-data xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda"
+  xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+  <datastore>ds:candidate</datastore>
+  <config>
+    <hardware xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"
+      xmlns="urn:ietf:params:xml:ns:yang:ietf-hardware">
+      <component nc:operation="delete">
+        <name>chassis</name>
+      </component>
+      <component>
+        <name>thething</name>
+        <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+          ianahw:stack</class>
+        <parent-rel-pos>0</parent-rel-pos>
+        <alias>dummy</alias>
+        <asset-id>dummy</asset-id>
+        <uri>urn:dummy</uri>
+      </component>
+      <component>
+        <name>system-controller</name>
+        <parent>thething</parent>
+      </component>
+      <component>
+        <name>rack-1</name>
+        <parent>thething</parent>
+      </component>
+      <component>
+        <name>l2-switch</name>
+        <parent>thething</parent>
+        <parent-rel-pos>2</parent-rel-pos>
+      </component>
+    </hardware>
+  </config>
+</edit-data>

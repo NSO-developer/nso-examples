@@ -1,0 +1,49 @@
+module esc_opdata_state_machines {
+
+  /*
+   * This represents operational data of the state machines
+   */
+
+  namespace "http://www.cisco.com/esc/esc_opdata_state_machines";
+
+  prefix "esc_opdata_state_machines";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Elie El Ajaltouni <eelajalt@cisco.com>";
+
+  revision 2014-09-22 {
+    description
+      "Elastic Services Controller Module's state machines operational data";
+  }
+
+  grouping esc_opdata_state_machines {
+    description
+      "This contains all the operational data of the service and VM
+       state machines";
+    container state_machine {
+      leaf state {
+        description "State in which service is currently in";
+        type types:service_state_machine_states;
+      }
+
+      container vm_state_machines {
+        list vm_state_machine {
+          key "vm_name";
+
+          leaf vm_name {
+            description "Name uniquely identifies a VM";
+            type string;
+          }
+
+          leaf state {
+            description "State in which VM is currently in";
+            type types:vm_state_machine_states;
+          }
+        }
+      }
+    }
+  }
+}

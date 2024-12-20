@@ -1,0 +1,28 @@
+<edit-data xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-nmda"
+  xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+  <datastore>ds:candidate</datastore>
+  <config>
+    <hardware xmlns="urn:ietf:params:xml:ns:yang:ietf-hardware">
+      <component>
+        <name>carbon</name>
+        <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+          ianahw:module</class>
+        <parent>slot-1-4-1</parent>
+        <parent-rel-pos>1040100</parent-rel-pos>
+        <alias>dummy</alias>
+        <asset-id>dummy</asset-id>
+        <uri>urn:dummy</uri>
+      </component>
+      <component>
+        <name>carbon-port-4</name>
+        <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+          ianahw:port</class>
+        <parent>carbon</parent>
+        <parent-rel-pos>1040104</parent-rel-pos>
+        <alias>dummy-port</alias>
+        <asset-id>dummy</asset-id>
+        <uri>urn:dummy</uri>
+      </component>
+    </hardware>
+  </config>
+</edit-data>

@@ -1,0 +1,30 @@
+   <alarms xmlns="http://tail-f.com/ns/ncs-alarms">
+      <alarm-model>
+        <alarm-type>
+          <type xmlns:ma="http://examples.com/ma">ma:webserver-on-fire</type>
+          <event-type>equipmentAlarm</event-type>
+          <has-clear>true</has-clear>
+          <kind-of-alarm>root-cause</kind-of-alarm>
+          <probable-cause>0</probable-cause>
+        </alarm-type>
+
+        <alarm-type>
+          <type xmlns:ma="http://examples.com/ma">ma:link-up</type>
+          <event-type>equipmentAlarm</event-type>
+          <has-clear>false</has-clear>
+          <kind-of-alarm>root-cause</kind-of-alarm>
+          <probable-cause>0</probable-cause>
+        </alarm-type>
+
+        <alarm-type>
+          <type xmlns:ma="http://examples.com/ma">ma:link-down</type>
+          <event-type>equipmentAlarm</event-type>
+          <has-clear>false</has-clear>
+          <kind-of-alarm>root-cause</kind-of-alarm>
+          <probable-cause>0</probable-cause>
+        </alarm-type>
+
+
+      </alarm-model>
+   </alarms>
+

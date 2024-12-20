@@ -1,0 +1,21 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>xml-rpc</name>
+  <package-version>1.0</package-version>
+  <description>XML-Rpc Ned Example</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>xml-rpc-ned</name>
+    <ned>
+      <generic>
+        <ned-id
+            xmlns:id="http://example.com/xmlrpcdevice/xmlrpc/id"
+            >id:genxmlrpc</ned-id>
+        <java-class-name>com.example.xmlrpcdevice.xmlrpc.XMLRpcNed
+        </java-class-name>
+      </generic>
+      <device>
+        <vendor>Apache XML-RPC</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

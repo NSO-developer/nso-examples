@@ -1,0 +1,60 @@
+module device-action {
+  namespace "http://example.com/device-actions";
+  prefix da;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "A small test module to support device migration";
+
+
+  container device-action {
+    tailf:action extract-device {
+      tailf:actionpoint device-action-point;
+      input {
+        leaf name {
+          type string;
+          mandatory true;
+        }
+        leaf delete {
+          type boolean;
+          default "false";
+        }
+      }
+      output {
+        leaf config {
+          type string;
+        }
+      }
+    }
+
+    tailf:action delete-device {
+      tailf:actionpoint device-action-point;
+      input {
+        leaf name {
+          type string;
+          mandatory true;
+        }
+      }
+      output {
+      }
+    }
+
+    tailf:action install-device {
+      tailf:actionpoint device-action-point;
+      input {
+        leaf name {
+          type string;
+          mandatory true;
+        }
+        leaf config {
+          type string;
+          mandatory true;
+        }
+      }
+      output {
+      }
+    }
+  }
+}

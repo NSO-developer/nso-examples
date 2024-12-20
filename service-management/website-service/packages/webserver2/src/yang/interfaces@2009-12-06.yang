@@ -1,0 +1,123 @@
+module interfaces {
+  namespace "http://acme.com/if";
+  prefix if;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "Interface configuration";
+
+
+
+  // This is version 2
+  revision 2009-12-06 {
+    description "Initial revision.";
+  }
+
+  grouping ifdata {
+    leaf ipv4-address {
+      type inet:ipv4-address;
+    }
+    leaf ipv4-mask {
+      type inet:ipv4-address;
+    }
+  }
+
+
+  list interface {
+    key name;
+    leaf name {
+      type string;
+    }
+    leaf macaddr {
+      type yang:mac-address;
+      mandatory true;
+    }
+    uses ifdata;
+    leaf status {
+      type enumeration {
+        enum Up;
+        enum Down;
+      }
+      default Up;
+    }
+    leaf mtu {
+      type uint32;
+    }
+
+    list alias {
+      key number;
+      leaf number {
+        type uint16;
+      }
+      uses ifdata;
+    }
+    leaf v2-foobar {
+      type string;
+    }
+    leaf speed {
+      type uint32;
+      default 1000000;
+    }
+
+    leaf txqueuelen {
+      type int32;
+    }
+
+    container stats {
+      config false;
+      tailf:callpoint if-stats;
+
+      container receive {
+        leaf bytes {
+          type uint32;
+          mandatory true;
+        }
+        leaf packets {
+          type uint32;
+          mandatory true;
+        }
+        leaf errors {
+          type uint32;
+          mandatory true;
+        }
+        leaf dropped {
+          type uint32;
+          mandatory true;
+        }
+      }
+      container transmit {
+        leaf bytes {
+          type uint32;
+          mandatory true;
+        }
+        leaf packets {
+          type uint32;
+          mandatory true;
+        }
+        leaf errors {
+          type uint32;
+          mandatory true;
+        }
+        leaf dropped {
+          type uint32;
+          mandatory true;
+        }
+        leaf collisions {
+          type uint32;
+          mandatory true;
+        }
+      }
+    }
+
+  }
+}

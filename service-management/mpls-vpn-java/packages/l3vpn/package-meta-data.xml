@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>l3vpn</name>
+  <package-version>1.0</package-version>
+  <description>Skeleton for a resource facing service - RFS</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>RFSSkeleton</name>
+    <callback>
+      <java-class-name>com.example.l3vpn.l3vpnRFS</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

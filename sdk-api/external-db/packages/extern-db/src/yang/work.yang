@@ -1,0 +1,36 @@
+module work {
+  namespace "http://example.com/work";
+  prefix w;
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  description "This model is used as a simple example model
+               illustrating how to have NCS configuration data
+               that is stored outside of NCS - i.e not in CDB";
+
+  revision 2010-04-26 {
+    description "Initial revision.";
+  }
+
+  container work {
+    tailf:callpoint workPoint;
+    list item {
+      key key;
+      leaf key {
+        type int32;
+      }
+      leaf title {
+        type string;
+      }
+      leaf responsible {
+        type string;
+      }
+      leaf comment {
+        type string;
+      }
+    }
+  }
+}

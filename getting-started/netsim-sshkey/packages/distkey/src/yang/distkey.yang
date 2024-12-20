@@ -1,0 +1,187 @@
+module distkey {
+  yang-version 1.1;
+  namespace "http://com/example/distkey";
+  prefix dk;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import tailf-aaa {
+    prefix aaa;
+  }
+  import ssh-authkey {
+    prefix sa;
+  }
+
+  organization "Tail-f";
+  description
+    "An example Nano service that generates client authentication keys,
+     distributes the public key to network elements as an authorized key,
+     configures NSO to use the key for authentication with the network
+     elements, and tests that the connection to the network elements can be
+     established.";
+
+  revision 2023-02-02 {
+    description
+      "Initial revision.";
+  }
+
+  // Service model
+  container pubkey-dist {
+    list key-auth {
+      key "ne-name local-user";
+
+      uses ncs:nano-plan-data;
+      uses ncs:service-data;
+      ncs:servicepoint "distkey-servicepoint";
+
+      leaf ne-name {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf local-user {
+        type leafref {
+          path "/ncs:devices/ncs:authgroups/ncs:group/ncs:umap/ncs:local-user";
+          require-instance false;
+        }
+      }
+      leaf remote-name {
+        type leafref {
+          path "/ncs:devices/ncs:authgroups/ncs:group/ncs:umap/ncs:remote-name";
+          require-instance false;
+        }
+        mandatory true;
+      }
+      leaf authgroup-name {
+        type leafref {
+          path "/ncs:devices/ncs:authgroups/ncs:group/ncs:name";
+          require-instance false;
+        }
+        mandatory true;
+      }
+      leaf passphrase {
+        // Leave unset for no passphrase
+        tailf:suppress-echo true;
+        type tailf:aes-256-cfb-128-encrypted-string {
+          length "10..max" {
+            error-message "The passphrase must be at least 10 characters long";
+          }
+          pattern ".*[a-z]+.*" {
+            error-message "The passphrase must have at least one lower case" +
+                          " alpha";
+          }
+          pattern ".*[A-Z]+.*" {
+            error-message "The passphrase must have at least one upper case" +
+                          " alpha";
+          }
+          pattern ".*[0-9]+.*" {
+            error-message "The passphrase must have at least one digit";
+          }
+          pattern ".*[<>~;:!@#/$%^&*=-]+.*" {
+            error-message "The passphrase must have at least one of these" +
+                          " symbols: [<>~;:!@#/$%^&*=-]+";
+          }
+          pattern ".* .*" {
+            modifier invert-match;
+            error-message "The passphrase must have no spaces";
+          }
+        }
+      }
+      action generate-keys {
+        tailf:actionpoint generate-keys;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
+      action delete-keys {
+        tailf:actionpoint delete-keys;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
+    }
+  }
+
+  // Nano service specifics
+  identity generated {
+    base ncs:plan-state;
+  }
+  identity distributed {
+    base ncs:plan-state;
+  }
+  identity configured {
+    base ncs:plan-state;
+  }
+  identity ne {
+    base ncs:plan-component-type;
+  }
+
+  ncs:plan-outline distkey-plan {
+    description "Plan for distributing a public key";
+    ncs:component-type "dk:ne" {
+      ncs:state "ncs:init";
+      ncs:state "dk:generated" {
+        ncs:create {
+          // Request the generate-keys action
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "generate-keys";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+        ncs:delete {
+          // Request the delete-keys action
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "delete-keys";
+            ncs:result-expr "result = 'true'";
+          }
+        }
+      }
+      ncs:state "dk:distributed" {
+        ncs:create {
+          // Invoke a Python program to distribute the authorized public key to
+          // the network element
+          ncs:nano-callback;
+          ncs:force-commit;
+        }
+      }
+      ncs:state "dk:configured" {
+        ncs:create {
+          // Invoke a Python program that in turn invokes a service template to
+          // configure NSO to use public key authentication with the network
+          // element
+          ncs:nano-callback;
+          // Request the connect action to test the public key authentication
+          ncs:post-action-node "/ncs:devices/device[name=$NE-NAME]" {
+            ncs:action-name "connect";
+            ncs:result-expr "result = 'true'";
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+  ncs:service-behavior-tree distkey-servicepoint {
+    description "One component per distkey behavior tree";
+    ncs:plan-outline-ref "dk:distkey-plan";
+    ncs:selector {
+      // The network element name used with this component
+      ncs:variable "NE-NAME" {
+        ncs:value-expr "current()/ne-name";
+      }
+      // Component for setting up public key authentication
+      ncs:create-component "concat(current()/ne-name, '-',current()/local-user)"
+      {
+        ncs:component-type-ref "dk:ne";
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <tacacs xmlns="http://tail-f.com/ns/cisco-nso-tacacs-auth">
+    <host>127.0.0.1</host>
+    <port>5049</port>
+    <secret>tacacs123</secret>
+  </tacacs>
+</config>

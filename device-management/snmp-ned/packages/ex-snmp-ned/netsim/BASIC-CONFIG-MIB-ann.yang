@@ -1,0 +1,33 @@
+module BASIC-CONFIG-MIB-ann {
+  namespace "urn:dummy";
+  prefix dummy;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import BASIC-CONFIG-MIB {
+    prefix x;
+  }
+
+  description
+    "Annotation module for the generated BASIC-CONFIG-MIB YANG module";
+
+  tailf:annotate "/x:BASIC-CONFIG-MIB/x:bscActTable/x:bscActEntry" {
+    tailf:annotate "x:bscActFlow" {
+      // add validation point that checks admin state
+      tailf:validate basic_vp {
+        tailf:dependency ".";
+      }
+    }
+  }
+
+  tailf:annotate "/x:BASIC-CONFIG-MIB/x:bscBaseTable/x:bscBaseEntry" {
+    tailf:annotate "x:bscBaseErr" {
+      // add validation point that sets error when bscBaseErr is set
+      tailf:validate basic_vp {
+        tailf:dependency ".";
+      }
+    }
+  }
+
+}

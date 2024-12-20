@@ -1,0 +1,17 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>webserver</name>
+  <package-version>1.0</package-version>
+  <description>The Webserver NED in the Website example</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>webserver</name>
+    <ned>
+      <netconf>
+        <ned-id>to be replaced by build</ned-id>
+      </netconf>
+      <device>
+        <vendor>Acme Inc.</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

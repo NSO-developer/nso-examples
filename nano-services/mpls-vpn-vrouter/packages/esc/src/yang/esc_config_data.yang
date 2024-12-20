@@ -1,0 +1,97 @@
+module esc_config_data {
+
+  namespace "http://www.cisco.com/esc/esc_config_data";
+  prefix "esc_config_data";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's config data descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Config Data";
+  }
+
+  grouping esc_config_data {
+    container config_data {
+      description
+        "This enables to pass day-0 configuration data into the service
+         VM. There are two ways: File, and inline data. In either case
+         a CDROM is created with the contents of the configuration
+         data and is attached to the VM.";
+      list configuration {
+        key "dst";
+        description
+          "This represents a list of configuration files/templates.
+           This being a list allows one to specify multiple day-0
+           configurations.";
+
+        /* Use choice as only one of file or data can be specified */
+        choice input_method {
+          case file {
+            leaf file {
+              description
+                "ESC downloads the file specified by the URL.
+                 This will be used as a template to replace the tokens
+                 specified in this template with the values specified in the
+                 'variable' section. This field and 'data are mutually
+                 exclusive. This template is used to generate the
+                 actual day-0 configuration files.";
+              type types:escuri;
+            }
+          }
+          case data {
+            leaf data {
+              description
+                "Instead of specifying a URL for as template, this allows to
+                 use inline text as template. This and 'file' element are
+                 mutually exclusive.";
+              type types:escbigdata;
+            }
+          }
+        }
+        leaf dst {
+          description
+            "Name of the configuration file that service VM is expecting.";
+          type types:escfilepath;
+          mandatory true;
+        }
+        list variable {
+          key "name";
+          description
+            "These are the variables that are specified in the template. This is
+             an unbounded list. Each variable should have a name and
+             at least one value.  Multiple values can be specified if
+             a non zero value is specified to 'min' and 'max' in the
+             scaling section. The values here are treated as a pool
+             and is managed by ESC.  ESC picks up one value each time
+             it spins a new VM either becuase scaling or because a
+             value greater than 1 is specified for 'min' in the
+             scaling section. When the VMs are destroyed because of
+             scale-in the values are returned back to the pool";
+          leaf name {
+            description
+              "Name of the variable.
+               This is case sensitive and should match exactly
+               as given in the template. ESC token manager will scan
+               the template file and will replace the FIRST occurance
+               of the variable with the next non-used";
+            type types:escname;
+            mandatory true;
+          }
+          leaf-list val {
+            description
+              "Number of values here should match the max value specified in
+               the scaling section so that we have enough values for all the
+               VMs that can be spun.";
+            type types:escbigdata;
+          }
+        }
+      }
+    }
+  }
+}

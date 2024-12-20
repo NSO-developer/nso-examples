@@ -1,0 +1,4 @@
+# service | device | interface | ip-address | mask | variant
+#---------|--------|-----------|------------|------|---------
+instance1 | c1     | 0/1       | 10.1.2.3   |      |
+instance2 | c2     | 0/2       | 10.2.2.3   | 28   | v3

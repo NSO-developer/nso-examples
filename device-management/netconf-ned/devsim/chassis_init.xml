@@ -1,0 +1,482 @@
+<config xmlns:or="urn:ietf:params:xml:ns:yang:ietf-origin"
+  xmlns="http://tail-f.com/ns/config/1.0">
+  <hardware or:origin="or:intended"
+    xmlns="urn:ietf:params:xml:ns:yang:ietf-hardware">
+    <component>
+      <name>chassis</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:stack
+      </class>
+      <description>Tail-f System</description>
+      <parent-rel-pos>0</parent-rel-pos>
+    </component>
+    <component>
+      <name>system-controller</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:cpu
+      </class>
+      <description>Tail-f System</description>
+      <parent>chassis</parent>
+      <parent-rel-pos>1</parent-rel-pos>
+    </component>
+    <component>
+      <name>l2-switch</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:backplane
+      </class>
+      <description>Tail-f System</description>
+      <parent>chassis</parent>
+      <parent-rel-pos>2</parent-rel-pos>
+    </component>
+    <component>
+      <name>rack-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:chassis
+      </class>
+      <description>Tail-f System</description>
+      <parent>chassis</parent>
+      <parent-rel-pos>1000000</parent-rel-pos>
+    </component>
+    <component>
+      <name>fan-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:fan
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1000001</parent-rel-pos>
+    </component>
+    <component>
+      <name>psu-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:power-supply
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1000002</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-10</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1011000</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-11</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1011100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-12</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1011200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-13</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1011300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-14</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1011400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-2</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-3</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-4</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-5</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010500</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-6</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010600</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-7</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>10102700</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-8</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010800</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-1-9</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-1</parent>
+      <parent-rel-pos>1010900</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-10</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1041000</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-11</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1041100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-12</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1041200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-13</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1041300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-14</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1041400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-2</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-3</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-4</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-5</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040500</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-6</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040600</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-7</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040700</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-8</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040800</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-4-9</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-4</parent>
+      <parent-rel-pos>1040900</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-10</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1051000</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-11</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1051100</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-12</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1051200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-13</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1051300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-14</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1051400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-2</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050200</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-3</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050300</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-4</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050400</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-5</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050500</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-6</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050600</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-7</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050700</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-8</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050800</parent-rel-pos>
+    </component>
+    <component>
+      <name>slot-1-5-9</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>subrack-1-5</parent>
+      <parent-rel-pos>1050900</parent-rel-pos>
+    </component>
+    <component>
+      <name>subrack-1-1</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1010000</parent-rel-pos>
+    </component>
+    <component>
+      <name>subrack-1-2</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1020000</parent-rel-pos>
+    </component>
+    <component>
+      <name>subrack-1-3</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1030000</parent-rel-pos>
+    </component>
+    <component>
+      <name>subrack-1-4</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1040000</parent-rel-pos>
+    </component>
+    <component>
+      <name>subrack-1-5</name>
+      <class xmlns:ianahw="urn:ietf:params:xml:ns:yang:iana-hardware">
+        ianahw:container
+      </class>
+      <description>Tail-f System</description>
+      <parent>rack-1</parent>
+      <parent-rel-pos>1050000</parent-rel-pos>
+    </component>
+  </hardware>
+</config>

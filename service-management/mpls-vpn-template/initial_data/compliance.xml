@@ -1,0 +1,35 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <compliance xmlns="http://tail-f.com/ns/ncs">
+  <reports>
+    <report>
+      <name>Compliance-Audit</name>
+      <device-check>
+        <all-devices/>
+        <current-out-of-sync>true</current-out-of-sync>
+        <historic-changes>true</historic-changes>
+      </device-check>
+      <service-check>
+        <all-services/>
+        <current-out-of-sync>true</current-out-of-sync>
+        <historic-changes>true</historic-changes>
+      </service-check>
+      <compare-template>
+        <template-name>snmp1</template-name>
+        <device-group>P</device-group>
+        <variable>
+          <name>COMMUNITY</name>
+          <value>'public'</value>
+        </variable>
+      </compare-template>
+      <compare-template>
+        <template-name>snmp1</template-name>
+        <device-group>PE</device-group>
+        <variable>
+          <name>COMMUNITY</name>
+          <value>'public'</value>
+        </variable>
+      </compare-template>
+    </report>
+  </reports>
+  </compliance>
+</config>

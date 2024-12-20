@@ -1,0 +1,69 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$PE}</name>
+      <config>
+        <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+          <name>{/name}-{$CE}</name>
+          <class>
+            <class-default>
+              <map>class-default</map>
+              <service-policy>
+                <name>{$POLICY_NAME}</name>
+              </service-policy>
+            </class-default>
+          </class>
+        </policy-map>
+        <policy-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+          <name>{$POLICY_NAME}</name>
+          <class>
+            <class-ref>
+              <map>{$CLASS_NAME}</map>
+              <bandwidth>
+                <bandwidth-units>
+                  <rate>{$CLASS_BW}</rate>
+                </bandwidth-units>
+              </bandwidth>
+            </class-ref>
+          </class>
+        </policy-map>
+
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm" tags="merge">
+          <class-of-service>
+
+            <interfaces>
+              <interface>
+                <name>{$PE_INT_NAME}</name>
+                <unit>
+                  <name>{$VLAN_ID}</name>
+                  <scheduler-map>{$POLICY_NAME}</scheduler-map>
+                  <classifiers>
+                    <dscp>
+                      <name>{$POLICY_NAME}</name>
+                    </dscp>
+                  </classifiers>
+                </unit>
+              </interface>
+            </interfaces>
+            <scheduler-maps>
+              <name>{$POLICY_NAME}</name>
+              <forwarding-class>
+                <name>{$CLASS_NAME}</name>
+                <scheduler>{$POLICY_NAME}-{$CLASS_NAME}-SCHED</scheduler>
+              </forwarding-class>
+            </scheduler-maps>
+            <schedulers>
+              <name>{$POLICY_NAME}-{$CLASS_NAME}-SCHED</name>
+              <transmit-rate>
+                <percent>{$CLASS_BW}</percent>
+              </transmit-rate>
+              <buffer-size>
+                <percent>{$CLASS_BW}</percent>
+              </buffer-size>
+            </schedulers>
+          </class-of-service>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

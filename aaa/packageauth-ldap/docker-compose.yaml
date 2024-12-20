@@ -1,0 +1,32 @@
+version: '2'
+
+services:
+  openldap:
+    image: docker.io/bitnami/openldap:2.6
+    container_name: openldap_tls
+    hostname: olle_tls
+    ports:
+      - '2389:2389'
+      - '2636:2636'
+    environment:
+      - BITNAMI_DEBUG=yes
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin
+      - LDAP_ROOT=dc=example,dc=com
+      - LDAP_GROUP=group01
+      - LDAP_USERS=user01,user02
+      - LDAP_PASSWORDS=password1,password2
+      - LDAP_EXTRA_SCHEMAS=cosine,inetorgperson,nis,memberof
+      - LDAP_ENABLE_TLS=yes
+      - LDAP_TLS_CERT_FILE=/opt/bitnami/openldap/certs/openldap.crt
+      - LDAP_TLS_KEY_FILE=/opt/bitnami/openldap/certs/openldap.key
+      - LDAP_TLS_CA_FILE=/opt/bitnami/openldap/certs/openldapCA.crt
+    volumes:
+      - 'openldap_data:/bitnami/openldap/tls'
+      - './ldifs_tls/memberof.ldif:/opt/bitnami/openldap/etc/schema/memberof.ldif'
+      - /path/to/certs:/opt/bitnami/openldap/certs
+      - /path/to/openldap-data-persistence:/bitnami/openldap/
+
+volumes:
+  openldap_data:
+    driver: local

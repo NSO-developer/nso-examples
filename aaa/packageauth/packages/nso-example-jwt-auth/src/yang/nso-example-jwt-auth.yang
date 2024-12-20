@@ -1,0 +1,36 @@
+module nso-example-jwt-auth {
+  yang-version 1.1;
+  namespace "urn:nso-example-jwt-auth";
+  prefix nso-example-jwt-auth;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  organization "Tail-f Systems";
+
+  description
+    "This model contains the configuration for the example JWT
+     authentication NCS package.";
+
+  revision 2023-04-19 {
+    description
+      "Initial revision.";
+  }
+
+
+  container jwt-auth {
+    leaf algorithm {
+      type string;
+      default "HS256";
+      description
+        "The MAC algorithm used to validate the JWT.";
+    }
+
+    leaf secret {
+      type tailf:aes-256-cfb-128-encrypted-string;
+      description
+        "The shared secret used to validate the JWT.";
+    }
+  }
+}

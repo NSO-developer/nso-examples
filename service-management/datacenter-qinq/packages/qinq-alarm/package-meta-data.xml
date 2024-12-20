@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>qinq-alarm</name>
+  <package-version>1.0</package-version>
+  <description>Queue in Queue Alarm Generator</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <!-- required-package>
+    <name>qinqui</name>
+  </required-package -->
+
+
+  <component>
+    <name>alarm-actions</name>
+    <callback>
+      <java-class-name>com.example.qinqalarm.ActionCb</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

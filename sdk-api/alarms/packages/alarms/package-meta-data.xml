@@ -1,0 +1,29 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>Alarm Producer/Consumer</name>
+  <package-version>1.0</package-version>
+  <description>NCS Alarm action generator</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+
+  <component>
+    <name>AlarmConsumer</name>
+    <application>
+      <java-class-name>
+        com.example.alarm.consumer.AlarmConsumer
+      </java-class-name>
+    </application>
+  </component>
+
+  <component>
+    <name>AlarmActionSubmitter</name>
+    <callback>
+      <java-class-name>com.example.alarm.producer.AlarmActionSubmitter
+      </java-class-name>
+    </callback>
+  </component>
+
+
+</ncs-package>

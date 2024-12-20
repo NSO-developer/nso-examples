@@ -1,0 +1,70 @@
+<config>
+  <vrf xmlns="urn:ios">
+    <definition>
+      <name>{/name}</name>
+      <rd>{/route-distinguisher}:1</rd>
+      <address-family>
+        <ipv4>
+          <route-target>
+            <export>
+              <asn-ip>{/route-distinguisher}:1</asn-ip>
+            </export>
+            <import>
+              <asn-ip>{/route-distinguisher}:1</asn-ip>
+            </import>
+          </route-target>
+        </ipv4>
+      </address-family>
+    </definition>
+  </vrf>
+  <?if {starts-with($PE_INT_NAME,'GigabitEthernet')}?>
+  <interface xmlns="urn:ios">
+    <GigabitEthernet>
+      <name>{substring($PE_INT_NAME,16)}.{$VLAN_ID}</name>
+      <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
+      <encapsulation>
+        <dot1Q>
+          <vlan-id>{$VLAN_ID}</vlan-id>
+        </dot1Q>
+      </encapsulation>
+      <ip>
+        <address>
+          <primary>
+            <address>{$LINK_PE_ADR}</address>
+            <mask>{$LINK_MASK}</mask>
+          </primary>
+        </address>
+      </ip>
+      <ip-vrf>
+        <ip>
+          <vrf>
+            <forwarding>{/name}</forwarding>
+          </vrf>
+        </ip>
+      </ip-vrf>
+    </GigabitEthernet>
+  </interface>
+  <?end?>
+  <router xmlns="urn:ios">
+    <bgp>
+      <as-no>100</as-no>
+      <address-family>
+        <with-vrf>
+          <ipv4>
+            <af>unicast</af>
+            <vrf>
+              <name>{/name}</name>
+              <neighbor>
+                <id>{$LINK_CE_ADR}</id>
+                <remote-as>{/route-distinguisher}</remote-as>
+                <activate/>
+                <as-override>
+                </as-override>
+              </neighbor>
+            </vrf>
+          </ipv4>
+        </with-vrf>
+      </address-family>
+    </bgp>
+  </router>
+</config>

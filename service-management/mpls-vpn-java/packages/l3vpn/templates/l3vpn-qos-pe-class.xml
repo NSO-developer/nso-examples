@@ -1,0 +1,43 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$PE}</name>
+      <config>
+        <class-map xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="merge">
+          <name>{$CLASS_NAME}</name>
+          <prematch>match-any</prematch>
+          <match>
+            <dscp>
+              <dscp-list>{$CLASS_DSCP}</dscp-list>
+            </dscp>
+            <!-- dscp is deleted in NED version 3.5.0.6 -->
+          </match>
+        </class-map>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm" tags="merge">
+          <class-of-service>
+            <classifiers>
+              <dscp>
+                <name>{$POLICY_NAME}-{$CE}</name>
+                <import>default</import>
+                <forwarding-class>
+                  <name>{$CLASS_NAME}</name>
+                  <loss-priority>
+                    <name>low</name>
+                    <code-points>{$CLASS_DSCP}</code-points>
+                  </loss-priority>
+                </forwarding-class>
+              </dscp>
+            </classifiers>
+            <forwarding-classes>
+              <queue>
+                <name>{$CLASS_COUNTER}</name>
+                <class-name>{$CLASS_NAME}</class-name>
+                <priority>{$CLASS_PRIORITY}</priority>
+              </queue>
+            </forwarding-classes>
+          </class-of-service>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,9 @@
+<lbConfig xmlns="http://pound/lb">
+  <system>
+    <ntp-server>18.4.5.6</ntp-server>
+    <resolver>
+      <search>acme.com</search>
+      <nameserver>18.4.5.6</nameserver>
+    </resolver>
+  </system>
+</lbConfig>

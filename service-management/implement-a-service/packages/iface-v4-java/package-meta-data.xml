@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>iface</name>
+  <package-version>4.0</package-version>
+  <description>
+    Java- and template-based iface resource facing service
+  </description>
+  <ncs-min-version>5.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>RFSSkeleton</name>
+    <callback>
+      <java-class-name>com.example.iface.ifaceRFS</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

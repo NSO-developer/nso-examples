@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="A1" target="SYSTEM_OUT">
+      <PatternLayout
+      pattern="&#60;%-4p&#62; %d{dd-MMM-yyyy::HH:mm:ss.SSS} %C{1} %t: - %m%n"/>
+    </Console>
+
+    <File name="NCFILEAPP" fileName="logs/REC-NOTIFS-${date:yyyy-MM-dd}.log">
+      <PatternLayout pattern="%level - %m%n"/>
+    </File>
+    <File name="PROPLOGFILEAPP" fileName="logs/props.log">
+      <PatternLayout pattern="%level - %m%n"/>
+    </File>
+  </Appenders>
+
+  <Loggers>
+    <Logger name="com.tailf.ha" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.proto" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.notif" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.ned" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.nsmux" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.navu" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.cdb" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.util" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.conf" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.dp" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.maapi" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.ncs" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.tailf.ncs.logging" level="warn" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+
+    <Logger name="com.tailf.ncs.NcsMain" level="info" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="PROPLOG" level="info" additivity="false">
+      <AppenderRef ref="PROPLOGFILEAPP"/>
+    </Logger>
+    <Logger name="NC-Notif-Reciver" level="info" additivity="false">
+      <AppenderRef ref="NCFILEAPP"/>
+    </Logger>
+    <Logger name="com.example.ncnotifreceiver.NcNotifSubscriber" level="info"
+            additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.example.websiteservice.websiteservice.CdbUpdateHandler"
+            level="info" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+    <Logger name="com.example.websiteservice.websiteservice.WebSiteServiceRFS"
+            level="info" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+
+    <Logger name="NCSLOGGER" level="error" additivity="false">
+      <AppenderRef ref="A1"/>
+    </Logger>
+
+    <Root level="info">
+      <AppenderRef ref="A1"/>
+    </Root>
+  </Loggers>
+</Configuration>

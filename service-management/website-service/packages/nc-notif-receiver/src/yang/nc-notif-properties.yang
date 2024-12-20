@@ -1,0 +1,34 @@
+module nc-notif-properties {
+  namespace "http://examples.com/nc-notif-props";
+  prefix "ncprops";
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container nc-common-properties {
+    leaf device-subscription {
+      type enumeration  {
+        enum www0;
+        enum www1;
+        enum www2;
+        enum lb;
+        enum ALL;
+      }
+      default "ALL";
+      tailf:info "The device name to listen for incomming notification
+       in the example package/ncnc-notif-receiver";
+    }
+
+    leaf stream-name {
+      type string;
+      default "*";
+      tailf:info "The stream name to subscribe to in the example
+      package/ncnc-notif-receiver";
+    }
+  }
+}

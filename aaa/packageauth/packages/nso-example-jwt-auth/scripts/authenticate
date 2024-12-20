@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+
+import base64, json, logging, os, re, sys
+import ncs, _ncs
+import jwt
+
+logdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                      "../../../../../logs")
+logname = os.path.join(logdir, "ncs-python-jwt-auth.log")
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+logfmt = ("%(asctime)s.%(msecs)02d %(filename)s:%(lineno)s"
+          " %(levelname)s: %(message)s")
+logging.basicConfig(filename=logname, filemode="a+", format=logfmt,
+                    datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+def base64_to_str(b):
+    return base64.decodebytes(b.encode("utf-8")).decode("utf-8")
+
+def str_to_base64(s):
+    return base64.encodebytes(s.encode("utf-8")).decode("utf-8")
+
+def lookup_config():
+    """Get shared secret and algorithm stored in NCS"""
+    logger.debug("jwt-auth: Retrieving config data from NCS")
+    with ncs.maapi.single_read_trans("admin", "system") as trans:
+        m = ncs.maapi.Maapi()
+        m.install_crypto_keys()
+        root = ncs.maagic.get_root(trans)
+        config = root.nso_example_jwt_auth__jwt_auth
+        cfg = {"algorithm": config.algorithm,
+               "secret": _ncs.decrypt(config.secret)}
+        return cfg
+
+
+def parse_args(args):
+    """
+    Parse args and put them in a dict.
+
+    See NSO Package Authentication documentation for details.
+    """
+    a = dict(zip(["user", "password", "orig_request", "request", "headers",
+                  "body", "srcip", "srcport", "ctx", "proto"],
+                 args.strip("[]").split(";")))
+    a["user"] = base64_to_str(a["user"])
+    a["password"] = base64_to_str(a["password"])
+    a["orig_request"] = base64_to_str(a["orig_request"])
+    a["request"] = base64_to_str(a["request"])
+    a["headers"] = base64_to_str(a["headers"])
+    a["body"] = base64_to_str(a["body"].replace("\n", ""))
+
+    return a
+
+
+def get_token(args):
+    args = parse_args(args)
+    match = re.search(r"Authorization: Bearer (?P<token>[\w\.\-_]+)",
+                      args["headers"])
+    return match.group("token")
+
+
+def main():
+    """Extract JWT from header Authorization: Bearer <token> and validate."""
+    args = sys.stdin.readline()
+    logger.debug(f"jwt-auth: input {args}")
+    try:
+        token = get_token(args)
+        logger.debug(f"jwt-auth: token = {token}")
+
+        # We show how to decode a JWT with a shared secret below.
+        # This would be the place to remotely validate the JWT.
+
+        # get config from /nso-example-jwt-auth:jwt-auth
+        cfg = lookup_config()
+
+        claims = jwt.decode(token, key=cfg["secret"],
+                            algorithms=[cfg["algorithm"]])
+        tailf_claims = claims["http://tail-f.com/ns/ncs-jwt"]
+
+        user = str_to_base64(claims["sub"]).strip("\n")
+        packageauth = (f"accept_username {user} " +
+                       tailf_claims["groups"] + " " +
+                       tailf_claims["uid"] + " " +
+                       tailf_claims["gid"] + " " +
+                       tailf_claims["supplementary_gids"] + " " +
+                       tailf_claims["HOME"])
+        logger.debug(f"jwt-auth: {packageauth}")
+        print(f"{packageauth}")
+
+    except Exception as e:
+        logger.debug(f"jwt-auth: {e}")
+        print("reject 'access denied'")
+
+
+if __name__ == "__main__":
+    main()

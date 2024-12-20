@@ -1,0 +1,46 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+  <template>
+    <name>snmp1</name>
+
+    <ned-id>
+      <id xmlns:id="http://tail-f.com/ns/ncs-ned">id:netconf</id>
+      <config>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <snmp>
+            <community>
+              <name>{$COMMUNITY}</name>
+              <authorization>read-only</authorization>
+            </community>
+          </snmp>
+        </configuration>
+      </config>
+    </ned-id>
+
+    <ned-id>
+      <id xmlns:id="urn:ios-id">id:cisco-ios</id>
+      <config>
+        <snmp-server xmlns="urn:ios">
+          <community>
+            <name>{$COMMUNITY}</name>
+            <RO/>
+          </community>
+        </snmp-server>
+      </config>
+    </ned-id>
+
+    <ned-id>
+      <id xmlns:id="http://tail-f.com/ned/cisco-ios-xr-id">id:cisco-ios-xr</id>
+      <config>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <community>
+            <name>foobar</name>
+            <RO/>
+          </community>
+        </snmp-server>
+      </config>
+    </ned-id>
+
+  </template>
+  </devices>
+</config>

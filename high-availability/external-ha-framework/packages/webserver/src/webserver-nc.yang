@@ -1,0 +1,18 @@
+module webserver-nc {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/webserver-nc";
+  prefix webserver-nc;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  identity webserver-nc {
+    tailf:abstract;
+    base ned:netconf-ned-id;
+  }
+}

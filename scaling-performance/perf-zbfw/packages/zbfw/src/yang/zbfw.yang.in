@@ -1,0 +1,276 @@
+module zbfw {
+  yang-version 1.1;
+  namespace "http://com/example/zbfw";
+  prefix zbfw;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  organization "Zbfw, Inc.";
+
+  contact
+    "Zbfw, Inc.
+     Email:support@123.abc";
+
+  description
+    "This module defines the data model for management of a zbfw feature";
+
+  revision 2022-11-23 {
+    description
+      "Initial Revision";
+  }
+
+  container policy-templates {
+
+    list policy-template {
+      // Template name should be template name + device name.
+      // e.g template1-ex0
+      key template-name;
+      leaf template-name {
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint zbfw-servicepoint; /*{
+        // Simulate pre-6.0 transaction locking
+        ncs:conflicts-with zbfw-servicepoint;
+      }*/
+
+      tailf:unique-selector 'zone/vpn' {
+        tailf:unique-leaf 'id';
+      }
+
+      list zone {
+        tailf:info "Configure a zone";
+        key "name";
+
+        leaf name {
+          tailf:info "Name of the zone";
+          type string;
+        }
+
+        list vpn {
+          tailf:info "VPN ID";
+          min-elements 1;
+
+          key "id";
+
+          leaf id {
+            type uint16;
+          }
+        }
+      }
+
+      tailf:unique-selector 'zone-pair' {
+        tailf:unique-leaf 'source-zone';
+        tailf:unique-leaf 'destination-zone';
+      }
+
+      list zone-pair {
+        tailf:info "Configure a zone pair";
+        key "name";
+
+        leaf name {
+          tailf:info "Name of the zone pair";
+          type string;
+        }
+
+        leaf source-zone {
+          tailf:info "Name of the source zone";
+          mandatory true;
+          type leafref {
+            path "../../zone/name";
+            require-instance "false";
+          }
+        }
+
+        leaf destination-zone {
+          tailf:info "Name of the destination zone";
+          mandatory true;
+          type leafref {
+            path "../../zone/name";
+            require-instance "false";
+          }
+        }
+
+        leaf zone-policy {
+          tailf:info "Name of the zone policy";
+          mandatory true;
+          type leafref {
+            path "../../zone-based-policy/name";
+          }
+        }
+      } // list zone-pair
+
+      list zone-based-policy {
+        tailf:info "Configure zone-based policy";
+
+        key "name";
+
+        leaf name {
+            tailf:info "Zone policy name";
+            type string;
+        }
+
+        list sequence {
+          tailf:info "List of sequences";
+
+          key "seq-value";
+
+          leaf seq-value {
+            type uint16 {
+              range "0..65535";
+              tailf:info "<0..65535>";
+            }
+          }
+
+          leaf seq-name {
+            tailf:info "Sequence name";
+            type string;
+          }
+
+          container match {
+            tailf:info "Match criteria";
+
+            choice source {
+              case prefix {
+                leaf-list source-ip {
+                  tailf:info "List of source addresses";
+                  type inet:ipv4-prefix;
+                }
+              }
+
+              case prefix-list {
+                leaf-list source-data-prefix-list {
+                  tailf:info "Source prefix list";
+                  type leafref {
+                    path "../../../../lists/data-prefix-list/name";
+                  }
+                }
+              }
+            }
+
+            leaf-list source-port {
+              tailf:info "List of source ports";
+              type uint16;
+            }
+
+            choice destination {
+              case prefix {
+                leaf-list destination-ip {
+                  tailf:info "List of destination addresses";
+                  type inet:ipv4-prefix;
+                }
+              }
+
+              case prefix-list {
+                leaf-list destination-data-prefix-list {
+                  tailf:info "Destination prefix list";
+                  type leafref {
+                    path "../../../../lists/data-prefix-list/name";
+                  }
+                }
+              }
+            }
+
+            leaf-list destination-port {
+              tailf:info "List of destination ports";
+              type uint16;
+            }
+
+            choice protocols {
+              case protocol-entry {
+                leaf-list protocol {
+                  tailf:info "List of protocol values";
+                  type uint8 {
+                    tailf:info "<0..255>";
+                  }
+                }
+              }
+
+              case protocol-name-entry {
+                leaf-list protocol-name {
+                  tailf:info "List of the protocol names";
+                  type string;
+                }
+              }
+            }
+          } //match
+
+          container action {
+              tailf:info "Pass, drop, or inspect";
+
+              leaf action-value {
+                type enumeration {
+                  enum pass;
+                  enum drop;
+                  enum inspect;
+                }
+                default drop;
+              }
+          } // action
+        } // sequence
+        leaf default-action {
+          tailf:info "Pass or drop";
+          type enumeration {
+            enum pass;
+            enum drop;
+          }
+          mandatory true;
+        }
+      } // zone-based-policy
+
+      leaf zone-to-nozone-internet {
+        default allow;
+        tailf:info "Allow or deny";
+        type enumeration {
+          enum allow {
+            value 0;
+          }
+          enum deny;
+        }
+      }
+
+      container lists {
+        list data-prefix-list {
+          tailf:info "List of prefixes";
+          min-elements 1;
+          key "name";
+
+          leaf name {
+            tailf:info "Name of prefix list";
+            type string;
+          }
+
+          list ip-prefix {
+            tailf:info "Prefix";
+            key "ip";
+
+            leaf ip {
+              type inet:ipv4-prefix;
+            }
+
+            leaf ipaddress {
+              tailf:info "IP address";
+              type inet:ip-address;
+            }
+
+            leaf netmask {
+              tailf:info "Netmask";
+              type inet:ip-address;
+            }
+          }
+        }
+      }
+    } // list template
+  } // container policy-templates
+}

@@ -1,0 +1,15 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>router</name>
+  <package-version>1.0</package-version>
+  <description>Example router package</description>
+  <ncs-min-version>3.0</ncs-min-version>
+  <component>
+    <name>router</name>
+    <ned>
+      <netconf/>
+      <device>
+        <vendor>Acme Inc.</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

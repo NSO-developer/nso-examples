@@ -1,0 +1,34 @@
+module esc_port_forwarding {
+
+  namespace "http://www.cisco.com/esc/esc_port_forwarding";
+  prefix "esc_port_forwarding";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's port forwarding descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Port Forwarding";
+  }
+
+  grouping esc_port_forwarding {
+    container port_forwarding {
+      description
+        "This enables to pass port forwarding information into ESC.
+         There is currently support for a File parameter only.";
+
+      leaf file {
+        description
+          "ESC downloads the file specified by the URL.
+          Interfaces on the networks specified will be forwarded
+          using the external port range specified.";
+        type types:escuri;
+      }
+    }
+  }
+}

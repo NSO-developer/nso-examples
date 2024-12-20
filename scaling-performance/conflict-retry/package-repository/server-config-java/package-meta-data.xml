@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>server-config</name>
+  <package-version>1.0</package-version>
+  <description>Server Java package</description>
+  <ncs-min-version>6.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>RFS for DNS NTP server</name>
+    <callback>
+      <java-class-name>
+        com.example.serverconfig.serverconfigRFS
+      </java-class-name>
+    </callback>
+  </component>
+</ncs-package>

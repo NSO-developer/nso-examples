@@ -1,0 +1,129 @@
+module link {
+  namespace "http://com/example/link";
+  prefix link;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list link {
+    description "This is an RFS skeleton service";
+
+    uses ncs:nano-plan-data;
+    uses ncs:service-data;
+    ncs:servicepoint link-servicepoint;
+
+    key name;
+
+    leaf name {
+      type string;
+    }
+
+    leaf unit {
+      mandatory true;
+      type uint32;
+    }
+
+    leaf vlan-id {
+      mandatory true;
+      type uint32;
+    }
+
+    list endpoints {
+      max-elements 1;
+      key "a-device a-interface b-device b-interface";
+
+      leaf a-device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf a-interface {
+        type string;
+      }
+      leaf b-device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf b-interface {
+        type string;
+      }
+      leaf test-passed {
+        type boolean;
+        default false;
+      }
+    }
+  }
+
+
+  identity vlan-link {
+    base ncs:plan-component-type;
+  }
+
+  identity dev-setup {
+    base ncs:plan-state;
+  }
+
+  ncs:plan-outline link-plan {
+    description
+      "Make before brake vlan plan";
+
+    ncs:component-type "link:vlan-link" {
+      ncs:state "ncs:init";
+      ncs:state "link:dev-setup" {
+        ncs:create {
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "ncs:ready" {
+        ncs:create {
+          ncs:pre-condition {
+            ncs:monitor "$SERVICE/endpoints" {
+              ncs:trigger-expr "test-passed = 'true'";
+            }
+          }
+        }
+        ncs:delete {
+          ncs:pre-condition {
+            ncs:monitor "$SERVICE/plan" {
+              ncs:trigger-expr
+                "component[type = 'link:vlan-link'][back-track = 'false']"
+              + "/state[name = 'ncs:ready'][status = 'reached']"
+              + " or not(component[back-track = 'false'])";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ncs:service-behavior-tree link-servicepoint {
+    description
+      "Make before brake vlan example";
+
+    ncs:plan-outline-ref link-plan;
+
+    ncs:selector {
+      /* create one link component per given endpoint */
+      ncs:multiplier {
+        ncs:foreach "endpoints" {
+          ncs:variable "LINKNAME" {
+            ncs:value-expr "concat(a-device, '-', a-interface,
+                                   '-', b-device, '-', b-interface)";
+          }
+
+          ncs:create-component "$LINKNAME" {
+            ncs:component-type-ref "link:vlan-link";
+          }
+        }
+      }
+    }
+  }
+}

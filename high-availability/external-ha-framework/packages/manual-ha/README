@@ -1,0 +1,41 @@
+
+This package implements actions to manually handle simple fail overs
+between two (2) NCS HA nodes.
+The YANG model defines actions to tell one node to be a primary
+and the other to be a secondary.
+
+ha must be enable in ncs.conf for the two nodes. See the example
+examples.ncs/web-server-farm/ha how to use this package.
+
+The package requires configuration of
+
+- names of the two nodes
+- IP addresses of the two nodes.
+- The cluster ID
+
+This would typically have to be part of XML initialization files
+for the two nodes. For example
+
+
+  <ha-config xmlns="http://tailf.com/ha">
+    <nodes>
+      <n1-name>primary</n1-name>
+      <n1-address>192.168.128.1</n1-address>
+      <n2-name>secondary</n2-name>
+      <n2-address>192.168.128.2</n2-address>
+    </nodes>
+    <cluster-id>clid</cluster-id>
+  </ha-config>
+
+
+The nodes must have the name of the node as an environment variable
+thus to start e.g node n1 (on host 192.168.128.1), it must be started
+as
+
+$ NCS_HA_NODE=primary ncs -c ncs.conf
+
+The Java code that implements the actions, read this variable to
+figure out weather it is node n1 or n2
+
+
+

@@ -1,0 +1,10 @@
+<project name="dns-service" default="all">
+  <property environment="env"/>
+
+  <import file="${env.NCS_DIR}/java/ncs-package.xml"/>
+
+  <augment id="core-libs">
+      <pathelement location="../../../lb/shared-jar/lb-ns.jar"/>
+      <pathelement location="../../../webserver/shared-jar/webserver-ns.jar"/>
+  </augment>
+</project>

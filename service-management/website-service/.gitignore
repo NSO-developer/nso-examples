@@ -1,0 +1,16 @@
+*.trace
+ncs-cdb/A.cdb
+ncs-cdb/C.cdb
+ncs-cdb/O.cdb
+ncs-cdb/cand.db
+ncs-cdb/netsim_devices_init.xml
+/netsim/
+packages/website-service/src/java/build/
+backup.xml
+pidfile
+/bin
+ncs-events.1
+ncs-events.idx
+ncs-events.siz
+packages/webserver2/netsim/interface_stats
+packages/webserver2/netsim/notifier_builtin_replay_store

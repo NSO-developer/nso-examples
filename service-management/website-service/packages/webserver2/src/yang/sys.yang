@@ -1,0 +1,350 @@
+module sys {
+  namespace "http://tail-f.com/sys";
+  prefix sys;
+
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "Configuration of system properties";
+
+  revision 2010-03-26 {
+    description "Initial revision.";
+  }
+
+
+  container host-settings {
+    container syslog {
+      list server {
+        key name;
+        max-elements 8;
+        leaf name {
+          type inet:host;
+        }
+        leaf enabled {
+          type boolean;
+          default true;
+        }
+        list selector {
+          key name;
+          tailf:indexed-view;
+          min-elements 1;
+          max-elements 8;
+          leaf name {
+            type int32;
+          }
+          leaf negate {
+            type boolean;
+            default false;
+          }
+          leaf comparison {
+            type syslogComparison;
+            default same_or_higher;
+          }
+          leaf level {
+            type syslogLevel;
+            default all;
+          }
+          leaf-list facility-list {
+            type syslogFacility;
+          }
+        }
+      }
+    }
+
+    typedef syslogLevel {
+      type enumeration {
+        enum emerg;
+        enum alert;
+        enum crit;
+        enum err;
+        enum warning;
+        enum notice;
+        enum info;
+        enum debug;
+        enum none;
+        enum all {
+          tailf:code-name syslog-all;
+        }
+      }
+    }
+
+    typedef syslogFacility {
+      type enumeration {
+        enum auth;
+        enum authpriv;
+        enum cron;
+        enum daemon;
+        enum ftp;
+        enum kern;
+        enum lpr;
+        enum mail;
+        enum news;
+        enum security;
+        enum syslog {
+          tailf:code-name facility-syslog;
+        }
+        enum user;
+        enum uucp;
+        enum local0;
+        enum local1;
+        enum local2;
+        enum local3;
+        enum local4;
+        enum local5;
+        enum local6;
+        enum local7;
+        enum all;
+      }
+    }
+    typedef syslogComparison {
+      type enumeration {
+        enum same_or_higher;
+        enum same;
+      }
+    }
+
+
+
+    container dns {
+      list search {
+        key name;
+        tailf:indexed-view;
+        max-elements 6;
+        leaf name {
+          type int32;
+        }
+        leaf domain {
+          type inet:domain-name;
+          mandatory true;
+        }
+      }
+      list server {
+        key name;
+        tailf:indexed-view;
+        max-elements 3;
+        leaf name {
+          type int32;
+        }
+        leaf address {
+          type inet:ip-address;
+          mandatory true;
+        }
+      }
+      container options {
+        presence "";
+        leaf ndots {
+          type uint8;
+        }
+        leaf timeout {
+          type uint8;
+        }
+        leaf attempts {
+          type uint8;
+        }
+      }
+    }
+
+
+    container ntp {
+      list server {
+        key name;
+        max-elements 16;
+        leaf name {
+          type inet:ip-address;
+        }
+        leaf enabled {
+          type boolean;
+          default true;
+        }
+        leaf peer {
+          type boolean;
+          default false;
+        }
+        leaf iburst {
+          type empty;
+        }
+        leaf version {
+          type ntpVersion;
+        }
+        leaf key {
+          type leafref {
+            path "../../server/name";
+          }
+        }
+        container status {
+          uses ntpStatus;
+          config false;
+          tailf:cdb-oper;
+        }
+      }
+      container local-clock {
+        leaf enabled {
+          type boolean;
+          default false;
+        }
+        leaf stratum {
+          type ntpStratum;
+          default 10;
+        }
+        container status {
+          uses ntpStatus;
+          config false;
+          tailf:cdb-oper;
+        }
+      }
+      list restrict {
+        key "name mask";
+        max-elements 64;
+        leaf name {
+          type ntpRestrictName;
+        }
+        leaf mask {
+          type ntpRestrictMask;
+        }
+        leaf-list flags {
+          type ntpRestrictFlag;
+        }
+      }
+      list key {
+        key name;
+        max-elements 64;
+        leaf name {
+          type ntpKeyName;
+        }
+        leaf value {
+          type ntpKeyValue;
+          mandatory true;
+        }
+        leaf trusted {
+          type boolean;
+          default true;
+        }
+      }
+      leaf requestkey {
+        type leafref {
+          path "../key/name";
+        }
+      }
+      leaf controlkey {
+        type leafref {
+          path "../key/name";
+        }
+      }
+    }
+    grouping ntpStatus {
+      leaf state {
+        type ntpState;
+        mandatory true;
+      }
+      leaf stratum {
+        type ntpStatusStratum;
+        mandatory true;
+      }
+      leaf reach {
+        type string;
+        mandatory true;
+      }
+      leaf delay {
+        type ntpDecimal;
+        mandatory true;
+      }
+      leaf offset {
+        type ntpDecimal;
+        mandatory true;
+      }
+      leaf jitter {
+        type ntpDecimal;
+        mandatory true;
+      }
+    }
+    typedef ntpVersion {
+      type int32 {
+        range "1 .. 4";
+      }
+    }
+    typedef ntpStratum {
+      type uint8 {
+        range "0 .. 15";
+      }
+    }
+    typedef ntpInvalidStratum {
+      type enumeration {
+        enum 16;
+      }
+    }
+    typedef ntpStatusStratum {
+      type union {
+        type ntpStratum;
+        type ntpInvalidStratum;
+      }
+    }
+    typedef ntpState {
+      type enumeration {
+        enum reject;
+        enum falsetick;
+        enum excess;
+        enum outlyer;
+        enum candidate;
+        enum selected;
+        enum syspeer;
+        enum ppspeer;
+        enum unknown;
+      }
+    }
+    typedef ntpDecimal {
+      type decimal64 {
+        fraction-digits 3;
+      }
+    }
+    typedef ntpRestrictName {
+      type union {
+        type inet:host;
+        type ntpDefault;
+      }
+    }
+    typedef ntpRestrictMask {
+      type union {
+        type inet:ip-address;
+        type ntpDefault;
+      }
+    }
+
+    typedef ntpRestrictFlag {
+      type enumeration {
+        enum ignore;
+        enum kod;
+        enum limited;
+        enum lowpriotrap;
+        enum nomodify;
+        enum nopeer;
+        enum noquery;
+        enum noserve;
+        enum notrap;
+        enum notrust;
+        enum ntpport;
+        enum version {
+          tailf:code-name ntp-version;
+        }
+      }
+    }
+    typedef ntpKeyName {
+      type uint16 {
+        range "1 .. max";
+      }
+    }
+    typedef ntpKeyValue {
+      type tailf:aes-cfb-128-encrypted-string {
+      }
+    }
+    typedef ntpDefault {
+      type enumeration {
+        enum default;
+      }
+    }
+  }
+}

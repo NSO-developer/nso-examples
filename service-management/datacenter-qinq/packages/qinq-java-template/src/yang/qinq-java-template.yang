@@ -1,0 +1,70 @@
+module qinq-java-template {
+
+  namespace "http://com/example/qinq-java-template";
+  prefix qjt;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list qinq-java-template {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint  "sp-qinq-java-template";
+
+    leaf name {
+      type string;
+    }
+
+    //perhaps some customer description or a reference to the
+    //customer list?
+
+    list edge-switch {
+      key "switch";
+      leaf switch {
+        type leafref {
+          path /ncs:devices/ncs:device/ncs:name;
+        }
+      }
+      list edge-interface {
+        key "interface";
+        leaf interface {
+          type string;
+          must
+            "not (/qjt:qinq-java-template"+
+            "[name != current()/../../../name]/"+
+            "/edge-switch[switch = current()/../../switch]"+
+            "/edge-interface[interface = current()])"
+              {
+                error-message "Edge interface must be unique";
+              }
+        }
+        leaf-list c-vlan {
+          type uint32 {
+            range 1..4094;
+          }
+        }
+      }
+      leaf-list trunk-interface {
+        min-elements 1;
+        type string;
+      }
+    }
+    list core-switch {
+      key "switch";
+      leaf switch {
+        type leafref {
+          path /ncs:devices/ncs:device/ncs:name;
+        }
+      }
+      leaf-list trunk-interface {
+        min-elements 1;
+        type string;
+      }
+    }
+  }
+}

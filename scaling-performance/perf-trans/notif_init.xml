@@ -1,0 +1,8 @@
+<services xmlns="http://tail-f.com/ns/ncs">
+  <commit-queue-notifications>
+    <subscription>
+      <name>perf-trans</name>
+      <service-type>/t3:t3s/t3:t3</service-type>
+    </subscription>
+  </commit-queue-notifications>
+</services>

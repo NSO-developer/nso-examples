@@ -1,0 +1,5 @@
+<!-- :add:/ncs-config/cli/ssh -->
+      <ha-primary-listen>
+        <ip>127.0.0.1</ip>
+        <port>2022</port>
+      </ha-primary-listen>

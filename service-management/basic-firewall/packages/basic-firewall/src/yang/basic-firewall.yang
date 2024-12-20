@@ -1,0 +1,120 @@
+module basic-firewall {
+
+  namespace "http://com/example/basic-firewall";
+  prefix bfw;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  augment /ncs:services/ncs:properties {
+    container basic-firewall {
+
+      list firewall-interface {
+        description "Service property defining the specific interfaces"+
+          "on a device where a managment firewall should be applied.";
+        tailf:info "List of devices where a firewall should be applied "+
+          "to a custom interface";
+        key "device";
+        leaf device {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+        leaf interface-name {
+          tailf:info "Interface name. For example FastEthernet.";
+          type string;
+        }
+        leaf interface-number {
+          tailf:info "Interface number. For example 0 or 1/0";
+          type string;
+        }
+      }
+    }
+  }
+
+  augment /ncs:services {
+    list basic-firewall {
+
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint bfwservice;
+
+
+      leaf description {
+        description "Name of the firewall";
+        tailf:info "A description of the firewall";
+        type string;
+      }
+
+      list rule {
+        description "A list of prefix, protocol and port combinations"+
+          " that should be permitted";
+        tailf:info "A list of prefix, protocol and port combinations "+
+          " that should be permitted by the firewall.";
+        key "source-ip-prefix source-port protocol";
+        ordered-by user;
+        leaf source-ip-prefix {
+          tailf:info "Source IP prefix";
+          type inet:ip-prefix;
+        }
+        leaf source-port {
+          tailf:info "Source IP port";
+          type inet:port-number;
+
+        }
+
+        leaf protocol {
+          tailf:info "Source IP protocol";
+          type enumeration {
+            enum icmp;
+            enum igmp;
+            enum ipip;
+            enum tcp;
+            enum egp;
+            enum udp;
+            enum rsvp;
+            enum gre;
+            enum esp;
+            enum ah;
+            enum icmp6;
+            enum ospf;
+            enum pim;
+            enum sctp;
+          }
+        }
+        leaf description {
+          tailf:info "Firewall rule description";
+          type string;
+        }
+        leaf log {
+          tailf:info "Configurable to enable logging of the rule "+
+            "on the device";
+          type empty;
+        }
+      }
+
+      leaf-list firewall-device-group {
+        description "Reference to a device group where the firewall"+
+          "rules should be applied.";
+        tailf:info "Reference to device groups where the firewall "+
+          "rules should be applied";
+        type leafref {
+          path "/ncs:devices/ncs:device-group/ncs:name";
+        }
+      }
+    }
+  }
+}

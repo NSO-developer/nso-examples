@@ -1,0 +1,22 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="bgp-clean">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>64512</as-no>
+            <!--
+              There is only ever a single instance of bgp-clean service per
+              device, so no multiple overlapping/interferring deletes.
+              -->
+            <neighbor tags="delete">
+              <id>1.2.3.4</id>
+            </neighbor>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,80 @@
+module esc_opdata_networks {
+
+  /*
+   * This represents operational data of the networks for a tenant
+   */
+
+  namespace "http://www.cisco.com/esc/esc_opdata_networks";
+
+  prefix "esc_opdata_networks";
+
+  import ietf-yang-types { prefix "ietf-yang-types"; }
+  import ietf-inet-types { prefix "ietf-inet-types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  revision 2014-09-06 {
+    description
+      "Elastic Services Controller Module's tenant's networks' and
+                subnetworks' operational data for a tenant";
+  }
+
+  grouping esc_opdata_networks {
+    description
+      "This contains all the operational data of the networks for each tenant";
+    container networks {
+      list network {
+        description "Network and subnet running information";
+        key "name";
+        leaf name {
+          description "Network on which the subnet resides";
+          type string;
+        }
+        leaf netid {
+          description "ID of the network";
+          type ietf-yang-types:uuid;
+        }
+        leaf shared {
+          description "Is the network shared among other tenants";
+          type boolean;
+        }
+        leaf status {
+          description "Is the network active or disabled";
+          type string;
+        }
+        container subnets {
+          list subnet {
+            description "List of subnets associated with the network";
+            key "name";
+            leaf name {
+              description "Name of the subnetwork";
+              type string;
+            }
+            leaf subnetid {
+              description "ID of the subnetwork";
+              type ietf-yang-types:uuid;
+            }
+            leaf cidr {
+              description "Classless Inter Domain Routing address";
+              type string;
+            }
+            leaf gateway {
+              description "Gateway of the subnet";
+              type ietf-inet-types:ip-address;
+            }
+            leaf dhcp {
+              description "Dynamic Host Control Protocol Enabled ?";
+              type boolean;
+            }
+            leaf ipversion {
+              description "IP Version 4/6";
+              type string;
+            }
+          }
+        }
+      }
+    }
+  }
+}

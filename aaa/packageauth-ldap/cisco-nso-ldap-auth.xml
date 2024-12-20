@@ -1,0 +1,32 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <ldap-auth xmlns="http://tail-f.com/ns/cisco-nso-ldap-auth">
+    <server>
+      <!-- Change the IP address to suit your setup. -->
+      <host>192.168.1.170</host>
+      <!-- Change the Port number to suit your setup. -->
+      <port>1389</port>
+      <!--
+          In a production scenario you always want to
+          run LDAP over TLS/SSL, hence set this to 'true'.
+      -->
+      <secure-connection>false</secure-connection>
+      <bind-admin-dn>cn=admin,dc=example,dc=com</bind-admin-dn>
+      <!-- NOTE: Don't use cleartext passwords like this... -->
+      <bind-admin-password>$0$admin</bind-admin-password>
+      <!--
+          Use 'search-base-dn' when Users may be located under
+          different LDAP nodes, hence we need to search to find
+          the user entry we want to use.
+      -->
+      <!-- search-base-dn>dc=example,dc=com</search-base-dn -->
+      <!--
+          Use 'user-base-dn' when all Users are located under
+          the same LDAP node.
+      -->
+      <user-base-dn>ou=users,dc=example,dc=com</user-base-dn>
+      <user-id-attribute>cn</user-id-attribute>
+      <group-id-attribute>cn</group-id-attribute>
+      <member-of-attribute>memberOf</member-of-attribute>
+    </server>
+  </ldap-auth>
+</config>

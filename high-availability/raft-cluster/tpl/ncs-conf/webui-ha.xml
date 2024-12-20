@@ -1,0 +1,5 @@
+<!-- :add:/ncs-config/webui/transport/tcp -->
+        <ha-primary-listen>
+          <ip>127.0.0.1</ip>
+          <port>8080</port>
+        </ha-primary-listen>

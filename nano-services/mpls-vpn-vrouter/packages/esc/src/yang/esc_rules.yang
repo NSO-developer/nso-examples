@@ -1,0 +1,74 @@
+module esc_rules {
+
+  namespace "http://www.cisco.com/esc/esc_rules";
+  prefix "esc_rules";
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's rules descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Rules";
+  }
+
+  grouping kpi_rules {
+    description
+      "Actions that should be taken by ESC or by some other module on behalf
+       of ESC when an event is triggerred by the event
+       generator. Every rule will have a name and an action script
+       associated with it. The action script is a URL from where ESC
+       downloads the script and executes when and event corresponding
+       to the 'event_name' is triggerred.";
+    list rule {
+      key "event_name";
+      leaf event_name {
+        description
+          "Event name: Corresponding event_name should be present in the
+           monitoring section";
+        /*
+         * This has to be relative path and not absolute path because
+         * this element can be present in service subtree and also
+         * in tenant subtree. Therefore, appropriate event_name in
+         * respective subtree should be referenced
+         */
+        type leafref {
+          path "../../../../kpi_data/kpi/event_name";
+        }
+        mandatory true; /* Need not specify as this is the key */
+      }
+      leaf-list action {
+        description
+          "Action associated with the above event.
+           There is a specific format for
+           this and the description should be updated with more useful
+           information.";
+        type string;
+      }
+
+    }
+  }
+
+  grouping esc_rules {
+    container rules {
+      container admin_rules {
+        description
+          "These are the rules that an administrator specifies when the service
+           is registered. This action is taken for each and every
+           deployment of the service.";
+        uses kpi_rules;
+      }
+
+      container user_rules {
+        description
+          "These are user specified rules which are an addendum for the admin
+           rules. These are per deployment. For example: User may want
+           to know when his VM died. The script may just genenrate an
+           Email";
+        uses kpi_rules;
+      }
+    }
+  }
+}

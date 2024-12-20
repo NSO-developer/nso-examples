@@ -1,0 +1,57 @@
+module dns {
+  namespace "http://com/example/dns";
+  prefix dns;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container dns-options {
+    list dns-option {
+      key name;
+
+      leaf name {
+        type string;
+      }
+
+      leaf-list servers {
+        type inet:ipv4-address;
+      }
+    }
+  }
+
+  list dns {
+    key name;
+
+    uses ncs:service-data;
+    ncs:servicepoint "dns";
+
+    leaf name {
+      type string;
+    }
+
+    leaf target-device {
+      mandatory true;
+      type string {
+        length "2";
+        pattern "c[0-2]";
+      }
+    }
+
+    // Replace the old, explicit IP with a reference to shared data
+    // leaf dns-server-ip {
+    //   type inet:ip-address {
+    //     pattern "192\.0.\.2\..*";
+    //   }
+    // }
+    leaf dns-servers {
+      mandatory true;
+      type leafref {
+        path "/dns-options/dns-option/name";
+      }
+    }
+  }
+}

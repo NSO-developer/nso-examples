@@ -1,0 +1,19 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="dns">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/target-device}</name>
+      <config>
+        <ip xmlns="urn:ios">
+          <?if {/dns-server-ip}?>
+            <!-- If dns-server-ip is set, use that. -->
+            <name-server>{/dns-server-ip}</name-server>
+          <?else?>
+            <!-- Otherwise, use the default one. -->
+            <name-server>192.0.2.1</name-server>
+          <?end?>
+        </ip>
+      </config>
+    </device>
+  </devices>
+</config-template>

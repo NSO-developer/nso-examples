@@ -1,0 +1,25 @@
+module bgp-clean {
+  namespace "http://com/example/bgpclean";
+  prefix bgp-clean;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  list bgp-clean {
+    key device;
+
+    uses ncs:service-data;
+    ncs:servicepoint "bgp-clean";
+
+    leaf device {
+      mandatory true;
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+  }
+}

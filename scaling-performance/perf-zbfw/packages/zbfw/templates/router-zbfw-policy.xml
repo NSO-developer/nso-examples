@@ -1,0 +1,57 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+  <device>
+    <name>{$VDEVICE}</name>
+      <config>
+        <?if-ned-id zbfw-router-nc-1.0:zbfw-router-nc-1.0?>
+        <sys xmlns="http://example.com/router">
+          <zbfw>
+            <zone>
+              <security foreach="{zone}">
+                <id>{name}</id>
+                <vpn foreach="{vpn}">
+                  <id>{id}</id>
+                </vpn>
+              </security>
+            </zone>
+            <zone-pair>
+              <security foreach="{zone-pair}">
+                <id>{name}</id>
+                <source>{source-zone}</source>
+                <destination>{destination-zone}</destination>
+                <service-policy>
+                  <type>
+                    <inspect>{zone-policy}</inspect>
+                  </type>
+                </service-policy>
+              </security>
+            </zone-pair>
+            <policy>
+              <policy-map>
+                <name>{name}</name>
+                <type>inspect</type>
+                <class foreach="{sequence}">
+                  <name>{../name}-seq-{seq-value}-cm_</name>
+                  <policy>
+                    <action>{action/action-value}</action>
+                    <log when="{action/log
+                               and (action/action-value != 'inspect')}"/>
+                  </policy>
+                </class>
+                <class>
+                  <name>class-default</name>
+                  <policy>
+                    <action when="{default-action = 'pass'}">pass</action>
+                    <action when="{default-action = 'drop'}">drop</action>
+                    <action when="{default-action = 'inspect'}">inspect</action>
+                  </policy>
+                </class>
+              </policy-map>
+            </policy>
+          </zbfw>
+        </sys>
+        <?end?>
+      </config>
+    </device>
+  </devices>
+</config-template>

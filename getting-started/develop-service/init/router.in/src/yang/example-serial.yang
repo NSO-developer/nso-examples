@@ -1,0 +1,89 @@
+module example-serial {
+  namespace "http://example.com/example-serial";
+  prefix ex;
+
+  import router {
+    prefix r;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  augment /r:sys/r:interfaces {
+    list serial {
+      key name;
+      leaf name {
+        type string;
+      }
+
+      container ppp {
+        leaf accounting {
+          type string;
+        }
+      }
+
+      container authentication {
+        leaf method {
+          type enumeration {
+            enum chap;
+            enum eap;
+            enum ms-chap;
+            enum ms-chap-v2;
+            enum pap;
+          }
+        }
+        leaf list-name {
+          type string;
+        }
+        leaf one-time {
+          type empty;
+        }
+        leaf optional {
+          type empty;
+        }
+      }
+
+      leaf authorization {
+        type string;
+      }
+
+      container ipcp {
+        container dns {
+          leaf primary {
+            type inet:ipv4-address;
+          }
+        }
+      }
+
+      container multilink {
+        presence true;
+        container links {
+          container minimum {
+            leaf minimum-value {
+              type uint8;
+            }
+            leaf mandatory {
+              type empty;
+            }
+          }
+        }
+        leaf group {
+          type uint32;
+        }
+        container fragment {
+          container delay {
+            leaf delay-value {
+              type uint16;
+            }
+            leaf additional-delay-value {
+              type uint16;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+  <device-group>
+    <name>C</name>
+    <device-name>ce0</device-name>
+    <device-name>ce1</device-name>
+    <device-name>ce3</device-name>
+    <device-name>ce4</device-name>
+    <device-name>ce5</device-name>
+    <device-name>ce6</device-name>
+    <device-name>ce7</device-name>
+    <device-name>ce8</device-name>
+  </device-group>
+  <device-group>
+    <name>P</name>
+    <device-name>p0</device-name>
+    <device-name>p1</device-name>
+    <device-name>p2</device-name>
+    <device-name>p3</device-name>
+  </device-group>
+  <device-group>
+    <name>PE</name>
+    <device-name>pe0</device-name>
+    <device-name>pe1</device-name>
+    <device-name>pe2</device-name>
+    <device-name>pe3</device-name>
+  </device-group>
+  </devices>
+</config>

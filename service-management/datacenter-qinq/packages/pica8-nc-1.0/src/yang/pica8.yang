@@ -1,0 +1,403 @@
+module pica8 {
+  namespace "http://pica8.org/yang";
+  prefix p8;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  description "YANG module for pica8.";
+
+  revision 2012-11-19 {
+    description "Initial revision.";
+  }
+
+  grouping if-info {
+    leaf description {
+      type string;
+    }
+    leaf mtu {
+      type uint32;
+    }
+    leaf speed {
+      type string;
+    }
+    leaf disable {
+      type boolean;
+    }
+  }
+
+  grouping cv-qv {
+    container untag {
+      leaf cvid {
+        type uint32;
+      }
+      leaf qvid {
+        type uint32;
+      }
+    }
+
+    list cvid {
+      key id;
+      leaf id {
+        type uint32;
+      }
+      list qvid {
+        key id;
+        leaf id {
+          type uint32;
+        }
+        leaf tag-action {
+          type string;
+        }
+        leaf set-qvid {
+          type uint32;
+        }
+      }
+    }
+
+  }
+
+  grouping ethernet-family {
+    container family {
+      container ethernet-switching {
+        leaf native-vlan-id {
+          type leafref {
+            path "/p8:vlans/p8:vlan-id/p8:id";
+          }
+        }
+        leaf port-mode {
+          type string;
+        }
+        container vlan {
+          list members {
+            key vlanid;
+            leaf vlanid {
+              type leafref {
+                path "/p8:vlans/p8:vlan-id/p8:id";
+              }
+            }
+          }
+        }
+        container qinq {
+          leaf mode {
+            type string;
+          }
+          container ingress {
+            uses cv-qv;
+          }
+          container egress {
+            uses cv-qv;
+          }
+        }
+      }
+    }
+  }
+
+  container interface {
+    container ecmp {
+      leaf max-path {
+        type uint16;
+      }
+      container hash-mapping {
+        container field {
+          container ingress-interface {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container vlan {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container ip-protocol {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container ip-source {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container ip-destination {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container port-source {
+            leaf disable {
+              type boolean;
+            }
+          }
+          container port-destination {
+            leaf disable {
+              type boolean;
+            }
+          }
+        }
+      }
+    }
+    leaf cut-through-mode {
+      type boolean;
+    }
+    leaf qe-interface-mode {
+      type string;
+    }
+    list aggregate-ethernet {
+      key name;
+      leaf name {
+        type string;
+      }
+      uses if-info;
+
+      container aggregated-ether-options {
+        leaf min-selected-port {
+          type uint32;
+        }
+        container lacp {
+          leaf enable {
+            type boolean;
+          }
+        }
+        leaf flow-control {
+          type boolean;
+        }
+      }
+
+      uses ethernet-family;
+    }
+    list gigabit-ethernet {
+      key name;
+      leaf name {
+        type string;
+      }
+      uses if-info;
+      uses ethernet-family;
+
+      leaf power-preemphasis-level {
+        type uint32;
+      }
+      container ether-options {
+        leaf flow-control {
+          type boolean;
+        }
+        leaf a8023ad {
+          type string;
+        }
+      }
+
+      container storm-control {
+        container broadcast {
+          leaf pps {
+            type uint32;
+          }
+        }
+        container multicast {
+          leaf pps {
+            type uint32;
+          }
+        }
+        container unicast {
+          leaf pps {
+            type uint32;
+          }
+        }
+      }
+    }
+  }
+  container vlans {
+    list vlan-id {
+      key id;
+      leaf id {
+        type uint32;
+      }
+      leaf description {
+        type string;
+      }
+      leaf vlan-name {
+        type string;
+      }
+      leaf l3-interface {
+        type string;
+      }
+      leaf open-flow-enable {
+        type boolean;
+      }
+    }
+  }
+
+  container system {
+    container login {
+      leaf announcement {
+        type string;
+      }
+    }
+    leaf hostname {
+      type string;
+    }
+
+    container services {
+      container telnet {
+        leaf connection-limit {
+          type uint32;
+        }
+        leaf disable {
+          type boolean;
+        }
+      }
+      container ssh {
+        leaf protocol-version {
+          type string;
+        }
+        leaf connection-limit {
+          type uint32;
+        }
+        leaf rate-limit {
+          type uint32;
+        }
+        leaf disable {
+          type boolean;
+        }
+      }
+    }
+    leaf ntp-server-ip {
+      type string;
+    }
+    container inband {
+      leaf enable {
+        type boolean;
+      }
+    }
+    container aaa {
+      container tacacs-plus {
+        leaf disable {
+          type boolean;
+        }
+        leaf authorization {
+          type boolean;
+        }
+        leaf accounting {
+          type boolean;
+        }
+        leaf key {
+          type string;
+        }
+        leaf auth-type {
+          type string;
+        }
+      }
+    }
+    leaf log-level {
+      type string;
+    }
+    leaf log-facility {
+      type uint16;
+    }
+    leaf timezone {
+      type string;
+    }
+  }
+  container protocols {
+    container igmp {
+      leaf disable {
+        type boolean;
+      }
+    }
+    container lacp {
+      leaf priority {
+        type uint32;
+      }
+    }
+    container lldp {
+      leaf enable {
+        type boolean;
+      }
+      leaf advertisement-interval {
+        type uint32;
+      }
+      leaf reinit-delay {
+        type uint32;
+      }
+      leaf transmit-delay {
+        type uint32;
+      }
+      leaf hold-time-multiplier {
+        type uint32;
+      }
+      list interface {
+        key if;
+        leaf if {
+          type leafref {
+            path "/p8:interface/p8:gigabit-ethernet/p8:name";
+          }
+        }
+        leaf status {
+          type string;
+        }
+      }
+      container tlv-select {
+        leaf mac-phy-cfg {
+          type boolean;
+        }
+        leaf management-address {
+          type boolean;
+        }
+        leaf port-description {
+          type boolean;
+        }
+        leaf port-vlan {
+          type boolean;
+        }
+        leaf system-capabilities {
+          type boolean;
+        }
+        leaf system-description {
+          type boolean;
+        }
+        leaf system-name {
+          type boolean;
+        }
+      } //tlv-select
+    } // lldp
+
+    container ospf4 {
+      leaf router-id {
+        type inet:ip-address;
+      }
+      leaf rfc1583-compatibility {
+        type boolean;
+      }
+      leaf ip-router-alert {
+        type boolean;
+      }
+    }
+    container snmp {
+      list community {
+        key name;
+        leaf name {
+          type string;
+        }
+        leaf authorization {
+          type enumeration {
+            enum read-only;
+            enum read-write;
+          }
+        }
+        leaf-list clients {
+          type inet:ip-address;
+        }
+      }
+      leaf contact {
+        type string;
+      }
+      leaf location {
+        type string;
+      }
+    } // snmp
+  } // protocols
+}
+
+
+

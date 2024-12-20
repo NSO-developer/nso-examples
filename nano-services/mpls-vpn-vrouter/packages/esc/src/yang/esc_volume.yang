@@ -1,0 +1,113 @@
+module esc_volume {
+
+  namespace "http://www.cisco.com/esc/esc_volume";
+  prefix "esc_volume";
+
+  import esc_types { prefix "types"; }
+
+  organization "Cisco Systems";
+
+  contact "Shesha Sreenivasamurthy <shesha@cisco.com>";
+
+  description
+    "ESC's volume descriptions'";
+
+  revision 2014-06-23 {
+    description "ESC Volume";
+  }
+
+/*
+ * This represents the volume definitions for the service
+ * created by the admin.
+ */
+  grouping esc_volume_template {
+    container volumes {
+      description
+        "This section lists volume definitions that is later referenced for
+         each VM deployed. This section can be used by the
+         administrator during registration in two different
+         ways. 1. By specifying multiple specific types of volumes
+         from which the deployer can choose during deployment 2. By
+         spefifying a range for a volume and deployer can choose any
+         size within that range. All volumes are created only during
+         deployment as it is attached to a VM and a volume specified
+         during registration can be used for multiple deployments as
+         template.This section can be optional. If left out and an
+         xpath is specified for volumes inside vm_instance section,
+         then deployer is free to specify any volumes. In this way,
+         the administrator can restrict what gets created during
+         deployment or can give a free hand and allow any volume to be
+         created during deployment. The size specified here takes
+         precedence over the size value specified for volumes inside
+         vm_instance.";
+      list volume {
+        key "volname";
+        leaf volname {
+          description "Name of the Volume";
+          type types:escname;
+          mandatory true;
+        }
+        leaf sizeunit {
+          description "Size units. MiB/GiB/TiB/PiB/EiB";
+          type types:szunits;
+        }
+        choice size_or_range {
+          case size {
+            leaf size {
+              description "Size of the Volume";
+              type types:escint32;
+              mandatory true;
+            }
+          }
+          case minmax {
+            leaf minsize {
+              description "Minimum size the Volume";
+              type types:escint32;
+              mandatory true;
+            }
+            leaf maxsize {
+              description "Maximum size of the Volume";
+              type types:escint32;
+              mandatory true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping esc_volume_deployment {
+    container volumes {
+      description
+        "Volumes that are to be attached to the VM. The adminstrator can
+         specify a range for volumes outside vm_instance section and
+         then spefify xpath for the size here. This is enable the
+         deployer to choose any size within a range during deployment.";
+      list volume {
+        key "volname";
+        leaf volid {
+          description "Volumes will be presented to the VM sorted by volume ID";
+          type types:escint8;
+        }
+        leaf volname {
+          description "Name of the Volume";
+          type types:escname;
+          mandatory true;
+        }
+        leaf size {
+          description "Size of the Volume";
+          type types:escint32;
+        }
+        leaf sizeunit {
+          description "Size units. MiB/GiB/TiB/PiB/EiB";
+          type types:szunits;
+        }
+        leaf bus {
+          description "Block device bus to be used: ide, scsi, virtio";
+          type types:iobus;
+          mandatory true;
+        }
+      }
+    }
+  }
+}

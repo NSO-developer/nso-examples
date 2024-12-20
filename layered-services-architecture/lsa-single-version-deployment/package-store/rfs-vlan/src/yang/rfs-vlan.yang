@@ -1,0 +1,55 @@
+module rfs-vlan {
+  namespace "http://com/example/rfsvlan";
+  prefix rfs-vlan;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description
+    "This service creates a vlan iface/unit on all routers
+     owned by this lower-nso ";
+
+  revision 2017-01-03 {
+    description
+      "Initial revision.";
+  }
+
+  container services {
+    list vlan {
+      key name;
+      leaf name {
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint "rfs-vlan";
+
+      leaf router {
+        type string;
+      }
+      leaf iface {
+        type string;
+        mandatory true;
+      }
+      leaf unit {
+        type int32;
+        mandatory true;
+      }
+      leaf vid {
+        type uint16;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+        mandatory true;
+      }
+
+    }
+  }
+}

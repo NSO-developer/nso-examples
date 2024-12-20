@@ -1,0 +1,75 @@
+module notif {
+  namespace "http://router.com/notif";
+  prefix notif;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+
+  notification startUp {
+    leaf node-id {
+      type string;
+    }
+  }
+
+  notification linkUp {
+    leaf ifName {
+      type string;
+      mandatory true;
+    }
+    leaf extraId {
+      type string;
+    }
+    list linkProperty {
+      max-elements 64;
+      leaf newlyAdded {
+        type empty;
+      }
+      leaf flags {
+        type uint32;
+        default 0;
+      }
+      list extensions {
+        max-elements 64;
+        leaf name {
+          type uint32;
+          mandatory true;
+        }
+        leaf value {
+          type uint32;
+          mandatory true;
+        }
+      }
+    }
+
+    list address {
+      key ip;
+      leaf ip {
+        type inet:ipv4-address;
+      }
+      leaf mask {
+        type inet:ipv4-address;
+      }
+    }
+
+    leaf-list iface-flags {
+      type enumeration {
+        enum UP;
+        enum DOWN;
+        enum BROADCAST;
+        enum RUNNING;
+        enum MULTICAST;
+        enum LOOPBACK;
+      }
+    }
+  }
+
+
+  notification linkDown {
+    leaf ifName {
+      type string;
+      mandatory true;
+    }
+  }
+}

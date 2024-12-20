@@ -1,0 +1,22 @@
+<high-availability xmlns="http://tail-f.com/ns/ncs">
+  <token>super-secret</token>
+  <ha-node>
+    <id>n1</id>
+    <address>127.0.1.1</address>
+    <nominal-role>primary</nominal-role>
+  </ha-node>
+  <ha-node>
+    <id>n2</id>
+    <address>127.0.2.1</address>
+    <nominal-role>secondary</nominal-role>
+    <failover-primary>true</failover-primary>
+  </ha-node>
+  <settings>
+    <enable-failover>true</enable-failover>
+    <start-up>
+      <assume-nominal-role>true</assume-nominal-role>
+      <join-ha>true</join-ha>
+    </start-up>
+    <reconnect-interval>2</reconnect-interval>
+  </settings>
+</high-availability>

@@ -1,0 +1,117 @@
+module t3 {
+  yang-version 1.1;
+  namespace "http://example.com/t3";
+  prefix t3;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Bla bla...";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  container t3s {
+    list t3 {
+      key id;
+
+      uses ncs:nano-plan-data;
+      uses ncs:service-data;
+      ncs:servicepoint "t3-servicepoint";
+
+      leaf id {
+        tailf:info "Unique service id";
+        type uint32;
+      }
+      leaf value {
+        type string;
+      }
+      action validate {
+        tailf:actionpoint t3-validate;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
+    }
+    container t3-settings {
+      leaf nwork {
+        type uint32;
+      }
+      leaf nfactorial {
+        config false;
+        type uint32;
+        default 50000;
+      }
+      leaf ndtrans {
+        type uint8;
+      }
+    }
+    container dev-settings {
+      presence "";
+      uses ncs:service-data;
+      ncs:servicepoint devs-servicepoint;
+      leaf dev-delay {
+        type uint32;
+      }
+    }
+    action calibrate-cpu-time {
+      tailf:actionpoint t3-cputime;
+    }
+  }
+
+  // Nano service specifics
+  identity validated {
+    base ncs:plan-state;
+  }
+  identity configured {
+    base ncs:plan-state;
+  }
+  identity ne {
+    base ncs:plan-component-type;
+  }
+
+  ncs:plan-outline ne-cfg-plan {
+    description "Plan for configuring router network elements";
+    ncs:component-type "t3:ne" {
+      ncs:state "ncs:init";
+      ncs:state "t3:validated" {
+        ncs:create {
+          // Invoke Python action code for validation
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "validate";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "t3:configured" {
+        ncs:create {
+          // Invoke the Python service code
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+  ncs:service-behavior-tree t3-servicepoint {
+    ncs:converge-on-re-deploy;
+    description "One component per ne";
+    ncs:plan-outline-ref "t3:ne-cfg-plan";
+    ncs:selector {
+      // Component for configuring the network element
+      ncs:create-component "current()/value"
+      {
+        ncs:component-type-ref "t3:ne";
+      }
+    }
+  }
+}

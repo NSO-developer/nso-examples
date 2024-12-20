@@ -1,0 +1,12 @@
+module gen-xml-rpc-id {
+  namespace "http://example.com/xmlrpcdevice/xmlrpc/id";
+  prefix id;
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  identity genxmlrpc {
+    base ned:generic-ned-id;
+  }
+}

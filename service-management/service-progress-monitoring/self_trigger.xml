@@ -1,0 +1,12 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <service-progress-monitoring xmlns="http://tail-f.com/ns/ncs">
+    <trigger>
+      <name>self</name>
+      <policy>service-ready</policy>
+      <target xmlns:myserv="http://com/tailf/examples/myserv">
+        /myserv:myserv[myserv:name='m1']
+      </target>
+      <component>self</component>
+    </trigger>
+  </service-progress-monitoring>
+</config>

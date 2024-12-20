@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>move-device</name>
+  <package-version>1.0</package-version>
+  <description>Support package for device migration</description>
+  <ncs-min-version>4.4</ncs-min-version>
+  <component>
+    <name>move_device</name>
+    <application>
+      <python-class-name>MoveDevice</python-class-name>
+    </application>
+  </component>
+</ncs-package>

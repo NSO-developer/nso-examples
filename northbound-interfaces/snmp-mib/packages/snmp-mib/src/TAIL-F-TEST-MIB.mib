@@ -1,0 +1,340 @@
+TAIL-F-TEST-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, NOTIFICATION-TYPE,
+    TimeTicks, Counter32, enterprises, IpAddress
+        FROM SNMPv2-SMI
+    DisplayString, TestAndIncr, TimeStamp, RowStatus, TruthValue
+        FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP
+        FROM SNMPv2-CONF;
+
+
+tailfTestMIB MODULE-IDENTITY
+    LAST-UPDATED "9511090000Z"
+    ORGANIZATION "Tail-F Systems AB"
+    CONTACT-INFO
+            "        Ola Samuelsson
+             E-mail: ola@tail-f.com"
+    DESCRIPTION
+            "Basic test objects for CONFD-SNMP integration."
+    REVISION      "9304010000Z"
+    DESCRIPTION
+            "First version."
+    ::= { tailf 1 }
+
+tailf OBJECT IDENTIFIER ::= { enterprises 24961 }
+
+-- Administrative assignments ++++---------------------------------
+
+tailfTestMIBObjects	OBJECT IDENTIFIER ::= { tailfTestMIB 1 }
+tailfTestMIBConformance OBJECT IDENTIFIER ::= { tailfTestMIB 2 }
+
+-- ----------------------------------------------------------------
+
+
+-- The Servers group
+--
+
+simpleVariables   OBJECT IDENTIFIER ::= { tailfTestMIBObjects 1 }
+simpleTables      OBJECT IDENTIFIER ::= { tailfTestMIBObjects 2 }
+extraObjects      OBJECT IDENTIFIER ::= { tailfTestMIBObjects 3 }
+
+numberOfServers OBJECT-TYPE
+    SYNTAX      INTEGER (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Return the current number of servers"
+    ::= { simpleVariables 1 }
+
+numberOfHosts OBJECT-TYPE
+    SYNTAX      INTEGER (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Return the current number of hosts"
+    ::= { simpleVariables 2 }
+
+maxNumberOfServers OBJECT-TYPE
+    SYNTAX      INTEGER (0..65535)
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+	"Set the max number of allowed servers per host"
+    ::= { simpleVariables 3 }
+
+maxNumberOfHosts OBJECT-TYPE
+    SYNTAX      INTEGER (0..65535)
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+	"Set the max number of allowed hosts"
+    ::= { simpleVariables 4 }
+
+
+
+--
+-- The hostTable contains a database of hosts
+--
+hostTable OBJECT-TYPE
+
+    SYNTAX       SEQUENCE OF HostEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "The table of hosts."
+    ::= { simpleTables 1 }
+
+hostEntry OBJECT-TYPE
+    SYNTAX       HostEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "Information about a host."
+    INDEX       { hostName }
+    ::= { hostTable 1 }
+
+HostEntry ::= SEQUENCE {
+    hostName                      DisplayString,
+    hostEnabled			  TruthValue,
+    hostNumberOfServers		  INTEGER,
+    hostRowStatus                 RowStatus
+}
+
+hostName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The unique index value of a row in this table."
+    ::= { hostEntry 1 }
+
+hostEnabled OBJECT-TYPE
+    SYNTAX       TruthValue
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "A bool value saying if host is enabled or not."	
+    ::= { hostEntry 2 }
+
+hostNumberOfServers OBJECT-TYPE
+    SYNTAX       INTEGER (0..65535)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "A read-only integer saying how many servers there currently are."	
+    ::= { hostEntry 3 }
+
+hostRowStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "The status of this conceptual row in the hostTable."
+    ::= { hostEntry 4 }
+
+
+
+--
+-- The serverTable contains a database of servers
+--
+
+serverTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF ServerEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "The table of servers."
+    ::= { simpleTables 2 }
+
+serverEntry OBJECT-TYPE
+    SYNTAX       ServerEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "Information about a server."
+    INDEX       { hostName, serverName }
+    ::= { serverTable 1 }
+
+ServerEntry ::= SEQUENCE { 
+    serverName		       DisplayString,
+    serverIP		       IpAddress,
+    serverPortNumber           INTEGER (0..65535),
+    serverRowStatus	       RowStatus
+}
+
+serverName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The unique index value 2 of a row in this table."
+    ::= { serverEntry 1 }
+
+serverIP OBJECT-TYPE
+    SYNTAX       IpAddress
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "The IP Address of this server."	
+    ::= { serverEntry 2 }
+
+serverPortNumber OBJECT-TYPE
+    SYNTAX       INTEGER (1..65535)
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "The port number."
+    ::= { serverEntry 3 }
+
+serverRowStatus OBJECT-TYPE
+    SYNTAX       RowStatus
+    MAX-ACCESS   read-create
+    STATUS       current
+    DESCRIPTION
+        "The status of this conceptual row in the serverTable."
+    ::= { serverEntry 4 }
+
+
+
+--
+-- The serviceTable contains a "read-only" database of services
+--
+
+serviceTable OBJECT-TYPE
+    SYNTAX       SEQUENCE OF ServiceEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "The table of services."
+    ::= { simpleTables 3 }
+
+serviceEntry OBJECT-TYPE
+    SYNTAX       ServiceEntry
+    MAX-ACCESS   not-accessible
+    STATUS       current
+    DESCRIPTION
+        "Information about a service."
+    INDEX       { serviceAddr, servicePortNumber }
+    ::= { serviceTable 1 }
+
+ServiceEntry ::= SEQUENCE {
+    serviceAddr        IpAddress,
+    servicePortNumber  INTEGER (1..65535),
+    serviceHostName    DisplayString,
+    serviceServerName  DisplayString
+}
+
+serviceAddr OBJECT-TYPE
+    SYNTAX          IpAddress
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The unique index value 1 of a row in this table."
+    ::= { serviceEntry 1 }
+
+servicePortNumber OBJECT-TYPE
+    SYNTAX      INTEGER (1..65535)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The unique index value 2 of a row in this table."
+    ::= { serviceEntry 2 }
+
+serviceHostName OBJECT-TYPE
+    SYNTAX       DisplayString
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+        "The service host name."	
+    ::= { serviceEntry 3 }
+
+serviceServerName OBJECT-TYPE
+    SYNTAX       DisplayString
+    MAX-ACCESS   read-only
+    STATUS       current
+    DESCRIPTION
+        "The service server name."	
+    ::= { serviceEntry 4 }
+
+-- Extra, optional objects
+
+-- in the example, we show how we don't implement these objects
+
+extraName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+            "A name."
+    ::= { extraObjects 1 }
+
+extraId OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "A unique identifier dervied from the name."
+    ::= { extraObjects 2 }
+
+extraDescr OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+            "A description."
+    ::= { extraObjects 3 }
+
+
+-- Conformance ----------------------------------------------------
+tailfTestMIBCompliances OBJECT IDENTIFIER ::= { tailfTestMIBConformance 1 }
+tailfTestMIBGroups      OBJECT IDENTIFIER ::= { tailfTestMIBConformance 2 }
+
+
+-- compliance statements
+
+tailfTestMIBCompliance MODULE-COMPLIANCE
+    STATUS  current
+    DESCRIPTION
+            "The compliance statement for SNMPv2 entities which
+            implement the SNMPv2 MIB."
+    MODULE  -- this module
+        -- MANDATORY-GROUPS { snmpGroup, snmpSetGroup, systemGroup,
+        --                   snmpBasicNotificationsGroup }
+
+        GROUP   serversGroup
+        DESCRIPTION
+            "This group is mandatory for SNMPv2 entities which
+            support community-based authentication."
+
+    ::= { tailfTestMIBCompliances 2 }
+
+
+-- units of conformance
+
+serversGroup OBJECT-GROUP
+    OBJECTS { numberOfServers,
+              numberOfHosts,	      
+              maxNumberOfServers,
+	      maxNumberOfHosts,
+	      --hostTable:   hostName
+	      hostEnabled,
+	      hostNumberOfServers,
+	      hostRowStatus,
+              --serverTable: serverHostName, serverName
+              serverIP,
+	      serverPortNumber,
+	      serverRowStatus,
+	      -- serviceTable: serviceAddr, servicePortNumber
+	      serviceHostName,
+	      serviceServerName
+	     }
+    STATUS  current
+    DESCRIPTION
+            "A collection of objects providing basic instrumentation and
+            control of Servers."
+    ::= { tailfTestMIBGroups 1 }
+
+
+END

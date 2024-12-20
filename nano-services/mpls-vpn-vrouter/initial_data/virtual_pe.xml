@@ -1,0 +1,6 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+
+  <onvpe xmlns="http://com/example/l3vpn">ce2</onvpe>
+  <onvpe xmlns="http://com/example/l3vpn">ce3</onvpe>
+
+</config>

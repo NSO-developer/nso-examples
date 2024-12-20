@@ -1,0 +1,28 @@
+HA STATUS
+~~~~~~~~~
+
+This package implements a very simple web server for publishing NSO HA status.
+The reason for a separate server is to provide this information without
+authentication, so clients (typically load balancers or proxies) can identify
+the active node where they can send (write) requests.
+
+The server by default listens on TCP port 8765 but can be configured through
+environment variables HASTATUS_ADDR and HASTATUS_PORT to bind to a different
+address/port combination.
+
+Since the web server runs as a package, NSO is responsible for starting and
+stopping it, as part of package management. The server implements two
+endpoints:
+
+GET /ha_status
+        Returns in the response body as plain text the current value of the
+        /ncs-state/ha/mode leaf. Unless there was an error, HTTP status code
+        is 200 OK.
+
+GET /ha_writable
+        Returns HTTP status code 200 OK and value 'true' in the body if this
+        node is currently the HA leader/primary and can therefore take write
+        requests. Otherwise, 409 Conflict status code with 'false' in the body
+        is returned, in order to allow checks to rely on the status code.
+        In this last case, the status code can be changed from 409 through
+        the HASTATUS_NWCODE environment variable if required.

@@ -1,0 +1,17 @@
+module work {
+  namespace "http://example.com/work";
+  prefix w;
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container extern {
+    tailf:callpoint workPoint;
+      leaf sleep-secs {
+        type int32;
+      }
+  }
+}

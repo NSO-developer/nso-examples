@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -e
+
+mkdir keys
+
+# root CA cert
+openssl req -x509 \
+            -sha256 \
+            -days 356 \
+            -nodes \
+            -newkey rsa:2048 \
+            -subj "/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd" \
+            -keyout keys/rootCA.key \
+            -out keys/rootCA.crt
+
+for role in idp sp; do
+    # privkey and certificate signing request
+    openssl req -sha256 \
+                -nodes \
+                -newkey rsa:2048 \
+                -subj "/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd" \
+                -keyout keys/$role.key \
+                -out keys/$role.csr
+    # certificate
+    openssl x509 -req \
+                 -sha256 \
+                 -days 365 \
+                 -CA keys/rootCA.crt \
+                 -CAkey keys/rootCA.key \
+                 -CAcreateserial \
+                 -in keys/$role.csr \
+                 -out keys/$role.crt
+done

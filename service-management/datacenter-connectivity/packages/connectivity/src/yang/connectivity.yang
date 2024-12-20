@@ -1,0 +1,114 @@
+module connectivity {
+
+  namespace "http://com/example/connectivity";
+  prefix connectivity;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  container topology {
+    list datacenter {
+      key "id";
+      leaf id {
+        type string;
+      }
+      list device {
+        key "device";
+        leaf device {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+
+        leaf role {
+          type enumeration {
+            enum access-layer;
+            enum aggregation-layer;
+            enum core-layer;
+          }
+        }
+
+        container settings {
+          leaf-list trunk-ports {
+            type string;
+          }
+          leaf-list core-trunk-ports {
+            when "../../role = 'aggregation-layer'";
+            type string;
+          }
+        }
+      }
+    }
+  }
+
+
+
+  container datacenter {
+
+    list connectivity {
+      // this represents one layer2 broadcast domain, i.e. one VLAN.
+
+      key name;
+      unique vlan;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint connectivity-servicepoint;
+
+      leaf vlan {
+        type uint32;
+        mandatory true;
+
+      }
+
+      leaf ip-network {
+        // the private IP network
+        mandatory true;
+        type inet:ip-prefix;
+      }
+
+      container connectivity-settings {
+        leaf preserve-vlan-tags {
+          type empty;
+        }
+      }
+
+      list endpoint {
+        key "device interface";
+
+        leaf device {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+
+        leaf interface {
+          type string;
+          // experimental completion point to facilitate
+          // pointing at an "interface" on a managed device
+          tailf:cli-completion-actionpoint if-complete;
+        }
+        container endpoint-settings {
+          leaf connect-multiple-vlans {
+            // this will make the accessport a trunk
+            type empty;
+          }
+        }
+
+      }
+    }
+  }
+}

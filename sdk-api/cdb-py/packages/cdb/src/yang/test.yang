@@ -1,0 +1,45 @@
+module test {
+  namespace "http://example.com/test";
+  prefix t;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "This model is used as a simple example model
+               illustrating some aspects of CDB subscriptions
+               and CDB operational data";
+
+  revision 2012-06-26 {
+    description "Initial revision.";
+  }
+
+  container test {
+    list config-item {
+      key ckey;
+      leaf ckey {
+        type string;
+      }
+      leaf i {
+        type int32;
+      }
+    }
+    list stats-item {
+      config false;
+      tailf:cdb-oper;
+      key skey;
+      leaf skey {
+        type string;
+      }
+      leaf i {
+        type int32;
+      }
+      container inner {
+        leaf l {
+          type string;
+        }
+      }
+    }
+  }
+}
+

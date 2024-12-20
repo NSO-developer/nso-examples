@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>manual-ha</name>
+  <package-version>1.0</package-version>
+  <description>Actions to manually control a two-node HA cluster</description>
+  <ncs-min-version>3.0</ncs-min-version>
+
+  <!-- It's possible to add more components to the -->
+  <!-- same package, multiple services, data providers etc -->
+
+  <component>
+    <name>HaActions</name>
+    <callback>
+      <java-class-name>com.tailf.manualha.HaActionCb</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

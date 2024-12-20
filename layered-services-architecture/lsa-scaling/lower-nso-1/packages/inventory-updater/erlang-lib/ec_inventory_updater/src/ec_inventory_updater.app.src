@@ -1,0 +1,12 @@
+%% This is an -*- erlang -*- file
+
+{application, ec_inventory_updater,
+ [
+  {description, ""},
+  {vsn, "%VSN%"},
+  {modules, [%MODULES%]},
+  {mod, {ec_inventory_updater_app, []}},
+  {registered, [ec_inventory_updater_server]},
+  {applications, [stdlib, kernel]},
+  {env, [{ncs_start_phase, phase2}]}
+ ]}.
