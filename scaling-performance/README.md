@@ -35,13 +35,14 @@ validation callback Python and Java applications adapted to handle concurrency.
 Used by the NSO Development Guide chapter Scaling and Performance
 Optimization.
 
-### perf-setvals
+### perf-bulkcreate
 If a service creates a significant amount of configuration data for devices, it
-is often significantly faster to use a single MAAPI `shared_set_values()` call
-instead of using multiple `create()` and `set()` calls or a service template.
-Wall-clock time performance is improved using MAAPI `shared_set_values()` and
-multiple CPU cores when writing to more than one device. Used by the NSO
-Development Guide chapter Scaling and Performance Optimization.
+is often significantly faster to use a single MAAPI `load_config_cmds()` or
+`shared_set_values()` call instead of using multiple `create()` and `set()`
+calls or a configuration template. Wall-clock time performance is improved
+using MAAPI `load_config_cmds()` or `shared_set_values()` and multiple CPU
+cores when writing to more than one device. Used by the NSO Development Guide
+chapter Scaling and Performance Optimization.
 
 ### perf-stack
 To simplify for the NSO manager application and user, a resource facing nano

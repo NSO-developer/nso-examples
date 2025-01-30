@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>rfs-acl</name>
+  <package-version>1.0</package-version>
+  <description>Example Java package</description>
+  <ncs-min-version>5.7</ncs-min-version>
+
+  <component>
+    <name>aclRFS</name>
+    <callback>
+      <java-class-name>com.example.acl.aclRFS</java-class-name>
+    </callback>
+  </component>
+</ncs-package>

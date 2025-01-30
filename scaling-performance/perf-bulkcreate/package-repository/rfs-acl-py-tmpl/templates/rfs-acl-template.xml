@@ -1,0 +1,33 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device tags="nocreate">
+      <name>{$DEVICE}</name>
+      <config tags="merge">
+        <route xmlns="http://cisco.com/ned/asa">
+          <id>ics</id>
+          <net>{$IPROUTE}</net>
+          <net-mask>255.255.255.255</net-mask>
+          <gw>1.0.0.1</gw>
+          <metric>1</metric>
+        </route>
+        <access-list xmlns="http://cisco.com/ned/asa">
+          <access-list-id>
+            <id>tailf_42</id>
+            <rule>
+        <id>extended permit tcp host {$IPACCESS} host {$IPACCESS} eq https</id>
+              <log/>
+            </rule>
+            <rule>
+              <id>extended deny ip any4 any4</id>
+              <log/>
+            </rule>
+            <rule>
+              <id>extended deny ip any6 any6</id>
+              <log/>
+            </rule>
+          </access-list-id>
+        </access-list>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -17,7 +17,7 @@ All Makefiles in the example collection will check for the $NCS_DIR variable.
 Thus, the 'ncsrc' file under the NSO local install root directory, where the
 $NCS_DIR variable points to, must be sourced before running the examples.
 
-    . /path/to/ncs-<ncs-vsn>/ncsrc
+    . /path/to/nso-<nso-vsn>/ncsrc
 
 Many examples use Netsim to simulate managed devices with northbound interfaces
 such as NETCONF, CLI, SNMP, etc.
