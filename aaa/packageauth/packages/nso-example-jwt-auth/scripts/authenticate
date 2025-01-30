@@ -4,16 +4,16 @@ import base64, json, logging, os, re, sys
 import ncs, _ncs
 import jwt
 
-logdir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                      "../../../../../logs")
-logname = os.path.join(logdir, "ncs-python-jwt-auth.log")
-if not os.path.isdir(logdir):
-    os.mkdir(logdir)
+logname = os.path.join(os.getenv("NCS_LOG_DIR",
+                                 os.path.join(os.getcwd(), "logs")),
+                       "ncs-python-jwt-auth.log")
+os.makedirs(os.path.dirname(logname), exist_ok=True)
 logfmt = ("%(asctime)s.%(msecs)02d %(filename)s:%(lineno)s"
           " %(levelname)s: %(message)s")
 logging.basicConfig(filename=logname, filemode="a+", format=logfmt,
                     datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 
 def base64_to_str(b):
     return base64.decodebytes(b.encode("utf-8")).decode("utf-8")
