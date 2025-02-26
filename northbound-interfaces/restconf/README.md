@@ -195,6 +195,7 @@ Now we can delete the resource:
 
 Use the CLI to verify it was deleted:
 
+    ncs_cli -u admin
     > show configuration devices device lb0 config lb:lbConfig
     system {
         ntp-server 18.4.5.6;
@@ -203,6 +204,7 @@ Use the CLI to verify it was deleted:
             nameserver 18.4.5.6;
         }
     }
+    > exit
 
 Using RESTCONF:
 

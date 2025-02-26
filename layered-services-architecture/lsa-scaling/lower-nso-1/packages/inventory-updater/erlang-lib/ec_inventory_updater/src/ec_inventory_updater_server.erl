@@ -170,7 +170,7 @@ config_changed(commit, _ChgXds, _IKeypath, {DevName, Cfg}) ->
 
 get_j_config(Th, USid, IKPs) ->
     IoHandler = spawn_link(fun() -> iohandler() end),
-    [cs_trans_rng:show(
+    [cli_show:show(
        IoHandler,
        Th,
        fxs_server:get_ns_list(),
@@ -213,7 +213,7 @@ get_j_config(Th, USid, IKPs) ->
 
 get_j_delta(NewTh, OldTh, USid, IKPs) ->
     IoHandler = spawn_link(fun() -> iohandler() end),
-    [cs_trans_rng:show_delta(
+    [cli_show:show_delta(
        IoHandler,
        USid,
        NewTh,
