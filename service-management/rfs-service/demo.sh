@@ -29,7 +29,7 @@ ncs
 printf "\n${PURPLE}##### The XML init file containing the device configuration\n${NC}"
 cat ./ncs-cdb/ncs_init.xml
 
-printf "\n${PURPLE}##### Instantiate the managed interfaces\n${NC}"
+printf "\n${PURPLE}##### Instantiate the managed interfaces and create syslog configuration\n${NC}"
 ncs_cli -n -u admin -C << EOF
 devices sync-from
 config

@@ -4,7 +4,7 @@ CDB API Python Subscribers
 This example shows a few different ways to subscribe to changes in the CDB
 configuration database.
 
-The CDB package `packages/cdb/package-meta-data.xml` file shows that the
+The `cdb` package `packages/cdb/package-meta-data.xml` file shows that the
 package has two components, where each component is of type `application`:
 
 - A CDB configuration data subscriber that subscribes to the
@@ -81,5 +81,3 @@ Further Reading
 + The `demo.sh` script
 + `packages/cdb/python/plaincdbsub/plaincdbsub.py`
 + `packages/cdb/python/opercdbsub/opercdbsub.py`
-
-

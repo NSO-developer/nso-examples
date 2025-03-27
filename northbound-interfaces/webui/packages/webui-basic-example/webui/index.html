@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="script.js"></script>
+    <title>Example package with a simple webui</title>
+</head>
+
+<body>
+    <div id="wrapper">
+        <header>
+            <h1>Example Package with a Simple WebUI</h1>
+        </header>
+        <main>
+            <section>
+                <h2>Data Fetched from NSO</h2>
+                <dl id="nso-data-list">
+                    <!-- dynamic data will be appended here -->
+                </dl>
+            </section>
+            <section>
+                <h2>Description</h2>
+                <p>
+                    This package provides a simple web UI to interact with Cisco NSO through the Northbound
+                    JSON-RPC API.<br>
+                    It fetches and displays the current user, the NSO version, the list of loaded packages,
+                    and the list of devices.
+                </p>
+                <p>More information about the NSO JSON-RPC API is available in the NSO Development Guide.</p>
+                <p>View the source code of the requests here: <a href="script.js">script.js</a></p>
+                <p>
+                    Additionally, using the browser developer network tools to inspect network requests in
+                    NSO's main web interface, 'webui-one', is an effective strategy for understanding
+                    JSON-RPC API usage. By analyzing network requests, payloads, and responses, users can
+                    gain critical insights into JSON-RPC API methods and parameters, enabling more
+                    efficient and informed API utilization.
+                </p>
+                <p>
+                    This implementation adheres to the Content Security Policy (CSP) as established
+                    by NSO's default and recommended configuration. By restricting resource loading
+                    to the same default origin ('self'), all types of resources, including scripts,
+                    images, stylesheets, frames, etc, can only be loaded from the same origin as the page
+                    itself. This approach protects against cross-site scripting (XSS) and style
+                    injection attacks.<br>
+                    With great power in GUI customization comes great security responsibility.
+                </p>
+            </section>
+        </main>
+        <footer>
+            <p>
+                <a href="/webui-one">
+                    Return to Cisco NSO WebUI
+                </a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

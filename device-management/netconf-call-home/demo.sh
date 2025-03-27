@@ -45,7 +45,7 @@ ncs_cli -n -u admin -C << EOF
 devices sync-from
 EOF
 
-printf "\n\n${PURPLE}##### Start a Python app that subsribes to the NCS_NOTIF_CALL_HOME_INFO event from NSO and push outstanding commit queue ites when a device connects\n${NC}"
+printf "\n\n${PURPLE}##### Start a Python app that subsribes to the NCS_NOTIF_CALL_HOME_INFO event from NSO\n${NC}"
 python3 notif.py -C </dev/null &
 echo $! > notif-app.pid
 

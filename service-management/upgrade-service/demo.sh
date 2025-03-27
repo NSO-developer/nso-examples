@@ -20,7 +20,7 @@ printf "\n${GREEN}##### Running the Example\n${NC}"
 printf "${PURPLE}##### Build the packages\n${NC}"
 make all
 
-printf "${PURPLE}##### Copy the vlan package to the packages directory\n${NC}"
+printf "\n${PURPLE}##### Copy the vlan package to the packages directory\n${NC}"
 cp -r ./package-store/vlan ./packages
 
 printf "\n${PURPLE}##### Start the netsim network\n${NC}"
@@ -51,6 +51,9 @@ ncs_cli -n -u admin -C << EOF
 show running-config services vlan | nomore
 EOF
 
+printf "\n${GREEN}##### Backup the CDB directory\n${NC}"
+cp -rf ncs-cdb ncs-cdb-bak
+
 printf "\n\n${GREEN}##### Upgrade the vlan package with the vlan_v2 package\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
@@ -74,19 +77,19 @@ ncs_cli -n -u admin -C << EOF
 show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
-printf "\n\n${GREEN}##### Upgrade the vlan_v2 package with the tunnel package\n${NC}"
+printf "\n\n${GREEN}##### Upgrade the vlan_v2 package with the *Java* tunnel package\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
 fi
 
-printf "\n\n${PURPLE}##### Undeploy the service instances with no-networking to remove the vlan service meta-data before upgrading to the tunnel package\n${NC}"
+printf "\n${PURPLE}##### Undeploy the service instances with no-networking to remove the vlan service meta-data before upgrading to the *Java* tunnel package\n${NC}"
 ncs_cli -n -u admin -C << EOF
 services vlan s1..2 un-deploy no-networking
 show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
-printf "\n\n${PURPLE}##### Replace the vlan_v2 package with the tunnel package\n${NC}"
+printf "\n\n${PURPLE}##### Replace the vlan_v2 package with the *Java* tunnel package\n${NC}"
 ncs --stop
 rm -rf packages/vlan
 cp -r ./package-store/tunnel ./packages/
@@ -100,7 +103,7 @@ ncs_cli -n -u admin -C << EOF
 show running-config services tunnel | nomore
 EOF
 
-printf "\n${PURPLE}##### Re-deploy the service instances to own the device configuration again. Check that the re-deploy does not change the device configuration before the actual re-deploy\n${NC}"
+printf "\n\n${PURPLE}##### Re-deploy the service instances to own the device configuration again. Check that the re-deploy does not change the device configuration before the actual re-deploy\n${NC}"
 ncs_cli -n -u admin -C << EOF
 services tunnel s1..2 re-deploy no-networking
 devices device ex0..2 compare-config
@@ -123,7 +126,91 @@ ncs_cli -n -u admin -C << EOF
 show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
-printf "\n${GREEN}##### Cleanup\n${NC}"
+printf "\n\n${PURPLE}##### Setup the Python demo: Stop NSO, restore the CDB directory backup and vlan package, and start with package reload\n${NC}"
+if [ -z "$NONINTERACTIVE" ]; then
+    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    read -n 1 -s -r
+fi
+ncs --stop
+rm -rf ncs-cdb
+mv ncs-cdb-bak ncs-cdb
+rm -rf ./packages/tunnel
+cp -r ./package-store/vlan ./packages/
+ncs --with-package-reload-force
+
+printf "\n\n${GREEN}##### Upgrade the vlan package with the *Python* vlan_v2-py package\n${NC}"
+if [ -z "$NONINTERACTIVE" ]; then
+    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    read -n 1 -s -r
+fi
+ncs --stop
+rm -rf packages/vlan
+cp -r ./package-store/vlan_v2-py ./packages/vlan
+make vlan
+
+printf "\n${PURPLE}##### Start NSO and have NSO reload packages to perform the CDB upgrade\n${NC}"
+ncs --with-package-reload
+
+printf "\n${PURPLE}##### Check the upgraded service data\n${NC}"
+ncs_cli -n -u admin -C << EOF
+show running-config services vlan | nomore
+EOF
+
+printf "\n\n${PURPLE}##### Review the changes made by the vlan service for the ex0 device\n${NC}"
+ncs_cli -n -u admin -C << EOF
+show running-config devices device ex0 | display service-meta-data | nomore
+EOF
+
+printf "\n\n${GREEN}##### Upgrade the vlan_v2 package with the *Python* tunnel package\n${NC}"
+if [ -z "$NONINTERACTIVE" ]; then
+    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    read -n 1 -s -r
+fi
+
+printf "\n${PURPLE}##### Undeploy the service instances with no-networking to remove the vlan service meta-data before upgrading to the *Python* tunnel package\n${NC}"
+ncs_cli -n -u admin -C << EOF
+services vlan s1..2 un-deploy no-networking
+show running-config devices device ex0 | display service-meta-data | nomore
+EOF
+
+printf "\n\n${PURPLE}##### Replace the vlan_v2 package with the *Python* tunnel-py package\n${NC}"
+ncs --stop
+rm -rf packages/vlan
+cp -r ./package-store/tunnel-py ./packages/tunnel
+make tunnel
+
+printf "\n${PURPLE}##### Start NSO and have NSO force reload packages to perform the CDB upgrade\n${NC}"
+ncs --with-package-reload-force
+
+printf "\n${PURPLE}##### Check the upgraded service data\n${NC}"
+ncs_cli -n -u admin -C << EOF
+show running-config services tunnel | nomore
+EOF
+
+printf "\n\n${PURPLE}##### Re-deploy the service instances to own the device configuration again. Check that the re-deploy does not change the device configuration before the actual re-deploy\n${NC}"
+ncs_cli -n -u admin -C << EOF
+services tunnel s1..2 re-deploy no-networking
+devices device ex0..2 compare-config
+EOF
+
+printf "\n \n${PURPLE}##### Check that the services are still in sync with the device configuration\n${NC}"
+ncs_cli -n -u admin -C << EOF
+services tunnel s1 check-sync
+services tunnel s2 check-sync
+EOF
+
+printf "\n\n${PURPLE}##### No diff and in sync. Re-deploy. Will cause no change on the devices as intended\n${NC}"
+ncs_cli -n -u admin -C << EOF
+services tunnel s1..2 re-deploy dry-run
+services tunnel s1..2 re-deploy
+EOF
+
+printf "\n\n${PURPLE}##### Review the device configuration data\n${NC}"
+ncs_cli -n -u admin -C << EOF
+show running-config devices device ex0 | display service-meta-data | nomore
+EOF
+
+printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r

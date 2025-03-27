@@ -7,13 +7,13 @@ class DiffIter(ncs.cdb.Subscriber):
         self.register('/devices/device{ex0}/config', priority=100)
 
     def pre_iterate(self):
-        self.log.info('configuration DiffIter: pre_iterate')
+        self.log.debug('configuration DiffIter: pre_iterate')
         return self.log
 
     def iterate(self, kp, op, oldv, newv, state):
         """Handle configuration changes"""
         log = state
-        log.info(f'iterate kp={str(kp)} op={op} oldv={oldv} newv={newv}')
+        log.debug(f'iterate kp={str(kp)} op={op} oldv={oldv} newv={newv}')
         if op is ncs.MOP_CREATED:
             pass
         elif op is ncs.MOP_DELETED:
@@ -33,4 +33,4 @@ class Plaincdbsub(ncs.application.Application):
 
     def teardown(self):
         self.sub.stop()
-        self.log.info('Plaincdbsub FINISHED')
+        self.log.debug('Plaincdbsub FINISHED')

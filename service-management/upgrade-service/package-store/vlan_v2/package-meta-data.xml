@@ -2,7 +2,7 @@
   <name>vlan</name>
   <package-version>1.0</package-version>
   <description>Create a vlan interface on all routers</description>
-  <ncs-min-version>5.0</ncs-min-version>
+  <ncs-min-version>6.0</ncs-min-version>
   <required-package>
     <name>router-nc-1.1</name>
   </required-package>

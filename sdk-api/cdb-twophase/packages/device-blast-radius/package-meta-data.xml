@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>device-blast-radius</name>
+  <package-version>1.0</package-version>
+  <description>Two Phase Subscriber Python package</description>
+  <ncs-min-version>5.7</ncs-min-version>
+
+  <component>
+    <name>device-blast-radius</name>
+    <application>
+      <python-class-name>two_phase_sub.TwoPhaseSubApp</python-class-name>
+    </application>
+  </component>
+</ncs-package>

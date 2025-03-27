@@ -1,3 +1,2 @@
 ###### Python pip requirements.txt file for running the demo script ######
 requests
-rich

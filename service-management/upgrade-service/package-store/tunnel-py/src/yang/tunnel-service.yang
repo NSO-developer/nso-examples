@@ -1,0 +1,69 @@
+module tunnel-service {
+  namespace "http://example.com/tunnel-service";
+  prefix tl;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "This service creates a tunnel assembly on all routers in our network. ";
+
+  revision 2013-01-08 {
+    description
+      "Initial revision.";
+  }
+
+  augment /ncs:services {
+    list tunnel {
+      key tunnel-name;
+      leaf tunnel-name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint tunnelspnt;
+
+      tailf:action self-test {
+        tailf:info "Perform self-test of the service";
+        tailf:actionpoint tunnelselftest;
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf message {
+            type string;
+            description
+              "Free format message.";
+          }
+        }
+      }
+
+      leaf gid {
+        type string;
+        mandatory true;
+      }
+      leaf interface {
+        type string;
+        mandatory true;
+      }
+      leaf assembly {
+        type int32;
+        mandatory true;
+      }
+      leaf tunnel-id {
+        type uint16;
+        mandatory true;
+      }
+      leaf descr {
+        type string;
+        mandatory true;
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>vlan</name>
+  <package-version>1.0</package-version>
+  <description>Create a vlan interface on all routers</description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <required-package>
+    <name>router-nc-1.1</name>
+  </required-package>
+  <component>
+    <name>vlan</name>
+    <application>
+      <python-class-name>vlan_service_rfs.VlanServiceRFS</python-class-name>
+    </application>
+  </component>
+  <component>
+    <name>upgrade-service</name>
+    <upgrade>
+      <python-class-name>upgrade_service.UpgradeService</python-class-name>
+    </upgrade>
+  </component>
+</ncs-package>

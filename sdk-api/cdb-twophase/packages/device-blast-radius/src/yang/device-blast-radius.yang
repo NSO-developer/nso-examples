@@ -1,0 +1,19 @@
+module device-blast-radius {
+  namespace "http://example.com/device-blast-radius";
+  prefix dbr;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  augment "/ncs:devices" {
+    container blast-radius {
+      leaf max-devices {
+        type uint32;
+        description
+          "The maximum number of devices that can be managed by a" +
+          "transaction.";
+      }
+    }
+  }
+}

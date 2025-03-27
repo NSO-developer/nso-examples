@@ -250,7 +250,7 @@ def main(args, runid):
         print(f"{OKGREEN}##### Press [ENTER] to continue or ctrl-c to exit\n"
               f"{ENDC}")
         input()
-        r = subprocess.run(['python3',
+        r = subprocess.run(['python3', '-u',
                             '../../common/simple_progress_trace_viewer.py',
                             f'nso-rundir/logs/t3-{runid}.csv'], check=True,
                            encoding='utf-8')

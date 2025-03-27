@@ -345,7 +345,7 @@ def main(args, runid):
         print(f"{OKGREEN}##### Press [ENTER] to continue or ctrl-c to exit"
               f"{ENDC}")
         input()
-        r = subprocess.run(['python3',
+        r = subprocess.run(['python3', '-u',
                             '../../common/simple_progress_trace_viewer.py',
                             f'upper-nso/logs/t3-{runid}.csv'], check=True,
                            encoding='utf-8')
@@ -357,7 +357,7 @@ def main(args, runid):
         print(f"{OKGREEN}##### Press [ENTER] to continue or ctrl-c to exit"
               f"{ENDC}")
         input()
-        r = subprocess.run(['python3',
+        r = subprocess.run(['python3', '-u',
                             '../../common/simple_progress_trace_viewer.py',
                             f'lower-nso-1/logs/t3-{runid}.csv'], check=True,
                            encoding='utf-8')
@@ -366,7 +366,7 @@ def main(args, runid):
         print(f"{OKGREEN}##### Press [ENTER] to continue or ctrl-c to exit"
               f"{ENDC}")
         input()
-        r = subprocess.run(['python3',
+        r = subprocess.run(['python3', '-u',
                             '../../common/simple_progress_trace_viewer.py',
                             f'lower-nso-2/logs/t3-{runid}.csv'], check=True,
                            encoding='utf-8')
