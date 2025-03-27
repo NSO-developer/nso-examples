@@ -1,0 +1,73 @@
+module vlan-service {
+  namespace "http://example.com/vlan-service";
+  prefix vl;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "This service creates a vlan iface/unit on all routers in our network. ";
+
+  revision 2013-08-30 {
+    description
+      "Added mandatory leaf global-id.";
+  }
+  revision 2013-01-08 {
+    description
+      "Initial revision.";
+  }
+
+  augment /ncs:services {
+    list vlan {
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint vlanspnt_v2;
+
+      tailf:action self-test {
+        tailf:info "Perform self-test of the service";
+        tailf:actionpoint vlanselftest;
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf message {
+            type string;
+            description
+              "Free format message.";
+          }
+        }
+      }
+
+      leaf global-id {
+        type string;
+        mandatory true;
+      }
+      leaf iface {
+        type string;
+        mandatory true;
+      }
+      leaf unit {
+        type int32;
+        mandatory true;
+      }
+      leaf vid {
+        type uint16;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+        mandatory true;
+      }
+    }
+  }
+}

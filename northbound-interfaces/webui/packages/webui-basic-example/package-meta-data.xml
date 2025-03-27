@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>webui-basic-example</name>
+  <package-version>1.0</package-version>
+  <description>Example package with a simple webui</description>
+  <ncs-min-version>6.3</ncs-min-version>
+</ncs-package>

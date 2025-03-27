@@ -168,7 +168,7 @@ printf "${PURPLE}##### Show a graph representation of the upper-nso progress tra
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
-    python3 ../../common/simple_progress_trace_viewer.py upper-nso/logs/t3-$RUNID.csv
+    python3 -u ../../common/simple_progress_trace_viewer.py upper-nso/logs/t3-$RUNID.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n\n${NC}"
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
@@ -178,7 +178,7 @@ printf "${PURPLE}##### Show a graph representation of the lower-nso-1 progress t
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
-    python3 ../../common/simple_progress_trace_viewer.py lower-nso-1/logs/t3-$RUNID.csv
+    python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-1/logs/t3-$RUNID.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
 fi
@@ -187,7 +187,7 @@ printf "${PURPLE}##### Show a graph representation of the lower-nso-2 progress t
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
-    python3 ../../common/simple_progress_trace_viewer.py lower-nso-2/logs/t3-$RUNID.csv
+    python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-2/logs/t3-$RUNID.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
 fi

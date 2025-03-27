@@ -1,0 +1,67 @@
+module vlan-rfs {
+  yang-version 1.1;
+  namespace "http://example.com/vlan-rfs";
+  prefix vr;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "This RFS manages a vlan iface/unit with one service instance per router.";
+
+  revision 2013-01-08 {
+    description
+      "Initial revision.";
+  }
+
+  container rfs-vlans {
+    list vlan {
+      key device;
+      leaf device {
+        tailf:cli-allow-range;
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint vlan-servicepoint;
+
+      action self-test {
+        tailf:info "Perform self-test of the service";
+        tailf:actionpoint vlanselftest;
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf message {
+            type string;
+            description
+              "Free format message.";
+          }
+        }
+      }
+
+      leaf iface {
+        type string;
+        mandatory true;
+      }
+      leaf unit {
+        type int32;
+        mandatory true;
+      }
+      leaf vid {
+        type uint16;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+        mandatory true;
+      }
+    }
+  }
+}

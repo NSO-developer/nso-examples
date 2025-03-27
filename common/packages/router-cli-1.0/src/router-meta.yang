@@ -1,0 +1,70 @@
+module router-meta {
+  namespace "http://example.com/router-meta-cli";
+  prefix metacli;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import router-cli {
+    prefix id;
+  }
+
+  revision 2023-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  grouping locks {
+    list locks {
+      config false;
+      tailf:cdb-oper {
+        tailf:persistent true;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+
+      leaf trigger {
+        type string;
+      }
+    }
+  }
+
+  grouping settings {
+    leaf default-handling-mode {
+      type enumeration {
+        enum report-all;
+        enum trim;
+        enum explicit;
+      }
+      default explicit;
+    }
+
+    leaf idle-timeout {
+      type uint16 {
+        range "0..8192";
+      }
+      units "seconds";
+    }
+
+    leaf use-stored-capabilities {
+      type boolean;
+      default false;
+    }
+  }
+
+  augment "/ncs:devices/ncs:device/ncs:ned-settings" {
+    when "derived-from(../ncs:device-type/ncs:cli/ncs:ned-id, "
+      + "'id:router-cli') or "
+      + "derived-from(../ncs:device-type/ncs:generic/ncs:ned-id, "
+      + "'id:router-gen') or ../ncs:auto-configure";
+    uses settings;
+    uses locks;
+  }
+}

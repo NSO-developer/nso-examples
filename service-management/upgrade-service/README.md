@@ -14,11 +14,14 @@ first upgrade, so user-written code is needed to update the CDB data. In the
 second case, the data must be moved (modified) to a package with a different
 YANG model and package name.
 
-n upgrade component is registered in the `package-meta-data.xml` file for the
+An upgrade component is registered in the `package-meta-data.xml` file for the
 `tunnel` package to handle the CDB upgrade. The upgrade component is
 a Java class with a main class that connects to NSO, reads old config data
-using the CDB API, and writes the adapted config data using the Management Agent
-API (MAAPI).
+using the CDB API, and writes the adapted config data using the Management
+Agent API (MAAPI).
+
+There are also Python variants of the packages with new versions called
+`vlan_v2-py` and `tunnel-py`.
 
 We will start with the `vlan` package and exchange it for a new version of the
 same package, followed by a switch to the `tunnel` package.
@@ -94,6 +97,13 @@ package, and start NSO so that the upgrade component Java program in the
     ncs --stop
     rm -rf packages/vlan
     cp -r ../package-store/vlan_v2 ./packages/vlan
+    make vlan
+
+Or to use the Python `vlan_v2-py` package:
+
+    ncs --stop
+    rm -rf ./packages/vlan
+    cp -r ./package-store/vlan_v2-py ./packages/vlan
     make vlan
 
 Start NSO and have NSO reload packages to perform the CDB upgrade:
@@ -296,11 +306,18 @@ changing the device configuration:
 
 Stop NSO, exchange the `vlan` package with the `tunnel` package, and start NSO
 to upgrade the service data using the upgrade component Java program in the
-tunnel package:
+`tunnel` package:
 
     ncs --stop
     rm -rf ./packages/vlan
     cp -r ./package-store/tunnel ./packages/
+    make tunnel
+
+Or to use the Python `tunnel-py` package:
+
+    ncs --stop
+    rm -rf ./packages/vlan
+    cp -r ./package-store/tunnel-py ./packages/tunnel
     make tunnel
 
 Start NSO and have NSO force reload packages to perform the CDB upgrade. Force

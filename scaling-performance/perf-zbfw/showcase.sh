@@ -10,7 +10,7 @@ printf "\n\n${GREEN}##### Showcase: Service mapping with 100 zone-pairs per 3 tr
 make stop clean NDEVS=3 parallel start; python3 measure.py --ntrans 1 --nzones 100 --cqparam sync
 CSVFILE=$(ls logs/*.csv)
 if [ -z "$NONINTERACTIVE" ]; then
-    python3 ../../common/simple_progress_trace_viewer.py $CSVFILE
+    python3 -u ../../common/simple_progress_trace_viewer.py $CSVFILE
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n${NC}"
 fi
 
@@ -22,7 +22,7 @@ fi
 make stop clean NDEVS=3 parallel start; python3 measure.py --ntrans 0 --nzones 100 --cqparam bypass
 CSVFILE=$(ls logs/*.csv)
 if [ -z "$NONINTERACTIVE" ]; then
-    python3 ../../common/simple_progress_trace_viewer.py $CSVFILE
+    python3 -u ../../common/simple_progress_trace_viewer.py $CSVFILE
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n${NC}"
 fi
 
@@ -34,7 +34,7 @@ fi
 make stop clean NDEVS=3 serial start; python3 measure.py --ntrans 1 --nzones 100 --cqparam async
 CSVFILE=$(ls logs/*.csv)
 if [ -z "$NONINTERACTIVE" ]; then
-    python3 ../../common/simple_progress_trace_viewer.py $CSVFILE
+    python3 -u ../../common/simple_progress_trace_viewer.py $CSVFILE
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n${NC}"
 fi
 

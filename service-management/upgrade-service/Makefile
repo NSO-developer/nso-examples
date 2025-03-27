@@ -3,7 +3,6 @@ all:
 	$(MAKE) -C packages/router-nc-1.1/src all
 	$(MAKE) -C package-store/vlan/src all
 	$(MAKE) -C package-store/vlan_v2/src all
-	$(MAKE) -C package-store/tunnel/src all
 	$(MAKE) netsim
 
 netsim:
@@ -20,7 +19,7 @@ clean:
 		$(MAKE) -C $$f clean || exit 1; \
 	done
 	rm -rf ./packages/*;
-	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb
+	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb-bak
 
 demo:
 	./demo.sh

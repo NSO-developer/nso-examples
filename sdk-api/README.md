@@ -38,6 +38,18 @@ Showcase a few different ways to subscribe to changes in the CDB configuration
 and operational data stores from a Java application. Used by the NSO
 Development Guide chapter Using CDB.
 
+### cdb-twophase
+Demonstrates a two-phase CDB mandatory subscriber that will iterate over the
+changed configuration during the prepare phase of the transaction and abort the
+transaction if the number of devices with configuration changes exceeds a
+limit.
+
+### event-notifications
+Demonstrates how to use the Python `_ncs.events` low-level module for
+subscribing to and processing NSO event notifications. The Python script used
+with this example can also be used as a standalone application for debugging
+any NSO instance.
+
 ### alarms
 Illustrates how to submit alarms to NSO using the Java `AlarmSinkCentral`.
 
@@ -58,5 +70,5 @@ Overview under DP API.
 
 ### external-encryption-keys
 Demonstrates how to use an external Python application to configure the
-built-in NSO crypto types' encryption keys as an option to configure the keys in
-`ncs.conf`. Used by the NSO Development Guide chapter Encryption Keys.
+built-in NSO crypto types' encryption keys as an option to configure the keys
+in `ncs.conf`. Used by the NSO Development Guide chapter Encryption Keys.

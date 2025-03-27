@@ -1,0 +1,49 @@
+module vlan-cfs {
+  yang-version 1.1;
+  namespace "http://example.com/vlan-cfs";
+  prefix vc;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "This CFS manages a vlan iface/unit on all routers.";
+
+  revision 2025-03-13 {
+    description
+      "Initial revision.";
+  }
+
+  container cfs-vlans {
+    list vlan {
+      key name;
+      leaf name {
+        type string;
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint vlan-cfs-servicepoint;
+
+      leaf iface {
+        type string;
+        mandatory true;
+      }
+      leaf unit {
+        type int32;
+        mandatory true;
+      }
+      leaf vid {
+        type uint16;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+        mandatory true;
+      }
+    }
+  }
+}

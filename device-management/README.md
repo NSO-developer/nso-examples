@@ -47,10 +47,15 @@ routers using the built-in NETCONF network element driver (NED). Used by the
 NSO Operation & Usage Guide Network Element Drivers and Adding Devices chapter
 to describe using a NETCONF NED.
 
-### xmlrpc-device
+### cli-ned
+An example of a CLI NED implementation for a device that provides a Cisco-style
+CLI interface where Java code is used to enable NSO to manage it. Used by the
+NSO Development Guide chapter CLI NED development.
+
+### generic-ned
 An example of a generic NED implementation for a device that provides a
 proprietary interface where Java code is used to enable NSO to manage it. Used
-by the NED Development Guide chapter Getting Started with a Generic NED.
+by the NED Development Guide chapter Generic NED Development.
 
 ### snmp-ned
 An example showcasing how to manage SNMP-enabled devices with NSO. Used by the
@@ -70,6 +75,11 @@ variables, templates with expressions, and templates combined.
 Implements a Java application that maps operational state data from devices
 to an aggregated high-level representation. Also used by the NSO Development
 Guide chapter NSO Packages.
+
+### netconf-call-home
+Demonstrates the NSO built-in support for the NETCONF SSH Call Home client
+protocol operations over SSH as defined in RFC 8071 (section 3.1) to enable
+NSO to communicate with the device after it calls home.
 
 ### ned-upgrade
 Demonstrates adding a new NED package to NSO without performing a complete

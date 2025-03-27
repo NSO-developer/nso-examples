@@ -1,0 +1,44 @@
+body {
+    font-family: Helvetica, sans-serif;
+    margin: 0;
+    width: 100%;
+    background-color: rgb(242, 242, 242);
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+
+h2 {
+    font-size: 1.2rem;
+}
+
+#wrapper {
+    display: flex;
+    flex-flow: column;
+    margin: 0 auto;
+    padding: 0 1rem;
+    width: 1024px;
+}
+
+a, .link-button {
+    color: rgb(4, 159, 217);
+    text-decoration: none;
+}
+
+p {
+    margin: 0.7rem 0 ;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+dt {
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+dd {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}

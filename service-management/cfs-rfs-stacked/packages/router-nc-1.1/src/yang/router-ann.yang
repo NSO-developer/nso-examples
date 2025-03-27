@@ -1,0 +1,83 @@
+module router-ann {
+  namespace "urn:dummy";
+  prefix "dummy";
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import router {
+    prefix r;
+  }
+
+  tailf:annotate-module "router-routes" {
+    tailf:annotate-statement "grouping[name='routes']" {
+      tailf:annotate-statement "container[name='inet6']" {
+        tailf:annotate-statement "list[name='route']" {
+          tailf:annotate-statement "leaf[name='type']" {
+            tailf:annotate-statement "type[name='enumeration']" {
+              tailf:annotate-statement "enum[name='next-hop']" {
+                tailf:code-name "inet6_next_hop";
+              }
+              tailf:annotate-statement "enum[name='reject']" {
+                tailf:code-name "inet6_reject";
+              }
+            }
+          }
+        }
+      }
+      tailf:annotate-statement "container[name='inet']" {
+        tailf:annotate-statement "list[name='route']" {
+          tailf:annotate-statement "leaf[name='type']" {
+            tailf:annotate-statement "type[name='enumeration']" {
+              tailf:annotate-statement "enum[name='next-hop']" {
+                tailf:code-name "inet_next_hop";
+              }
+              tailf:annotate-statement "enum[name='reject']" {
+                tailf:code-name "inet_reject";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  tailf:annotate-module "router-syslog" {
+    tailf:annotate-statement "grouping[name='syslog']" {
+      tailf:annotate-statement "list[name='server']" {
+        tailf:annotate-statement "leaf[name='administrator']" {
+          tailf:hidden maint;
+        }
+        tailf:annotate-statement "action[name='archive-log']" {
+          tailf:exec "./scripts/archive-log";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='syslogFacility']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='syslog']" {
+          tailf:code-name "sf_syslog";
+        }
+        tailf:annotate-statement "enum[name='all']" {
+          tailf:code-name "sf_all";
+        }
+      }
+    }
+  }
+  tailf:annotate-module "router-ntp" {
+    tailf:annotate-statement "typedef[name='ntpState']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='reject']" {
+          tailf:code-name "ns_reject";
+        }
+      }
+    }
+    tailf:annotate-statement "typedef[name='ntpRestrictFlag']" {
+      tailf:annotate-statement "type[name='enumeration']" {
+        tailf:annotate-statement "enum[name='version']" {
+          tailf:code-name "nr_version";
+        }
+      }
+    }
+  }
+}

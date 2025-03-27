@@ -22,6 +22,12 @@ variants of Java service callbacks to implement service-to-device mappings of
 data, shared data between service instances, and FASTMAP. The example is used
 by the NSO Development Guide.
 
+### cfs-rfs-stacked service
+A stacked service Python variant of the Java-based RFS VLAN service example.
+Demonstrates a simple stacked services design that applies to bigger,
+more complex services where there are many reasons why you prefer stacked
+services to a single monolithic one.
+
 ### rfs-service-erlang
 Subset Erlang variant of the Java-based RFS service example. Used by the NSO
 Development Guide chapter Embedded Erlang Applications.
@@ -90,10 +96,10 @@ service discovery documentation.
 ### upgrade-service
 Based on the `rfs-service` example's `vlan` service package. Performs a package
 upgrade where instance data in the NSO CDB is changed and migrated with the
-help of Java code that connects to NSO, reads old config data using the CDB
-API, and writes the adapted config data using MAAPI while adjusting service
-meta-data. Used by the NSO Development Guide under Writing an Upgrade Package
-Component.
+help of Java or Python code that connects to NSO, reads old config data using
+the CDB API, and writes the adapted config data using MAAPI while adjusting
+service meta-data. Used by the NSO Development Guide under Writing an Upgrade
+Package Component.
 
 ### access-lists
 Illustrates how to create a simple service with NSO. Implements a basic

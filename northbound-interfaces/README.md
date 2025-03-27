@@ -1,7 +1,8 @@
 Northbound Interfaces Examples
 ==============================
 
-Northbound programmatic APIs in NSO: NETCONF, RESTCONF, and SNMP.
+Northbound programmatic APIs in NSO: NETCONF, RESTCONF, WebUI/JSON-RPC, and
+SNMP.
 
 See each example for a detailed description, additional requirements, and
 pointers to further reading.
@@ -18,10 +19,9 @@ Showcases how to generate and subscribe to NSO northbound RESTCONF and NETCONF
 notifications, including YANG-Push notifications. Supports the NSO Development
 Guide on the NETCONF and RESTCONF Northbound APIs.
 
-### netconf-call-home
-Demonstrates the NSO built-in support for the NETCONF SSH Call Home client
-protocol operations over SSH as defined in RFC 8071 (section 3.1) to enable
-NSO to communicate with the device after it calls home.
+### webui
+Demonstrates how to use and update a custom Web UI package using the
+JSON-RPC API to query data from NSO.
 
 ### snmp-mib
 Show how a simple proprietary SNMP MIB is used to access data from a YANG

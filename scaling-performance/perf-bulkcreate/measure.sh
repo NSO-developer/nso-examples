@@ -142,7 +142,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     done
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r </dev/tty
-    python3 ../../common/simple_progress_trace_viewer.py nso-rundir/logs/progress-$RUN_ID.csv
+    python3 -u ../../common/simple_progress_trace_viewer.py nso-rundir/logs/progress-$RUN_ID.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n${NC}"
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r </dev/tty
