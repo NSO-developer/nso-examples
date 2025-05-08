@@ -33,6 +33,7 @@ nso-node%: cdb-init/init.xml packages
 		-e 's/127\.0\.0\.1/$(NSO_IP$*)/g' \
 		-e 's/4569/456$*/g' \
 		-e 's/u@ncs/u@n$*/g' \
+		-e 's|<webui>|<webui><match-host-name>false</match-host-name>|g' \
 		$@/ncs.conf
 	if [ -e packages ]; then \
 		cd $@/packages/ && ln -sf ../../packages/* ./ ; fi

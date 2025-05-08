@@ -1,0 +1,98 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$CE}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet tags="replace">
+            <id>{$CE_INTERFACE_NO}</id>
+            <ipv4>
+              <address>
+                <ip>{$CE_IP}</ip>
+                <mask>{$SUBNET_MASK}</mask>
+              </address>
+            </ipv4>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <?if {$CE_BGP}?>
+          <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+            <name>pass-all</name>
+            <?if-ned-id-match cisco-iosxr-srdemo.*?>
+              <value>pass</value>
+            <?elif-ned-id-match cisco-iosxr-cli.*?>
+              <value>  pass&#13;&#10;</value>
+            <?end?>
+          </route-policy>
+        <?end?>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {$CE_BGP}?>
+            <bgp>
+              <bgp-no-instance>
+                <id>{$CE_AS}</id>
+                <bgp>
+                  <router-id>{$CE_BGP_ID}</router-id>
+                </bgp>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <redistribute>
+                        <connected/>
+                      </redistribute>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{$PE_IP}</id>
+                  <remote-as>{$AS}</remote-as>
+                  <update-source>
+                    <GigabitEthernet>{$CE_INTERFACE_NO}</GigabitEthernet>
+                  </update-source>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <!-- Must follow list key order -->
+                        <?if-ned-id-match cisco-iosxr-srdemo.*?>
+                          <route-policy>
+                              <name>pass-all</name>
+                              <direction>in</direction>
+                          </route-policy>
+                          <route-policy>
+                            <name>pass-all</name>
+                            <direction>out</direction>
+                          </route-policy>
+                        <?elif-ned-id-match cisco-iosxr-cli.*?>
+                          <route-policy>
+                              <direction>in</direction>
+                              <name>pass-all</name>
+                          </route-policy>
+                          <route-policy>
+                            <direction>out</direction>
+                            <name>pass-all</name>
+                          </route-policy>
+                        <?end?>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </bgp-no-instance>
+            </bgp>
+          <?else?>
+            <static>
+              <address-family>
+                <ipv4>
+                  <unicast>
+                    <routes-ip>
+                      <net>{vpn-routes}</net>
+                      <address>{$PE_IP}</address>
+                    </routes-ip>
+                  </unicast>
+                </ipv4>
+              </address-family>
+            </static>
+          <?end?>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,82 @@
+module srv6-node {
+  namespace "http://tail-f.com/srlab/srv6-node";
+  prefix srv6;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  augment /cor:core-network {
+    action provision {
+      description
+       "Deploy SRv6 config for all core network devices.
+
+        Must run in a configuration session (config mode).";
+
+      tailf:actionpoint srv6-node-provision;
+      output {
+        leaf-list provisioning {
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+      }
+    }
+  }
+
+  augment /cor:core-network/cor:settings {
+    leaf enable-cdp {
+      description
+       "Connected neighbor discovery.
+
+        This is very useful for lab but should not be used in production.";
+      type boolean;
+    }
+    leaf fast-reroute {
+      description "Enable fast reroute with TI-LFA";
+      type boolean;
+    }
+  }
+
+  augment /cor:core-network/cor:services {
+    list srv6-node {
+      description "Node configuration for an SRv6 router.";
+
+      uses ncs:service-data;
+      ncs:servicepoint srv6-node-service;
+
+      key name;
+      leaf name {
+        description "Device name";
+        type string;
+        tailf:cli-allow-range;
+      }
+      leaf fast-reroute {
+        description "Per-node override for global setting.";
+        type boolean;
+      }
+
+      leaf-list rr-neighbors {
+        config false;
+        type inet:ip-address;
+      }
+    }
+  }
+}

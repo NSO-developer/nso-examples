@@ -1,0 +1,61 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <settings>
+      <management-base>10.10.20.100</management-base>
+      <enable-cdp xmlns="http://tail-f.com/srlab/srv6-node">true</enable-cdp>
+    </settings>
+
+    <!-- DEVICES -->
+    <devices>
+      <name>core-1</name>
+      <index>1</index>
+      <role>core</role>
+      <enabled>true</enabled>
+    </devices>
+    <devices>
+      <name>core-2</name>
+      <index>2</index>
+      <role>core</role>
+    </devices>
+    <devices>
+      <name>core-3</name>
+      <index>3</index>
+      <role>core</role>
+    </devices>
+    <devices>
+      <name>core-4</name>
+      <index>4</index>
+      <role>core</role>
+    </devices>
+    <devices>
+      <name>core-5</name>
+      <index>5</index>
+      <role>core</role>
+      <role>rr</role>
+    </devices>
+    <devices>
+      <name>pe-01</name>
+      <index>11</index>
+      <role>pe</role>
+    </devices>
+    <devices>
+      <name>pe-02</name>
+      <index>12</index>
+      <role>pe</role>
+    </devices>
+
+  </core-network>
+
+  <!-- DEVICE GROUP AUTH -->
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <authgroups>
+      <group>
+        <name>cisco</name>
+        <default-map>
+          <remote-name>cisco</remote-name>
+          <remote-password>cisco</remote-password>
+        </default-map>
+      </group>
+    </authgroups>
+  </devices>
+</config>

@@ -1,0 +1,17 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>srv6-node</name>
+  <package-version>1.0</package-version>
+  <description>Node configuration for a SRv6 core network</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+  <required-package>
+    <name>core-network</name>
+  </required-package>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>srv6_node.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

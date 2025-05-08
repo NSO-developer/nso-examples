@@ -1,0 +1,56 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$NAME}</name>
+      <config tags="replace">
+        <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">{$NAME}</hostname>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <monitor>debugging</monitor>
+          <console>debugging</console>
+        </logging>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>cisco</name>
+          <group>
+            <name>root-lr</name>
+          </group>
+          <group>
+            <name>cisco-support</name>
+          </group>
+        </username>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <ipv4>
+              <address>
+                <ip>{$ADDRESS}</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+            <shutdown tags="delete"/>
+          </MgmtEth>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <static>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <routes-ip>
+                    <net>0.0.0.0/0</net>
+                    <address>10.10.20.254</address>
+                  </routes-ip>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </static>
+        </router>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <vrf>
+              <name>default</name>
+            </vrf>
+          </server>
+        </ssh>
+      </config>
+    </device>
+  </devices>
+</config-template>

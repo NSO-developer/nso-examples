@@ -1,0 +1,492 @@
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.tailf.conf.ConfPath;
+import com.tailf.ncs.ResourceManager;
+import com.tailf.ned.NedCapability;
+import com.tailf.ned.NedCliBase;
+import com.tailf.ned.NedCliBaseTemplate;
+import com.tailf.ned.NedCmd;
+import com.tailf.ned.NedErrorCode;
+import com.tailf.ned.NedException;
+import com.tailf.ned.NedExpectResult;
+import com.tailf.ned.NedMux;
+import com.tailf.ned.NedWorker;
+import com.tailf.ned.NedWorker.TransactionIdMode;
+import com.tailf.ned.SSHClient;
+import com.tailf.ned.SSHSessionException;
+
+
+/**
+ * This class implements NED interface for ConfD cli-c device.
+ */
+
+public class CliNed extends NedCliBaseTemplate {
+    public static Logger LOGGER  = LogManager.getLogger(CliNed.class);
+
+    public final static Pattern PROMPT_NON_CONFIG =
+        // start of input, > 0 not '(' or '#' or ' ', one #, >= 0 ' ', eol
+        Pattern.compile("\\A[^\\(\\# ]+# *$");
+    public final static Pattern PROMPT_TOP_CONFIG =
+        // same as non-config but with '(config)'
+        Pattern.compile("\\A[^\\(\\# ]+\\(config\\)# *$");
+    public final static Pattern PROMPT_ANY_CONFIG =
+        // same as non-config but with '(...)'
+        Pattern.compile("\\A[^\\(\\# ]+\\(.*\\)# *$");
+    public final static Pattern PROMPT_FALLBACK =
+        // start of input, > 0 not '#' or ' ', one #, >= 0 ' ', eol
+        Pattern.compile("\\A[^\\# ]+# *$");
+
+
+    public class SendCmdException extends NedException {
+        public SendCmdException(String response) {
+            super(NedErrorCode.NED_EXTERNAL_ERROR,
+                  "Unexpected response: " + response);
+        }
+    }
+
+
+    public CliNed() {
+        super();
+    }
+
+    protected CliNed(String deviceId, NedMux mux) {
+        this.device_id = deviceId;
+        this.mux = mux;
+    }
+
+    protected CliNed(String device_id,
+                      InetAddress ip,
+                      int port,
+                      String proto,  // ssh or telnet
+                      String ruser,
+                      String pass,
+                      String secpass,
+                      boolean trace,
+                      int connectTimeout, // msec
+                      int readTimeout,    // msec
+                      int writeTimeout,   // msec
+                      NedMux mux,
+                      NedWorker worker) {
+        super(device_id, ip, port, proto, ruser, pass, secpass, trace,
+              connectTimeout, readTimeout, writeTimeout, mux, worker);
+    }
+
+    protected CliNed initNoConnect(NedWorker worker) {
+        this.useStoredCapabilities();
+        return this;
+    }
+
+    protected CliNed init(NedWorker worker) {
+        try {
+            setupSSH(worker);
+        }
+        catch (Exception e) {
+            LOGGER.error("connect failed ",  e);
+            worker.error(NedCmd.CONNECT_CLI,
+                         NedErrorCode.CONNECT_CONNECTION_REFUSED,
+                         e.getMessage());
+            return this;
+        }
+
+        try {
+             NedExpectResult res = this.session.expect(new Pattern[] {
+                Pattern.compile("\\A[Ll]ogin:"),
+                Pattern.compile("\\A[Uu]sername:"),
+                Pattern.compile("\\A[Pp]assword:"),
+                PROMPT_NON_CONFIG
+            }, worker);
+            if (res.getHit() < 3) {
+                throw new NedException(NedErrorCode.CONNECT_BADAUTH,
+                                       "Authentication failed");
+            }
+
+            sendCmd(worker, PROMPT_NON_CONFIG, "terminal length 0");
+            sendCmd(worker, PROMPT_NON_CONFIG, "terminal width 0");
+
+            NedCapability[] capabilities = getCapabilities(worker);
+            this.setConnectionData(capabilities,
+                                   capabilities,
+                                   false,
+                                   TransactionIdMode.UNIQUE_STRING);
+        }
+        catch (Exception e) {
+            worker.error(NedCmd.CONNECT_CLI, e.getMessage());
+        }
+        return this;
+    }
+
+    protected String sendCmd(NedWorker worker, Pattern prompt, String cmd)
+            throws IOException, SSHSessionException, SendCmdException {
+        this.session.print(cmd + "\n");
+        this.session.expect(Pattern.quote(cmd), worker);
+
+        NedExpectResult res = this.session.expect(new Pattern[] {
+            prompt,
+            PROMPT_FALLBACK
+        }, worker);
+        if (res.getHit() > 0) {
+            LOGGER.error("Unexpected prompt: " + res.getMatch());
+            throw new SendCmdException("got prompt " + res.getMatch());
+        }
+        return res.getText();
+    }
+
+    @Override
+    public void setupSSH(NedWorker worker) throws Exception {
+        // Use the new(er) way of doing SSH
+        this.trace(worker, "SSH connecting to host: "+
+            ip.getHostAddress()+":"+port, "out");
+        sshClient = SSHClient.createClient(worker, this);
+        sshClient.connect(this.connectTimeout, 0);
+        try {
+            this.trace(worker, "SSH authenticating", "out");
+            sshClient.authenticate();
+        } catch (IOException e) {
+            worker.connectError(NedErrorCode.CONNECT_BADAUTH, "Auth failed");
+            return;
+        }
+        this.trace(worker, "SSH initializing session", "out");
+        this.session = sshClient.createSession();
+        maybeTrace(worker);
+    }
+
+    protected void maybeTrace(NedWorker w) {
+        if (this.trace) {
+            this.session.setTracer(w);
+        }
+    }
+
+    protected NedCapability[] getCapabilities(NedWorker worker)
+            throws NedException, IOException, SSHSessionException {
+        ArrayList<NedCapability> list = new ArrayList<NedCapability>();
+
+        String output = sendCmd(worker, PROMPT_NON_CONFIG,
+            "show confd-state loaded-data-models data-model namespace");
+
+        for (String line : output.split("[\r\n]+")) {
+            // Skip header and separator lines
+            if (line.startsWith("NAME") ||
+                line.startsWith("---") ||
+                line.trim().isEmpty()
+            ) {
+                continue;
+            }
+            // Split the line by whitespace and assume the last token is the ns
+            String[] tokens = line.trim().split("\\s+");
+            if (tokens.length > 1) {
+                String namespace = tokens[tokens.length - 1];
+                LOGGER.debug("getCapabilities: " + namespace);
+                list.add(new NedCapability(namespace,
+                    "", Collections.emptyList(), "", Collections.emptyList()));
+            }
+        }
+
+        list.add(new NedCapability(
+            "http://tail-f.com/ns/ncs-ned/show-partial" +
+                "?path-format=cmd-path-modes-only",
+            "", Collections.emptyList(), "", Collections.emptyList()
+        ));
+        list.add(new NedCapability(
+            "http://tail-f.com/ns/ncs-ned/show-auto-config",
+            "", Collections.emptyList(), "", Collections.emptyList()
+        ));
+        return list.toArray(new NedCapability[list.size()]);
+    }
+
+    @Override
+    public boolean keepAlive(NedWorker worker) {
+        try {
+            session.setTracer(null); // Let's not trace this
+            session.print("\n");
+            session.setTracer(worker);
+            session.expect(new Pattern[] {
+                PROMPT_NON_CONFIG,
+                PROMPT_ANY_CONFIG
+            }, worker);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void reconnect(NedWorker worker) {
+        // Do nothing but override base.
+    }
+
+    public void close(NedWorker worker)
+        throws NedException, IOException {
+        try {
+            ResourceManager.unregisterResources(this);
+        } catch (Exception ignore) {
+        }
+        super.close(worker);
+    }
+
+    public void close() {
+        try {
+            ResourceManager.unregisterResources(this);
+        } catch (Exception ignore) {
+        }
+        super.close();
+    }
+
+    @Override
+    public void getTransId(NedWorker worker)
+            throws Exception {
+        maybeTrace(worker);
+
+        // For some reason "show confd-state internal cdb datastore
+        //   running transaction-id" has about 2 seconds of lag...
+        String tid = sendCmd(worker, PROMPT_NON_CONFIG, "show netconf-state " +
+            "datastores | display xpath | include transaction-id");
+        tid = tid.split("transaction-id +")[1].trim();
+
+        LOGGER.info("getTransId: " + tid);
+        worker.getTransIdResponse(tid);
+    }
+
+    protected boolean enterConfig(NedWorker worker, int cmd)
+            throws NedException, IOException, SSHSessionException {
+        session.print("config exclusive\n");
+        session.expect("config exclusive", worker);
+        NedExpectResult res = session.expect(new Pattern[] {
+            PROMPT_TOP_CONFIG,
+            PROMPT_NON_CONFIG
+         }, worker);
+        if (res.getHit() > 0) {
+            worker.error(cmd, NedCmd.cmdToString(cmd), res.getText());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void applyConfig(NedWorker worker, int cmd, String data)
+            throws NedException, IOException, SSHSessionException,
+                ApplyException {
+        if (!enterConfig(worker, cmd)) {
+            // we encountered an error
+            return;
+        }
+
+        long time, lastTime = System.currentTimeMillis();
+
+        // apply one line at a time
+        for (String line : data.split("\n")) {
+            LOGGER.debug("applyConfig: " + line);
+            time = System.currentTimeMillis();
+            if ((time - lastTime) > (0.8 * this.writeTimeout)) {
+                lastTime = time;
+                worker.setTimeout(writeTimeout);
+            }
+
+            line = line.trim();
+            printLineWait(worker, cmd, line);
+        }
+
+        sendCmd(worker, PROMPT_TOP_CONFIG, "top");
+        String output = sendCmd(worker, PROMPT_TOP_CONFIG, "validate");
+        if (this.checkErrors(output) != null) {
+            throw new ApplyException("validate", output, true, true);
+        }
+    }
+
+    protected boolean printLineWait(NedWorker worker, int cmd, String line)
+            throws NedException, IOException, SSHSessionException,
+                ApplyException {
+        this.session.print(line + "\n");
+        this.session.expect(Pattern.quote(line), worker);
+
+        NedExpectResult res = this.session.expect(new Pattern[] {
+            PROMPT_TOP_CONFIG,
+            PROMPT_ANY_CONFIG,
+            PROMPT_FALLBACK,
+            Pattern.compile("Uncommitted changes found, commit them")
+        }, worker);
+        if (res.getHit() > 1) {
+            throw new ApplyException(line, "exited from config mode",
+                                     false, false);
+        }
+
+        boolean isAtTop = res.getHit() == 0;
+        String error = this.checkErrors(res.getText());
+        if (error != null) {
+            throw new ApplyException(line, error, isAtTop, true);
+        }
+        return isAtTop;
+    }
+
+    protected String checkErrors(String s) {
+        String[] errors = new String[] {
+            "syntax error: ",
+            "Failed: ",
+            "Aborted: ",
+        };
+
+        for (String output : s.split("\n|\r")) {
+            for (String error : errors) {
+                if (output.startsWith(error)) {
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void show(NedWorker worker, String toptag)
+            throws Exception {
+        maybeTrace(worker);
+
+        String data = showRunning(worker, toptag);
+        LOGGER.debug("show: " + toptag + " { " + data + " }");
+        if (data.contains("% No entries found.")) {
+            worker.showCliResponse("");
+        } else {
+            worker.showCliResponse(data);
+        }
+    }
+
+    @Override
+    public void showPartial(NedWorker worker, ConfPath[] paths,
+                            String[] cmdpaths)
+            throws Exception {
+        maybeTrace(worker);
+
+        ArrayList<String> result = new ArrayList<String>();
+        for (String path : cmdpaths) {
+            LOGGER.debug("showPartial: " + path);
+            String data = showRunning(worker, path);
+            if (data.contains("% No entries found.")) {
+                result.add("");
+            } else {
+                result.add(data);
+            }
+        }
+        worker.showCliResponse(result);
+    }
+
+    protected String showRunning(NedWorker worker, String path)
+            throws Exception {
+        String cmd = "show running-config " + path;
+        this.session.print(cmd + "\n");
+        this.session.expect(cmd, worker);
+
+        NedExpectResult res = this.session.expect(new Pattern[] {
+            Pattern.compile("\\A[Ss]yntax error:"),
+            PROMPT_NON_CONFIG,
+            PROMPT_FALLBACK
+        }, worker);
+        worker.setTimeout(readTimeout);
+
+        if (res.getHit() < 1) {
+            LOGGER.debug("Unsupported path on device: " + path);
+            this.session.expect(PROMPT_FALLBACK, worker);
+            return "";
+        }
+        if (res.getHit() > 1) {
+            LOGGER.error("Unexpected prompt: " + res.getMatch());
+            throw new SendCmdException("got prompt " + res.getMatch());
+        }
+        return res.getText();
+    }
+
+    @Override
+    public NedCliBase newConnection(String device_id,
+                                    InetAddress ip,
+                                    int port,
+                                    String proto,  // ssh or telnet
+                                    String ruser,
+                                    String pass,
+                                    String secpass,
+                                    String publicKeyDir,
+                                    boolean trace,
+                                    int connectTimeout, // msec
+                                    int readTimeout,    // msec
+                                    int writeTimeout,   // msecs
+                                    NedMux mux,
+                                    NedWorker worker) {
+        try {
+            LOGGER.debug("newConnection to " + device_id +
+                         " => connectTimeout " + connectTimeout +
+                         " readTimeout " + readTimeout +
+                         " writeTimeout " + writeTimeout);
+            CliNed ned = new CliNed(device_id, ip, port, proto, ruser, pass,
+                                    secpass, trace, connectTimeout, readTimeout,
+                                    writeTimeout, mux, worker);
+            ResourceManager.registerResources(ned);
+            return ned.init(worker);
+        } catch (Exception e) {
+            LOGGER.error("Failed starting new connection", e);
+            return null;
+        }
+    }
+
+    @Override
+    public NedCliBase initNoConnect(String device_id,
+                                    NedMux mux,
+                                    NedWorker worker) {
+        try {
+            LOGGER.debug("initNoConnect to " + device_id);
+            CliNed ned = new CliNed(device_id, mux);
+            ResourceManager.registerResources(ned);
+            return ned.initNoConnect(worker);
+        } catch (Exception e) {
+            LOGGER.error("Failed initializing NED", e);
+            return null;
+        }
+    }
+
+    // Prepare is handled by applyConfig()
+
+    @Override
+    public void commit(NedWorker worker, int timeout) throws Exception {
+        maybeTrace(worker);
+        LOGGER.debug("commit.");
+        String output = sendCmd(worker, PROMPT_ANY_CONFIG, "commit confirmed");
+        if (this.checkErrors(output) != null) {
+            throw new SendCmdException(output);
+        }
+        worker.commitResponse();
+    }
+
+    @Override
+    public void abort(NedWorker worker, String data) throws Exception {
+        maybeTrace(worker);
+        LOGGER.debug("abort.");
+        sendCmd(worker, PROMPT_NON_CONFIG, "abort");
+        worker.abortResponse();
+    }
+
+    @Override
+    public void persist(NedWorker worker) throws Exception {
+        maybeTrace(worker);
+        LOGGER.debug("persist.");
+        sendCmd(worker, PROMPT_NON_CONFIG, "commit and-quit");
+        worker.persistResponse();
+    }
+
+    @Override
+    public void revert(NedWorker worker, String data) throws Exception {
+        maybeTrace(worker);
+        LOGGER.debug("revert.");
+        String output = sendCmd(worker, PROMPT_NON_CONFIG, "abort");
+
+        // Aborting commit produces additional system message, which
+        // prints the prompt again and above might match the first one.
+        if (output.contains("Confirmed commit has been aborted.") &&
+            !output.contains("configuration rolled back")) {
+            this.session.expect("configuration rolled back", worker);
+        }
+        worker.revertResponse();
+    }
+}

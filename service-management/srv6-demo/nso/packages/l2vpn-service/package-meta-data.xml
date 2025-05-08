@@ -1,0 +1,24 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>l2vpn-service</name>
+  <package-version>1.0</package-version>
+  <description>SRv6 EVPN multipoint VPN (ELAN)</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+  <required-package>
+    <name>inventory</name>
+  </required-package>
+  <required-package>
+    <name>shared-code</name>
+  </required-package>
+
+  <supported-ned-id xmlns:id="never-match">id:safely-ignore</supported-ned-id>
+  <supported-ned-id-match>cisco-iosxr-srdemo.*</supported-ned-id-match>
+  <supported-ned-id-match>cisco-iosxr-cli.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>l2vpn_service.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

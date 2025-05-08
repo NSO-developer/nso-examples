@@ -1,0 +1,707 @@
+module tailf-ned-cisco-ios-xr {
+  namespace 'http://tail-f.com/ned/cisco-ios-xr';
+  prefix cisco-ios-xr;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+
+
+  grouping srv6-locator-ref {
+    container segment-routing {
+      container srv6 {
+        tailf:cli-add-mode;
+        list locator {
+          key name;
+          leaf name {
+            type string;
+          }
+        }
+      }
+    }
+  }
+
+  grouping srv6-locator {
+    container segment-routing {
+      container srv6 {
+        tailf:cli-add-mode;
+        leaf locator {
+          type string;
+        }
+        container alloc {
+          leaf mode {
+            type string;
+          }
+        }
+      }
+    }
+  }
+
+  grouping bgp-address-family {
+    container address-family {
+      container ipv4 {
+        container unicast {
+          tailf:cli-add-mode;
+          presence true;
+
+          uses srv6-locator;
+          container redistribute {
+            container connected {
+              presence true;
+            }
+          }
+          list route-policy {
+            tailf:cli-suppress-mode;
+            key 'name direction';
+            leaf name {
+              type string;
+            }
+            leaf direction {
+              type string;
+            }
+          }
+          container as-override {
+            presence true;
+          }
+        }
+      }
+      container vpnv4 {
+        container unicast {
+          tailf:cli-add-mode;
+          presence true;
+          leaf route-reflector-client {
+            type empty;
+          }
+        }
+      }
+      container l2vpn {
+        container evpn {
+          tailf:cli-add-mode;
+          presence true;
+          leaf route-reflector-client {
+            type empty;
+          }
+        }
+      }
+    }
+  }
+
+  grouping bgp-neighbor {
+    list neighbor {
+      key id;
+      leaf id {
+        type inet:ip-address;
+      }
+      container use {
+        leaf neighbor-group {
+          type string;
+        }
+      }
+      leaf remote-as {
+        type inet:as-number;
+      }
+      container update-source {
+        leaf GigabitEthernet {
+          tailf:cli-allow-join-with-value {
+            tailf:cli-display-joined;
+          }
+          type string;
+        }
+      }
+      uses bgp-address-family;
+    }
+  }
+
+  grouping interface-ref {
+    list interface {
+      key name;
+      leaf name {
+        type string;
+      }
+    }
+  }
+
+  grouping interface-config {
+    leaf description {
+      type string;
+    }
+    leaf shutdown {
+      type empty;
+      tailf:cli-show-no;
+    }
+    leaf vrf {
+      type string;
+    }
+    container ipv4 {
+      container address {
+        tailf:cli-compact-syntax;
+        leaf ip {
+          tailf:cli-drop-node-name;
+          type inet:ipv4-address;
+        }
+        leaf mask {
+          tailf:cli-drop-node-name;
+          type inet:ipv4-address;
+        }
+      }
+    }
+    container ipv6 {
+      container address {
+        list prefix-list {
+          tailf:cli-compact-syntax;
+          tailf:cli-suppress-mode;
+          tailf:cli-drop-node-name;
+          key prefix;
+          leaf prefix {
+            tailf:cli-drop-node-name;
+            type inet:ipv6-prefix;
+          }
+        }
+      }
+      leaf enable {
+        type empty;
+      }
+    }
+    container l2transport {
+      presence true;
+    }
+    leaf cdp {
+      type empty;
+    }
+  }
+
+
+  /*** CONFIG ***/
+
+  leaf hostname {
+    type string;
+  }
+
+  container logging {
+    leaf console {
+      type string;
+    }
+    leaf monitor {
+      type string;
+    }
+  }
+
+  list username {
+    key name;
+    leaf name {
+      type string;
+    }
+
+    list group {
+      tailf:cli-suppress-mode;
+      key name;
+      leaf name {
+        type string;
+      }
+    }
+  }
+
+  container cdp {
+    presence true;
+  }
+
+
+  /*** VRF ***/
+
+  container vrf {
+    list vrf-list {
+      tailf:cli-explicit-exit;
+      tailf:cli-drop-node-name;
+      key name;
+      leaf name {
+        type string;
+      }
+      leaf description {
+        type string;
+      }
+      container address-family {
+        container ipv4 {
+          container unicast {
+            tailf:cli-add-mode;
+            container import {
+              container route-target {
+                tailf:cli-add-mode;
+                list address-list {
+                  tailf:cli-suppress-mode;
+                  tailf:cli-drop-node-name;
+                  key name;
+                  leaf name {
+                    tailf:cli-drop-node-name {
+                      tailf:cli-suppress-warning TAILF_SUGGEST_COMBO;
+                    }
+                    type string;
+                  }
+                }
+              }
+            }
+            container export {
+              container route-target {
+                tailf:cli-add-mode;
+                list address-list {
+                  tailf:cli-suppress-mode;
+                  tailf:cli-drop-node-name;
+                  key name;
+                  leaf name {
+                    tailf:cli-drop-node-name {
+                      tailf:cli-suppress-warning TAILF_SUGGEST_COMBO;
+                    }
+                    type string;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*** INTERFACE ***/
+
+  container interface {
+    list MgmtEth {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list Loopback {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list GigabitEthernet {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list TenGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list TwentyFiveGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list FortyGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list FiftyGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list HundredGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list TwoHundredGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+    list FourHundredGigE {
+      tailf:cli-explicit-exit;
+      tailf:cli-allow-join-with-key {
+        tailf:cli-display-joined;
+      }
+      key id;
+      leaf id {
+        type string;
+      }
+      uses interface-config;
+    }
+  }
+
+  /*** ROUTE POLICY ***/
+  list route-policy {
+    tailf:cli-exit-command "end-policy";
+    key name;
+    leaf name {
+      type string;
+    }
+    leaf value {
+      tailf:cli-suppress-quotes;
+      tailf:cli-drop-node-name {
+        tailf:cli-suppress-warning TAILF_SUGGEST_COMBO;
+      }
+      type string;
+    }
+  }
+
+
+  container router {
+
+    /*** ROUTER STATIC ***/
+
+    container static {
+      tailf:cli-add-mode;
+      tailf:cli-explicit-exit;
+      container address-family {
+        container ipv4 {
+          container unicast {
+            tailf:cli-add-mode;
+            presence true;
+            list routes-ip {
+              tailf:cli-drop-node-name;
+              tailf:cli-suppress-mode;
+              tailf:cli-compact-syntax;
+              key "net address";
+              leaf net {
+                type inet:ipv4-prefix;
+              }
+              leaf address {
+                tailf:cli-drop-node-name;
+                type inet:ipv4-address;
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    /*** ROUTER ISIS ***/
+
+    container isis {
+      list tag {
+        tailf:cli-explicit-exit;
+        tailf:cli-drop-node-name;
+        key name;
+        leaf name {
+          type string;
+        }
+        leaf is-type {
+          type string;
+        }
+        list net {
+          tailf:cli-suppress-mode;
+          key id;
+          leaf id {
+            tailf:cli-drop-node-name;
+            type string;
+          }
+        }
+        container log {
+          container adjacency {
+            leaf changes {
+              type empty;
+            }
+          }
+        }
+        container address-family {
+          container ipv6 {
+            container unicast {
+              tailf:cli-add-mode;
+              presence true;
+              leaf metric-style {
+                type string;
+              }
+              uses srv6-locator-ref;
+            }
+          }
+        }
+        list interface {
+          tailf:cli-explicit-exit;
+          key name;
+          leaf name {
+            type string;
+          }
+          leaf interface-type {
+            tailf:cli-drop-node-name {
+              tailf:cli-suppress-warning TAILF_SUGGEST_COMBO;
+            }
+            type enumeration {
+              enum passive;
+            }
+          }
+          leaf point-to-point {
+            type empty;
+          }
+          container address-family {
+            container ipv6 {
+              container unicast {
+                presence true;
+                container fast-reroute {
+                  container enable {
+                    leaf per-prefix {
+                      type empty;
+                    }
+                  }
+                  container per-prefix {
+                    container ti-lfa {
+                      presence true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+    /*** ROUTER BGP ***/
+
+    container bgp {
+      list bgp-no-instance {
+        tailf:cli-explicit-exit;
+        tailf:cli-drop-node-name;
+        key id;
+        leaf id {
+          type inet:as-number;
+        }
+        container bgp {
+          leaf router-id {
+            type string;
+          }
+        }
+        uses bgp-address-family;
+
+        list neighbor-group {
+          key name;
+          leaf name {
+            type string;
+          }
+          leaf remote-as {
+            type inet:as-number;
+          }
+          container update-source {
+            leaf Loopback {
+              tailf:cli-allow-join-with-value {
+                tailf:cli-display-joined;
+              }
+              type uint8;
+            }
+          }
+          uses bgp-address-family;
+        }
+        uses bgp-neighbor;
+
+        list vrf {
+          key name;
+          leaf name {
+            type string;
+          }
+          leaf rd {
+            type string;
+          }
+          uses bgp-address-family;
+          uses bgp-neighbor;
+        }
+      }
+    }
+  }
+
+
+  /*** EVPN ***/
+
+  container evpn {
+    tailf:cli-add-mode;
+    presence true;
+    uses srv6-locator-ref;
+    list evi {
+      key 'id segment-routing';
+      leaf id {
+        type uint32;
+      }
+      leaf segment-routing {
+        tailf:cli-expose-key-name;
+        type string;
+      }
+      leaf advertise-mac {
+        type empty;
+      }
+    }
+    uses interface-ref;
+  }
+
+
+  /*** L2VPN ***/
+
+  container l2vpn {
+    tailf:cli-add-mode;
+    presence true;
+    container xconnect {
+      list group {
+        key name;
+        leaf name {
+          type string;
+        }
+        list p2p {
+          key name;
+          leaf name {
+            type string;
+          }
+          uses interface-ref;
+          container neighbor-evpn-service {
+            tailf:cli-drop-node-name;
+            container neighbor {
+              list evpn {
+                tailf:cli-suppress-mode;
+                key 'evi service';
+                leaf evi {
+                  tailf:cli-expose-key-name;
+                  type uint32;
+                }
+                leaf service {
+                  tailf:cli-expose-key-name;
+                  type uint32;
+                }
+                container segment-routing {
+                  leaf srv6 {
+                    type empty;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    container bridge {
+      list group {
+        key group-name;
+        leaf group-name {
+          type string;
+        }
+        list bridge-domain {
+          key bridge-domain-name;
+          leaf bridge-domain-name {
+            type string;
+          }
+          uses interface-ref;
+          container evi {
+            tailf:cli-compact-syntax;
+            leaf id {
+              tailf:cli-drop-node-name;
+              type uint32;
+            }
+            leaf segment-routing {
+              type string;
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  /*** SEGMENT ROUTING ***/
+
+  container segment-routing {
+    tailf:cli-add-mode;
+    presence true;
+    container srv6 {
+      tailf:cli-add-mode;
+      container encapsulation {
+        tailf:cli-add-mode;
+        tailf:cli-compact-syntax;
+        leaf source-address {
+          type inet:ip-address;
+        }
+      }
+      container locators {
+        tailf:cli-add-mode;
+        list locator {
+          key name;
+          leaf name {
+            type string;
+          }
+          container micro-segment {
+            container behavior {
+              leaf unode {
+                type string;
+              }
+            }
+          }
+          leaf prefix {
+            type inet:ip-prefix;
+          }
+        }
+      }
+    }
+  }
+
+
+  /*** SSH ***/
+
+  container ssh {
+    container server {
+      list vrf {
+        key name;
+        leaf name {
+          type string;
+        }
+      }
+    }
+  }
+}

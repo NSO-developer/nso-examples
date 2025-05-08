@@ -140,7 +140,7 @@ EOF
 
 printf "\n\n${PURPLE}##### List what services are configured on what devices\n${NC}"
 ncs_cli -n -u admin -C << EOF
-show devices device service-list | nomore
+show devices device services | nomore
 EOF
 
 printf "\n\n${GREEN}##### Must validation\n${NC}"

@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>inventory</name>
+  <package-version>1.0</package-version>
+  <description>Resources and equipment for service provisioning</description>
+  <ncs-min-version>6.4</ncs-min-version>
+</ncs-package>

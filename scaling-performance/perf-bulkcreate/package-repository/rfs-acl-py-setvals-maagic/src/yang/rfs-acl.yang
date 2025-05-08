@@ -1,0 +1,38 @@
+module rfs-acl {
+  yang-version 1.1;
+  namespace "http://example.com/rfs-acl";
+  prefix ra;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Bla bla...";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision";
+  }
+
+  container rfs-routes {
+    list route {
+      key device;
+      uses ncs:service-data;
+      ncs:servicepoint "rfs-acl-servicepoint";
+
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+      leaf num-routes {
+        type uint32;
+        default 1;
+      }
+    }
+  }
+}

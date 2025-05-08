@@ -1,0 +1,21 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$NAME}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet>
+            <id>0/0/0/1</id>
+            <description>e-line</description>
+            <ipv4>
+              <address>
+                <ip>10.1.4.4</ip>
+                <mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </GigabitEthernet>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

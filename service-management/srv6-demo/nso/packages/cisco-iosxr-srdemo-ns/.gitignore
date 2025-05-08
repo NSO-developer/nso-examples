@@ -1,0 +1,11 @@
+__pycache__/
+load-dir/
+private-jar/
+shared-jar/
+ncsc-out/
+package-meta-data.xml
+src/package-meta-data.xml.in
+src/java/
+src/*.yang
+*.ccl
+*.fxs

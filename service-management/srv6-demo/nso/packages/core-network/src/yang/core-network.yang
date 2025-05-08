@@ -1,0 +1,119 @@
+module core-network {
+  namespace "http://tail-f.com/srlab/corenetwork";
+  prefix core-network;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  identity device-role {
+    description
+     "Base identity for defining SP core device roles.";
+  }
+
+  identity core {
+    base device-role;
+    description
+     "A core (backbone) device providing transit.";
+  }
+
+  identity rr {
+    base device-role;
+    description
+     "A BGP Route Reflector (RR).";
+  }
+
+  identity pe {
+    base device-role;
+    description
+     "A Provider Edge (PE) device implementing customer services.";
+  }
+
+  identity agg {
+    base device-role;
+    description
+     "A port aggregation device (switch) for PE.";
+  }
+
+  container core-network {
+    tailf:cli-add-mode;
+    description
+     "Configuration for SP core network (backbone, PEs)";
+
+    container settings {
+      tailf:cli-add-mode;
+
+      leaf management-base {
+        description "Base address used for calculating management addresses.";
+        type inet:ip-address;
+      }
+    }
+
+    list devices {
+      key name;
+
+      leaf name {
+        type string;
+      }
+      unique index;
+      leaf index {
+        description
+         "A unique number assigned to every SP device.
+
+          It is used for deriving various per-device values, such as
+          management IP during onboarding, router ID and similar.";
+        mandatory true;
+        type uint8;
+      }
+      leaf-list role {
+        type identityref {
+          base device-role;
+        }
+      }
+      leaf enabled {
+        type boolean;
+        default true;
+      }
+    }
+
+    list links {
+      key "device-a interface-a device-b interface-b";
+
+      leaf device-a {
+        type leafref {
+          path "/core-network/devices/name";
+        }
+      }
+      leaf interface-a {
+        type string;
+      }
+      leaf device-b {
+        type leafref {
+          path "/core-network/devices/name";
+        }
+      }
+      leaf interface-b {
+        type string;
+      }
+      leaf enabled {
+        type boolean;
+        default true;
+      }
+    }
+
+    container services {
+      tailf:cli-add-mode;
+    }
+  }
+}

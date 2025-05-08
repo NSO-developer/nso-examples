@@ -1,0 +1,20 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>onboard-lab</name>
+  <package-version>1.0</package-version>
+  <description>Quickly onboard devices in lab</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+  <required-package>
+    <name>core-network</name>
+  </required-package>
+  <required-package>
+    <name>inventory</name>
+  </required-package>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>onboard_lab.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

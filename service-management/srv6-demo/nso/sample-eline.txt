@@ -1,0 +1,4 @@
+eline sample-eline
+ customer Tail-f
+ ports    [ pe-01-3 pe-02-4 ]
+!

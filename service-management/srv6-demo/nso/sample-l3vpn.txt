@@ -1,0 +1,14 @@
+l3vpn sample-l3vpn
+ customer Tail-f
+ link 1
+  port pe-01-2
+ !
+ link 2
+  port pe-02-2
+ !
+ link 3
+  port pe-02-3
+  bgp-peering enabled
+  bgp-peering peer-as 65010
+ !
+!

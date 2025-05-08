@@ -89,17 +89,11 @@ Note: It is important to re-deploy all affected services touching the
       procedure will add extra time in handling the reverse/forward diffset,
       such as when using the get-modifications action."
 
-next_step "Find all services touching this device"
-exec_cli_np "show devices device ex0 service-list"
+next_step "List all services touching this device"
+exec_cli_np "show devices device ex0 services service"
 
-next_step "Invoke re-deploy for found services"
-services=$(ncs_cmd -o -c 'mget "/devices/device{ex0}/service-list"')
-for s in $services; do
-    s_cli=$(echo "$s" | tr '/{}' ' ')
-    exec_cli $s_cli re-deploy
-    printf '\n%s' "or using ncs_cmd: "
-    exec_shell ncs_cmd -u admin -c "maction $s/re-deploy"
-done
+next_step "Invoke re-deploy for these services"
+exec_cli_np "devices device ex0 services service * re-deploy"
 
 next_step "Observe different configuration depending on the NED version"
 exec_cli_np "acme-dns get-modifications"

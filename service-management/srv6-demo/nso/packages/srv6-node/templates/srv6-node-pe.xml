@@ -1,0 +1,57 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{name}</name>
+      <config>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$AS}</id>
+              <bgp>
+                <router-id>{$ROUTER_ID}</router-id>
+              </bgp>
+              <address-family>
+                <vpnv4>
+                  <unicast/>
+                </vpnv4>
+                <l2vpn>
+                  <evpn/>
+                </l2vpn>
+              </address-family>
+              <neighbor-group>
+                <name>RR</name>
+                <remote-as>{$AS}</remote-as>
+                <update-source>
+                  <Loopback>0</Loopback>
+                </update-source>
+                <address-family>
+                  <l2vpn>
+                    <evpn/>
+                  </l2vpn>
+                  <vpnv4>
+                    <unicast/>
+                  </vpnv4>
+                </address-family>
+              </neighbor-group>
+              <neighbor>
+                <id>{rr-neighbors}</id>
+                <use>
+                  <neighbor-group>RR</neighbor-group>
+                </use>
+              </neighbor>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+        <evpn xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <segment-routing>
+            <srv6>
+              <locator>
+                <name>VPNLAB</name>
+              </locator>
+            </srv6>
+          </segment-routing>
+        </evpn>
+      </config>
+    </device>
+  </devices>
+</config-template>

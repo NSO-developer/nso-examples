@@ -32,6 +32,13 @@ services to a single monolithic one.
 Subset Erlang variant of the Java-based RFS service example. Used by the NSO
 Development Guide chapter Embedded Erlang Applications.
 
+### srv6-demo
+A fully-fleshed-out Segment Routing over IPv6 VPN services example that can,
+in addition to netsim devices, be used with actual IOS XR routers, such as
+XRd, to demonstrate working data plane connectivity. It features different
+service types, as well as a simple inventory system to prevent misconfiguration
+from provisioning incompatible services on the same interface.
+
 ### mpls-vpn-java
 An example that illustrates how services are created and used in NSO by
 managing Layer3 VPNs in a service provider MPLS network. Used by the NSO

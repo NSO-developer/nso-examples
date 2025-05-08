@@ -173,7 +173,7 @@ get_j_config(Th, USid, IKPs) ->
     [cli_show:show(
        IoHandler,
        Th,
-       fxs_server:get_ns_list(),
+       fxs_server:get_ns_map(),
        _WithDefaults=false,
        _ShowDefaults=false,
        _EmitParents=true,
@@ -218,7 +218,7 @@ get_j_delta(NewTh, OldTh, USid, IKPs) ->
        USid,
        NewTh,
        OldTh,
-       cs_server:get_ns_list(),
+       cs_server:get_ns_map(),
        _Visible=['*', full],
        _ExportedNS=no_export_none,
        _FiltersIKP=IKeypath,

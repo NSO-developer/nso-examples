@@ -1,0 +1,58 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet tags="replace">
+            <id>{$INTERFACE_NO}</id>
+            <l2transport/>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <evpn xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if-ned-id-match cisco-iosxr-srdemo.*?>
+            <evi>
+              <id>{$VNI}</id>
+              <segment-routing>srv6</segment-routing>
+              <advertise-mac/>
+            </evi>
+          <?elif-ned-id-match cisco-iosxr-cli.*?>
+            <evi>
+              <id>{$VNI}</id>
+              <segment-routing>srv6</segment-routing>
+              <advertise-mac/>
+            </evi>
+          <?end?>
+          <interface>
+            <name>GigabitEthernet{$INTERFACE_NO}</name>
+          </interface>
+        </evpn>
+        <l2vpn xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bridge>
+            <group>
+              <group-name>EVPN-{$CUSTOMER}</group-name>
+              <bridge-domain>
+                <bridge-domain-name>{$VNI}-{name}</bridge-domain-name>
+                <interface>
+                  <name>GigabitEthernet{$INTERFACE_NO}</name>
+                </interface>
+                <?if-ned-id-match cisco-iosxr-srdemo.*?>
+                  <evi>
+                    <id>{$VNI}</id>
+                    <segment-routing>srv6</segment-routing>
+                  </evi>
+              <?elif-ned-id-match cisco-iosxr-cli.*?>
+                  <evi>
+                    <id>{$VNI}</id>
+                    <segment-routing>srv6</segment-routing>
+                  </evi>
+              <?end?>
+              </bridge-domain>
+            </group>
+          </bridge>
+        </l2vpn>
+      </config>
+    </device>
+  </devices>
+</config-template>

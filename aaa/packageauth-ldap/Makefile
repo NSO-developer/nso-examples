@@ -11,7 +11,7 @@ logs:
 	mkdir logs
 
 pyvenv:
-	virtualenv $@
+	python3 -m venv $@
 	$@/bin/pip $(PIP_OPTS) install pip --upgrade
 
 cisco-nso-ldap-auth-deps: pyvenv

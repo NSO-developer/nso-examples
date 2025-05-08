@@ -62,6 +62,7 @@ Next, run the example using a single MAAPI Python `load_config_cmds()` or
 
     ./measure.sh -r 3000 -t py_mload_xml -n true
     ./measure.sh -r 3000 -t py_setvals_xml -n true
+    ./measure.sh -r 3000 -t py_setvals_maagic -n true
 
 Using the MAAPI `load_config_cmds()` or `shared_set_values()` functions, the
 service create callback is, for this example, ~5x faster than using the MAAPI

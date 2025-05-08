@@ -1,0 +1,20 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>eline-service</name>
+  <package-version>1.0</package-version>
+  <description>SRv6 EVPN point-to-point link (E-LINE)</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+  <required-package>
+    <name>inventory</name>
+  </required-package>
+  <required-package>
+    <name>shared-code</name>
+  </required-package>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>eline_service.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

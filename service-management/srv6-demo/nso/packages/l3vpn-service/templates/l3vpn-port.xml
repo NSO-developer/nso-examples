@@ -1,0 +1,76 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>L3VPN-{$VNI}</name>
+            <description>{$CUSTOMER}-{name}</description>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{$VNI}:1</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{$VNI}:1</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet tags="replace">
+            <id>{$INTERFACE_NO}</id>
+            <vrf>L3VPN-{$VNI}</vrf>
+            <ipv4>
+              <address>
+                <ip>{$PE_IP}</ip>
+                <mask>{$SUBNET_MASK}</mask>
+              </address>
+            </ipv4>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$AS}</id>
+              <vrf>
+                <name>L3VPN-{$VNI}</name>
+                <rd>{$AS}:{$VNI}</rd>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <redistribute>
+                        <connected/>
+                      </redistribute>
+                      <segment-routing>
+                        <srv6>
+                          <locator>VPNLAB</locator>
+                          <alloc>
+                            <mode>per-vrf</mode>
+                          </alloc>
+                        </srv6>
+                      </segment-routing>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

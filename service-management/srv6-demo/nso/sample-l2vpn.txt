@@ -1,0 +1,4 @@
+l2vpn sample-l2vpn
+ customer Tail-f
+ ports    [ pe-01-2 pe-02-2 pe-02-3 ]
+!

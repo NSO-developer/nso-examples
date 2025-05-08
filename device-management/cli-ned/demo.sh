@@ -24,6 +24,13 @@ make start
 printf "\n${PURPLE}##### List the devices in the simulated network using 'ncs-netsim list'\n${NC}"
 ncs-netsim list
 
+printf "\n${PURPLE}##### Trace the device communication\n${NC}"
+ncs_cli -n -u admin -C << EOF
+config
+devices device ex0..2 trace pretty trace-output file,external
+commit
+EOF
+
 printf "\n${PURPLE}##### Sync the configuration from the CLI devices\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"

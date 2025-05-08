@@ -1,0 +1,210 @@
+#                      core-5 (RR)
+#                       /       \
+#                   core-1 === core-2
+#  ce-1-1 ---\     /   ||       ||   \     /--- ce-1-2
+#             pe-01    ||       ||    pe-02
+#  ce-1-4 ---/     \   ||       ||   /     \=== ce-1-3
+#                   core-4 === core-3
+
+# IP addresses:     management      loopback
+# ------------------------------------------------
+# core-X            10.10.20.10X    fd00::X
+# pe-0X             10.10.20.11X    fd00::1X
+# ce-1-3            10.10.20.123    N/A
+
+# Customer links:   ce              pe
+# ------------------------------------------------
+# ce-1-X            10.1.X.3        10.1.X.2
+
+services:
+  # Linux containers
+  ce-1-1:
+    non_xr: true
+    image: alpine:3.15
+    container_name: ce-1-1
+    stdin_open: true
+    tty: true
+    cap_add:
+      - NET_ADMIN
+    command: /bin/sh -c "ip route add 10.0.0.0/8 via 10.1.1.2 && /bin/sh"
+    networks:
+      ce-1-1-pe-01:
+        ipv4_address: 10.1.1.3
+  ce-1-2:
+    non_xr: true
+    image: alpine:3.15
+    container_name: ce-1-2
+    stdin_open: true
+    tty: true
+    networks:
+      ce-1-2-pe-02:
+        ipv4_address: 10.1.2.3
+    cap_add:
+      - NET_ADMIN
+    command: /bin/sh -c "ip route add 10.0.0.0/8 via 10.1.2.2 && /bin/sh"
+  ce-1-4:
+    non_xr: true
+    image: alpine:3.15
+    container_name: ce-1-4
+    stdin_open: true
+    tty: true
+    networks:
+      ce-1-4-pe-01:
+        ipv4_address: 10.1.4.3
+    cap_add:
+      - NET_ADMIN
+    command: /bin/sh -c "ip route add 10.0.0.0/8 via 10.1.4.4 && /bin/sh"
+  # XRd containers
+  ce-1-3:
+    xr_startup_cfg: ce-1-3-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.123
+  core-1:
+    xr_startup_cfg: core-1-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Gi0/0/0/4
+      - Gi0/0/0/5
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.101
+  core-2:
+    xr_startup_cfg: core-2-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Gi0/0/0/4
+      - Gi0/0/0/5
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.102
+  core-3:
+    xr_startup_cfg: core-3-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Gi0/0/0/4
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.103
+  core-4:
+    xr_startup_cfg: core-4-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Gi0/0/0/4
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.104
+  core-5:
+    xr_startup_cfg: core-5-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.105
+  pe-01:
+    xr_startup_cfg: pe-01-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.111
+      ce-1-1-pe-01:
+        ipv4_address: 10.1.1.2
+      ce-1-4-pe-01:
+        ipv4_address: 10.1.4.2
+  pe-02:
+    xr_startup_cfg: pe-02-startup.cfg
+    xr_interfaces:
+      - Gi0/0/0/0
+      - Gi0/0/0/1
+      - Gi0/0/0/2
+      - Gi0/0/0/3
+      - Gi0/0/0/4
+      - Mg0/RP0/CPU0/0
+    networks:
+      mgmt:
+        ipv4_address: 10.10.20.112
+      ce-1-2-pe-02:
+        ipv4_address: 10.1.2.2
+
+xr_l2networks:
+  # Core links
+  - ["core-1:Gi0/0/0/0", "core-2:Gi0/0/0/2"]
+  - ["core-1:Gi0/0/0/1", "core-2:Gi0/0/0/3"]
+  - ["core-2:Gi0/0/0/0", "core-3:Gi0/0/0/2"]
+  - ["core-2:Gi0/0/0/1", "core-3:Gi0/0/0/3"]
+  - ["core-3:Gi0/0/0/0", "core-4:Gi0/0/0/2"]
+  - ["core-3:Gi0/0/0/1", "core-4:Gi0/0/0/3"]
+  - ["core-4:Gi0/0/0/0", "core-1:Gi0/0/0/2"]
+  - ["core-4:Gi0/0/0/1", "core-1:Gi0/0/0/3"]
+  # RR links
+  - ["core-5:Gi0/0/0/0", "core-1:Gi0/0/0/5"]
+  - ["core-5:Gi0/0/0/1", "core-2:Gi0/0/0/5"]
+  # PE-to-core links
+  - ["pe-01:Gi0/0/0/0", "core-1:Gi0/0/0/4"]
+  - ["pe-01:Gi0/0/0/1", "core-4:Gi0/0/0/4"]
+  - ["pe-02:Gi0/0/0/0", "core-2:Gi0/0/0/4"]
+  - ["pe-02:Gi0/0/0/1", "core-3:Gi0/0/0/4"]
+  # CE-to-PE links
+  - ["ce-1-3:Gi0/0/0/0", "pe-02:Gi0/0/0/3"]
+  - ["ce-1-3:Gi0/0/0/1", "pe-02:Gi0/0/0/4"]
+
+networks:
+  ce-1-1-pe-01:
+    xr_interfaces:
+      - pe-01:Gi0/0/0/2
+    ipam:
+      config:
+        - subnet: 10.1.1.0/24
+  ce-1-2-pe-02:
+    xr_interfaces:
+      - pe-02:Gi0/0/0/2
+    ipam:
+      config:
+        - subnet: 10.1.2.0/24
+  ce-1-4-pe-01:
+    xr_interfaces:
+      - pe-01:Gi0/0/0/3
+    ipam:
+      config:
+        - subnet: 10.1.4.0/24
+  mgmt:
+    xr_interfaces:
+      - ce-1-3:Mg0/RP0/CPU0/0
+      - core-1:Mg0/RP0/CPU0/0
+      - core-2:Mg0/RP0/CPU0/0
+      - core-3:Mg0/RP0/CPU0/0
+      - core-4:Mg0/RP0/CPU0/0
+      - core-5:Mg0/RP0/CPU0/0
+      - pe-01:Mg0/RP0/CPU0/0
+      - pe-02:Mg0/RP0/CPU0/0
+    ipam:
+      config:
+        - subnet: 10.10.20.0/24
+          gateway: 10.10.20.254

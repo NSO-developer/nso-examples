@@ -1,0 +1,60 @@
+module onboard-lab {
+  namespace "http://tail-f.com/srlab/onboard-lab";
+  prefix lab;
+  yang-version 1.1;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  container lab {
+    action onboard {
+      description
+       "Add device(s) to NSO using auto-configure feature.
+
+        Must run in a configuration session (config mode).";
+
+      tailf:actionpoint onboard-lab;
+      input {
+        leaf authgroup {
+          description "Authentication group to use for onboarding.";
+          type leafref {
+            path "/ncs:devices/ncs:authgroups/ncs:group/ncs:name";
+          }
+        }
+        leaf-list device {
+          type string;
+        }
+      }
+      output {
+        leaf-list onboarding {
+          type string;
+        }
+      }
+    }
+
+    action reset {
+      description
+       "Reset device(s) to a clean state.
+
+        Must run in a configuration session (config mode).";
+
+      tailf:actionpoint onboard-lab-reset;
+      input {
+        leaf-list device {
+          type string;
+        }
+      }
+    }
+  }
+}

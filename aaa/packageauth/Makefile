@@ -2,7 +2,7 @@ all: pyvenv
 	$(MAKE) -C packages/nso-example-jwt-auth/src all
 
 pyvenv:
-	virtualenv $@
+	python3 -m venv $@
 	$@/bin/pip $(PIP_OPTS) install -r requirements.txt
 
 clean:

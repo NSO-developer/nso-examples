@@ -1,0 +1,6 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>core-network</name>
+  <package-version>1.0</package-version>
+  <description>Core network definition and shared namespace</description>
+  <ncs-min-version>6.4</ncs-min-version>
+</ncs-package>

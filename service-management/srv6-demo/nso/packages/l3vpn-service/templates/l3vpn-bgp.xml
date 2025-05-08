@@ -1,0 +1,61 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>pass-all</name>
+          <?if-ned-id-match cisco-iosxr-srdemo.*?>
+            <value>pass</value>
+          <?elif-ned-id-match cisco-iosxr-cli.*?>
+            <value>  pass&#13;&#10;</value>
+          <?end?>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$AS}</id>
+              <vrf>
+                <name>L3VPN-{$VNI}</name>
+                <neighbor>
+                  <id>{$CE_IP}</id>
+                  <remote-as>{$CE_AS}</remote-as>
+                  <update-source>
+                    <GigabitEthernet>{$INTERFACE_NO}</GigabitEthernet>
+                  </update-source>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <!-- Must follow list key order -->
+                        <?if-ned-id-match cisco-iosxr-srdemo.*?>
+                          <route-policy>
+                              <name>pass-all</name>
+                              <direction>in</direction>
+                          </route-policy>
+                          <route-policy>
+                            <name>pass-all</name>
+                            <direction>out</direction>
+                          </route-policy>
+                        <?elif-ned-id-match cisco-iosxr-cli.*?>
+                          <route-policy>
+                              <direction>in</direction>
+                              <name>pass-all</name>
+                          </route-policy>
+                          <route-policy>
+                            <direction>out</direction>
+                            <name>pass-all</name>
+                          </route-policy>
+                        <?end?>
+                        <as-override/>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>
