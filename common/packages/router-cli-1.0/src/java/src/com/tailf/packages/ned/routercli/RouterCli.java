@@ -574,9 +574,6 @@ public class RouterCli extends NedCliBaseTemplate {
             "is not permitted",
             "cannot negate",
             "does not exist. create first",
-            "use 'vrf forwarding' command for vrf",
-            "use 'ip vrf forwarding' command for vrf",
-            "is linked to a vrf. enable ipv4 on that vrf first",
             "failed"
         };
 
@@ -875,127 +872,6 @@ public class RouterCli extends NedCliBaseTemplate {
 
     private String getTransIdValue(String res) throws Exception {
         // calculate checksum of config
-        int i;
-
-        i = res.indexOf("version");
-        if (i >= 0) {
-            int n = res.indexOf("\n", i);
-            res = res.substring(n+1);
-        }
-
-        i = res.indexOf("No entries found.");
-        if (i >= 0) {
-            int n = res.indexOf("\n", i);
-            res = res.substring(n+1);
-        }
-
-        i = res.lastIndexOf("\nend");
-        if (i >= 0) {
-            res = res.substring(0,i);
-        }
-
-        // strip out all alias
-        i = res.indexOf("\nalias");
-        while(i >= 0) {
-            int n = res.indexOf("\n", i+1);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\nalias");
-        }
-
-        // strip out all macros
-        i = res.indexOf("\nmacro name");
-        while(i >= 0) {
-            int n = res.indexOf("\n@", i);
-            res = res.substring(0, i+1)+res.substring(n+2);
-            i = res.indexOf("\nmacro name");
-        }
-
-        // strip out all cryptos
-        i = res.indexOf("\ncrypto pki trustpoint");
-        while(i >= 0) {
-            int n = res.indexOf("!", i);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\ncrypto pki trustpoint");
-        }
-
-        // strip out all cryptos
-        i = res.indexOf("\ncrypto pki certificate");
-        while(i >= 0) {
-            int n = res.indexOf("quit", i);
-            n = res.indexOf("\n", n+1);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\ncrypto pki certificate");
-        }
-
-        // strip out all ntp clock-period, not really someting
-        // that is configurable
-        i = res.indexOf("\nntp clock-period");
-        while(i >= 0) {
-            int n = res.indexOf("\n", i+1);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\nntp clock-period");
-        }
-
-        i = res.indexOf("\nlicense");
-        while(i >= 0) {
-            int n = res.indexOf("\n", i+1);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\nlicense");
-        }
-
-        i = res.indexOf("\nhw-module");
-        while(i >= 0) {
-            int n = res.indexOf("\n", i+1);
-            res = res.substring(0, i+1)+res.substring(n+1);
-            i = res.indexOf("\nhw-module");
-        }
-
-        // remove all between boot-start-marker and boot-end-marker
-        i = res.indexOf("boot-start-marker");
-        if (i >= 0) {
-            int n = res.indexOf("boot-end-marker", i);
-            if (n >= 0) {
-                n = res.indexOf("\n", n);
-                res = res.substring(0,i)+res.substring(n+1);
-            } else {
-                n = res.indexOf("\n", i);
-                res = res.substring(0,i)+res.substring(n+1);
-            }
-        }
-
-        // look for etype and convert to compact syntax
-        i = res.indexOf("etype ");
-        while(i >= 0) {
-            int n = res.indexOf("\n", i);
-            String estr = res.substring(i, n);
-            estr = estr.replaceAll(" , ", ",");
-            res = res.substring(0,i)+estr+res.substring(n);
-            i = res.indexOf("etype ", i+5);
-        }
-
-        // look for banner and process separately
-        i = res.indexOf ("\nbanner ");
-        if (i >= 0) {
-            int n=res.indexOf(" ", i+9);
-            int start_banner = n+2;
-            String delim = res.substring(n+1, n+2);
-            if (delim.equals("^")) {
-                delim = res.substring(n+1,n+3);
-                start_banner = n+3;
-            }
-            int end_i = res.indexOf(delim, start_banner);
-            String banner = stringQuote(res.substring(start_banner, end_i));
-            res = res.substring(0,n+1)+delim+
-                " "+banner+" "+delim+res.substring(end_i+delim.length());
-
-        }
-
-        res = res.replaceAll("channel-misconfig \\(STP\\)",
-                             "channel-misconfig");
-
-        res = res.replaceAll("no passive-interface ",
-                             "disable passive-interface ");
-
         byte[] bytes = res.getBytes("UTF-8");
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] thedigest = md.digest(bytes);
@@ -1003,86 +879,6 @@ public class RouterCli extends NedCliBaseTemplate {
         String md5String = md5Number.toString(16);
 
         return md5String;
-    }
-
-    public String stringQuote(String aText) {
-        StringBuilder result = new StringBuilder();
-        StringCharacterIterator iterator =
-            new StringCharacterIterator(aText);
-        char character =  iterator.current();
-        result.append("\"");
-        while (character != CharacterIterator.DONE ){
-            if (character == '"')
-                result.append("\\\"");
-            else if (character == '\\')
-                result.append("\\\\");
-            else if (character == '\b')
-                result.append("\\b");
-            else if (character == '\n')
-                result.append("\\n");
-            else if (character == '\r')
-                result.append("\\r");
-            else if (character == (char) 11) // \v
-                result.append("\\v");
-            else if (character == '\f')
-                result.append("'\f");
-            else if (character == '\t')
-                result.append("\\t");
-            else if (character == (char) 27) // \e
-                result.append("\\e");
-            else
-                //the char is not a special one
-                //add it to the result as is
-                result.append(character);
-            character = iterator.next();
-        }
-        result.append("\"");
-        return result.toString();
-    }
-
-    public String stringDequote(String aText) {
-        if (aText.indexOf("\"") != 0)
-            return aText;
-
-        aText = aText.substring(1,aText.length()-1);
-
-        StringBuilder result = new StringBuilder();
-        StringCharacterIterator iterator =
-            new StringCharacterIterator(aText);
-        char c1 = iterator.current();
-
-        while (c1 != CharacterIterator.DONE ) {
-            if (c1 == '\\') {
-                char c2 = iterator.next();
-                if (c2 == CharacterIterator.DONE )
-                    result.append(c1);
-                else if (c2 == 'b')
-                    result.append('\b');
-                else if (c2 == 'n')
-                    result.append('\n');
-                else if (c2 == 'r')
-                    result.append('\r');
-                else if (c2 == 'v')
-                    result.append((char) 11); // \v
-                else if (c2 == 'f')
-                    result.append('\f');
-                else if (c2 == 't')
-                    result.append('\t');
-                else if (c2 == 'e')
-                    result.append((char) 27); // \e
-                else {
-                    result.append(c2);
-                    c1 = iterator.next();
-                }
-            }
-            else {
-                //the char is not a special one
-                //add it to the result as is
-                result.append(c1);
-                c1 = iterator.next();
-            }
-        }
-        return result.toString();
     }
 
     public void showPartial(NedWorker worker, ConfPath[] paths,
@@ -1389,10 +1185,6 @@ public class RouterCli extends NedCliBaseTemplate {
                                     NedMux mux,
                                     NedWorker worker)
         throws NedWorker.NotEnoughDataException {
-        if (device_id.equals("ex6")) {
-            throw new NedWorker.NotEnoughDataException();
-        }
-
         try {
             RouterCli ned = new RouterCli(device_id, mux);
             ResourceManager.registerResources(ned);

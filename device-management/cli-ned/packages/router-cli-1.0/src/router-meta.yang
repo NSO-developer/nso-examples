@@ -19,33 +19,7 @@ module router-meta {
       "Initial revision.";
   }
 
-  grouping locks {
-    list locks {
-      config false;
-      tailf:cdb-oper {
-        tailf:persistent true;
-      }
-      key id;
-      leaf id {
-        type string;
-      }
-
-      leaf trigger {
-        type string;
-      }
-    }
-  }
-
   grouping settings {
-    leaf default-handling-mode {
-      type enumeration {
-        enum report-all;
-        enum trim;
-        enum explicit;
-      }
-      default explicit;
-    }
-
     leaf idle-timeout {
       type uint16 {
         range "0..8192";
@@ -65,6 +39,5 @@ module router-meta {
       + "derived-from(../ncs:device-type/ncs:generic/ncs:ned-id, "
       + "'id:router-gen') or ../ncs:auto-configure";
     uses settings;
-    uses locks;
   }
 }

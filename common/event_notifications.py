@@ -4,6 +4,7 @@ Event notification subscriber example application
 """
 import argparse
 import datetime
+import os
 import select
 import socket
 import sys
@@ -679,12 +680,19 @@ def run(args):
                                         xpath_filter=args.xpath_filter,
                                         verbosity=progress_verbosity)
 
-    event_sock = socket.socket()
+    path = os.environ.get('NCS_IPC_PATH')
+    if path:
+        sock_type = socket.AF_UNIX
+    else:
+        sock_type = socket.AF_INET
+
+    event_sock = socket.socket(sock_type)
     events.notifications_connect2(sock=event_sock,
                                   mask=mask,
                                   ip=args.address,
                                   port=args.port,
-                                  data=data)
+                                  data=data,
+                                  path=path)
 
     if args.non_interactive:
         loop(args.port, event_sock, mask, args.non_interactive)
@@ -779,10 +787,10 @@ if __name__ == "__main__":
     parser.add_argument('-x', '--xpath-filter', default="/",
                         help='XPath filter')
     parser.add_argument('-z', '--user-id', type=int, help='User ID')
-    parser.add_argument('-I', '--address', default='127.0.0.1',
-                        help='Connect to NSO at ADDRESS. Default: 127.0.0.1')
-    parser.add_argument('-p', '--port', type=int, default=4569,
-                        help='Connect to NSO at PORT. Default: 4569')
+    parser.add_argument('-I', '--address', default=_ncs.ADDR,
+                        help='Connect to NSO at ADDRESS. Default: _ncs.ADDR')
+    parser.add_argument('-p', '--port', type=int, default=_ncs.PORT,
+                        help='Connect to NSO at PORT. Default: _ncs.PORT')
     parser.add_argument('-n', '--non-interactive', action='store_true',
                         help='No actions or input required from user')
     args = parser.parse_args()

@@ -11,11 +11,11 @@ packages/cisco-nso-saml2-auth:
 	cp -a $(PKG_DIR) $@
 
 pyvenv:
-	virtualenv $@
+	python3 -m venv $@
 	$@/bin/pip $(PIP_OPTS) install pip --upgrade
 
 pyvenv.idp:
-	virtualenv $@
+	python3 -m venv $@
 	$@/bin/pip $(PIP_OPTS) install pip --upgrade
 
 flask-saml2: pyvenv.idp
