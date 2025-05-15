@@ -79,7 +79,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
 fi
-python3 -u event_notifications.py --all --audit-sync --audit-network-sync --ha-info-sync --stream NETCONF --non-interactive | tee nso-rundir/logs/event.log &
+python3 -u event_notifications.py --all --audit-sync --audit-network-sync --ha-info-sync --stream NETCONF --non-interactive 2>/dev/null | tee nso-rundir/logs/event.log &
 echo $! > nso-rundir/notif-app.pid
 
 # For replaying stream notifications
@@ -157,11 +157,11 @@ if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
 fi
-python3 -u event_notifications.py --call-home --commit-simple --ha-info --heartbeat --stream ncs-events --start-time $dt_string --non-interactive | tee nso-rundir/logs/call-home-event.log &
+python3 -u event_notifications.py --call-home --commit-simple --ha-info --heartbeat --stream ncs-events --start-time $dt_string --non-interactive 2>/dev/null | tee nso-rundir/logs/call-home-event.log &
 echo $! > nso-rundir/notif-app.pid
 
 printf "${PURPLE}##### Wait for the first heartbeat before continuing\n${NC}"
-grep -q 'tick heartbeat' <(tail -f nso-rundir/logs/call-home-event.log)
+grep -q 'tick heartbeat' <(tail -F nso-rundir/logs/call-home-event.log)
 
 printf "${PURPLE}##### Have the d1 device call home\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then

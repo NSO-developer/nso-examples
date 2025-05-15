@@ -7,7 +7,7 @@ CDB_DIR       := nso-rundir/ncs-cdb
 INITS         := $(wildcard *_init.xml)
 CDB_INITS     := $(addprefix $(CDB_DIR)/,$(INITS))
 NDEVS         := 1
-TEST          := "py_setvals_xml"
+TEST          :="py_setvals_xml"
 
 all: setup $(CDB_INITS)
 
@@ -19,10 +19,8 @@ setup:
 	cat nso-rundir/ncs.conf | ncs_conf_tool -e false ncs-config logs xpath-trace-log enabled > nso-rundir/ncs.conf.new
 	mv nso-rundir/ncs.conf.new nso-rundir/ncs.conf
 	cp -r ${NCS_DIR}/packages/neds/cisco-asa-cli-6.6 nso-rundir/packages/
-	@if test "${TEST}" = "j_setvals_xml"; then \
+	if test "${TEST}" = "j_setvals_xml"; then \
 		cp -r package-repository/rfs-acl-java-setvals nso-rundir/packages/rfs-acl; \
-	elif test "${TEST}" = "py_setvals_maagic"; then \
-		cp -r package-repository/rfs-acl-py-setvals-maagic nso-rundir/packages/rfs-acl; \
 	elif test "${TEST}" = "py_setvals_xml"; then \
 		cp -r package-repository/rfs-acl-py-setvals nso-rundir/packages/rfs-acl; \
 	elif test "${TEST}" = "py_create"; then \
@@ -33,10 +31,7 @@ setup:
 		cp -r package-repository/rfs-acl-java-mload nso-rundir/packages/rfs-acl; \
 	elif test "${TEST}" = "py_template"; then \
 		cp -r package-repository/rfs-acl-py-tmpl nso-rundir/packages/rfs-acl; \
-	else \
-		echo "Unkown test ${TEST}"; exit 1; \
 	fi
-
 	for f in nso-rundir/packages/*/src; do \
 		$(MAKE) -C $$f all || exit 1; \
 	done

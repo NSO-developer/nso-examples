@@ -78,8 +78,6 @@ if [ $TEST == "j_setvals_xml" ]; then
     printf "${PURPLE}##### Using Java MAAPI sharedSetValues(String XML) for service create mapping\n${NC}"
 elif [ $TEST == "py_setvals_xml" ]; then
     printf "${PURPLE}##### Using Python Maagic shared_set_values_xml() for service create mapping\n${NC}"
-elif [ $TEST == "py_setvals_maagic" ]; then
-    printf "${PURPLE}##### Using Python Maagic shared_set_values() for service create mapping\n${NC}"
 elif [ $TEST == "py_create" ]; then
     printf "${PURPLE}##### Using Python MAAPI create() for service create mapping\n${NC}"
 elif [ $TEST == "py_mload_xml" ]; then

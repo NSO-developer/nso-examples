@@ -1,3 +1,0 @@
-    driver: macvlan
-    driver_opts:
-      parent: ens160
