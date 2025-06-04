@@ -24,8 +24,8 @@ start:
 	ncs_cmd -u admin -c 'maction /devices/sync-from'
 	ncs_load -lmu admin -F c devices.cfg
 	ncs_load -lmu admin -F c init.cfg
-	NCS_IPC_PORT=5011 ncs_load -lm -F c oob-c1.cfg
-	NCS_IPC_PORT=5015 ncs_load -lm -F c oob-r2.cfg
+	unset NCS_IPC_PATH; NCS_IPC_PORT=5011 ncs_load -lm -F c oob-c1.cfg
+	unset NCS_IPC_PATH; NCS_IPC_PORT=5015 ncs_load -lm -F c oob-r2.cfg
 
 stop:
 	ncs --stop || true
