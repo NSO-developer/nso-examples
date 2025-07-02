@@ -1,0 +1,4 @@
+dn: cn=GROUP,ou=groups,dc=example,dc=com
+changetype: modify
+add: member
+member: MEMBER

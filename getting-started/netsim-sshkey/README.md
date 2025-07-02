@@ -152,7 +152,7 @@ Further Reading
 + NSO Development Guide: Developing and Deploying a Nano Service
 + An NSO system-install variant of this example to demonstrate deploying the
   application:
-  https://gitlab.com/nso-developer/nso-examples under deployment/netsim-sshkey
+  https://github.com/NSO-developer/sshkey-deployment-example
 + NSO Development Guide: Nano Services
 + The showcase.sh and showcase_rc.py scripts
 + The tailf-ncs-plan.yang and tailf-ncs-services.yang modules

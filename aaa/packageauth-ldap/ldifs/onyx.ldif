@@ -1,0 +1,4 @@
+dn: cn=onyx,ou=groups,dc=example,dc=com
+objectclass: groupOfNames
+cn: onyx
+member: uid=sbrown,ou=engineering,dc=example,dc=com

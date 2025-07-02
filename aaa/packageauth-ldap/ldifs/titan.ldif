@@ -1,0 +1,6 @@
+# Use ldapadd
+dn: cn=titan,ou=groups,dc=example,dc=com
+objectclass: groupOfNames
+cn: titan
+member: uid=jsmith,ou=engineering,dc=example,dc=com
+member: uid=sbrown,ou=engineering,dc=example,dc=com

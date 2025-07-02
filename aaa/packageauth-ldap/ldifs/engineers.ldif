@@ -1,0 +1,46 @@
+# Add John Smith to the organization.
+dn: uid=jsmith,ou=engineering,dc=example,dc=com
+changetype: add
+description: John Smith from engineering.  John is the tech
+  lead of the project, so contact him with any questions.
+cn: John Smith
+sn: Smith
+uid: jsmith
+uidNumber: 1005
+gidNumber: 1001
+homeDirectory: /home/john
+mail: john.smith@example.org
+objectClass: top
+objectClass: posixAccount
+objectClass: customPosixAccount
+objectClass: shadowAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+loginShell: /bin/bash
+#userPassword: jsmith
+userPassword: {SSHA}nw5hiHBTDNbarvqQVbIj3jlqrDr7Rius
+
+# Add Sally Brown to the organization
+dn: uid=sbrown,ou=engineering,dc=example,dc=com
+changetype: add
+description: Sally Brown from engineering. Sally is responsible
+  for designing the graphical user interface.
+cn: Sally Brown
+sn: Brown
+uid: sbrown
+uidNumber: 1006
+gidNumber: 1001
+gidsExtra: 2000 3000
+homeDirectory: /home/sally
+mail: sally.brown@example.org
+objectClass: top
+objectClass: posixAccount
+objectClass: customPosixAccount
+objectClass: shadowAccount
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+loginShell: /bin/bash
+#userPassword: sbrown
+userPassword: {SSHA}GdKojX76l3+QVbqxcpyHvAkDw6iy6o3f
