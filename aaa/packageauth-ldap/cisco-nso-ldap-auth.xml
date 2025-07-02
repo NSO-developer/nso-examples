@@ -2,7 +2,7 @@
   <ldap-auth xmlns="http://tail-f.com/ns/cisco-nso-ldap-auth">
     <server>
       <!-- Change the IP address to suit your setup. -->
-      <host>192.168.1.170</host>
+      <host>127.0.0.1</host>
       <!-- Change the Port number to suit your setup. -->
       <port>1389</port>
       <!--
@@ -23,9 +23,9 @@
           Use 'user-base-dn' when all Users are located under
           the same LDAP node.
       -->
-      <user-base-dn>ou=users,dc=example,dc=com</user-base-dn>
-      <user-id-attribute>cn</user-id-attribute>
-      <group-id-attribute>cn</group-id-attribute>
+      <user-base-dn>ou=engineering,dc=example,dc=com</user-base-dn>
+      <user-id-attribute>uid</user-id-attribute>
+      <group-id-attribute>ou</group-id-attribute>
       <member-of-attribute>memberOf</member-of-attribute>
     </server>
   </ldap-auth>

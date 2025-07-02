@@ -1,0 +1,13 @@
+dn: cn=gidsExtra,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: gidsExtra
+olcAttributeTypes: ( 1.3.6.1.4.1.32473.1337.1.1
+                     NAME 'gidsExtra'
+                     DESC 'Additional GIDs for a user'
+                     EQUALITY caseIgnoreMatch
+                     SYNTAX 1.3.6.1.4.1.1466.115.121.1.44{1024} )
+olcObjectClasses: ( 1.3.6.1.4.1.32473.1337.1.2
+                    NAME 'customPosixAccount'
+                    DESC 'add gidsExtra attribute to posixAccount'
+                    SUP posixAccount
+                    AUXILIARY MAY ( gidsExtra ) )
