@@ -1,0 +1,3 @@
+dn: ou=engineering,dc=example,dc=com
+objectClass: organizationalUnit
+ou: engineering

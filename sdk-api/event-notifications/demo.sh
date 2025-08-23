@@ -161,6 +161,9 @@ python3 -u event_notifications.py --call-home --commit-simple --ha-info --heartb
 echo $! > nso-rundir/notif-app.pid
 
 printf "${PURPLE}##### Wait for the first heartbeat before continuing\n${NC}"
+while [ ! -f nso-rundir/logs/call-home-event.log ]; do
+  sleep 1
+done
 grep -q 'tick heartbeat' <(tail -F nso-rundir/logs/call-home-event.log)
 
 printf "${PURPLE}##### Have the d1 device call home\n${NC}"
