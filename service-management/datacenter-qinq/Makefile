@@ -6,11 +6,11 @@ PACKAGES = \
 	qinq-template qinq-java-template
 
 # Directory of example packages
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 # The create-network argument to ncs-netsim
 NETWORK = \
-	create-network $(PACKAGE_STORE)/cisco-ios-cli-3.0   3 c \
+	create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0   3 c \
 	create-network packages/pica8-nc-1.0                4 p
 
 NETSIM_DIR = netsim
@@ -19,6 +19,7 @@ all: packages netsim ncs
 .PHONY: all
 
 packages:
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all
 	for i in $(PACKAGES); do \
 		$(MAKE) -C packages/$${i}/src all || exit 1; \
 	done
@@ -46,7 +47,7 @@ clean:
 	done
 	$(MAKE) -C alarms clean
 	rm -rf netsim logs state ncs-cdb *.trace
-	rm -f packages/cisco-ios-cli-3.0
+	rm -f packages/cisco-ios-netsim-cli-1.0
 	rm -rf bin
 	rm -f README.ncs README.netsim
 .PHONY: clean

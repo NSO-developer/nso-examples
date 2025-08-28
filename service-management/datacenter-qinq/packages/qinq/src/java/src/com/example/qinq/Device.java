@@ -115,7 +115,7 @@ public abstract class Device {
 
             if(leaf.value().toString().equals("pica8")){
                 type = devType.pica8;
-            }else if(leaf.value().toString().equals("tailf-ned-cisco-ios")){
+            }else if(leaf.value().toString().equals("netsim-ned-cisco-ios")){
                 type = devType.ciscoios;
             }
         }

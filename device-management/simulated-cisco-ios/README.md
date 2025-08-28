@@ -6,8 +6,8 @@ and how to manage these with NSO. NSO will use Cisco IOS CLI commands to manage
 the routers.
 
 NSO interfaces the devices by using Network Element Drivers, NEDs. NSO ships
-with a few example NEDs under `$NCS_DIR/packages/neds`. See the NSO
-Administration Guide chapter NED Administration regarding Cisco-provided
+with a few example NEDs under `$NCS_DIR/examples.ncs/common/packages`. See the
+NSO Administration Guide chapter NED Administration regarding Cisco-provided
 production NEDs and the NSO Development Guide chapter Developing NEDs for
 documentation on how to develop NEDs for different protocols.
 
@@ -27,7 +27,8 @@ example, you can print a tree structure of the YANG model as described by IETF
 RFC 8340 using the NSO yanger tool:
 
     yanger -W none -f tree \
-    $NCS_DIR/packages/neds/cisco-ios-cli-3.0/src/yang/tailf-ned-cisco-ios.yang
+    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src/yang/\
+    tailf-ned-cisco-ios.yang
 
 The NEDs can also be used by the NSO network simulator, netsim, to simulate
 the management interface of devices.
@@ -56,13 +57,14 @@ Setting up and Running the Simulator
 ------------------------------------
 
 The package describing the device is
-`$NCS_DIR/packages/neds/cisco-ios-cli-3.0`. The `ncs-netsim create-network`
-command takes three parameters: the NED package, number of simulated devices,
-and the name prefix.
+`$NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0`. The
+`ncs-netsim create-network` command takes three parameters: the NED package,
+number of simulated devices, and the name prefix.
 
 Create the simulated network:
 
-    ncs-netsim create-network $NCS_DIR/packages/neds/cisco-ios-cli-3.0 3 c
+    ncs-netsim create-network \
+    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 3 c
 
 This creates the simulated network in a `./netsim` directory. The simulated
 network consists of three devices, `c0`, `c1`, and `c2`, which can be managed
@@ -127,7 +129,7 @@ Start the NSO J-style CLI:
     > show packages packages package cisco-ios
     ...
     component cisco-ios
-      ned cli ned-id cisco-ios-cli-3.0
+      ned cli ned-id cisco-ios-netsim-cli-1.0
     ...
 
     > show configuration devices device
@@ -145,7 +147,7 @@ Start the NSO J-style CLI:
         authgroup default;
         device-type {
             cli {
-                ned-id cisco-ios-cli-3.0;
+                ned-id cisco-ios-netsim-cli-1.0;
             }
         }
         state {
@@ -300,7 +302,7 @@ Make a change to, for example, `c0`:
 
 Inspect the CLI trace from the 'c0' device communication:
 
-    cat logs/ned-cisco-ios-cli-3.0-c0.trace
+    cat logs/ned-cisco-ios-netsim-cli-1.0-c0.trace
 
 The above can also be done using the NSO Web UI at http://127.0.0.1:8080.
 

@@ -8,10 +8,18 @@
         <ip xmlns="urn:ios">
           <?if {/dns-server-ip}?>
             <!-- If dns-server-ip is set, use that. -->
-            <name-server>{/dns-server-ip}</name-server>
+            <name-server>
+              <name-server-list>
+                <address>{/dns-server-ip}</address>
+              </name-server-list>
+            </name-server>
           <?else?>
             <!-- Otherwise, use the default one. -->
-            <name-server>192.0.2.1</name-server>
+            <name-server>
+              <name-server-list>
+                <address>192.0.2.1</address>
+              </name-server-list>
+            </name-server>
           <?end?>
         </ip>
       </config>

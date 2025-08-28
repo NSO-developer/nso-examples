@@ -38,7 +38,8 @@ Then, we create a simulated network with one instance of this device:
 
 And add one instance of the Cisco IOS device to the simulated network:
 
-    ncs-netsim add-to-network $NCS_DIR/packages/neds/cisco-ios 1 c
+    ncs-netsim add-to-network \
+    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 1 c
 
 Finally, we create an NSO setup to use this simulated network:
 

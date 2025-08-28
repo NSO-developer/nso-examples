@@ -8,24 +8,34 @@
   <router xmlns="http://tail-f.com/ned/alu-sr">
     <router-name>Base</router-name>
   </router>
-    <card xmlns="http://tail-f.com/ned/alu-sr">
+  <card xmlns="http://tail-f.com/ned/alu-sr">
     <slot-number>1</slot-number>
-    <card-type>iom3-xp</card-type>
+    <card-type>
+      <card-type>iom3-xp</card-type>
+    </card-type>
     <mda>
       <mda-slot>1</mda-slot>
-      <mda-type>m2-10gb-xp-xfp</mda-type>
+      <mda-type>
+        <type>m2-10gb-xp-xfp</type>
+      </mda-type>
     </mda>
     <mda>
       <mda-slot>2</mda-slot>
-      <mda-type>m2-10gb-xp-xfp</mda-type>
+      <mda-type>
+        <type>m2-10gb-xp-xfp</type>
+      </mda-type>
     </mda>
   </card>
   <card xmlns="http://tail-f.com/ned/alu-sr">
     <slot-number>3</slot-number>
-    <card-type>iom3-xp</card-type>
+    <card-type>
+      <card-type>iom3-xp</card-type>
+    </card-type>
     <mda>
       <mda-slot>1</mda-slot>
-      <mda-type>m2-10gb-xp-xfp</mda-type>
+      <mda-type>
+        <type>m2-10gb-xp-xfp</type>
+      </mda-type>
     </mda>
   </card>
   <port xmlns="http://tail-f.com/ned/alu-sr">

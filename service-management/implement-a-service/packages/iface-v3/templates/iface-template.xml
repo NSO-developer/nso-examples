@@ -16,7 +16,7 @@
               </address>
 
               <!-- Part for device with the exact version of NED -->
-              <?if-ned-id cisco-ios-cli-3.0:cisco-ios-cli-3.0?>
+              <?if-ned-id cisco-ios-netsim-cli-1.0:cisco-ios-netsim-cli-1.0?>
                 <dhcp>
                   <snooping>
                     <trust/>

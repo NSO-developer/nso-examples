@@ -7,7 +7,9 @@
           <name>{$CLASS_NAME}</name>
           <prematch>match-any</prematch>
           <match>
-            <dscp>{$CLASS_DSCP}</dscp>
+            <dscp>
+              <dscp-list>{$CLASS_DSCP}</dscp-list>
+            </dscp>
           </match>
         </class-map>
         <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm" tags="merge">

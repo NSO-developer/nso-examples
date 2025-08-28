@@ -86,7 +86,7 @@ public class qinq {
                                                 switchContainer);
                  } catch (NullPointerException e) {
                      throw new DpCallbackException(
-                         "No data on device, did you sync from network?");
+                         "No data on device, did you sync from network?", e);
                  }
              }
          } catch (Exception e) {

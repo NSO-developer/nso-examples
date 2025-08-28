@@ -39,8 +39,8 @@ public class NexusDevice extends Device{
         NavuContainer vlanList = deviceContainer.container("config").
             namespace(nsName).
             container("spanning-tree").
-            container("vlans-priority").
-            list("vlan").sharedCreate(vlan);
+            container("vlan").
+            list("vlan-list").sharedCreate(vlan);
         vlanList.leaf("priority").sharedSet("24576");
 
         NavuLeafList trunkInterfaces =
@@ -79,17 +79,18 @@ public class NexusDevice extends Device{
 
         vlanInt.container("vrf").leaf("member").sharedSet(vrf);
 
-        vlanInt.container("ip").leaf("address").sharedSet(bviAddress);
+        vlanInt.container("ip").container("address").leaf("ipaddr").
+            sharedSet(bviAddress);
         vlanInt.container("ip").container("router").
-            leaf("ospf").sharedSet(this.ospfProcess);
-        vlanInt.container("ip").container("router").
+            container("ospf").leaf("name").sharedSet(this.ospfProcess);
+        vlanInt.container("ip").container("router").container("ospf").
             leaf("area").sharedSet(this.ospfArea);
 
         NavuContainer hsrp = vlanInt.container("hsrp").list("hsrp-list").
-            sharedCreate("1");
-        hsrp.leaf("ip").sharedSet(hsrpAddress.split("/")[0]);
-        hsrp.container("timers").leaf("timer1").sharedSet("1");
-        hsrp.container("timers").leaf("timer2").sharedSet("3");
+            sharedCreate(new String[] {"1","ipv4"});
+        hsrp.list("ip").sharedCreate(hsrpAddress);
+        hsrp.container("timers").leaf("hello-seconds").sharedSet("1");
+        hsrp.container("timers").leaf("hold-seconds").sharedSet("3");
         hsrp.container("preempt").sharedCreate().container("delay").
             leaf("minimum").sharedSet("180");
 
@@ -124,15 +125,15 @@ public class NexusDevice extends Device{
             leaf("message-digest").sharedCreate();
 
         ospfVRF.container("timers").container("throttle").
-            container("lsa").leaf("router").sharedSet("1000");
+            container("lsa").leaf("start").sharedSet("1000");
         ospfVRF.container("timers").container("throttle").
-            container("lsa").leaf("network").sharedSet("1000");
+            container("lsa").leaf("hold").sharedSet("1000");
         ospfVRF.container("timers").container("throttle").
-            container("spf").leaf("delay").sharedSet("10");
+            container("spf").leaf("initial").sharedSet("10");
         ospfVRF.container("timers").container("throttle").
-            container("spf").leaf("min-delay").sharedSet("100");
+            container("spf").leaf("minimum").sharedSet("100");
         ospfVRF.container("timers").container("throttle").
-            container("spf").leaf("max-delay").sharedSet("5000");
+            container("spf").leaf("maximum").sharedSet("5000");
 
     }
 
@@ -181,7 +182,7 @@ public class NexusDevice extends Device{
                 namespace(nsName).
                 container("interface").
                 list("loopback").elem("0").container("ip").
-                leaf("address").valueAsString();
+                container("address").leaf("ipaddr").valueAsString();
 
     }
 

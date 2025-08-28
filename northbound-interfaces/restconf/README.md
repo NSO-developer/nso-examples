@@ -61,7 +61,7 @@ containing the `restconf` attribute:
     < Content-Type: application/xrd+xml
     < Content-Security-Policy: default-src 'self'; \
     block-all-mixed-content; base-uri 'self'; frame-ancestors 'none';
-    < Strict-Transport-Security: max-age=15552000; includeSubDomains
+    < Strict-Transport-Security: max-age=31536000; includeSubDomains
     < X-Content-Type-Options: nosniff
     < X-Frame-Options: DENY
     < X-XSS-Protection: 1; mode=block
@@ -98,7 +98,7 @@ resource, which is accessible through the path `/restconf`:
     < Pragma: no-cache
     < Content-Security-Policy: default-src 'self'; \
     block-all-mixed-content; base-uri 'self'; frame-ancestors 'none';
-    < Strict-Transport-Security: max-age=15552000; includeSubDomains
+    < Strict-Transport-Security: max-age=31536000; includeSubDomains
     < X-Content-Type-Options: nosniff
     < X-Frame-Options: DENY
     < X-XSS-Protection: 1; mode=block

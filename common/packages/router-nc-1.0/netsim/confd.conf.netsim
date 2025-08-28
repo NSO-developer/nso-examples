@@ -162,6 +162,13 @@
     <prompt2>\u@%NAME%%</prompt2>
     <cPrompt1>%NAME%#</cPrompt1>
     <cPrompt2>%NAME%(\m)#</cPrompt2>
-
   </cli>
+  <encryptedStrings>
+    <AESCFB128>
+      <key>0123456789abcdef0123456789abcdef</key>
+    </AESCFB128>
+    <AES256CFB128>
+      <key>0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</key>
+    </AES256CFB128>
+  </encryptedStrings>
 </confdConfig>

@@ -5,11 +5,11 @@ set -e
 if [ ! -d netsim ]; then
 
     ncs-netsim --dir netsim  \
-        create-network device-nodes/packages/cisco-ios-cli-3.8      9 ce \
-        create-network device-nodes/packages/cisco-iosxr-cli-3.5    2 pe \
-        create-network device-nodes/packages/juniper-junos-nc-3.0   1 pe \
-        create-network device-nodes/packages/alu-sr-cli-3.4         1 pe \
-        create-network device-nodes/packages/cisco-iosxr-cli-3.5    4 p
+        create-network device-nodes/packages/cisco-ios-netsim-cli-1.0      9 ce \
+        create-network device-nodes/packages/cisco-iosxr-netsim-cli-1.0    2 pe \
+        create-network device-nodes/packages/juniper-junos-netsim-nc-1.0   1 pe \
+        create-network device-nodes/packages/alu-sr-netsim-cli-1.0         1 pe \
+        create-network device-nodes/packages/cisco-iosxr-netsim-cli-1.0    4 p
 
 
     cp initial_data/ios.xml netsim/ce/ce0/cdb

@@ -50,7 +50,7 @@ env ${ENV}4692 ncs_cli -n -u admin -C << EOF
 vpn l3vpn volvo get-modifications
 EOF
 
-printf "\n\n${PURPLE}##### Verify that the nso-3 RFS node has modified one of the PE routers\n${NC}"
+printf "\n\n${PURPLE}##### Verify that the nso-3 RFS node has modified the affected PE routers\n${NC}"
 env ${ENV}4694 ncs_cli -n -u admin -C << EOF
 vpn l3vpn volvo get-modifications
 EOF

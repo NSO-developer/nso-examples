@@ -45,18 +45,13 @@
     <directory>./cdb</directory>
   </rollback>
 
-  <!-- These keys are used to encrypt values adhering to the types
-       tailf:des3-cbc-encrypted-string and tailf:aes-cfb-128-encrypted-string
-       as defined in the tailf-common YANG module. These types are
-       described in confd_types(3).
-  -->
   <encryptedStrings>
-
-
     <AESCFB128>
       <key>0123456789abcdef0123456789abcdef</key>
-      <initVector>0123456789abcdef0123456789abcdef</initVector>
     </AESCFB128>
+    <AES256CFB128>
+      <key>0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</key>
+    </AES256CFB128>
   </encryptedStrings>
 
   <logs>

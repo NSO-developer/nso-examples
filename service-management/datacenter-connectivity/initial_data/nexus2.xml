@@ -3,7 +3,9 @@
   <loopback>
     <name>0</name>
     <ip>
-      <address>11.3.3.3/32</address>
+      <address>
+        <ipaddr>11.3.3.3/32</ipaddr>
+      </address>
     </ip>
   </loopback>
   </interface>
