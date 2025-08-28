@@ -38,7 +38,7 @@ public class JuniperDevice extends Device {
                 list("interface").elem(interfaceName);
 
         NavuContainer filterContainer = interfaceContainer.list("unit").
-                        elem(new ConfKey(new ConfUInt64(0))).
+                        elem("0").
                         container("family").
                         container("inet").
                         container("filter").

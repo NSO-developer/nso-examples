@@ -150,16 +150,16 @@ public abstract class Device {
         for(NavuContainer cont : modules.elements()){
             NavuLeaf leaf = cont.leaf("name");
 
-            if(leaf.value().toString().equals("tailf-ned-cisco-ios-xr")){
+            if(leaf.value().toString().equals("netsim-ned-cisco-ios-xr")){
                 type = devType.iosxr;
             }
-            else if(leaf.value().toString().equals("tailf-ned-cisco-nx")){
+            else if(leaf.value().toString().equals("netsim-ned-cisco-nx")){
                 type = devType.nexus;
             }
-            else if(leaf.value().toString().equals("tailf-ned-cisco-ios")){
+            else if(leaf.value().toString().equals("netsim-ned-cisco-ios")){
                 type = devType.ios;
             }
-            else if(leaf.value().toString().equals("tailf-ned-dell-ftos")){
+            else if(leaf.value().toString().equals("netsim-ned-dell-ftos")){
                 type = devType.force10;
             }
 

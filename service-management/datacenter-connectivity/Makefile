@@ -3,19 +3,23 @@
 PACKAGES = connectivity
 
 # Directory of example packages
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 # The create-network argument to ncs-netsim
 NETWORK = \
-	create-network $(PACKAGE_STORE)/cisco-ios-cli-3.0   6 catalyst \
-	create-network $(PACKAGE_STORE)/cisco-iosxr-cli-3.0 4 asr      \
-	create-network $(PACKAGE_STORE)/cisco-nx-cli-3.0    4 nexus    \
-	create-network $(PACKAGE_STORE)/dell-ftos-cli-3.0   2 dell
+	create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0   6 catalyst \
+	create-network $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0 4 asr      \
+	create-network $(PACKAGE_STORE)/cisco-nx-netsim-cli-1.0    4 nexus    \
+	create-network $(PACKAGE_STORE)/dell-ftos-netsim-cli-1.0   2 dell
 
 all: packages netsim ncs
 .PHONY: all
 
 packages:
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-nx-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/dell-ftos-netsim-cli-1.0/src all
 	for i in $(PACKAGES); do                         \
 	    $(MAKE) -C packages/$${i}/src all || exit 1; \
 	done
@@ -61,10 +65,10 @@ clean:
 	$(MAKE) -C alarms clean
 	rm -f README.ncs README.netsim
 	rm -rf netsim logs state ncs-cdb *.trace
-	rm -f packages/cisco-ios-cli-3.0
-	rm -f packages/cisco-nx-cli-3.0
-	rm -f packages/cisco-iosxr-cli-3.0
-	rm -f packages/dell-ftos-cli-3.0
+	rm -f packages/cisco-ios-netsim-cli-1.0
+	rm -f packages/cisco-nx-netsim-cli-1.0
+	rm -f packages/cisco-iosxr-netsim-cli-1.0
+	rm -f packages/dell-ftos-netsim-cli-1.0
 	rm -rf bin
 .PHONY: clean
 

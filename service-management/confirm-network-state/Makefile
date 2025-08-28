@@ -6,7 +6,7 @@ packages:
 
 ncs-run: packages
 	ncs-setup --dest ncs-run --netsim-dir ./netsim \
-		--package cisco-ios-cli-3.0 \
+		--package cisco-ios-netsim-cli-1.0 \
 		--package packages/router-nc-1.0 \
 		--package packages/iface-v3 \
 		--use-copy
@@ -15,7 +15,7 @@ ncs-run: packages
 		ncs-config logs 1<>ncs-run/ncs.conf <ncs-run/ncs.conf
 
 netsim: packages
-	ncs-netsim create-network cisco-ios-cli-3.0 3 c
+	ncs-netsim create-network cisco-ios-netsim-cli-1.0 3 c
 	ncs-netsim add-to-network packages/router-nc-1.0 3 r
 
 start:

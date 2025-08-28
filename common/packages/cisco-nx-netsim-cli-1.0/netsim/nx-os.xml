@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <!-- <feature xmlns="http://tail-f.com/ned/cisco-nx">
+    <fex></fex>
+  </feature>
+  -->
+  <fex xmlns="http://tail-f.com/ned/cisco-nx">
+    <id>101</id>
+    <pinning>
+      <max-links>1</max-links>
+    </pinning>
+  </fex>
+  <fex xmlns="http://tail-f.com/ned/cisco-nx">
+    <id>102</id>
+    <pinning>
+      <max-links>1</max-links>
+    </pinning>
+  </fex>
+  <vlan xmlns="http://tail-f.com/ned/cisco-nx">
+    <vlan-list>
+      <id>1</id>
+    </vlan-list>
+    <vlan-list>
+      <id>380</id>
+    </vlan-list>
+    <vlan-list>
+      <id>400</id>
+    </vlan-list>
+  </vlan>
+  <interface xmlns="http://tail-f.com/ned/cisco-nx">
+    <Ethernet>
+      <name>1/1</name>
+      <description>e1/1</description>
+      <channel-group>
+        <id>73</id>
+        <mode>active</mode>
+      </channel-group>
+      <enable>
+        <switchport>true</switchport>
+      </enable>
+       <switchport>
+        <mode>trunk</mode>
+        <trunk>
+          <allowed>
+            <vlan>
+              <ids>1</ids>
+              <ids>380</ids>
+              <ids>400</ids>
+            </vlan>
+          </allowed>
+        </trunk>
+      </switchport>
+    </Ethernet>
+    <Ethernet>
+      <name>101/1/1</name>
+      <spanning-tree>
+        <port>
+          <type>edge</type>
+        </port>
+      </spanning-tree>
+      <enable>
+        <switchport>true</switchport>
+      </enable>
+      <switchport>
+        <access>
+          <vlan>401</vlan>
+        </access>
+      </switchport>
+    </Ethernet>
+    <port-channel>
+      <name>73</name>
+      <spanning-tree>
+        <port>
+          <type>network</type>
+        </port>
+      </spanning-tree>
+      <switchport>
+        <mode>trunk</mode>
+        <trunk>
+          <allowed>
+            <vlan>
+              <ids>1</ids>
+              <ids>380</ids>
+              <ids>400</ids>
+            </vlan>
+          </allowed>
+        </trunk>
+      </switchport>
+    </port-channel>
+    <port-channel>
+      <name>100</name>
+      <spanning-tree>
+        <port>
+          <type>network</type>
+        </port>
+      </spanning-tree>
+      <switchport>
+        <mode>trunk</mode>
+      </switchport>
+    </port-channel>
+  </interface>
+<!--
+  <ip xmlns="http://tail-f.com/ned/cisco-nx">
+    <dhcp>
+      <relay>false</relay>
+    </dhcp>
+  </ip>
+  <ipv6 xmlns="http://tail-f.com/ned/cisco-nx">
+    <dhcp>
+      <relay>false</relay>
+    </dhcp>
+  </ipv6>
+-->
+</config>

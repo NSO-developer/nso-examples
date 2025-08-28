@@ -22,7 +22,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
 fi
-yanger -W none -f tree ${NCS_DIR}/packages/neds/cisco-ios-cli-3.0/src/yang/tailf-ned-cisco-ios.yang
+yanger -W none -f tree ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang
 
 printf "\n${GREEN}##### Setting up and Running the Simulator\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
@@ -30,7 +30,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     read -n 1 -s -r
 fi
 printf "${PURPLE}##### Create the simulated network\n${NC}"
-ncs-netsim --dir nso-rundir/netsim create-network ${NCS_DIR}/packages/neds/cisco-ios-cli-3.0 3 c
+ncs-netsim --dir nso-rundir/netsim create-network ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 3 c
 
 printf "\n${PURPLE}##### Start the simulated devices\n${NC}"
 ncs-netsim --dir nso-rundir/netsim start
@@ -123,7 +123,7 @@ commit
 EOF
 
 printf "\n\n${PURPLE}##### Inspect the CLI trace from the 'c0' device communication\n${NC}"
-cat ./nso-rundir/logs/ned-cisco-ios-cli-3.0-c0.trace
+cat ./nso-rundir/logs/ned-cisco-ios-netsim-cli-1.0-c0.trace
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then

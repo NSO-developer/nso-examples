@@ -6,8 +6,8 @@ state
 _tmp_ncs*
 README.ncs
 README.netsim
-packages/alu-sr-cli-3.4
-packages/cisco-ios-cli-3.8
-packages/cisco-iosxr-cli-3.5
-packages/juniper-junos-nc-3.0
+packages/alu-sr-netsim-cli-1.0
+packages/cisco-ios-netsim-cli-1.0
+packages/cisco-iosxr-netsim-cli-1.0
+packages/juniper-junos-netsim-nc-1.0
 ncs.conf

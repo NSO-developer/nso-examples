@@ -1,23 +1,23 @@
 # The order of packages is significant as there are dependencies between
 # the packages. Typically generated namespaces are used by other packages.
+NEDS = cisco-ios-netsim-cli-1.0 cisco-iosxr-netsim-cli-1.0
 PACKAGES = esc vm-manager l3vpn
-NEDS = cisco-ios-cli-3.8 cisco-iosxr-cli-3.5
 
 # The create-network argument to ncs-netsim
-NETWORK = create-network cisco-ios-cli-3.8 4 ce \
-          create-network cisco-iosxr-cli-3.5 1 pe \
-          create-network cisco-iosxr-cli-3.5 1 p
+NETWORK = create-network cisco-ios-netsim-cli-1.0 4 ce \
+          create-network cisco-iosxr-netsim-cli-1.0 1 pe \
+          create-network cisco-iosxr-netsim-cli-1.0 1 p
 
 NETSIM_DIR = netsim
 
 all: build-all $(NETSIM_DIR)
 
-build-all: $(NEDS:%=packages/%) $(ALL_PACKAGES:%=packages/%)
-	for i in $(PACKAGES); do \
+build-all: $(NEDS:%=packages/%)
+	for i in $(PACKAGES) $(NEDS); do \
 	  $(MAKE) -C packages/$${i}/src all || exit 1; \
 	done
 
-packages/%: $(NCS_DIR)/packages/neds/%
+packages/%: $(NCS_DIR)/examples.ncs/common/packages/%
 	@ln -s $< $@
 
 MKDIR_P = mkdir -p

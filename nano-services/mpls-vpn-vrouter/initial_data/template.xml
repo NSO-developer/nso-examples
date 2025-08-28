@@ -4,7 +4,7 @@
     <name>snmp1</name>
 
     <ned-id>
-      <id xmlns:id="http://tail-f.com/ns/ned-id/cisco-ios-cli-3.8">id:cisco-ios-cli-3.8</id>
+      <id xmlns:id="http://tail-f.com/ns/ned-id/cisco-ios-netsim-cli-1.0">id:cisco-ios-netsim-cli-1.0</id>
       <config>
         <snmp-server xmlns="urn:ios">
           <community>
@@ -16,7 +16,7 @@
     </ned-id>
 
     <ned-id>
-      <id xmlns:id="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-3.5">id:cisco-iosxr-cli-3.5</id>
+      <id xmlns:id="http://tail-f.com/ns/ned-id/cisco-iosxr-netsim-cli-1.0">id:cisco-iosxr-netsim-cli-1.0</id>
       <config>
         <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <community>

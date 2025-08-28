@@ -5,8 +5,8 @@
 
     <ned-id>
       <id
-          xmlns:id="http://tail-f.com/ns/ned-id/juniper-junos-nc-3.0"
-          >id:juniper-junos-nc-3.0</id>
+          xmlns:id="http://tail-f.com/ns/ned-id/juniper-junos-netsim-nc-1.0"
+          >id:juniper-junos-netsim-nc-1.0</id>
       <config>
         <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
           <snmp>
@@ -21,8 +21,8 @@
 
     <ned-id>
       <id
-          xmlns:id="http://tail-f.com/ns/ned-id/cisco-ios-cli-3.0"
-          >id:cisco-ios-cli-3.0</id>
+          xmlns:id="http://tail-f.com/ns/ned-id/cisco-ios-netsim-cli-1.0"
+          >id:cisco-ios-netsim-cli-1.0</id>
       <config>
         <snmp-server xmlns="urn:ios">
           <community>
@@ -35,8 +35,8 @@
 
     <ned-id>
       <id
-          xmlns:id="http://tail-f.com/ns/ned-id/cisco-iosxr-cli-3.0"
-          >id:cisco-iosxr-cli-3.0</id>
+          xmlns:id="http://tail-f.com/ns/ned-id/cisco-iosxr-netsim-cli-1.0"
+          >id:cisco-iosxr-netsim-cli-1.0</id>
       <config>
         <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
           <community>

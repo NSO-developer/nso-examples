@@ -73,38 +73,38 @@ complete(UInfo, _CliStyle, _Token, _CompletionChar, _IKP,
 %% Given the module, which different lists can we find
 %% under the interface container
 
-iface_types(<<"tailf-ned-cisco-ios">>) ->
+iface_types(<<"netsim-ned-cisco-ios">>) ->
     ['Loopback', 'GigabitEthernet', 'Port-channel',
      'FastEthernet', 'TenGigabitEthernet'];
-iface_types(<<"tailf-ned-cisco-nx">>) ->
+iface_types(<<"netsim-ned-cisco-nx">>) ->
     ['Ethernet', fc, 'port-channel', 'san-port-channel'];
-iface_types(<<"tailf-ned-cisco-ios-xr">>) ->
+iface_types(<<"netsim-ned-cisco-ios-xr">>) ->
     ['Loopback', 'MgmtEth', 'TenGigE', 'GigabitEthernet'];
-iface_types(<<"tailf-ned-cisco-ios-xe">>) ->
+iface_types(<<"netsim-ned-cisco-ios-xe">>) ->
     ['GigabitEthernet', 'Loopback', 'Port-channel', 'TenGigabitEthernet',
      'FastEthernet'];
-iface_types(<<"tailf-ned-dell-ftos">>) ->
+iface_types(<<"netsim-ned-dell-ftos">>) ->
     ['fortyGigE', 'ManagementEthernet', 'GigabitEthernet',
      'TenGigabitEthernet'].
 
 
 %% Given the module, what is the namespace
-urn(<<"tailf-ned-cisco-ios">>) ->
+urn(<<"netsim-ned-cisco-ios">>) ->
     ?ios_urn;
-urn(<<"tailf-ned-cisco-nx">>) ->
+urn(<<"netsim-ned-cisco-nx">>) ->
     ?nexus_urn;
-urn(<<"tailf-ned-cisco-ios-xr">>) ->
+urn(<<"netsim-ned-cisco-ios-xr">>) ->
     ?iosxr_urn;
-urn(<<"tailf-ned-cisco-ios-xe">>) ->
+urn(<<"netsim-ned-cisco-ios-xe">>) ->
     ?iosxe_urn;
-urn(<<"tailf-ned-dell-ftos">>) ->
+urn(<<"netsim-ned-dell-ftos">>) ->
     ?force10_urn;
-urn(<<"junos">>) ->
+urn(<<"juniper-junos-netsim-nc-1.0">>) ->
     'http://xml.juniper.net/xnm/1.1/xnm'.
 
 iface_paths(unknown, _) ->
     [];
-iface_paths(<<"junos">>, DevPath) ->
+iface_paths(<<"netsim-ned-juniper-junos">>, DevPath) ->
     %% what about units
     [[interface, interfaces,
       ['http://xml.juniper.net/xnm/1.1/xnm'|configuration],
@@ -115,14 +115,14 @@ iface_paths(DT, DevPath) ->
                       [Type , [urn(DT)|interface], config | DevPath]
               end, Types).
 
-collect(Maapi, Th, <<"junos">>, [ Path | Tail], Acc) ->
+collect(Maapi, Th, <<"netsim-ned-juniper-junos">>, [ Path | Tail], Acc) ->
      case econfd_maapi:all_keys(Maapi, Th, Path) of
         {ok, Keys} ->
              L = lists:map(
                    fun({K}) -> lists:flatten(
                                  io_lib:format("~s",[k2s(K)]))
                    end, Keys),
-             collect(Maapi, Th, <<"junos">>, Tail, L ++ Acc);
+             collect(Maapi, Th, <<"netsim-ned-juniper-junos">>, Tail, L ++ Acc);
         Err ->
             Err
     end;
@@ -151,9 +151,9 @@ k2s(X) when is_binary(X) ->
 
 
 dev_type({ok, Keys}) ->
-    dev_type([<<"tailf-ned-cisco-ios">>, <<"tailf-ned-cisco-nx">>,
-              <<"tailf-ned-cisco-ios-xr">>,
-              <<"tailf-ned-dell-ftos">>], Keys).
+    dev_type([<<"netsim-ned-cisco-ios">>, <<"netsim-ned-cisco-nx">>,
+              <<"netsim-ned-cisco-ios-xr">>,
+              <<"netsim-ned-dell-ftos">>], Keys).
 dev_type([H|T], Keys) ->
     case lists:member({H}, Keys) of
         true ->

@@ -5,7 +5,11 @@
       <name>{/target-device}</name>
       <config>
         <ip xmlns="urn:ios">
-          <name-server>192.0.2.1</name-server>
+          <name-server>
+            <name-server-list>
+              <address>192.0.2.1</address>
+            </name-server-list>
+          </name-server>
         </ip>
       </config>
     </device>

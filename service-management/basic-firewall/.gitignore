@@ -3,5 +3,5 @@ README.ncs
 README.netsim
 /ncs-cdb/
 ncs.conf
-packages/cisco-ios-cli-3.0
-packages/juniper-junos-nc-3.0
+packages/cisco-ios-netsim-cli-1.0
+packages/juniper-junos-netsim-nc-1.0

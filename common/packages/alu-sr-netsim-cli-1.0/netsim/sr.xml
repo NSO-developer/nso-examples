@@ -1,0 +1,83 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <model xmlns="http://tail-f.com/ned/alu-sr">7750</model>
+  <model-name xmlns="http://tail-f.com/ned/alu-sr">SR</model-name>
+  <os-major xmlns="http://tail-f.com/ned/alu-sr">14</os-major>
+  <os-minor xmlns="http://tail-f.com/ned/alu-sr">0</os-minor>
+  <os-patch xmlns="http://tail-f.com/ned/alu-sr">0</os-patch>
+  <use-extra-get-port-speed xmlns="http://tail-f.com/ned/alu-sr">false</use-extra-get-port-speed>
+  <force-no-filter-name xmlns="http://tail-f.com/ned/alu-sr">false</force-no-filter-name>
+  <system xmlns="http://tail-f.com/ned/alu-sr">
+    <alarms>
+      <shutdown>false</shutdown>
+    </alarms>
+    <snmp>
+      <shutdown>false</shutdown>
+      <streaming>
+        <shutdown>true</shutdown>
+      </streaming>
+    </snmp>
+    <lldp>
+      <shutdown>false</shutdown>
+    </lldp>
+    <netconf>
+      <shutdown>false</shutdown>
+    </netconf>
+    <time>
+      <ntp>
+        <shutdown>false</shutdown>
+        <authentication-check>false</authentication-check>
+      </ntp>
+      <sntp>
+        <shutdown>false</shutdown>
+      </sntp>
+    </time>
+    <sync-if-timing>
+      <ref1>
+        <shutdown>false</shutdown>
+      </ref1>
+      <ref2>
+        <shutdown>false</shutdown>
+      </ref2>
+    </sync-if-timing>
+    <security>
+      <tacplus>
+         <shutdown>false</shutdown>
+      </tacplus>
+      <cpm-filter>
+        <ip-filter>
+          <shutdown>false</shutdown>
+        </ip-filter>
+        <ipv6-filter>
+          <shutdown>false</shutdown>
+        </ipv6-filter>
+      </cpm-filter>
+      <management-access-filter>
+        <ip-filter>
+          <shutdown>false</shutdown>
+        </ip-filter>
+        <ipv6-filter>
+          <shutdown>false</shutdown>
+        </ipv6-filter>
+      </management-access-filter>
+    </security>
+  </system>
+  <router xmlns="http://tail-f.com/ned/alu-sr">
+    <router-name>Base</router-name>
+    <interface>
+      <interface-name>system</interface-name>
+      <icmp>
+	<mask-reply>false</mask-reply>
+      </icmp>
+    </interface>
+    <mpls>
+     <interface>
+      <name>system</name>
+     </interface>
+    </mpls>
+    <rsvp>
+     <interface>
+      <name>system</name>
+     </interface>
+    </rsvp>
+  </router>
+</config>

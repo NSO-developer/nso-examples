@@ -18,11 +18,11 @@ set -e
 rm -rf nso-rundir devsim
 
 printf "${PURPLE}##### Setting up and running a simulated Cisco IOS device without generating NSO device setup configuration\n${NC}"
-ncs-netsim --dir devsim create-network ${NCS_DIR}/packages/neds/cisco-ios-cli-3.0 1 myrouter
+ncs-netsim --dir devsim create-network ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 1 myrouter
 ncs-netsim --dir devsim start
 
 printf "\n${GREEN}##### Set up NSO with the Network Element Driver (NED) package for the device\n${NC}"
-ncs-setup --no-netsim --dest ./nso-rundir --use-copy --package ${NCS_DIR}/packages/neds/cisco-ios-cli-3.0
+ncs-setup --no-netsim --dest ./nso-rundir --use-copy --package ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0
 
 printf "${PURPLE}##### Start NSO\n${NC}"
 ncs --cd ./nso-rundir
@@ -48,7 +48,7 @@ devices device myrouter0
 address 127.0.0.1
 port 10022
 authgroup mygroup
-device-type cli ned-id cisco-ios-cli-3.0
+device-type cli ned-id cisco-ios-netsim-cli-1.0
 ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
 state admin-state unlocked
 commit

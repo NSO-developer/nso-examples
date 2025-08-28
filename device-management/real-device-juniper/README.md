@@ -27,10 +27,10 @@ Preparations
    simulator will create files and directories in this example. Change to this
    directory before continuing.
 
-**Note**: The juniper-junos-nc-3.0 is an *example* Junos NED and will not work
-well with real Junos devices. While this example applies to using any NETCONF
-NED, when using a Cisco-provided NETCONF NED, always check the README of the
-NED for additional information.
+**Note**: The juniper-junos-netsim-nc-1.0 is an *example* Junos NED and will
+not work well with real Junos devices. While this example applies to using any
+NETCONF NED, when using a Cisco-provided NETCONF NED, always check the README
+of the NED for additional information.
 
 Setting up NSO to work with a NETCONF Device
 --------------------------------------------
@@ -38,7 +38,7 @@ Setting up NSO to work with a NETCONF Device
 Set up NSO with the Network Element Driver (NED) package for the device:
 
     ncs-setup --dest . --ned-package \
-    ${NCS_DIR}/packages/neds/juniper-junos-nc-3.0
+    ${NCS_DIR}/examples.ncs/common/packages/juniper-junos-netsim-nc-1.0
 
 This can be done in another empty directory as well. See the `demo.sh` script
 for an example of a setup in a `nso-rundir` directory.
@@ -74,7 +74,7 @@ Add configuration to NSO for the simulated device:
     % set address olive0.lab
     % set port 22
     % set authgroup junipers
-    % set device-type netconf ned-id juniper-junos-nc-3.0
+    % set device-type netconf ned-id juniper-junos-netsim-nc-1.0
     % set ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
     % set state admin-state unlocked
     % top
@@ -82,7 +82,7 @@ Add configuration to NSO for the simulated device:
     % set address olive1.lab
     % set port 22
     % set authgroup junipers
-    % set device-type netconf ned-id juniper-junos-nc-3.0
+    % set device-type netconf ned-id juniper-junos-netsim-nc-1.0
     % set ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
     % set state admin-state unlocked
 
@@ -141,7 +141,7 @@ Add device configuration through NSO:
 Or use device groups to add device configuration through NSO:
 
     % set devices device-group olives device-name [ olive0 olive1 ]
-    % set devices template snmp ned-id juniper-junos-nc-3.0 config \
+    % set devices template snmp ned-id juniper-junos-netsim-nc-1.0 config \
       configuration snmp contact the-boss2
     % commit
 

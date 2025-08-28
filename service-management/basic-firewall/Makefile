@@ -3,17 +3,19 @@
 PACKAGES = basic-firewall
 
 # Directory of example packages
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 # The create-network argument to ncs-netsim
 NETWORK = \
-	create-network $(PACKAGE_STORE)/cisco-ios-cli-3.0     1 c \
-	create-network $(PACKAGE_STORE)/juniper-junos-nc-3.0  1 j
+	create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0     1 c \
+	create-network $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0  1 j
 
-all:  packages netsim ncs
+all: packages netsim ncs
 .PHONY: all
 
 packages:
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all || exit 1;
+	$(MAKE) -C $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0/src all || exit 1;
 	for i in $(PACKAGES); do \
 	    $(MAKE) -C packages/$${i}/src all || exit 1; \
 	done
@@ -33,8 +35,8 @@ clean:
 	done
 	rm -f README.ncs README.netsim ncs.conf
 	rm -rf netsim state ncs-cdb *.trace
-	rm -f packages/cisco-ios-cli-3.0
-	rm -f packages/juniper-junos-nc-3.0
+	rm -f packages/cisco-ios-netsim-cli-1.0
+	rm -f packages/juniper-junos-netsim-nc-1.0
 	rm -rf bin logs/*
 .PHONY: clean
 

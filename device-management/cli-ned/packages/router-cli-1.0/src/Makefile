@@ -1,5 +1,5 @@
 PACKAGE_NAME = router
-JAVA_PACKAGE = com.tailf.packages.ned.routercli
+JAVA_PACKAGE = com.tailf.packages.ned.netsimcli
 
 all: javac
 	$(MAKE) -C ../netsim  all
@@ -16,9 +16,8 @@ JFLAGS = --java-disable-prefix \
          --java-package $(JAVA_PACKAGE).$(NS) \
          --emit-java java/src/$(JDIR)/$(NS)
 
-javac: fxs ../load-dir/router-meta.fxs
+javac: fxs
 	cd java && ant -q all
-
 
 SRC = $(wildcard yang/*.yang)
 FXS = $(SRC:yang/%.yang=ncsc-out/modules/fxs/%.fxs)
@@ -48,13 +47,12 @@ $(DIRS):
 	fi
 	chmod -w $@
 
+.NOTPARALLEL: ncsc-out/.done
 ncsc-out/.done:	$(SRC)
 	$(NCSC) --ncs-compile-bundle yang                   \
-	    --ncs-device-dir ncsc-out                        \
+	    --ncs-device-dir ncsc-out                       \
 	    --fail-on-warnings                              \
-	                            \
-	                                \
-	    --ncs-device-type cli-ned                        \
+	    --ncs-device-type cli-ned                       \
 	    $(NCSCPATH)                                     \
 	    $(NED_ID_ARG)                                   \
 	    $(NCSC_EXTRA_FLAGS)
@@ -73,6 +71,3 @@ clean:
 	cd java && ant -q clean || true
 	rm -f router-cli*.yang
 .PHONY: clean
-
-../load-dir/router-meta.fxs: router-meta.yang ../package-meta-data.xml | ../load-dir
-	@$(NCSC) $(NCSC_FLAGS) --yangpath yang -c $< -o $@

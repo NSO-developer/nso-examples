@@ -14,7 +14,7 @@ ncs-events.siz
 /bin/
 README.ncs
 README.netsim
-packages/cisco-ios-cli-3.0
-packages/cisco-iosxr-cli-3.0
-packages/cisco-nx-cli-3.0
-packages/dell-ftos-cli-3.0
+packages/cisco-ios-netsim-cli-1.0
+packages/cisco-iosxr-netsim-cli-1.0
+packages/cisco-nx-netsim-cli-1.0
+packages/dell-ftos-netsim-cli-1.0

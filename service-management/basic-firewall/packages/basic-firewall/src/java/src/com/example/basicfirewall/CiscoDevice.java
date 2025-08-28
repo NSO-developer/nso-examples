@@ -45,22 +45,16 @@ public class CiscoDevice extends Device{
                                        interfaceName + " " +
                                            interfaceNumber);
 
+       interfaceContainer.container("ip").
+                       list("access-group").
+                       create("in");
+
        ConfKey key = service.getKey();
        interfaceContainer.container("ip").
-                       container("access-group").
+                       list("access-group").
+                       elem("in").
                        leaf("access-list").
-                       sharedSet(key.elementAt(0).toString());
-
-       ConfEnumeration dirEnum = ConfEnumeration.
-                               getEnumByLabel(interfaceContainer.
-                               container("ip").
-                               container("access-group").
-                               leaf("direction").
-                               getKeyPath(),"in");
-
-       interfaceContainer.container("ip").
-                       container("access-group").
-                       leaf("direction").sharedSet(dirEnum);
+                       set(key.elementAt(0).toString());
    }
 
    public void createACL(NavuContainer service)

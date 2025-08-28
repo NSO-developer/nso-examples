@@ -28,7 +28,7 @@ printf "\n${PURPLE}##### Create a simulated network with one device\n${NC}"
 ncs-netsim create-network host 1 h
 
 printf "\n${PURPLE}##### Add one instance of the cisco-ios device to the simulated network\n${NC}"
-ncs-netsim add-to-network $NCS_DIR/packages/neds/cisco-ios-cli-3.0 1 c
+ncs-netsim add-to-network $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 1 c
 
 printf "\n${PURPLE}##### Create an NSO setup to use the simulated network\n${NC}"
 ncs-setup --netsim-dir ./netsim --dest .

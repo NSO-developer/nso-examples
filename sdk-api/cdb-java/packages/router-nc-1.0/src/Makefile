@@ -41,6 +41,7 @@ $(DIRS):
 fxs: $(DIRS) ../package-meta-data.xml ncsc-out/.done
 .PHONY: fxs
 
+.NOTPARALLEL: ncsc-out/.done
 ncsc-out/.done: $(SRC)
 	$(NCSC) --ncs-compile-bundle yang    \
 	        --ncs-device-dir ncsc-out    \

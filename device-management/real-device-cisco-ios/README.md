@@ -27,17 +27,18 @@ Preparations
    simulator will create files and directories in this example. Change to this
    directory before continuing.
 
-**Note**: The cisco-ios-cli-3.0 is an *example* Cisco IOS NED and will not work
-well with real Cisco IOS devices. While this example applies to using any CLI
-NED, when using a Cisco-provided CLI NED, always check the README of the NED
-for additional information.
+**Note**: The cisco-ios-netsim-cli-1.0 is an *example* Cisco IOS NED and will
+not work well with real Cisco IOS devices. While this example applies to using
+any CLI NED, when using a Cisco-provided CLI NED, always check the README of
+the NED for additional information.
 
 Setting up NSO to work with a CLI Device
 ----------------------------------------
 
 Set up NSO with the Network Element Driver (NED) package for the device:
 
-    ncs-setup --dest . --ned-package ${NCS_DIR}/packages/neds/cisco-ios-cli-3.0
+    ncs-setup --dest . --ned-package \
+    ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0
 
 This can be done in another empty directory as well. See the `demo.sh` script
 for an example of a setup in a `nso-rundir` directory.
@@ -50,18 +51,18 @@ Start the CLI:
 
     ncs_cli -u admin
 
-NSO will load the cisco-ios-cli-3.0 NED package at startup:
+NSO will load the cisco-ios-netsim-cli-1.0 NED package at startup:
 
     > show packages
-    packages package cisco-ios-cli-3.0
+    packages package cisco-ios-netsim-cli-1.0
      package-version 3.0.0.4
      description     "NED package for Cisco IOS"
      ncs-min-version [ 3.0.2 ]
-     directory       ./state/packages-in-use/1/cisco-ios-cli-3.0
+     directory       ./state/packages-in-use/1/cisco-ios-netsim-cli-1.0
      component upgrade-ned-id
       upgrade java-class-name com.tailf.packages.ned.ios.UpgradeNedId
      component cisco-ios
-      ned cli ned-id  cisco-ios-cli-3.0
+      ned cli ned-id  cisco-ios-netsim-cli-1.0
       ned cli java-class-name com.tailf.packages.ned.ios.IOSNedCli
       ned device vendor Cisco
       ned option show-tag
@@ -86,7 +87,7 @@ Add configuration to NSO for the simulated device:
     % set address [ADD ADDRESS HERE]
     % set port 22
     % set authgroup mygroup
-    % set device-type cli ned-id cisco-ios-cli-3.0
+    % set device-type cli ned-id cisco-ios-netsim-cli-1.0
     % set ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
     % set state admin-state unlocked
 
@@ -139,7 +140,9 @@ Get the current configuration from the device covered by the YANG model:
 
 This ingests the configuration from the device into CDB. Only the parts covered
 by the YANG model(s) will be loaded. The YANG data model is located under:
-`$NCS_DIR/packages/neds/cisco-ios-cli-3.0/src/yang/tailf-ned-cisco-ios.yang`.
+
+    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src/yang/\
+    tailf-ned-cisco-ios.yang
 
 Show the device configuration:
 

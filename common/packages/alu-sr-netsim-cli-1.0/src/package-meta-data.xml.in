@@ -1,0 +1,22 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>alu-sr-netsim</name>
+  <package-version>1.0</package-version>
+  <description>ALU SR netsim CLI NED</description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <component>
+    <name>netsim-cli</name>
+    <ned>
+      <cli>
+        <ned-id>replaced by build</ned-id>
+        <java-class-name>
+          com.tailf.packages.ned.netsimcli.NetsimCli
+        </java-class-name>
+      </cli>
+      <device>
+        <vendor>Tail-f</vendor>
+        <product-family>Tail-f netsim CLI 1.0</product-family>
+        <operating-system>netsim</operating-system>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

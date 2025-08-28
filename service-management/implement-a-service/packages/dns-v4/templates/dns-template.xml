@@ -5,7 +5,11 @@
       <name>{/target-device}</name>
       <config>
         <ip xmlns="urn:ios">
-          <name-server>{deref(/dns-servers)/../servers}</name-server>
+          <name-server>
+            <name-server-list>
+              <address>{deref(/dns-servers)/../servers}</address>
+            </name-server-list>
+          </name-server>
         </ip>
       </config>
     </device>

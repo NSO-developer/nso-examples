@@ -18,7 +18,7 @@ setup:
 	ncs-setup --dest nso-rundir
 	cat nso-rundir/ncs.conf | ncs_conf_tool -e false ncs-config logs xpath-trace-log enabled > nso-rundir/ncs.conf.new
 	mv nso-rundir/ncs.conf.new nso-rundir/ncs.conf
-	cp -r ${NCS_DIR}/packages/neds/cisco-asa-cli-6.6 nso-rundir/packages/
+	cp -r ${NCS_DIR}/examples.ncs/common/packages/cisco-asa-netsim-cli-1.0 nso-rundir/packages/
 	@if test "${TEST}" = "j_setvals_xml"; then \
 		cp -r package-repository/rfs-acl-java-setvals nso-rundir/packages/rfs-acl; \
 	elif test "${TEST}" = "py_setvals_maagic"; then \
@@ -40,7 +40,7 @@ setup:
 	for f in nso-rundir/packages/*/src; do \
 		$(MAKE) -C $$f all || exit 1; \
 	done
-	ncs-netsim create-network nso-rundir/packages/cisco-asa-cli-6.6 \
+	ncs-netsim create-network nso-rundir/packages/cisco-asa-netsim-cli-1.0 \
 	           $(NDEVS) asa --dir nso-rundir/netsim
 	ncs-netsim --dir nso-rundir/netsim ncs-xml-init \
 	           > nso-rundir/ncs-cdb/devices.xml
