@@ -1,4 +1,5 @@
 # -*- mode: python; python-indent: 4 -*-
+import uuid
 import ncs
 import _ncs
 from ncs.application import Service
@@ -55,7 +56,7 @@ class ShowcaseCommitParams(Action):
             params = t.get_params()
             self.log.info(
                 "Apply commit parameter Trace ID and dry-run with an action")
-            params.trace_id("foobar")
+            params.trace_id(str(uuid.uuid4()))
             params.dry_run_native()
 
             # Display commit params

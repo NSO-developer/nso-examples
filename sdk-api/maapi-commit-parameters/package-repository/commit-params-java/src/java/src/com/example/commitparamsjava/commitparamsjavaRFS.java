@@ -3,6 +3,7 @@ package com.example.commitparamsjava;
 import com.example.commitparamsjava.namespaces.*;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 import com.tailf.conf.*;
 import com.tailf.navu.*;
 import com.tailf.ncs.ns.Ncs;
@@ -119,7 +120,7 @@ public class commitparamsjavaRFS {
             // Init and set commit parameters
             log.info("Apply commit param Trace ID and dry-run with an action");
             CommitParams cp = maapi.getTransParams(th);
-            cp.setTraceId("foobar");
+            cp.setTraceId(UUID.randomUUID().toString());
             cp.setDryRunNative();
 
             // Detect transaction commit parameters

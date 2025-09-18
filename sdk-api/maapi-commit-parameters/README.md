@@ -13,6 +13,10 @@ The Java and Python examples feature a service that tries to modify interface
 configuration on the `ex0` device, then adds the `dry-run` and `trace-id`
 commit parameters and applies the transaction.
 
+NSO automatically generates a trace ID if the `trace-id` parameter is not
+provided. The `trace-id` parameter is included by this example for
+demonstration purposes.
+
 The examples show how to detect arbitrary and specific commit parameters in
 service code and apply commit parameters from code either as an action or from
 a script. It also contains a list of all currently existing commit parameters
