@@ -52,7 +52,7 @@ filterList = [
 ]
 
 
-def tailf_ned_sanitize(yang_file):
+def tailf_ned_sanitize(yang_file, stats_suffix):
     my_env = os.environ.copy()
     ncs_dir = os.environ['NCS_DIR']
     yang_path = yang_file.rsplit('/', 1)[0]
@@ -131,6 +131,13 @@ def tailf_ned_sanitize(yang_file):
         description.decompose()
     for reference in yin_soup.find_all('reference'):
         reference.decompose()
+    if stats_suffix:
+        for node_type in ['container', 'list', 'leaf-list', 'leaf']:
+            nodes = yin_soup.module.find_all(node_type, recursive=False)
+            for node in nodes:
+                alt_name = yin_soup.new_tag('tailf:alt-name',
+                                            yname=f"{node['yname']}-stats")
+                node.append(alt_name)
 
     with open(f'{module_name}.yin', "w") as yin_file:
         yin_soup_str = str(yin_soup)
@@ -156,7 +163,10 @@ if __name__ == "__main__":
         description="",
         formatter_class=argparse.RawTextHelpFormatter
     )
+    parser.add_argument('-s', '--stats-suffix', action='store_true',
+                        help='Append a "-stats" suffix to top level nodes in' +
+                             'the CLI')
     parser.add_argument('filename', nargs=1, type=str,
                         help='<file> YANG module to be sanitized')
     args = parser.parse_args()
-    tailf_ned_sanitize(args.filename[0])
+    tailf_ned_sanitize(args.filename[0], args.stats_suffix)

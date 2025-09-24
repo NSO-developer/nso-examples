@@ -240,24 +240,6 @@ def main(args, runid):
         print(r.text)
         print(f"Status code: {r.status_code}\n")
 
-    if args.nocq:
-        print(f'\n{OKBLUE}###### No lower node commit-queues\n{ENDC}')
-    else:
-        print(f'\n{OKBLUE}###### Configure the default lower node commit-queue'
-              f' settings\n{ENDC}')
-        for lower_nso in ["lower-nso-1", "lower-nso-2"]:
-            CQ_SETTINGS = {}
-            CQ_SETTINGS["enabled-by-default"] = True
-            CQ_SETTINGS["sync"] = ""
-            INPUT_DATA = {"tailf-ncs:commit-queue": [CQ_SETTINGS]}
-            PATH = f'/data/tailf-ncs:devices/device={lower_nso}/config' +\
-                   '/tailf-ncs:devices/global-settings/commit-queue'
-            print(f"{BOLD}PATCH " + BASE_URL + PATH + f"{ENDC}")
-            print(f"{HEADER}" + json.dumps(INPUT_DATA, indent=2) + f"{ENDC}")
-            r = session.patch(BASE_URL + PATH, json=INPUT_DATA,
-                              headers=headers)
-            print(f"Status code: {r.status_code}\n")
-
     print(f'\n{OKBLUE}##### Configure the device delay, i.e., simulated'
           f' device work and calibrate the CPU time\n{ENDC}')
     # Set the transaction delay on the devices. Controls how long netsim
@@ -297,7 +279,10 @@ def main(args, runid):
     T3_DATA["run-id"] = runid
     T3S_DATA = {"t3-settings": [T3_DATA]}
     INPUT_DATA = {"cfs-t3:cfs-t3s": [T3S_DATA]}
-    PATH = '/data'
+    if args.nocq:
+        PATH = '/data'
+    else:
+        PATH = '/data?commit-queue=sync'
     print(f"{BOLD}PATCH " + BASE_URL + PATH + f"{ENDC}")
     print(f"{HEADER}" + json.dumps(INPUT_DATA, indent=2) + f"{ENDC}")
     r = session.patch(BASE_URL + PATH, json=INPUT_DATA, headers=headers)
@@ -305,29 +290,17 @@ def main(args, runid):
     print(f"Status code: {r.status_code}\n")
 
     tot_ntrans = args.ntrans * 2
-    tot_ndevs = args.ldevs * 2
-    n_cqtrans = 0
-    if args.nocq:
-        n_cqtrans = tot_ndevs
-        print(f'{HEADER}##### Wait for {tot_ntrans} lower nodes nano service'
-              f' plan to reach ready status\n{ENDC}')
-    else:
-        print(f'{HEADER}##### Wait for {tot_ntrans} lower nodes nano service'
-              ' plan to reach ready status and commit queue items to'
-              f' complete\n{ENDC}')
+    print(f'{HEADER}##### Wait for {tot_ntrans} lower nodes nano service'
+          f' plan to reach ready status\n{ENDC}')
     while True:
         PATH = "/data/tailf-ncs:devices?fields=device/notifications" +\
                "/received-notifications/notification/data"
         # print(f"{BOLD}GET " + BASE_URL + PATH + f"{ENDC}")
         r = session.get(BASE_URL + PATH, headers=headers)
         nready = r.text.count('"state": "ready"')
-        if not args.nocq:
-            n_cqtrans = r.text.count('"status": "completed"')
-        if nready == tot_ntrans and n_cqtrans == tot_ndevs:
+        if nready == tot_ntrans:
             break
         time.sleep(0.1)
-        # print(f"{HEADER}##### Wait for {tot_ntrans-nready} lower nodes" +\
-        #       f" nano service plan to reach ready status\n{ENDC}")
 
     total = time.time() - start  # Total wall-clock time for the test
 
@@ -390,7 +363,7 @@ if __name__ == '__main__':
                         help='RFS devices per transaction. '
                         'Default: 1')
     parser.add_argument('-q', '--nocq', action='store_true',
-                        help='No commit queues on the lower devices. '
+                        help='No commit queues. '
                         'Default: False')
     parser.add_argument('-y', '--dev_delay', type=int, default=1,
                         help='Simulated device work in seconds. '

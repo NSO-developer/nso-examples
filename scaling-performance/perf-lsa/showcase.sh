@@ -64,16 +64,6 @@ devices device * out-of-sync-commit-behaviour accept
 commit
 EOF
 
-if [ $USECQ == "True" ]; then
-    printf "\n\n${PURPLE}##### Configure the default lower node commit-queue settings${NC}"
-    env ${ENV}4569 ncs_cli -n -u admin -C << EOF
-config
-devices device * config devices global-settings commit-queue enabled-by-default true
-devices device * config devices global-settings commit-queue sync
-commit
-EOF
-fi
-
 printf "\n\n${PURPLE}##### Configure the device delay, i.e., simulated device work and calibrate the CPU time${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 config
@@ -94,13 +84,19 @@ progress trace t3-trace-$RUNID enabled verbosity normal destination file t3-$RUN
 commit
 EOF
 
+CQSYNC=""
+if [ $USECQ == "True" ]; then
+    printf "\n\n${PURPLE}##### Use commit-queue sync${NC}"
+    CQSYNC=" commit-queue sync"
+fi
+
 printf "\n\n${PURPLE}##### Run a test with $NTRANS transactions per lower NSO with $NDTRANS transactions per lower NSO device\n${NC}"
 printf "${PURPLE}##### run-id $RUNID on a processor with $NUM_CPU cores${NC}"
 START=$($DATE +%s)
 env ${ENV}4569 ncs_cli -n -u admin -C <<EOF
 config
 cfs-t3s t3-settings ntrans $NTRANS nwork $NWORK ndtrans $NDTRANS run-id $RUNID
-commit
+commit$CQSYNC
 EOF
 
 printf "\n\n${PURPLE}##### Wait for the lower nodes nano service plan to reach ready status\n${NC}"
@@ -123,34 +119,6 @@ done
 
 END=$($DATE +%s)
 TIME=$(($END-$START))
-
-if [ $USECQ == "True" ]; then
-    while : ; do
-        arr1=($(echo "show devices device lower-nso-1 live-status devices commit-queue queue-item | icount" | env ${ENV}4569 ncs_cli -C -u admin))
-        res1=${arr1[1]}
-        arr2=($(echo "show devices device lower-nso-2 live-status devices commit-queue queue-item | icount" | env ${ENV}4569 ncs_cli -C -u admin))
-        res2=${arr2[1]}
-        if [ "$res1" == "0" ] && [ "$res2" == "0" ]; then
-            break
-        fi
-        printf "${RED}##### Waiting for $res1 lower-nso-1 and $res2 lower-nso-2 commit queue items to complete...\n${NC}"
-        sleep .1
-    done
-    arr=($(echo "show devices device lower-nso-1 live-status devices commit-queue completed queue-item failed | icount" | env ${ENV}4569 ncs_cli -C -u admin))
-    res=${arr[1]}
-    if [ ! "$res" == "0" ]; then
-        printf "${RED}##### $res lower-nso-1 commit queue items failed!\n${NC}"
-    else
-        printf "${GREEN}##### All lower-nso-1 commit queue items completed\n${NC}"
-    fi
-    arr=($(echo "show devices device lower-nso-2 live-status devices commit-queue completed queue-item failed | icount" | env ${ENV}4569 ncs_cli -C -u admin))
-    res=${arr[1]}
-    if [ ! "$res" == "0" ]; then
-        printf "${RED}##### $res lower-nso-2 commit queue items failed!\n${NC}"
-        else
-        printf "${GREEN}##### All lower-nso-2 commit queue items completed\n${NC}"
-    fi
-fi
 
 printf "\n${PURPLE}##### Disable the NSO progress traces${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF

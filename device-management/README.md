@@ -52,9 +52,9 @@ An example of a CLI NED implementation for a device that provides a Cisco-style
 CLI interface where Java code is used to enable NSO to manage it. Used by the
 NSO Development Guide chapter CLI NED development.
 
-### generic-cli-ned
+### generic-restconf-ned
 An example of a generic NED implementation for a device that provides a
-Juniper-style CLI interface where Java code is used to enable NSO to manage it.
+RESTCONF interface where Java code is used to enable NSO to manage it.
 
 ### generic-xmlrpc-ned
 An example of a generic NED implementation for a device that provides a

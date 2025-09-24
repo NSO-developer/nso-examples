@@ -237,9 +237,9 @@ the RFS nodes:
               }
     ...
 
-Commit the changes to the RFS nodes:
+Commit the changes to the RFS nodes using commit queues:
 
-    % commit
+    % commit commit-queue sync
     % exit
     > exit
 

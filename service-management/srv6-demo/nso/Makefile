@@ -2,11 +2,12 @@ all: packages ncs-run/.ready
 
 .PHONY: packages
 packages:
+	$(MAKE) -C ../../../common/packages/cisco-iosxr-netsim-cli-1.0/src all
 	for p in packages/*/src; do $(MAKE) -C $$p || exit 1; done
 
 ncs-run/.ready:
 	[ -d ncs-run ] || ncs-setup --dest ncs-run
-	(cd ncs-run && rm -rf packages && ln -s ../packages .)
+	(cd ncs-run && rm -rf packages && ln -s ../packages . && ln -sf ../../../../common/packages/cisco-iosxr-netsim-cli-1.0 packages/cisco-iosxr-netsim-cli-1.0)
 	cp ncs-run/ncs.conf ncs-run/ncs.conf.in
 	ncs_conf_tool -a '<style>c</style>' ncs-config cli \
 		<ncs-run/ncs.conf.in >ncs-run/ncs.conf
@@ -43,5 +44,6 @@ test:
 	$(MAKE) -C ../labsim stop clean
 
 clean:
+	rm -f packages/cisco-iosxr-netsim-cli-1.0
 	for p in packages/*/src; do $(MAKE) -C $$p clean; done
 	rm -fr ncs-run/

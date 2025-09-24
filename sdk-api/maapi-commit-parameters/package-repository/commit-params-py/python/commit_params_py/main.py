@@ -54,15 +54,15 @@ class ShowcaseCommitParams(Action):
             # Init and set commit parameters
             params = t.get_params()
             self.log.info(
-                "Apply commit parameter Trace ID and dry-run with an action")
-            params.trace_id("foobar")
+                "Apply commit parameter label and dry-run with an action")
+            params.label("foobar")
             params.dry_run_native()
 
             # Display commit params
             self.log.info(f"All transaction params: {params}")
-            if params.get_trace_id() is not None:
+            if params.get_label() is not None:
                 self.log.info(
-                    f"Commit trace ID detected: {params.get_trace_id()}")
+                    f"Commit label detected: {params.get_label()}")
 
             # Apply the transaction and print out the dry-run results
             result = t.apply_params(True, params)
