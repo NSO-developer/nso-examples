@@ -26,10 +26,7 @@ DIRS += ../shared-jar ../private-jar java/src/$(JDIR)/$(NS)
 NED_ID_ARG = $(shell [ -x ${NCS_DIR}/support/ned-ncs-ned-id-arg ] && \
                ${NCS_DIR}/support/ned-ncs-ned-id-arg package-meta-data.xml.in)
 
-## Uncomment and patch the line below if you have a dependency to
-## other YANG files
-# YANGPATH += ../../<pkg-name>/src/yang
-
+YANGPATH += $(NCS_DIR)/src/ncs/yang
 NCSCPATH   = $(YANGPATH:%=--yangpath %)
 
 fxs: $(DIRS) ../package-meta-data.xml ncsc-out/.done

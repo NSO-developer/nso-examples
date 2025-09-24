@@ -716,146 +716,51 @@ public class NetsimCli extends NedCliBaseTemplate {
     @Override
     public void showStatsPath(NedWorker worker, int th, ConfPath path)
         throws Exception {
-        showStatsConfPath(worker, th, new ConfPath[]{removeLiveStatus(path)});
-        worker.showStatsPathResponse(new NedTTL[] {
-            new NedTTL(path, 10)
-        });
-    }
-
-    @Override
-    public void showStatsFilter(NedWorker worker, int th, ConfPath[] paths)
-        throws Exception {
-        showStatsConfPath(worker, th, paths);
-        worker.showStatsFilterResponse();
-    }
-
-    @Override
-    public void showStatsFilter(NedWorker worker, int th, String[] xpaths)
-        throws Exception {
-        List<ConfPath> paths = new ArrayList<ConfPath>();
-        for (String xpath : xpaths) {
-            try {
-                xpath = "/ncs:devices/ncs:device[name = '" + device_id + "']" +
-                    "/ncs:live-status" + xpath;
-                ConfPath path = new ConfPath((new ConfXPath(xpath)).getKP());
-                paths.add(removeLiveStatus(path));
-            } catch (Exception e) {
-                // Ignored
-            }
-        }
-        showStatsConfPath(
-            worker, th, paths.toArray(new ConfPath[paths.size()]));
-        worker.showStatsFilterResponse();
-    }
-
-    protected ConfPath removeLiveStatus(ConfPath path) throws Exception{
-        ConfTag liveStatus = new ConfTag(new Ncs(), Ncs._live_status);
-        List<ConfObject> kp = new ArrayList<ConfObject>();
-        for (ConfObject o: path.getKP()) {
-            if (liveStatus.equals(o)) {
-                break;
-            } else {
-                kp.add(o);
-            }
-        }
-        return new ConfPath(kp.toArray(new ConfObject[kp.size()]));
-    }
-
-    protected void showStatsConfPath(NedWorker worker, int th, ConfPath[] paths)
-            throws Exception {
         String startCmd = inConfig ? "do show" : "show";
 
-        List<String> cmds = new ArrayList<String>();
-        for (ConfPath path : paths) {
-            String str = "";
-            for (ConfObject pathelem : path.getKP()) {
-                if (pathelem instanceof ConfKey) {
-                    str = pathelem.toString().replaceAll(
-                            "(\\A\\{)|(\\}\\z)", "") + " " + str;
-                } else {
-                    str = ((ConfTag)pathelem).getTag() + " " + str;
-                }
-            }
-
-            cmds.add(startCmd + " " + str + "| display xml");
-        }
-
-        if (cmds.isEmpty()) {
-            cmds.add(startCmd + " sys | display xml");
-        }
-
         mm.attach(th, 0);
+        String str = "";
+        for (ConfObject pathelem : path.getKP()) {
+            if (pathelem instanceof ConfKey) {
+                str = pathelem.toString().replaceAll(
+                            "(\\A\\{)|(\\}\\z)", "") + " " + str;
+            } else {
+                str = ((ConfTag)pathelem).getTag() + " " + str;
+            }
+        }
+
         NavuNode liveStatus = new NavuContainer(mm, th, Ncs.hash)
             .container(Ncs._devices)
             .list(Ncs._device)
             .elem(device_id)
             .container(Ncs._live_status);
-        for (String cmd : cmds) {
-            session.println(cmd);
-            session.expect(cmd.replaceAll("\\|", "\\\\|"));
 
-            NedExpectResult res = session.expect(new String[]{
-                "\\Asyntax error: .*",
-                "\\ANo entries found\\.",
-                privexec_prompt
-            }, worker);
+        String lstr = "live-status ";
+        int i = str.indexOf(lstr);
+        if (i >= 0 ) {
+            str = (i >= 0) ? str.substring(i + lstr.length()) : null;
+        }
 
-            if (res.getHit() == 2) {
-                String data = res.getText()
-                    .replaceFirst("\\A\\s*" +
-                        "<config xmlns=\"http://tail-f.com/ns/config/1.0\">", "")
-                    .replaceAll("</config>\\Z", "");
+        String cmd = startCmd + " " + str + "| display xml";
+        session.println(cmd);
+        session.expect(cmd.replaceAll("\\|", "\\\\|"));
 
-                liveStatus.setValues(data);
-            }
+        NedExpectResult res = session.expect(new String[]{
+            "\\Asyntax error: .*",
+            "\\ANo entries found\\.",
+            privexec_prompt
+        }, worker);
+
+        if (res.getHit() == 2) {
+            String data = res.getText()
+                .replaceFirst("\\A\\s*" +
+                    "<config xmlns=\"http://tail-f.com/ns/config/1.0\">", "")
+                .replaceAll("</config>\\Z", "");
+
+            liveStatus.setValues(data);
         }
         mm.detach(th);
-    }
-
-    @Override
-    public void showStatsFilter(
-            NedWorker worker, int th, NedShowFilter[] filters)
-        throws Exception {
-        final String startCmd = inConfig ? "do show" : "show";
-
-        List<String> cmds = new ArrayList<String>();
-        ConfTag liveStatusTag = new ConfTag(new Ncs(), Ncs._live_status);
-        if (filters == null || filters.length == 0) {
-            cmds.add(startCmd + " sys");
-        } else {
-            cmds(Arrays.asList(filters), startCmd, cmds);
-        }
-
-        mm.attach(th, 0);
-        NavuNode liveStatus = new NavuContainer(mm, th, Ncs.hash)
-                                .container(Ncs._devices)
-                                .list(Ncs._device)
-                                .elem(device_id)
-                                .container(Ncs._live_status);
-
-        for (String cmd : cmds) {
-            cmd = cmd + " | display xml";
-            session.println(cmd);
-            session.expect(cmd.replaceAll("\\|", "\\\\|"));
-
-            NedExpectResult res = session.expect(new String[]{
-                "\\Asyntax error: .*",
-                "\\ANo entries found\\.",
-                privexec_prompt
-            }, worker);
-
-            if (res.getHit() == 2) {
-                String data = res.getText()
-                    .replaceFirst("\\A\\s*" +
-                        "<config xmlns=\"http://tail-f.com/ns/config/1.0\">",
-                        "")
-                    .replaceAll("</config>\\Z", "");
-
-                liveStatus.setValues(data);
-            }
-        }
-        mm.detach(th);
-        worker.showStatsFilterResponse();
+        worker.showStatsPathResponse(new NedTTL[] {new NedTTL(path, 60, true)});
     }
 
     public void cmds(

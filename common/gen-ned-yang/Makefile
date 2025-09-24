@@ -27,23 +27,37 @@ $(shell mkdir -p $(NETSIM_YANG_DIR))
 # Define all targets
 TARGETS := \
 	$(NETSIM_YANG_DIR)/netsim-ned-a10-acos.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-a10-acos-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-alu-sr.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-cisco-asa-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-nx.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-cisco-nx-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-dell-ftos.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-dell-ftos-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-juniper-junos.yang
 
 # Define copy targets
 COPY_TARGETS := \
 	$(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang \
+	$(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang \
 	$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang \
+	$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang \
 	$(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang \
+	$(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang \
 	$(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang \
+	$(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-stats.yang \
 	$(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
+	$(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang \
 	$(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang \
+	$(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx-stats.yang \
 	$(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang \
+	$(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos-stats.yang \
 	$(DEST_BASE)/juniper-junos-netsim-nc-1.0/src/yang/netsim-ned-juniper-junos.yang
 
 # Default target
@@ -54,20 +68,38 @@ all: $(COPY_TARGETS)
 $(NETSIM_YANG_DIR)/netsim-ned-a10-acos.yang: $(NED_PACKAGES_DIR)/a10-acos-cli-$(A10_ACOS_VSN)/netsim/tailf-ned-a10-acos.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
 
+$(NETSIM_YANG_DIR)/netsim-ned-a10-acos-stats.yang: $(NED_PACKAGES_DIR)/a10-acos-cli-$(A10_ACOS_VSN)/src/yang/tailf-ned-a10-acos-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
+
 $(NETSIM_YANG_DIR)/netsim-ned-alu-sr.yang: $(NED_PACKAGES_DIR)/alu-sr-cli-$(ALU_SR_VSN)/netsim/tailf-ned-alu-sr.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
+
+$(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang: $(NED_PACKAGES_DIR)/alu-sr-cli-$(ALU_SR_VSN)/src/yang/tailf-ned-alu-sr-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
 
 $(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang: $(NED_PACKAGES_DIR)/cisco-asa-cli-$(CISCO_ASA_VSN)/netsim/tailf-ned-cisco-asa.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
 
+$(NETSIM_YANG_DIR)/netsim-ned-cisco-asa-stats.yang: $(NED_PACKAGES_DIR)/cisco-asa-cli-$(CISCO_ASA_VSN)/src/yang/tailf-ned-cisco-asa-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
+
 $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios.yang: $(NED_PACKAGES_DIR)/cisco-ios-cli-$(CISCO_IOS_VSN)/netsim/tailf-ned-cisco-ios.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
+
+$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-stats.yang: $(NED_PACKAGES_DIR)/cisco-ios-cli-$(CISCO_IOS_VSN)/src/yang/tailf-ned-cisco-ios-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
 
 $(NETSIM_YANG_DIR)/netsim-ned-cisco-nx.yang: $(NED_PACKAGES_DIR)/cisco-nx-cli-$(CISCO_NX_VSN)/netsim/tailf-ned-cisco-nx.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
 
+$(NETSIM_YANG_DIR)/netsim-ned-cisco-nx-stats.yang: $(NED_PACKAGES_DIR)/cisco-nx-cli-$(CISCO_NX_VSN)/src/yang/tailf-ned-cisco-nx-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
+
 $(NETSIM_YANG_DIR)/netsim-ned-dell-ftos.yang: $(NED_PACKAGES_DIR)/dell-ftos-cli-$(DELL_FTOS_VSN)/netsim/tailf-ned-dell-ftos.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
+
+$(NETSIM_YANG_DIR)/netsim-ned-dell-ftos-stats.yang: $(NED_PACKAGES_DIR)/dell-ftos-cli-$(DELL_FTOS_VSN)/src/yang/tailf-ned-dell-ftos-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
 
 $(NETSIM_YANG_DIR)/netsim-ned-juniper-junos.yang: $(NED_PACKAGES_DIR)/juniper-junos-nc-$(JUNIPER_JUNOS_VSN)/src/yang/junos.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
@@ -77,26 +109,50 @@ $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr.yang: $(SANITIZE_SCRIPT)
 	$(MAKE) -C get-xr-netsim-yang CISCO_IOSXR_VSN=$(CISCO_IOSXR_VSN)
 	$(PYTHON) $(SANITIZE_SCRIPT) get-xr-netsim-yang/tailf-ned-cisco-ios-xr.yang > $@
 
+$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr-stats.yang: $(NED_PACKAGES_DIR)/cisco-iosxr-cli-$(CISCO_IOSXR_VSN)/src/yang/tailf-ned-cisco-ios-xr-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
+
 # Copy rules
 $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang: $(NETSIM_YANG_DIR)/netsim-ned-a10-acos.yang
+	cp $< $@
+
+$(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-a10-acos-stats.yang
 	cp $< $@
 
 $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang: $(NETSIM_YANG_DIR)/netsim-ned-alu-sr.yang
 	cp $< $@
 
+$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang
+	cp $< $@
+
 $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang
+	cp $< $@
+
+$(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-asa-stats.yang
 	cp $< $@
 
 $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios.yang
 	cp $< $@
 
+$(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-stats.yang
+	cp $< $@
+
 $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr.yang
+	cp $< $@
+
+$(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr-stats.yang
 	cp $< $@
 
 $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-nx.yang
 	cp $< $@
 
+$(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-nx-stats.yang
+	cp $< $@
+
 $(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang: $(NETSIM_YANG_DIR)/netsim-ned-dell-ftos.yang
+	cp $< $@
+
+$(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-dell-ftos-stats.yang
 	cp $< $@
 
 $(DEST_BASE)/juniper-junos-netsim-nc-1.0/src/yang/netsim-ned-juniper-junos.yang: $(NETSIM_YANG_DIR)/netsim-ned-juniper-junos.yang
@@ -116,13 +172,20 @@ clean: clean-iosxr
 # Individual device targets for convenience
 .PHONY: a10-acos alu-sr cisco-asa cisco-ios cisco-iosxr cisco-nx dell-ftos
 
-a10-acos: $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang
-alu-sr: $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang
-cisco-asa: $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang
-cisco-ios: $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang
-cisco-iosxr: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang
-cisco-nx: $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang
-dell-ftos: $(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang
+a10-acos: $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang \
+		  $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang
+alu-sr: $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang \
+		$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang
+cisco-asa: $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang \
+		   $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang
+cisco-ios: $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang \
+		   $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-stats.yang
+cisco-iosxr: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
+		   $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang
+cisco-nx: $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang \
+		   $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx-stats.yang
+dell-ftos: $(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang \
+		   $(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos-stats.yang
 juniper-junos: $(DEST_BASE)/juniper-junos-netsim-nc-1.0/src/yang/netsim-ned-juniper-junos.yang
 
 # Help target

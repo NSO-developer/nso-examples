@@ -229,13 +229,16 @@ proc = subprocess.Popen('exec netconf-console --create-subscription='
                         stdout=subprocess.PIPE,
                         text=True)
 do_print = False
+do_break = False
 while True:
     line = proc.stdout.readline()
     if '<notification' in line:
         do_print = True
     if do_print:
         print(f'{line}', end="")
-    if '</notification>' in line:
+    if do_print and '</hardware-state-change>' in line:
+        do_break = True
+    if do_break and '</notification>' in line:
         break
 proc.kill()
 
@@ -336,13 +339,16 @@ proc = subprocess.Popen('exec netconf-console --create-subscription='
                         stdout=subprocess.PIPE,
                         text=True)
 do_print = False
+do_break = False
 while True:
     line = proc.stdout.readline()
     if '<notification' in line:
         do_print = True
     if do_print:
         print(f'{line}', end="")
-    if '</notification>' in line:
+    if do_print and '</hardware-state-change>' in line:
+        do_break = True
+    if do_break and '</notification>' in line:
         break
 proc.kill()
 

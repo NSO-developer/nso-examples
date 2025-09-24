@@ -49,7 +49,7 @@ module router-ann {
           tailf:hidden maint;
         }
         tailf:annotate-statement "action[name='archive-log']" {
-          tailf:exec "./scripts/archive-log";
+          tailf:exec "./archive-log";
         }
       }
     }

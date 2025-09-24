@@ -172,7 +172,7 @@ The created NED is a `lsa-netconf` NED based on the YANG files of the
 the lower node. See `--package-version 6.4` above.
 
 The package will be generated in the `packages` directory of the upper NSO
-node. See `--dest upper-nso/packages/rfs-vlan-nc-5.4` above.
+node. See `--dest upper-nso/packages/rfs-vlan-nc-6.4` above.
 
 Install the `cfs-vlan` service:
 
@@ -291,9 +291,9 @@ the RFS nodes:
               }
     ...
 
-Commit the changes to the RFS nodes:
+Commit the changes to the RFS nodes using commit queues:
 
-    % commit
+    % commit commit-queue sync
     % exit
     > exit
 

@@ -39,7 +39,7 @@ lower-nso-%:
 	rm -rf $@/packages/router-nc-1.1/netsim
 	cp -r package-repository/router-netsim $@/packages/router-nc-1.1/netsim
 	for f in $@/packages/*/src; do \
-		$(MAKE) -C $$f all || exit 1; \
+		$(MAKE) -C $$f clean all || exit 1; \
 	done
 	cp nso-etc/$@/ncs.conf $@
 

@@ -27,9 +27,14 @@ make all
 printf "\n${PURPLE}##### Start the simulated network and NSO\n${NC}"
 make start
 
-printf "\n${PURPLE}##### Sync the configuration from the remote LSA-node\n${NC}"
+printf "\n\n${PURPLE}##### Enable the NSO progress trace${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
-devices sync-from
+unhide debug
+config
+devices device * config progress trace progress-trace enabled verbosity very-verbose destination format csv file progress-trace.csv
+top
+progress trace progress-trace enabled verbosity very-verbose destination file progress-trace.csv format csv
+commit
 EOF
 
 printf "\n\n${PURPLE}##### Configure a CFS VLAN service instance\n${NC}"
@@ -37,6 +42,16 @@ env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 config
 cfs-vlan v1 a-router ex0 z-router ex5 iface eth3 unit 3 vid 77
 commit dry-run
+commit commit-queue sync
+EOF
+
+printf "\n${PURPLE}##### Disable the NSO progress traces${NC}"
+env ${ENV}4569 ncs_cli -n -u admin -C << EOF
+unhide debug
+config
+progress trace progress-trace disabled
+commit
+devices device * config progress trace progress-trace disabled
 commit
 EOF
 

@@ -1,0 +1,234 @@
+module netsim-ned-dell-ftos-stats {
+  namespace "http://tail-f.com/ned/dell-ftos-stats";
+  prefix ftos-stats;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  typedef ipv4-prefix {
+    type string;
+  }
+
+  container exec {
+    tailf:alt-name "exec-stats";
+  }
+  container stats {
+    config false;
+    list mac-address-table {
+      key "vlan-id mac";
+      leaf vlan-id {
+        type uint16;
+      }
+      leaf mac {
+        type string;
+      }
+      leaf type {
+        type string;
+      }
+      leaf interface {
+        type string;
+      }
+      leaf state {
+        type string;
+      }
+    }
+    list interface {
+      key "type id";
+      leaf type {
+        type string;
+      }
+      leaf id {
+        type string;
+      }
+      leaf state {
+        type enumeration {
+          enum up;
+          enum down;
+        }
+      }
+      leaf line-protocol {
+        type string;
+      }
+      leaf hw-address {
+        type yang:mac-address;
+      }
+      leaf current-address {
+        type yang:mac-address;
+      }
+      leaf index {
+        type uint64;
+      }
+      leaf internet-address {
+        type string;
+      }
+      leaf mtu {
+        type uint16;
+      }
+      leaf ip-mtu {
+        type uint16;
+      }
+      leaf line-speed {
+        type string;
+      }
+      leaf flowcontrol-rx {
+        type enumeration {
+          enum on;
+          enum off;
+        }
+      }
+      leaf flowcontrol-tx {
+        type enumeration {
+          enum on;
+          enum off;
+        }
+      }
+      leaf arp-type {
+        type string;
+      }
+      leaf arp-timeout {
+        type string;
+      }
+      leaf last-clearing-counter {
+        type string;
+      }
+      leaf queue-strategy {
+        type string;
+      }
+      container input {
+        leaf packets {
+          type uint64;
+        }
+        leaf bytes {
+          type uint64;
+        }
+        leaf pkts-64-byte {
+          type uint64;
+        }
+        leaf pkts-over-64-byte {
+          type uint64;
+        }
+        leaf pkts-over-127-byte {
+          type uint64;
+        }
+        leaf pkts-over-255-byte {
+          type uint64;
+        }
+        leaf pkts-over-511-byte {
+          type uint64;
+        }
+        leaf pkts-over-1023-byte {
+          type uint64;
+        }
+        leaf multicasts {
+          type uint64;
+        }
+        leaf broadcasts {
+          type uint64;
+        }
+        leaf runts {
+          type uint64;
+        }
+        leaf giants {
+          type uint64;
+        }
+        leaf throttles {
+          type uint64;
+        }
+        leaf crc {
+          type uint64;
+        }
+        leaf overrun {
+          type uint64;
+        }
+        leaf discarded {
+          type uint64;
+        }
+      }
+      container output {
+        leaf packets {
+          type uint64;
+        }
+        leaf bytes {
+          type uint64;
+        }
+        leaf underruns {
+          type uint64;
+        }
+        leaf pkts-64-byte {
+          type uint64;
+        }
+        leaf pkts-over-64-byte {
+          type uint64;
+        }
+        leaf pkts-over-127-byte {
+          type uint64;
+        }
+        leaf pkts-over-255-byte {
+          type uint64;
+        }
+        leaf pkts-over-511-byte {
+          type uint64;
+        }
+        leaf pkts-over-1023-byte {
+          type uint64;
+        }
+        leaf multicasts {
+          type uint64;
+        }
+        leaf broadcasts {
+          type uint64;
+        }
+        leaf throttles {
+          type uint64;
+        }
+        leaf discarded {
+          type uint64;
+        }
+        leaf unicasts {
+          type uint64;
+        }
+        leaf collisions {
+          type uint64;
+        }
+        leaf wreddrops {
+          type uint64;
+        }
+      }
+      container rate-info {
+        container input {
+          leaf mbit-p-sec {
+            type string;
+          }
+          leaf packets-p-sec {
+            type uint64;
+          }
+          leaf percent-line-rate {
+            type string;
+          }
+        }
+        container output {
+          leaf mbit-p-sec {
+            type string;
+          }
+          leaf packets-p-sec {
+            type uint64;
+          }
+          leaf percent-line-rate {
+            type string;
+          }
+        }
+      }
+      leaf time-since-last-status-change {
+        type string;
+      }
+    }
+    tailf:alt-name "stats-stats";
+  }
+}

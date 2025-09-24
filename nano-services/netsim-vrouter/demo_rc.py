@@ -74,7 +74,7 @@ def service_cq_status(nready, status, name, notifications):
                ["tailf-ncs:service-commit-queue-event"]
                ["status"] == status and
                notif["ietf-restconf:notification"]
-               ["tailf-ncs:service-commit-queue-event"]["trace-id"] == name):
+               ["tailf-ncs:service-commit-queue-event"]["label"] == name):
                 nready += 1
     return nready
 
@@ -348,7 +348,7 @@ print(r.text)
 dt_string = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
 
 PATH = '/data/vrouter:vrouters/vrouter?commit-queue=sync&'\
-       'commit-queue-error-option=rollback-on-error&trace-id'\
+       'commit-queue-error-option=rollback-on-error&label'\
        '=vr{}'.format(NVR*2+1)
 print(f"{BOLD}PATCH " + BASE_URL + PATH + f"{ENDC}")
 print(f"{HEADER}" + json.dumps(INPUT_DATA, indent=2) + f"{ENDC}")

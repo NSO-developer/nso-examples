@@ -74,6 +74,9 @@ public class commitparamsjavaRFS {
             if (cp.isDryRun()) {
                 log.info("Dry run detected!");
             }
+            if (cp.getLabel() != null) {
+                log.info("Commit label detected: " + cp.getLabel());
+            }
 
             myTemplate.apply(service, myVars);
 
@@ -117,15 +120,15 @@ public class commitparamsjavaRFS {
             maapi.setElem(th, enum_speed, confPath + "/speed");
 
             // Init and set commit parameters
-            log.info("Apply commit param Trace ID and dry-run with an action");
+            log.info("Apply commit param label and dry-run with an action");
             CommitParams cp = maapi.getTransParams(th);
-            cp.setTraceId("foobar");
+            cp.setLabel("foobar");
             cp.setDryRunNative();
 
             // Detect transaction commit parameters
             log.info("Commit parameters: " + cp);
-            if (cp.getTraceId() != null) {
-                log.info("Commit trace ID detected: " + cp.getTraceId());
+            if (cp.getLabel() != null) {
+                log.info("Commit label detected: " + cp.getLabel());
             }
 
             // Apply the transaction and print out the dry-run results

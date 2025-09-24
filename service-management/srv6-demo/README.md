@@ -32,6 +32,10 @@ either physical or virtual, but you must provide the connectivity and
 initial configuration yourself (we also strongly encourage you to install
 a production-grade NED in nso/packages/ in this case).
 
+To run the netsim-based walkthrough below from a demo shell script:
+
+    $ make demo-ns
+
 
 Start & Connect Devices (XRd)
 -----------------------------
@@ -440,4 +444,4 @@ We encourage you to investigate the implementation of the services and, as
 an exercise, modify the `l3vpn` to support statically-configured routes for
 each link as an alternative to BGP peering (requires some NSO knowledge).
 
-Or learn more about NSO at https://cisco-tailf.gitbook.io/nso-docs.
+Or learn more about NSO at https://nso-docs.cisco.com.

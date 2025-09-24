@@ -1,4 +1,4 @@
-XR_NED ?= ../nso/packages/cisco-iosxr-srdemo-ns
+XR_NED ?= ../../../common/packages/cisco-iosxr-netsim-cli-1.0
 
 all: netsim/.ready
 

@@ -13,7 +13,7 @@
 
   <supported-ned-id xmlns:id="never-match">id:safely-ignore</supported-ned-id>
   <supported-ned-id-match>cisco-iosxr-srdemo.*</supported-ned-id-match>
-  <supported-ned-id-match>cisco-iosxr-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
 
   <component>
     <name>main</name>
