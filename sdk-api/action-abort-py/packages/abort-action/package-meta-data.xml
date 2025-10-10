@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>abort-action</name>
+  <package-version>1.0</package-version>
+  <description>Python package</description>
+  <ncs-min-version>6.4</ncs-min-version>
+  <component>
+    <name>action</name>
+    <application>
+      <python-class-name>action.Action</python-class-name>
+    </application>
+  </component>
+</ncs-package>

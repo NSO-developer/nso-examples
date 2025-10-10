@@ -1,0 +1,51 @@
+module action-abort-test {
+  yang-version 1.1;
+  namespace "http://example.com/action-abort-test";
+  prefix a;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description "A small test module to illustrate how to implement
+               user defined actions that can be aborted.";
+
+  container action-abort-test {
+    action iosxr-config {
+      tailf:actionpoint iosxr-config;
+      input {
+        leaf timeout {
+          type uint8;
+          default 3;
+          description
+            "The maximum time to wait for the action to complete, in seconds.";
+        }
+        leaf device {
+          type leafref {
+            path /ncs:devices/ncs:device/ncs:name;
+          }
+          mandatory true;
+          description
+            "The XR device to perform the action on.";
+        }
+        leaf work-duration {
+          type uint8;
+          default 6;
+          description
+            "The duration of the work performed by the action, in seconds.";
+        }
+      }
+      output {
+        leaf outcome {
+          type string;
+          mandatory true;
+          description
+            "The outcome of the action: 'completed' or 'aborted'.";
+        }
+      }
+    }
+  }
+}
