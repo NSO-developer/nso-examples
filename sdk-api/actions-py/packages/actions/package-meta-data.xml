@@ -6,7 +6,7 @@
   <component>
     <name>action</name>
     <application>
-      <python-class-name>Action</python-class-name>
+      <python-class-name>action.Action</python-class-name>
     </application>
   </component>
 </ncs-package>

@@ -97,7 +97,7 @@ EOF
 printf "\n\n${PURPLE}##### Load the rollback file and preview the changes before committing them\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
 configure
-rollback 10005
+request rollback-files apply-rollback-file fixed-number 10005
 compare running brief | nomore
 commit
 EOF

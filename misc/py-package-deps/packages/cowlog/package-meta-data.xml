@@ -1,0 +1,12 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>cowlog</name>
+  <package-version>1.0</package-version>
+  <description>Python package</description>
+  <ncs-min-version>6.6</ncs-min-version>
+  <component>
+    <name>action</name>
+    <application>
+      <python-class-name>cowlog.Action</python-class-name>
+    </application>
+  </component>
+</ncs-package>

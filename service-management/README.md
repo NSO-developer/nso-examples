@@ -100,6 +100,12 @@ such as those provisioned by an older automation system, requiring service
 reconciliation. See the NSO Development Guide chapter Services Deep Dive for
 service discovery documentation.
 
+### confirm-network-state
+The example demonstrates out-of-band changes handling with a service policy.
+The managed devices have confirm-network-state processing configured and have
+out-of-band changes related to the provisioned services, which NSO processes
+during a related change or a sync-from operation.
+
 ### upgrade-service
 Based on the `rfs-service` example's `vlan` service package. Performs a package
 upgrade where instance data in the NSO CDB is changed and migrated with the

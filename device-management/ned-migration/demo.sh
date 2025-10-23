@@ -31,13 +31,13 @@ were created by the same service.
 
 next_step "Preview migrate of a single device to a new NED with dry-run"
 exec_cli "devices device ex0 migrate new-ned-id router-nc-1.1\
- suppress-modified-paths without-instance-data verbose dry-run"
+ suppress-modified-paths without-instance-data report { all } dry-run"
 echo "
 The output shows that the 'sys/dns/domain' leaf is removed in the new NED.
 
 Using the 'suppress-modified-paths without-instance-data' allows you to
 ignore changes in the NED that do not affect your configuration, while
-'verbose' produces a list of service instances that are affected.
+'report { all }' produces a list of service instances that are affected.
 Additionally, if the no-networking option is used, no southbound
 traffic is generated towards the devices; only the device
 configuration in the CDB is used for the migration."

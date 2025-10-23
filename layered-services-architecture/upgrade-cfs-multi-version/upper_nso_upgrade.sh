@@ -245,10 +245,10 @@ printf "${RED}##### Multi-version step: ${PURPLE}Migrate the upper NSO single ve
 env $NODE1 ncs_cli -u admin -C << EOF
 config
 ncs:devices device lower-nso-* ssh fetch-host-keys
-ncs:devices device lower-nso-1 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} dry-run verbose
-ncs:devices device lower-nso-1 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} verbose
-ncs:devices device lower-nso-2 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} dry-run verbose
-ncs:devices device lower-nso-2 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} verbose
+ncs:devices device lower-nso-1 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} dry-run report { all }
+ncs:devices device lower-nso-1 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} report { all }
+ncs:devices device lower-nso-2 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} dry-run report { all }
+ncs:devices device lower-nso-2 migrate new-ned-id cisco-nso-nc-${OLD_VERSION::3} report { all }
 ncs:devices device lower-nso-* out-of-sync-commit-behaviour accept
 commit
 EOF

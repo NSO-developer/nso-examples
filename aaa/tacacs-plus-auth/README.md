@@ -21,8 +21,6 @@ Build the necessary files, copy the example `ncs.conf`, activate the Python
 virtualenv, and start NSO:
 
     make clean all
-    ncs-setup --dest .
-    cp ncs.conf.example ncs.conf
     . pyvenv/bin/activate
     (pyvenv) $ make start
 

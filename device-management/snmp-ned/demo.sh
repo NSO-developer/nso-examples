@@ -74,7 +74,7 @@ cat logs/rollback*
 printf "\n${PURPLE}##### Undo the 'sysContact' change\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
-rollback configuration 10005
+rollback-files apply-rollback-file fixed-number 10005
 commit dry-run
 commit
 EOF

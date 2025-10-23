@@ -76,7 +76,7 @@ EOF
 printf "\n\n${PURPLE}##### Rollback the previous transaction\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
-rollback configuration
+rollback-files apply-rollback-file id 0
 commit dry-run
 commit
 EOF

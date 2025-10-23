@@ -53,8 +53,8 @@ EOF
 printf "\n\n${PURPLE}##### View the log output in ncs-python-vm-actions.log\n${NC}"
 cat logs/ncs-python-vm-actions.log
 
-printf "\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
+    printf "${GREEN}##### Cleanup\n${NC}"
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
     printf "\n${PURPLE}##### Stop NSO and clean all created files\n${NC}"

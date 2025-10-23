@@ -40,7 +40,7 @@ Running the Example
 
 To run the example, execute:
 
-    make build start
+    make all start
 
 The script will configure two NSO nodes locally, in an HA setup, using the
 loopback interfaces 127.0.1.1 and 127.0.2.1. On some systems, such as macOS,

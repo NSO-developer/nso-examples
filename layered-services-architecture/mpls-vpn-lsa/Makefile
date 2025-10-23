@@ -1,5 +1,3 @@
-
-
 SN_PACKAGES = l3vpn-srv l3vpn-ned
 DN_PACKAGES = l3vpn
 
@@ -111,5 +109,3 @@ cli-nso-3:
 
 demo:
 	./demo.sh
-
-#  LocalWords:  SN

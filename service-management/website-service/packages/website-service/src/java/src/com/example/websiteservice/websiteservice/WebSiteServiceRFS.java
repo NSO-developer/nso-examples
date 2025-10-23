@@ -67,13 +67,9 @@ public class WebSiteServiceRFS {
 
         Properties opaqueProps;
 
-        if (opaque==null) {
-            opaqueProps = new Properties();
-        } else{
-            opaqueProps = opaque;
-            LOGGER.info("opaqueProps Alias:" + opaqueProps.getProperty("alias")+
-                        ",sub:" + opaqueProps.getProperty("subnet"));
-        }
+        opaqueProps = opaque;
+        LOGGER.info("opaqueProps Alias:" + opaqueProps.getProperty("alias")+
+            ",sub:" + opaqueProps.getProperty("subnet"));
 
         try {
 

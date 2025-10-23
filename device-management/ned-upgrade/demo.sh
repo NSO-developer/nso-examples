@@ -44,7 +44,7 @@ echo "
 Alternatively, you can use the 'migrate dry-run' action to only list the
 device model changes that affect your existing configurations."
 exec_cli "devices migrate old-ned-id router-nc-1.0 new-ned-id router-nc-1.1\
- dry-run suppress-modified-paths without-instance-data verbose"
+ dry-run suppress-modified-paths without-instance-data report { all }"
 echo "
 In the new NED, the 'domain' leaf has changed into 'search' leaf-list.
 This is a backward incompatible change and requires special provisions

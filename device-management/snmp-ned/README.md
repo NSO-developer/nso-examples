@@ -346,7 +346,7 @@ inverse SNMP operation. To display the rollback files:
 
 To undo the `sysContact` change:
 
-    % rollback 10005
+    % rollback-files apply-rollback-file id 00005
     % commit dry-run
     % commit
     Commit complete.

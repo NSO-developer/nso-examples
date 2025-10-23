@@ -259,7 +259,7 @@ Take a look at the `rollback` file:
 
 Load the rollback file:
 
-    % rollback 10006
+    % rollback-files apply-rollback-file id 00006
 
 Show the diff:
 

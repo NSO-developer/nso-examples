@@ -36,7 +36,7 @@ printf "\n${PURPLE}##### Get the status from NSO on all nodes\n${NC}"
 make status
 
 printf "\n${PURPLE}##### Configure a VPN network from the CFS NSO node\n${NC}"
-ncs_cli -n -u admin -C << EOF
+env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 config
 vpn l3vpn volvo route-distinguisher 999 endpoint main-office ce-device ce6 ce-interface GigabitEthernet0/11 ip-network 10.10.1.0/24 as-number 65101 bandwidth 12000000
 vpn l3vpn volvo route-distinguisher 999 endpoint branch-office1 ce-device ce1 ce-interface GigabitEthernet0/11 ip-network 10.7.7.0/24 as-number 65102 bandwidth 6000000

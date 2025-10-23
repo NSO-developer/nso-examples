@@ -9,6 +9,12 @@ pointers to further reading.
 Suggested Order of Consumption:
 -------------------------------
 
+### py-package-deps
+Demonstrates how to either install Python package dependencies in the NSO
+package `python` directory, or as an alternative, use a Python virtual
+environment to manage dependencies that automatically activates when the Python
+VM for a package starts.
+
 ### locks-and-timeouts
 Showcase various timeouts and locks we can encounter and how to address the
 issue while running an NSO instance. Use cases include DP API data provider,

@@ -6,8 +6,21 @@ from ncs.application import Service
 from ncs.dp import Action
 
 
+def only_works_in_config(func):
+    def hint_on_error(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except Exception as e:
+            if getattr(e, 'confd_errno', 0) == ncs.ERR_NOT_WRITABLE:
+                raise Exception('This action requires configure mode.')
+            else:
+                raise e
+    return hint_on_error
+
+
 class ProvisionAction(Action):
     @Action.action
+    @only_works_in_config
     def cb_action(self, uinfo, name, kp, input, output, trans):
         root = ncs.maagic.get_root(trans)
         devices = [x.name for x in root.core_network.devices if x.enabled]

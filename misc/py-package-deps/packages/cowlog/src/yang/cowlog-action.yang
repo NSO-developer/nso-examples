@@ -1,0 +1,17 @@
+module cowlog-action {
+  yang-version 1.1;
+  namespace "http://example.com/cowlog-action";
+  prefix c;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  description "A YANG module defining an action to log a cow message.";
+
+  container cowlog-action {
+    action cowlog {
+      tailf:actionpoint cowlog-point;
+    }
+  }
+}

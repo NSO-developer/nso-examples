@@ -67,10 +67,7 @@ public class l3vpnRFS {
                                             throws ConfException {
         LOGGER.info("reached create " + context.getComponentName() +
                            ":" + context.getState());
-        if (opaque == null) {
-            opaque = new Properties();
-            opaque.setProperty("dumb-not-null", "true");
-        }
+        opaque.setProperty("dumb-not-null", "true");
         String name = service.leaf(l3vpn._name_).valueAsString();
         String deploymentName = "vpn";
         String virtualPEName =

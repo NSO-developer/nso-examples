@@ -65,9 +65,6 @@ public class ifaceRFS {
             myVars.putQuoted("NETMASK", quad_mask);
             myTemplate.apply(service, myVars);
 
-            if (opaque == null) {
-                opaque = new Properties();
-            }
             opaque.setProperty("DEVICE",
                                service.leaf("device").valueAsString());
             opaque.setProperty("INTERFACE",

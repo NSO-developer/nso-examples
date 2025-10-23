@@ -26,7 +26,7 @@ Build the package and start NSO:
 Run the `reboot` action:
 
     ncs_cli -u admin
-    > action-test system reboot
+    > request action-test system reboot
 
 Run the `restart` action:
 
@@ -86,7 +86,8 @@ Further Reading
 
 + NSO Development Guide: Actions
 + The `demo.sh` script
-+ Python API reference documentation: `ncs.dp` and `ncs.maagic`.
++ Python API reference documentation: `ncs.dp`, `ncs.application`, and
+`ncs.maagic`.
 + The package in the `./packages/actions` directory
 + More Python action examples in the NSO example set:
 `find $NCS_DIR/examples.ncs/ -name "*.py" |xargs grep "@Action.action"`

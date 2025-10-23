@@ -1,4 +1,4 @@
-all: fxs javac
+all: javac
 	cd ../netsim && $(MAKE) all
 .PHONY: all
 
@@ -41,8 +41,7 @@ $(DIRS):
 fxs: $(DIRS) ../package-meta-data.xml ncsc-out/.done
 .PHONY: fxs
 
-.NOTPARALLEL: ncsc-out/.done
-ncsc-out/.done: $(SRC)
+ncsc-out/.done: $(SRC) $(DIRS)
 	$(NCSC) --ncs-compile-bundle yang    \
 	        --ncs-device-dir ncsc-out    \
 	        --ncs-device-type netconf    \
@@ -54,7 +53,7 @@ ncsc-out/.done: $(SRC)
 	done
 	touch ncsc-out/.done
 
-javac: $(DIRS)
+javac: fxs
 	cd java && ant -q all
 	cp java/build/jar/*-ns.jar ../shared-jar
 	cp java/build/jar/*.jar ../private-jar

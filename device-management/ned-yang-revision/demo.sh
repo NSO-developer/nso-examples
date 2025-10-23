@@ -66,8 +66,8 @@ make stop-nso cdm start-nso
 ncs_cli -n -u admin -C << EOF
 show packages | nomore
 config
-devices device ex0 migrate new-ned-id router-nc-1.1 dry-run verbose
-devices device ex0 migrate new-ned-id router-nc-1.1 verbose
+devices device ex0 migrate new-ned-id router-nc-1.1 dry-run report { all }
+devices device ex0 migrate new-ned-id router-nc-1.1 report { all }
 commit
 link t2 re-deploy dry-run
 link t2 re-deploy

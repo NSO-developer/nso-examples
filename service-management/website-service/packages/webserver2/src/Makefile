@@ -1,4 +1,4 @@
-all: fxs javac
+all: javac
 	$(MAKE) -C ../netsim  all
 .PHONY: all
 
@@ -74,7 +74,7 @@ ncsc-out/modules/fxs/%.fxs:	yang/%.yang
 	cp $@ ../load-dir; \
 	$(NCSC) $(JFLAGS)/$*.java $@
 
-javac:
+javac: fxs
 	cd java && ant -q all
 
 clean:

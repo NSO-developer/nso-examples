@@ -65,10 +65,8 @@ public class escstart {
         LOGGER.info("reached create " + context.getComponentName() +
                            ":" + context.getState());
         try {
-            if (opaque == null) {
-                opaque = new Properties();
-                opaque.setProperty("dumb-not-null", "true");
-            }
+            opaque.setProperty("dumb-not-null", "true");
+
             String deploymentName = vm.leaf("deployment-name").valueAsString();
             String vmDevice       = vm.leaf("vm-device").valueAsString();
             String tenant         = vm.leaf("tenant").valueAsString();
