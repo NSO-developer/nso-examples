@@ -1,0 +1,112 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <interface xmlns="http://cisco.com/ned/asa">
+    <Management>
+      <name>0/0</name>
+      <management-only />
+      <nameif>management</nameif>
+      <security-level>0</security-level>
+    </Management>
+    <GigabitEthernet>
+      <name>0/0</name>
+      <nameif>gig00</nameif>
+      <shutdown />
+      <security-level>0</security-level>
+      <ospf>
+        <priority>20</priority>
+        <network>
+          <point-to-point>
+            <non-broadcast />
+          </point-to-point>
+        </network>
+        <message-digest-key>
+          <id>1</id>
+          <md5>
+            <secret>cisco</secret>
+          </md5>
+        </message-digest-key>
+        <authentication>
+          <type>message-digest</type>
+        </authentication>
+      </ospf>
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/1</name>
+      <shutdown />
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/2</name>
+      <shutdown />
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/3</name>
+      <shutdown />
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/4</name>
+      <nameif>testif</nameif>
+      <security-level>0</security-level>
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/5</name>
+      <ip>
+        <address>
+          <ip>
+            <host-ip>11.22.33.1</host-ip>
+            <netmask>255.255.255.0</netmask>
+          </ip>
+        </address>
+      </ip>
+      <nameif>elevenif</nameif>
+      <security-level>0</security-level>
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/6</name>
+      <shutdown />
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/7</name>
+    </GigabitEthernet>
+    <GigabitEthernet>
+      <name>0/8</name>
+      <shutdown />
+    </GigabitEthernet>
+  </interface>
+  <access-list xmlns="http://cisco.com/ned/asa">
+    <access-list-id>
+      <id>tailf_42</id>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.1 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.2 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.3 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.4 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.5 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.6 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.7 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.8 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.9 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.10 255.255.255.127 eq 1</id>
+      </rule>
+      <rule>
+        <id>extended permit tcp 192.168.0.1 255.255.255.0 1.0.0.11 255.255.255.127 eq 1</id>
+      </rule>
+    </access-list-id>
+  </access-list>
+</config>

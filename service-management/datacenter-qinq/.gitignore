@@ -8,4 +8,4 @@ _tmp_ncs*
 README.ncs
 README.netsim
 ncs.conf
-packages/cisco-ios-cli-3.0
+packages/cisco-ios-netsim-cli-1.0

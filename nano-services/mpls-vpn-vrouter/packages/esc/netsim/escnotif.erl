@@ -175,7 +175,7 @@ send_notif(Nctx, [{created, _IKP, G, DepName, SrvName, Version, Ten} | Tail]) ->
     NSO = Dir++"/../../..",
 
     if G == <<"CSR">> ->
-            Ned = "cisco-ios-cli-3.8";
+            Ned = "cisco-ios-netsim-cli-1.0";
        G == <<"ASA">> ->
             Ned = "cisco-asa";
        G == <<"WSA">> ->
@@ -312,7 +312,7 @@ send_notif(Nctx, [{deleted, _IKP, G, DepName, SrvName, Version, Ten}]) ->
     NSO = Dir++"/../../..",
 
 %    if G == <<"CSR">> ->
-%            Ned = "cisco-ios-cli-3.8";
+%            Ned = "cisco-ios-netsim-cli-1.0";
 %       G == <<"ASA">> ->
 %            Ned = "cisco-asa";
 %       G == <<"WSA">> ->
@@ -525,7 +525,7 @@ details([Gr, _SrvName, DepName, Tenant] ) ->
 
 
     if Gr == <<"CSR">> ->
-            Ned = "cisco-ios-cli-3.8";
+            Ned = "cisco-ios-netsim-cli-1.0";
        Gr == <<"ASA">> ->
             Ned = "cisco-asa";
        Gr == <<"WSA">> ->

@@ -38,6 +38,7 @@ set cluster device-notifications enabled
 set cluster remote-node lower-nso-1 address 127.0.0.1 port 2023 authgroup default username admin
 set cluster remote-node lower-nso-2 address 127.0.0.1 port 2024 authgroup default username admin
 set cluster commit-queue enabled
+set devices global-settings commit-queue enabled-by-default true
 commit
 request cluster remote-node lower-nso-1 ssh fetch-host-keys
 request cluster remote-node lower-nso-2 ssh fetch-host-keys
@@ -52,5 +53,6 @@ set ncs:devices device lower-nso-2 state admin-state unlocked
 commit
 request ncs:devices fetch-ssh-host-keys
 request ncs:devices sync-from
-exit
+set ncs:devices device lower-nso-* config devices global-settings commit-queue enabled-by-default true
+commit
 EOF

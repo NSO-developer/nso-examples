@@ -4,9 +4,9 @@ netsim
 logs
 state
 _tmp_ncs*
-device-nodes/packages/alu-sr-cli-3.4
-device-nodes/packages/cisco-ios-cli-3.8
-device-nodes/packages/cisco-iosxr-cli-3.5
-device-nodes/packages/juniper-junos-nc-3.0
+device-nodes/packages/alu-sr-netsim-cli-1.0
+device-nodes/packages/cisco-ios-netsim-cli-1.0
+device-nodes/packages/cisco-iosxr-netsim-cli-1.0
+device-nodes/packages/juniper-junos-netsim-nc-1.0
 device-nodes/nso-*/packages
 service-node/packages/l3vpn-ned/

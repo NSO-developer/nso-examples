@@ -23,20 +23,11 @@
     <directory>./logs</directory>
   </rollback>
   <encryptedStrings>
-    <DES3CBC>
-      <key1>0123456789abcdef</key1>
-      <key2>0123456789abcdef</key2>
-      <key3>0123456789abcdef</key3>
-      <initVector>0123456789abcdef</initVector>
-    </DES3CBC>
     <AESCFB128>
       <key>0123456789abcdef0123456789abcdef</key>
-      <initVector>0123456789abcdef0123456789abcdef</initVector>
     </AESCFB128>
     <AES256CFB128>
-      <key>
-        0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-      </key>
+      <key>0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</key>
     </AES256CFB128>
   </encryptedStrings>
   <logs>

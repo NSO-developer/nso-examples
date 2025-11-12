@@ -210,20 +210,26 @@ def ha_demo(ip1, ip2, ip3):
 
     print(f"\n{okblue}##### Role-revert the nodes back to start-up"
           f" settings\n{endc}")
-    path = '/operations/high-availability/disable'
+    path = '/operations/high-availability/be-primary'
     print(f"{bold}POST " + node1_url + path + f"{endc}")
     r = session.post(node1_url + path, headers=headers)
     print("Status code: {}\n".format(r.status_code))
 
-    path = '/operations/high-availability/disable'
+    input_data = {"input": {"node": "n1"}}
+    path = '/operations/high-availability/be-secondary-to'
     print(f"{bold}POST " + node2_url + path + f"{endc}")
-    r = session.post(node2_url + path, headers=headers)
+    print(f"{header}" + json.dumps(input_data, indent=2) + f"{endc}")
+    r = session.post(node2_url + path, json=input_data, headers=headers)
     print("Status code: {}\n".format(r.status_code))
+    print(r.text)
 
-    path = '/operations/high-availability/enable'
-    print(f"{bold}POST " + node1_url + path + f"{endc}")
-    r = session.post(node1_url + path, headers=headers)
+    input_data = {"input": {"node": "n1"}}
+    path = '/operations/high-availability/be-secondary-to'
+    print(f"{bold}POST " + node3_url + path + f"{endc}")
+    print(f"{header}" + json.dumps(input_data, indent=2) + f"{endc}")
+    r = session.post(node3_url + path, json=input_data, headers=headers)
     print("Status code: {}\n".format(r.status_code))
+    print(r.text)
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'
@@ -234,11 +240,6 @@ def ha_demo(ip1, ip2, ip3):
         print(f"{header}#### Waiting for node 1 to revert to primary role"
               f"...{endc}")
         time.sleep(1)
-
-    path = '/operations/high-availability/enable'
-    print(f"{bold}POST " + node2_url + path + f"{endc}")
-    r = session.post(node2_url + path, headers=headers)
-    print("Status code: {}\n".format(r.status_code))
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'

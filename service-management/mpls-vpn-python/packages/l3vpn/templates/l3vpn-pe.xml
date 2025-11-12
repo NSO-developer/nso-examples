@@ -55,7 +55,7 @@
             <address-family>
               <with-vrf>
                 <ipv4>
-                  <unicast-multicast>unicast</unicast-multicast>
+                  <af>unicast</af>
                   <vrf>
                     <name>{/name}</name>
                     <neighbor>

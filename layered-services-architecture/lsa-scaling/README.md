@@ -229,10 +229,10 @@ dispatch service instance data to the correct lower node:
         rfs-node lower-nso-2;
     }
 
-Commit the changes to the lower nodes:
+Commit the changes to the lower nodes using commit queues:
 
     % commit dry-run
-    % commit
+    % commit commit-queue sync
     % exit
     > exit
 

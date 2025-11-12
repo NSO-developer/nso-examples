@@ -3,20 +3,24 @@
 PACKAGES = l3vpn
 
 # Directory of example packages
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 # The create-network argument to ncs-netsim
 NETWORK = \
-	create-network $(PACKAGE_STORE)/cisco-ios-cli-3.8     9 ce \
-	create-network $(PACKAGE_STORE)/cisco-iosxr-cli-3.5   2 pe \
-	create-network $(PACKAGE_STORE)/juniper-junos-nc-3.0  1 pe \
-	create-network $(PACKAGE_STORE)/alu-sr-cli-3.4        1 pe \
-	create-network $(PACKAGE_STORE)/cisco-iosxr-cli-3.5   4 p
+	create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0     9 ce \
+	create-network $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0   2 pe \
+	create-network $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0  1 pe \
+	create-network $(PACKAGE_STORE)/alu-sr-netsim-cli-1.0        1 pe \
+	create-network $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0   4 p
 
 all: packages netsim ncs
 .PHONY: all
 
 packages:
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/alu-sr-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0/src all
 	for i in $(PACKAGES); do \
 	    $(MAKE) -C packages/$${i}/src all || exit 1; \
 	done
@@ -58,10 +62,10 @@ clean:
 	done
 	rm -f README.ncs README.netsim ncs.conf*
 	rm -rf netsim logs state ncs-cdb *.trace
-	rm -f packages/alu-sr-cli-3.4
-	rm -f packages/cisco-ios-cli-3.8
-	rm -f packages/cisco-iosxr-cli-3.5
-	rm -f packages/juniper-junos-nc-3.0
+	rm -f packages/alu-sr-netsim-cli-1.0
+	rm -f packages/cisco-ios-netsim-cli-1.0
+	rm -f packages/cisco-iosxr-netsim-cli-1.0
+	rm -f packages/juniper-junos-netsim-nc-1.0
 	rm -rf bin
 .PHONY: clean
 

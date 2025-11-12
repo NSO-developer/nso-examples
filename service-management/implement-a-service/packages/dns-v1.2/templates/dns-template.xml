@@ -6,9 +6,17 @@
       <config>
         <ip xmlns="urn:ios">
           <?if {starts-with(/name, 'c1')}?>
-            <name-server>192.0.2.1</name-server>
+            <name-server>
+              <name-server-list>
+                <address>192.0.2.1</address>
+              </name-server-list>
+            </name-server>
           <?else?>
-            <name-server>192.0.2.2</name-server>
+            <name-server>
+              <name-server-list>
+                <address>192.0.2.2</address>
+              </name-server-list>
+            </name-server>
           <?end?>
         </ip>
       </config>

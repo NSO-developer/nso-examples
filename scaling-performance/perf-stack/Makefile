@@ -21,7 +21,7 @@ setup:
 	rm -rf nso-rundir/packages/router-nc-1.1/netsim
 	cp -r package-repository/router-netsim nso-rundir/packages/router-nc-1.1/netsim
 	for f in nso-rundir/packages/*/src; do \
-		$(MAKE) -C $$f all || exit 1; \
+		$(MAKE) -C $$f clean all || exit 1; \
 	done
 	ncs-netsim create-network nso-rundir/packages/router-nc-1.1 \
 	           $(NDEVS) ex --dir nso-rundir/netsim

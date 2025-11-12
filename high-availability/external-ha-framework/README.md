@@ -5,13 +5,10 @@ This small example shows how to use the NSO HA (high availability) framework.
 The example builds and starts two NSO nodes, `n1` and `n2`. Both nodes run on
 the same host (localhost) using different `NCS_IPC_PORT`s.
 
-The YANG data models are simple. See the `$NCS_DIR/packages/services/manual-ha`
-package.
-
 The YANG modules define action points, allowing the operator to set the current
-node to primary, secondary, or none. The Java and YANG code,
-available in the `$NCS_DIR/packages/services/manual-ha` package, implements the
-actions using the Java API for HA and action callbacks.
+node to primary, secondary, or none. The Java and YANG implementations,
+available in the `package/manual-ha` package, implements the actions using the
+Java API for HA and action callbacks.
 
 Running the Example
 -------------------

@@ -1,16 +1,14 @@
-
-
 SN_PACKAGES = l3vpn-srv l3vpn-ned
 DN_PACKAGES = l3vpn
 
 # Directory of example packages
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 NEDS = \
-	cisco-ios-cli-3.8    \
-	cisco-iosxr-cli-3.5  \
-	juniper-junos-nc-3.0 \
-	alu-sr-cli-3.4
+	cisco-ios-netsim-cli-1.0    \
+	cisco-iosxr-netsim-cli-1.0  \
+	juniper-junos-netsim-nc-1.0 \
+	alu-sr-netsim-cli-1.0
 
 MNAME = cisco-nso-nc-$(shell ncs --version | sed 's/\([0-9]*\.[0-9]*\).*/\1/')
 
@@ -111,5 +109,3 @@ cli-nso-3:
 
 demo:
 	./demo.sh
-
-#  LocalWords:  SN

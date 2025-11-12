@@ -18,11 +18,11 @@ set -e
 rm -rf nso-rundir devsim
 
 printf "${PURPLE}##### Setting up and running a simulated Junos device without generating NSO device setup configuration\n${NC}"
-ncs-netsim --dir devsim create-network ${NCS_DIR}/packages/neds/juniper-junos-nc-3.0 2 olive
+ncs-netsim --dir devsim create-network ${NCS_DIR}/examples.ncs/common/packages/juniper-junos-netsim-nc-1.0 2 olive
 ncs-netsim --dir devsim start
 
 printf "\n${GREEN}##### Set up NSO with the Network Element Driver (NED) package for the device\n${NC}"
-ncs-setup --no-netsim --dest ./nso-rundir --use-copy --package ${NCS_DIR}/packages/neds/juniper-junos-nc-3.0
+ncs-setup --no-netsim --dest ./nso-rundir --use-copy --package ${NCS_DIR}/examples.ncs/common/packages/juniper-junos-netsim-nc-1.0
 
 printf "${PURPLE}##### Start NSO\n${NC}"
 ncs --cd ./nso-rundir
@@ -48,14 +48,14 @@ devices device olive0
 address 127.0.0.1
 port 12022
 authgroup junipers
-device-type netconf ned-id juniper-junos-nc-3.0
+device-type netconf ned-id juniper-junos-netsim-nc-1.0
 ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
 state admin-state unlocked
 devices device olive1
 address 127.0.0.1
 port 12023
 authgroup junipers
-device-type netconf ned-id juniper-junos-nc-3.0
+device-type netconf ned-id juniper-junos-netsim-nc-1.0
 ssh-algorithms public-key [ ssh-ed25519 ssh-rsa ]
 state admin-state unlocked
 commit
@@ -97,7 +97,7 @@ ncs_cli -n --cwd ./nso-rundir -u admin -C << EOF
 config
 devices device-group olives device-name [ olive0 olive1 ]
 top
-devices template snmp ned-id juniper-junos-nc-3.0 config junos:configuration snmp contact the-boss2
+devices template snmp ned-id juniper-junos-netsim-nc-1.0 config junos:configuration snmp contact the-boss2
 commit
 devices device-group olives apply-template template-name snmp
 commit dry-run

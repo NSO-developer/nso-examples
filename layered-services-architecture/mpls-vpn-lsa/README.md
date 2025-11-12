@@ -222,7 +222,7 @@ We see that the `nso-1` node has only modified the CE devices, whereas:
     make cli-nso-3
     request vpn l3vpn volvo get-modifications
 
-The `nso-3` node has modified one of the `PE` routers.
+The `nso-3` node has modified the affected `PE` routers.
 
 Cleanup
 -------

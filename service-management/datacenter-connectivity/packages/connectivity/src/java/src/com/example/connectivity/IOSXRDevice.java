@@ -83,11 +83,10 @@ public class IOSXRDevice extends Device{
             container("l2vpn").
             sharedCreate();
 
-        l2VPN.list("pw-class").sharedCreate(evcID).
-            container("encapsulation").
-            container("mpls").
-            container("transport-mode").
-            leaf("ethernet").sharedCreate();
+        NavuContainer pwClass = l2VPN.list("pw-class").sharedCreate(evcID);
+        NavuContainer mpls = pwClass.container("encapsulation").
+            container("mpls").sharedCreate();
+        mpls.container("transport-mode").leaf("ethernet").sharedCreate();
 
         NavuContainer p2p = l2VPN.container("xconnect").sharedCreate().
             list("group").sharedCreate(evcID).

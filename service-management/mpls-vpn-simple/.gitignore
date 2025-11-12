@@ -2,6 +2,6 @@ README.ncs
 README.netsim
 /ncs-cdb/
 /netsim/
-packages/cisco-ios-cli-3.0
-packages/cisco-iosxr-cli-3.0
+packages/cisco-ios-netsim-cli-1.0
+packages/cisco-iosxr-netsim-cli-1.0
 ncs.conf

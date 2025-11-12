@@ -368,7 +368,7 @@ public class escstart {
 
             vm.leaf("authgroup").sharedSet("default");
             vm.container("ssh").leaf("host-key-verification").sharedSet("none");
-            String nedId = "cisco-ios-cli-3.8";
+            String nedId = "cisco-ios-netsim-cli-1.0";
 
             NavuContainer cli = vm.container("device-type").
                 container("cli");

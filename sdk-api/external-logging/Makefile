@@ -1,9 +1,10 @@
-PACKAGE_STORE=$(NCS_DIR)/packages/neds
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
 all:	ncs.conf
 
 netsim:
-	ncs-netsim create-network $(PACKAGE_STORE)/cisco-ios-cli-3.8 2 ios
+	make -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all
+	ncs-netsim create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0 2 ios
 
 ncs.conf: netsim
 	ncs-setup --dest .
@@ -27,7 +28,7 @@ reset:
 clean:
 	$(RM) README.ncs README.netsim ncs.conf storedstate ./*.log
 	$(RM) -r logs netsim packages state ncs-cdb scripts
-	$(RM) -f ned-cisco-ios-cli-3.8-ios1_filtered.trace
+	$(RM) -f ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace
 
 start:
 	ncs-netsim start
@@ -38,14 +39,14 @@ stop:
 	ncs-netsim stop
 
 clean-logs:
-	$(RM) logs/ned-cisco-ios-cli-3.8-ios0.trace \
-	      filtered_ned-cisco-ios-cli-3.8-ios1.trace
+	$(RM) logs/ned-cisco-ios-netsim-cli-1.0-ios0.trace \
+	      filtered_ned-cisco-ios-netsim-cli-1.0-ios1.trace
 
 grep-logs:
-	@echo "logs/ned-cisco-ios-cli-3.8-ios0.trace" && \
-	grep '^banner motd' logs/ned-cisco-ios-cli-3.8-ios0.trace && \
-	echo "ned-cisco-ios-cli-3.8-ios1_filtered.trace" && \
-	grep '^banner motd' ned-cisco-ios-cli-3.8-ios1_filtered.trace
+	@echo "logs/ned-cisco-ios-netsim-cli-1.0-ios0.trace" && \
+	grep '^banner motd' logs/ned-cisco-ios-netsim-cli-1.0-ios0.trace && \
+	echo "ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace" && \
+	grep '^banner motd' ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace
 
 demo:
 	./demo.sh

@@ -317,7 +317,7 @@
               <queue-id>1</queue-id>
               <rate>
                 <cir>{round($BW div 1000)}</cir>
-                <pir-rate>{round($BW div 1000)}</pir-rate>
+                <pir>{round($BW div 1000)}</pir>
               </rate>
             </queue>
           </sap-egress>
@@ -325,25 +325,23 @@
         <router xmlns="http://tail-f.com/ned/alu-sr">
           <router-name>Base</router-name>
           <policy-options>
-            <begin>
-              <policy-statement>
-                <name>{/name}</name>
-                <entry>
-                  <id>10</id>
-                  <from>
+            <policy-statement>
+              <name>{/name}</name>
+              <entry>
+                <id>10</id>
+                <from>
+                  <protocol>
                     <protocol>bgp-vpn</protocol>
-                  </from>
-                  <action>
-                    <other>
-                      <action>accept</action>
-                    </other>
-                  </action>
-                  <to>
-                    <protocol>bgp</protocol>
-                  </to>
-                </entry>
-              </policy-statement>
-            </begin>
+                  </protocol>
+                </from>
+                <action>
+                  <mode>accept</mode>
+                </action>
+                <to>
+                  <protocol>bgp</protocol>
+                </to>
+              </entry>
+            </policy-statement>
           </policy-options>
         </router>
         <service xmlns="http://tail-f.com/ned/alu-sr">
@@ -353,7 +351,9 @@
             <description>Link to CE / {$CE} - {$CE_INT_NAME}</description>
             <interface>
               <ip-int-name>{/name}-{$CE}</ip-int-name>
-              <address>{$LINK_PE_ADR}/{$LINK_PREFIX}</address>
+              <address>
+                <ip-address>{$LINK_PE_ADR}/{$LINK_PREFIX}</ip-address>
+              </address>
               <sap>
                 <sap-id>{$PE_INT_NAME}:{$VLAN_ID}</sap-id>
                 <egress>

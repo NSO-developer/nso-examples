@@ -69,9 +69,9 @@ public abstract class Device {
         for(NavuContainer cont : modules.elements()){
             NavuLeaf leaf = cont.leaf("name");
 
-            if(leaf.value().toString().equals("junos")){
+            if(leaf.value().toString().equals("netsim-ned-juniper-junos")){
                 type = devType.junos;
-            }else if(leaf.value().toString().equals("tailf-ned-cisco-ios")){
+            }else if(leaf.value().toString().equals("netsim-ned-cisco-ios")){
                 type = devType.cisco;
             }
         }

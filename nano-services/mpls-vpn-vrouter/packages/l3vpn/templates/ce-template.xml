@@ -60,6 +60,7 @@
             </neighbor>
             <network>
               <number>{$LOCAL_CE_NET}</number>
+              <mask>{$CE_MASK}</mask>
             </network>
           </bgp>
         </router>

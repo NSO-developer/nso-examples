@@ -153,15 +153,15 @@ EOF
 printf "\n\n${PURPLE}##### Role-revert the nodes back to start-up settings${NC}"
 
 env $NODE1 ncs_cli -n -u admin -C << EOF
-high-availability disable
+high-availability be-primary
 EOF
 
 env $NODE2 ncs_cli -n -u admin -C << EOF
-high-availability disable
+high-availability be-secondary-to node n1
 EOF
 
-env $NODE1 ncs_cli -n -u admin -C << EOF
-high-availability enable
+env $NODE3 ncs_cli -n -u admin -C << EOF
+high-availability be-secondary-to node n1
 EOF
 
 printf "\n\n"
@@ -169,10 +169,6 @@ while [[ $(env $NODE1 ncs_cmd -o -c 'mrtrans; maapi_get "/high-availability/stat
     printf "${RED}#### Waiting for node 1 to revert to primary role...\n${NC}"
     sleep 1
 done
-
-env $NODE2 ncs_cli -n -u admin -C << EOF
-high-availability enable
-EOF
 
 printf "\n\n"
 while [[ $(env $NODE2 ncs_cmd -o -c 'mrtrans; maapi_get "/high-availability/status/mode"') != "secondary" ]] || \

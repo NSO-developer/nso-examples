@@ -34,16 +34,18 @@ public class Force10Device extends Device{
            role.container("settings").leafList("trunk-ports");
 
        for(ConfValue i : trunkInterfaces){
-           vInt.list("tagged").sharedCreate(i);
+           vInt.list("tagged").sharedCreate(new String[] {i.toString(), ""});
        }
        if (endpoint.container("endpoint-settings").
                leaf("connect-multiple-vlans").exists()) {
                vInt.list("tagged").
-               sharedCreate(endpoint.leaf("interface").valueAsString());
+               sharedCreate(new String[] {endpoint.leaf("interface").
+                                            valueAsString(), ""});
        }
        else {
            vInt.list("untagged").
-           sharedCreate(endpoint.leaf("interface").valueAsString());
+           sharedCreate(new String[] {endpoint.leaf("interface").
+                                        valueAsString(), ""});
        }
    }
 

@@ -1,17 +1,18 @@
 all:
+	$(MAKE) -C $(NCS_DIR)/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src all
 	$(MAKE) -C ../packages
 	$(MAKE) netsim
 	$(MAKE) ncs-run
 
 ncs-run:
 	ncs-setup --dest ncs-run --netsim-dir ./netsim \
-		--package cisco-ios-cli-3.0 \
+		--package cisco-ios-netsim-cli-1.0 \
 		--package ../packages/router-nc-1.0 \
 		--package ../packages/dns-v2.1 \
 		--use-copy
 
 netsim:
-	ncs-netsim create-network cisco-ios-cli-3.0 3 c
+	ncs-netsim create-network cisco-ios-netsim-cli-1.0 3 c
 	ncs-netsim add-to-network ../packages/router-nc-1.0 3 r
 
 start:
@@ -28,7 +29,7 @@ cli:
 
 demo:
 	$(MAKE) stop clean all start
-	@echo; echo; cat README; echo
+	@echo; echo; cat README.md; echo
 	@$(MAKE) cli
 
 test:
