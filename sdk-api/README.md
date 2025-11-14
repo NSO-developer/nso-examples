@@ -29,6 +29,11 @@ and write Python code that invokes actions.
 Illustrates how to define a YANG action, attach Java code behind the action,
 and write Java code that invokes actions.
 
+### action-abort-py
+Illustrates how to implement an abortable Python action that spawns a separate
+worker process using the multiprocessing library and returns the worker's
+outcome via a result queue or terminates the worker if the action is aborted.
+
 ### cdb-py
 Showcase a few different ways to subscribe to changes in the CDB configuration
 and operational data stores from a Python application.

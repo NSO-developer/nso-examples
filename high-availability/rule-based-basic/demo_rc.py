@@ -106,7 +106,6 @@ def ha_demo(ip1, ip2):
     else:
         my_env['NCS_IPC_ADDR'] = '127.0.0.1'
         my_env["NCS_IPC_PORT"] = str(ipc1)
-    print(my_env)
     subprocess.run(['ncs', '--stop'], check=True, env=my_env, encoding='utf-8')
 
     while True:
@@ -157,20 +156,18 @@ def ha_demo(ip1, ip2):
 
     print(f"\n{okblue}##### Role-revert the nodes back to start-up"
           f" settings\n{endc}")
-    path = '/operations/high-availability/disable'
+    path = '/operations/high-availability/be-primary'
     print(f"{bold}POST " + node1_url + path + f"{endc}")
     r = session.post(node1_url + path, headers=headers)
     print("Status code: {}\n".format(r.status_code))
 
-    path = '/operations/high-availability/disable'
+    input_data = {"input": {"node": "n1"}}
+    path = '/operations/high-availability/be-secondary-to'
     print(f"{bold}POST " + node2_url + path + f"{endc}")
-    r = session.post(node2_url + path, headers=headers)
+    print(f"{header}" + json.dumps(input_data, indent=2) + f"{endc}")
+    r = session.post(node2_url + path, json=input_data, headers=headers)
     print("Status code: {}\n".format(r.status_code))
-
-    path = '/operations/high-availability/enable'
-    print(f"{bold}POST " + node1_url + path + f"{endc}")
-    r = session.post(node1_url + path, headers=headers)
-    print("Status code: {}\n".format(r.status_code))
+    print(r.text)
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'
@@ -181,11 +178,6 @@ def ha_demo(ip1, ip2):
         print(f"{header}#### Waiting for node 1 to revert to primary role"
               f"...{endc}")
         time.sleep(1)
-
-    path = '/operations/high-availability/enable'
-    print(f"{bold}POST " + node2_url + path + f"{endc}")
-    r = session.post(node2_url + path, headers=headers)
-    print("Status code: {}\n".format(r.status_code))
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'

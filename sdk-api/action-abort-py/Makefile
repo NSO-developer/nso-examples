@@ -6,7 +6,6 @@ netsim:
 
 all: netsim
 	$(MAKE) -C packages/abort-action/src all
-	cp logging.xml ncs-cdb
 
 clean:
 	rm -f packages/cisco-iosxr-netsim-cli-1.0
