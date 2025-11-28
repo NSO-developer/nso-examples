@@ -635,15 +635,6 @@ public class NetsimCli extends NedCliBaseTemplate {
         ArrayList<String> resultList = new ArrayList<>(cmdpaths.length);
         String result = "";
         for (int i = 0; i < cmdpaths.length; i ++) {
-            // FIXME: This is a workaround for NSO sometimes not handling the
-            // tailf:cli-drop-node-name YANG extension correctly on lists when
-            // using the cmd-path-full path-format with the show-partial
-            // capability. (ENG-38203)
-            String prefix = "ip access-list extended ext-named-acl";
-            if (cmdpaths[i].startsWith(prefix)) {
-                cmdpaths[i] = cmdpaths[i].replace(" ext-named-acl", "");
-            }
-
             String showPath = cmdpaths[i].replace("\\ ", "");
             session.print("show running-config "+ showPath + "\n");
             session.expect("show running-config " + showPath);
