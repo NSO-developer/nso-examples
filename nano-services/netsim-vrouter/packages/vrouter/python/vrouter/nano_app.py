@@ -62,7 +62,7 @@ class NanoServiceCallbacks(NanoService):
                                        _maapi.CONFIG_XML | _maapi.CONFIG_MERGE,
                                        device_xml, "/")
             except (_ncs.error.Error) as exception:
-                self.log.debug('Nano create failed(state=', state,
+                self.log.error('Nano create failed(state=', state,
                                ' error=', exception, ')')
                 service.plan.component[component].state[state].status = \
                     'failed'

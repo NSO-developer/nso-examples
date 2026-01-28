@@ -15,11 +15,13 @@ NED_ID_ARG = $(shell [ -x ${NCS_DIR}/support/ned-ncs-ned-id-arg ] && \
 YANGPATH += $(NCS_DIR)/src/ncs/yang
 NCSCPATH   = $(YANGPATH:%=--yangpath %)
 
-fxs: $(DIRS) ../package-meta-data.xml ncsc-out/.done
+fxs: ncsc-out/.done
 .PHONY: fxs
 
 $(DIRS):
 	mkdir -p $@
+
+$(FXS): | $(DIRS)
 
 ../package-meta-data.xml: package-meta-data.xml.in
 	rm -rf $@
@@ -30,8 +32,7 @@ $(DIRS):
 	fi
 	chmod -w $@
 
-.NOTPARALLEL: ncsc-out/.done
-ncsc-out/.done:	$(SRC)
+ncsc-out/.done:	$(SRC) ../package-meta-data.xml | $(DIRS)
 	$(NCSC) --ncs-compile-bundle yang                   \
 	    --ncs-device-dir ncsc-out                        \
 	    --fail-on-warnings                              \

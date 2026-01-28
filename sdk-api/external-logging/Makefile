@@ -46,6 +46,9 @@ grep-logs:
 	@echo "logs/ned-cisco-ios-netsim-cli-1.0-ios0.trace" && \
 	grep '^banner motd' logs/ned-cisco-ios-netsim-cli-1.0-ios0.trace && \
 	echo "ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace" && \
+	while [ ! -f ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace ]; do \
+		sleep 0.5; \
+	done; \
 	grep '^banner motd' ned-cisco-ios-netsim-cli-1.0-ios1_filtered.trace
 
 demo:
