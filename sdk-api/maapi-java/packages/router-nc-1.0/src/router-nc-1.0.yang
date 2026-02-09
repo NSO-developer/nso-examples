@@ -1,0 +1,13 @@
+module router-nc-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/router-nc-1.0";
+  prefix router-nc-1.0;
+
+  import router-nc {
+    prefix family;
+  }
+
+  identity router-nc-1.0 {
+    base family:router-nc;
+  }
+}

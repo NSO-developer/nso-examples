@@ -1,0 +1,12 @@
+module netsim-ned-a10-acos-stats {
+  namespace "http://tail-f.com/ned/a10-acos-stats";
+  prefix a10-acos-stats;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container exec {
+    tailf:alt-name "exec-stats";
+  }
+}

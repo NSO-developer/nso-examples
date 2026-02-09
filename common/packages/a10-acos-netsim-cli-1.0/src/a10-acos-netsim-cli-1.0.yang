@@ -1,0 +1,13 @@
+module a10-acos-netsim-cli-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/a10-acos-netsim-cli-1.0";
+  prefix a10-acos-netsim-cli-1.0;
+
+  import a10-acos-netsim-cli {
+    prefix family;
+  }
+
+  identity a10-acos-netsim-cli-1.0 {
+    base family:a10-acos-netsim-cli;
+  }
+}

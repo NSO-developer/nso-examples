@@ -1,0 +1,13 @@
+module cisco-iosxr-netsim-cli-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/cisco-iosxr-netsim-cli-1.0";
+  prefix cisco-iosxr-netsim-cli-1.0;
+
+  import cisco-iosxr-netsim-cli {
+    prefix family;
+  }
+
+  identity cisco-iosxr-netsim-cli-1.0 {
+    base family:cisco-iosxr-netsim-cli;
+  }
+}
