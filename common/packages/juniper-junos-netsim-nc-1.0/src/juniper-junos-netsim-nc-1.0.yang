@@ -1,0 +1,13 @@
+module juniper-junos-netsim-nc-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/juniper-junos-netsim-nc-1.0";
+  prefix juniper-junos-netsim-nc-1.0;
+
+  import juniper-junos-netsim-nc {
+    prefix family;
+  }
+
+  identity juniper-junos-netsim-nc-1.0 {
+    base family:juniper-junos-netsim-nc;
+  }
+}

@@ -1,0 +1,3299 @@
+module netsim-ned-dell-ftos {
+  namespace "http://tail-f.com/ned/dell-ftos";
+  prefix ftos;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  revision 2019-11-28;
+
+  typedef ipv4-prefix {
+    type string;
+  }
+
+  typedef ipv6-prefix {
+    type string;
+  }
+
+  grouping secret-grouping {
+    leaf encryption {
+      tailf:cli-drop-node-name;
+      type enumeration {
+        enum 0;
+        enum 5;
+      }
+    }
+    leaf password {
+      tailf:cli-drop-node-name;
+      type string;
+    }
+  }
+
+  grouping password-grouping {
+    leaf encryption {
+      tailf:cli-drop-node-name;
+      type enumeration {
+        enum 0;
+        enum 7;
+      }
+    }
+    leaf password {
+      tailf:cli-drop-node-name;
+      type string;
+    }
+  }
+
+  grouping sha-password-grouping {
+    leaf encryption {
+      tailf:cli-drop-node-name;
+      type enumeration {
+        enum 0;
+        enum 8;
+      }
+    }
+    leaf password {
+      tailf:cli-drop-node-name;
+      type string;
+    }
+  }
+
+  grouping location-grouping {
+    leaf location {
+      tailf:cli-drop-node-name;
+      type enumeration {
+        enum system:;
+        enum tftp:;
+      }
+    }
+    leaf partition {
+      tailf:cli-drop-node-name;
+      type enumeration {
+        enum A:;
+        enum B:;
+      }
+    }
+  }
+
+  grouping interface-grouping {
+    leaf description {
+      tailf:cli-multi-value;
+      type string;
+    }
+    container arp {
+      leaf inspection-trust {
+        type empty;
+      }
+    }
+    container ip {
+      list access-group {
+        tailf:cli-suppress-mode;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-siblings;
+        }
+        tailf:cli-compact-syntax;
+        key "inout";
+        leaf inout {
+          type enumeration {
+            enum in;
+            enum out;
+          }
+        }
+        choice acl-choice {
+          leaf extended-group {
+            tailf:cli-drop-node-name;
+            tailf:cli-prefix-key;
+            type string;
+          }
+          leaf standard-group {
+            tailf:cli-drop-node-name;
+            tailf:cli-prefix-key;
+            type string;
+          }
+        }
+      }
+      container address {
+        presence "true";
+        container address-conf {
+          tailf:cli-drop-node-name;
+          choice primary-address-choice {
+            leaf primary-address {
+              tailf:cli-drop-node-name;
+              type ipv4-prefix;
+            }
+            container dhcp {
+              presence "true";
+            }
+          }
+          container secondary-address-conf {
+            tailf:cli-drop-node-name;
+            tailf:cli-compact-syntax;
+            leaf secondary-address {
+              tailf:cli-drop-node-name;
+              type ipv4-prefix;
+            }
+            leaf secondary {
+              type empty;
+            }
+          }
+        }
+      }
+      container dhcp {
+        container snooping {
+          leaf trust {
+            type empty;
+          }
+        }
+      }
+    }
+    container ipv6 {
+      list access-group {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        key "inout";
+        leaf inout {
+          type enumeration {
+            enum in;
+            enum out;
+          }
+        }
+        leaf group {
+          tailf:cli-drop-node-name;
+          tailf:cli-prefix-key;
+          type string;
+        }
+      }
+    }
+    leaf mtu {
+      type uint32;
+    }
+    container iscsi {
+      leaf enable {
+        type boolean;
+      }
+    }
+    leaf rate-interval {
+      type uint16;
+    }
+    container service-policy {
+      leaf input {
+        type string;
+      }
+      leaf output {
+        type string;
+      }
+    }
+    container flowcontrol {
+      tailf:cli-compact-syntax;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      leaf rx {
+        type enumeration {
+          enum off;
+          enum on;
+        }
+      }
+      leaf tx {
+        type enumeration {
+          enum off;
+          enum on;
+        }
+      }
+    }
+    container portmode {
+      leaf hybrid {
+        type empty;
+      }
+    }
+    leaf spanning-tree-no {
+      type boolean;
+    }
+    container switchport {
+      tailf:cli-diff-create-before "../spanning-tree-no";
+      presence "true";
+    }
+    container spanning-tree {
+      container pvst {
+        container edge-port {
+          presence "true";
+        }
+      }
+      container rstp {
+        container edge-port {
+          presence "true";
+        }
+      }
+      container mstp {
+        container edge-port {
+          presence "true";
+          leaf bpduguard {
+            type empty;
+          }
+          leaf bpdufilter {
+            type empty;
+          }
+        }
+      }
+    }
+    container protocol {
+      container lldp {
+        tailf:cli-add-mode;
+        presence "true";
+        container advertise {
+          container dot1-tlv {
+            container port-vlan-id-conf {
+              tailf:cli-drop-node-name;
+              tailf:cli-compact-syntax;
+              leaf port-protocol-vlan-id {
+                type empty;
+              }
+              leaf port-vlan-id {
+                type empty;
+              }
+            }
+          }
+        }
+        leaf mode {
+          type enumeration {
+            enum rx;
+            enum tx;
+          }
+        }
+      }
+    }
+    container port-channel-protocol {
+      container LACP {
+        tailf:cli-add-mode;
+        presence "true";
+        container port-channel {
+          tailf:cli-compact-syntax;
+          leaf channel-number {
+            tailf:cli-drop-node-name;
+            type uint8;
+          }
+          leaf mode {
+            type enumeration {
+              enum active;
+              enum off;
+              enum passive;
+            }
+          }
+        }
+      }
+    }
+    leaf shutdown {
+      type boolean;
+    }
+  }
+
+  container boot {
+    container system {
+      leaf gateway {
+        type inet:ipv4-address;
+      }
+      list stack-unit {
+        tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        key "id";
+        leaf id {
+          type union {
+            type uint8;
+            type enumeration {
+              enum all;
+            }
+          }
+        }
+        container primary {
+          tailf:cli-sequence-commands;
+          tailf:cli-compact-syntax;
+          uses location-grouping;
+        }
+        container secondary {
+          tailf:cli-sequence-commands;
+          tailf:cli-compact-syntax;
+          uses location-grouping;
+        }
+        container default {
+          tailf:cli-sequence-commands;
+          tailf:cli-compact-syntax;
+          uses location-grouping;
+        }
+      }
+    }
+  }
+  container redundancy {
+    container disable-auto-reboot {
+      list stack-unit {
+        tailf:cli-suppress-mode;
+        key "id";
+        leaf id {
+          type union {
+            type uint8;
+            type enumeration {
+              enum members;
+            }
+          }
+        }
+      }
+    }
+    leaf protocol {
+      type enumeration {
+        enum lacp;
+        enum xstp;
+      }
+    }
+    leaf auto-synchronize {
+      type enumeration {
+        enum full;
+      }
+    }
+  }
+  container service {
+    choice timestamps-choice {
+      leaf timestamps {
+        type boolean;
+      }
+      container timestamps-conf {
+        tailf:cli-drop-node-name;
+        container timestamps {
+          container log-conf {
+            tailf:cli-drop-node-name;
+            choice log-choice {
+              leaf log {
+                type boolean;
+              }
+              container log-conf {
+                tailf:cli-drop-node-name;
+                container log {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands {
+                    tailf:cli-reset-siblings;
+                  }
+                  leaf datetime {
+                    type empty;
+                  }
+                  leaf localtime {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                  leaf msec {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                  leaf show-timezone {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                }
+              }
+            }
+          }
+          container debug-conf {
+            tailf:cli-drop-node-name;
+            choice debug-choice {
+              leaf debug {
+                type boolean;
+              }
+              container debug-conf {
+                tailf:cli-drop-node-name;
+                container debug {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands {
+                    tailf:cli-reset-siblings;
+                  }
+                  leaf datetime {
+                    type empty;
+                  }
+                  leaf localtime {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                  leaf msec {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                  leaf show-timezone {
+                    tailf:cli-optional-in-sequence;
+                    type empty;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  container logging {
+    choice buffered-choice {
+      leaf buffered {
+        type boolean;
+      }
+      container buffered-conf {
+        tailf:cli-drop-node-name;
+        container buffered {
+          tailf:cli-compact-syntax;
+          leaf buffer-size {
+            tailf:cli-drop-node-name;
+            type uint32;
+          }
+          leaf severity-level {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum emergencies;
+              enum alerts;
+              enum critical;
+              enum errors;
+              enum warnings;
+              enum notifications;
+              enum informational;
+              enum debugging;
+            }
+          }
+        }
+      }
+    }
+    choice console-choice {
+      leaf console {
+        type boolean;
+      }
+      container console-conf {
+        tailf:cli-drop-node-name;
+        container console {
+          leaf severity-level {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum emergencies;
+              enum alerts;
+              enum critical;
+              enum errors;
+              enum warnings;
+              enum notifications;
+              enum informational;
+              enum debugging;
+            }
+          }
+        }
+      }
+    }
+    list host {
+      tailf:cli-drop-node-name;
+      tailf:cli-suppress-mode;
+      key "address";
+      leaf address {
+        type inet:ip-address;
+      }
+      leaf udp {
+        type uint32;
+      }
+    }
+    leaf monitor {
+      type boolean;
+    }
+    leaf trap {
+      type enumeration {
+        enum notifications;
+        enum alerts;
+        enum critical;
+        enum debugging;
+        enum emergencies;
+        enum errors;
+        enum informational;
+        enum warnings;
+      }
+    }
+    container source-interface {
+      leaf Loopback {
+        type uint32;
+      }
+    }
+    leaf version {
+      type enumeration {
+        enum 0;
+        enum 1;
+      }
+    }
+  }
+  container hardware {
+    leaf watchdog {
+      type empty;
+    }
+  }
+  leaf hostname {
+    type string;
+  }
+  container enable {
+    leaf inverse-mask {
+      type empty;
+    }
+    container optic-info-update {
+      presence "true";
+      leaf interval {
+        type uint16;
+      }
+    }
+    container sha256-password {
+      tailf:cli-compact-syntax;
+      leaf eight {
+        tailf:alt-name "8";
+        type empty;
+      }
+      leaf password {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+    }
+    container password {
+      list level {
+        tailf:cli-suppress-mode;
+        tailf:cli-sequence-commands;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "id";
+        leaf id {
+          type uint8;
+        }
+        uses password-grouping {
+          refine "password";
+        }
+      }
+      container password {
+        tailf:cli-drop-node-name;
+        tailf:cli-sequence-commands;
+        tailf:cli-compact-syntax;
+        uses password-grouping {
+          refine "password";
+        }
+      }
+    }
+    container restricted {
+      tailf:cli-sequence-commands;
+      tailf:cli-compact-syntax;
+      uses password-grouping {
+        refine "password";
+      }
+    }
+    container secret {
+      list level {
+        tailf:cli-suppress-mode;
+        tailf:cli-sequence-commands;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "id";
+        leaf id {
+          type uint8;
+        }
+        uses secret-grouping {
+          refine "password";
+        }
+      }
+      container secret {
+        tailf:cli-drop-node-name;
+        tailf:cli-sequence-commands;
+        tailf:cli-compact-syntax;
+        uses secret-grouping {
+          refine "password";
+        }
+      }
+    }
+  }
+  list username {
+    tailf:cli-suppress-mode;
+    tailf:cli-compact-syntax;
+    tailf:cli-delete-when-empty;
+    key "id";
+    leaf id {
+      type string;
+    }
+    choice user-pass-choice {
+      leaf nopassword {
+        type empty;
+      }
+      container password {
+        tailf:cli-flatten-container;
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands;
+        uses password-grouping {
+          refine "password";
+        }
+      }
+      container secret {
+        tailf:cli-flatten-container;
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands;
+        uses secret-grouping {
+          refine "password";
+        }
+      }
+      container sha256-password {
+        tailf:cli-flatten-container;
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands;
+        uses sha-password-grouping {
+          refine "password";
+        }
+      }
+    }
+    leaf access-class {
+      type string;
+    }
+    leaf privilege {
+      type uint8;
+    }
+    leaf role {
+      type enumeration {
+        enum netadmin;
+        enum netoperator;
+        enum secadmin;
+        enum sysadmin;
+      }
+    }
+  }
+  container bfd {
+    leaf enable {
+      type empty;
+    }
+  }
+  container privilege {
+    container exec {
+      list level {
+        tailf:cli-suppress-mode;
+        key "id keywords";
+        leaf id {
+          type uint8;
+        }
+        leaf keywords {
+          tailf:cli-multi-word-key;
+          type string;
+        }
+      }
+    }
+    container configure {
+      list level {
+        tailf:cli-suppress-mode;
+        key "id keywords";
+        leaf id {
+          type uint8;
+        }
+        leaf keywords {
+          tailf:cli-multi-word-key;
+          type string;
+        }
+      }
+    }
+  }
+  list stack-unit {
+    tailf:cli-suppress-mode;
+    tailf:cli-delete-when-empty;
+    key "id";
+    leaf id {
+      type uint8;
+    }
+    list provision {
+      tailf:cli-suppress-mode;
+      tailf:cli-flatten-container;
+      key "id";
+      leaf id {
+        type string;
+      }
+      leaf mac-address {
+        type yang:mac-address;
+      }
+    }
+    list port {
+      tailf:cli-suppress-mode;
+      tailf:cli-flatten-container;
+      tailf:cli-delete-when-empty;
+      tailf:cli-compact-syntax;
+      key "id";
+      leaf id {
+        type uint8;
+      }
+      leaf portmode {
+        type enumeration {
+          enum quad;
+        }
+      }
+      leaf speed {
+        type enumeration {
+          enum 10G;
+          enum 25G;
+        }
+      }
+    }
+    leaf priority {
+      type uint8;
+    }
+    leaf stack-group {
+      type uint8;
+    }
+  }
+  container default {
+    leaf vlan-id {
+      type uint16;
+    }
+  }
+  container ip {
+    container access-list {
+      list extended {
+        key "id";
+        leaf id {
+          type string;
+        }
+        leaf description {
+          tailf:cli-multi-value;
+          type string;
+        }
+        list seq {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          key "id";
+          leaf id {
+            type uint32;
+          }
+          choice seq-choice {
+            container deny {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              choice deny-choice {
+                leaf proto-number {
+                  tailf:cli-drop-node-name;
+                  type uint8;
+                }
+                leaf icmp {
+                  type empty;
+                }
+                leaf ip {
+                  type empty;
+                }
+                leaf tcp {
+                  type empty;
+                }
+                leaf udp {
+                  type empty;
+                }
+              }
+              container src {
+                tailf:cli-drop-node-name;
+                tailf:cli-compact-syntax;
+                tailf:cli-flatten-container;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-drop-node-name;
+                tailf:cli-compact-syntax;
+                tailf:cli-flatten-container;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              leaf dscp {
+                tailf:cli-optional-in-sequence;
+                type uint8;
+              }
+              leaf fragments {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf count {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf bytes {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf order {
+                type uint8;
+              }
+            }
+            container permit {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              choice deny-choice {
+                leaf proto-number {
+                  tailf:cli-drop-node-name;
+                  type uint8;
+                }
+                leaf icmp {
+                  type empty;
+                }
+                leaf ip {
+                  type empty;
+                }
+                leaf tcp {
+                  type empty;
+                }
+                leaf udp {
+                  type empty;
+                }
+              }
+              container src {
+                tailf:cli-drop-node-name;
+                tailf:cli-compact-syntax;
+                tailf:cli-flatten-container;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-drop-node-name;
+                tailf:cli-compact-syntax;
+                tailf:cli-flatten-container;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              leaf dscp {
+                tailf:cli-optional-in-sequence;
+                type uint8;
+              }
+              leaf fragments {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf count {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf bytes {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf order {
+                type uint8;
+              }
+            }
+          }
+        }
+      }
+      list standard {
+        key "id";
+        leaf id {
+          type string;
+        }
+        leaf description {
+          tailf:cli-multi-value;
+          type string;
+        }
+        list seq {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          key "id";
+          leaf id {
+            type uint32;
+          }
+          choice seq-choice {
+            container deny {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-drop-node-name;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              leaf dscp {
+                tailf:cli-optional-in-sequence;
+                type uint8;
+              }
+              leaf fragments {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf count {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf bytes {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf order {
+                type uint8;
+              }
+            }
+            container permit {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-flatten-container;
+                tailf:cli-drop-node-name;
+                tailf:cli-compact-syntax;
+                tailf:cli-sequence-commands;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                    }
+                    leaf mask {
+                      tailf:cli-drop-node-name;
+                      type inet:ipv4-address;
+                      mandatory true;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv4-address;
+                    }
+                  }
+                }
+              }
+              leaf dscp {
+                tailf:cli-optional-in-sequence;
+                type uint8;
+              }
+              leaf fragments {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf count {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf bytes {
+                tailf:cli-optional-in-sequence;
+                type empty;
+              }
+              leaf order {
+                type uint8;
+              }
+            }
+          }
+        }
+      }
+    }
+    list prefix-list {
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf description {
+        type string;
+      }
+      list seq {
+        tailf:cli-suppress-mode;
+        key "id address";
+        leaf id {
+          type uint32;
+        }
+        leaf deny-permit {
+          tailf:cli-drop-node-name;
+          tailf:cli-prefix-key {
+            tailf:cli-before-key "2";
+          }
+          type enumeration {
+            enum permit;
+            enum deny;
+          }
+        }
+        leaf address {
+          type ipv4-prefix;
+        }
+      }
+    }
+    list route {
+      tailf:cli-suppress-mode;
+      key "address";
+      leaf address {
+        type ipv4-prefix;
+      }
+      leaf router-address {
+        tailf:cli-drop-node-name;
+        type inet:ipv4-address;
+      }
+    }
+    container ssh {
+      leaf authentication-retries {
+        type uint8;
+      }
+      leaf connection-rate-limit {
+        type uint8;
+      }
+      container hostbased-authentication {
+        leaf enable {
+          type empty;
+        }
+      }
+      leaf key-size {
+        type uint16;
+      }
+      container password-authentication {
+        leaf enable {
+          type empty;
+        }
+      }
+      leaf pub-key-file {
+        type string;
+      }
+      leaf rhostsfile {
+        type string;
+      }
+      leaf rsa-authentication {
+        type enumeration {
+          enum enable;
+        }
+      }
+      container server {
+        leaf enable {
+          type empty;
+        }
+        leaf port {
+          type uint16;
+        }
+        leaf version {
+          type uint8;
+        }
+        container cipher {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
+          leaf add-cipher-first {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum 3des-cbc;
+              enum aes128-cbc;
+              enum aes192-cbc;
+              enum aes256-cbc;
+              enum aes128-ctr;
+              enum aes192-ctr;
+              enum aes256-ctr;
+            }
+          }
+          leaf add-cipher-second {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum aes128-cbc;
+              enum aes192-cbc;
+              enum aes256-cbc;
+              enum 3des-cbc;
+              enum aes128-ctr;
+              enum aes192-ctr;
+              enum aes256-ctr;
+            }
+          }
+        }
+        container mac {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
+          leaf add-mac-first {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum hmac-md5;
+              enum hmac-md5-96;
+              enum hmac-sha1;
+              enum hmac-sha1-96;
+              enum hmac-sha2-256;
+              enum hmac-sha2-256-96;
+            }
+          }
+          leaf add-mac-second {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum hmac-md5-96;
+              enum hmac-sha1;
+              enum hmac-sha1-96;
+              enum hmac-sha2-256;
+              enum hmac-sha2-256-96;
+              enum hmac-md5;
+            }
+          }
+        }
+      }
+    }
+    container scp {
+      leaf topdir {
+        type string;
+      }
+    }
+    container dhcp {
+      container snooping {
+        presence "true";
+        list vlan {
+          tailf:cli-suppress-mode;
+          tailf:cli-range-list-syntax;
+          tailf:cli-delete-when-empty;
+          key "id";
+          leaf id {
+            type uint32;
+          }
+        }
+      }
+    }
+  }
+  container interface {
+    list fortyGigE {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping;
+    }
+    list GigabitEthernet {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping;
+    }
+    list TenGigabitEthernet {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping {
+        refine "shutdown";
+        refine "ip/address/address-conf";
+      }
+    }
+    list ManagementEthernet {
+      key "id";
+      leaf id {
+        type string;
+      }
+      leaf description {
+        tailf:cli-multi-value;
+        type string;
+      }
+      container ip {
+        leaf address {
+          type ipv4-prefix;
+        }
+      }
+      leaf shutdown {
+        type boolean;
+      }
+    }
+    list Port-channel {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping;
+      leaf lacp {
+        type enumeration {
+          enum fast-switchover;
+          enum long-timeout;
+        }
+      }
+      container vlt-peer-lag {
+        leaf port-channel {
+          type uint32;
+        }
+      }
+    }
+    list Vlan {
+      key "id";
+      leaf id {
+        type uint16;
+      }
+      leaf description {
+        tailf:cli-multi-value;
+        type string;
+      }
+      container arp {
+        leaf inspection {
+          type empty;
+        }
+        leaf timeout {
+          type uint32;
+        }
+      }
+      container fip-snooping {
+        leaf enable {
+          type empty;
+        }
+        leaf fc-map {
+          type string;
+        }
+      }
+      container icmp6-redirect {
+        leaf enable {
+          type empty;
+        }
+      }
+      container ip {
+        list access-group {
+          tailf:cli-suppress-mode;
+          tailf:cli-sequence-commands {
+            tailf:cli-reset-siblings;
+          }
+          tailf:cli-compact-syntax;
+          key "inout";
+          leaf inout {
+            type enumeration {
+              enum in;
+              enum out;
+            }
+          }
+          choice acl-choice {
+            leaf extended-group {
+              tailf:cli-drop-node-name;
+              tailf:cli-prefix-key;
+              type string;
+            }
+            leaf standard-group {
+              tailf:cli-drop-node-name;
+              tailf:cli-prefix-key;
+              type string;
+            }
+          }
+        }
+        container address {
+          presence "true";
+          container address-conf {
+            tailf:cli-drop-node-name;
+            choice primary-address-choice {
+              leaf primary-address {
+                tailf:cli-drop-node-name;
+                type ipv4-prefix;
+              }
+              container dhcp {
+                presence "true";
+              }
+            }
+            container secondary-address-conf {
+              tailf:cli-drop-node-name;
+              tailf:cli-compact-syntax;
+              leaf secondary-address {
+                tailf:cli-drop-node-name;
+                type ipv4-prefix;
+              }
+              leaf secondary {
+                type empty;
+              }
+            }
+          }
+        }
+        leaf directed-broadcast {
+          type empty;
+        }
+        leaf helper-address {
+          type inet:ipv4-address;
+        }
+        container igmp {
+          leaf access-group {
+            type string;
+          }
+          leaf group-join-limit {
+            type uint32;
+          }
+          leaf immediate-leave {
+            type empty;
+          }
+          leaf last-member-query-interval {
+            type uint16;
+          }
+          leaf querier-timeout {
+            type uint16;
+          }
+          leaf query-interval {
+            type uint16;
+          }
+          leaf query-max-resp-time {
+            type uint8;
+          }
+          container snooping {
+            presence "true";
+            leaf fast-leave {
+              type empty;
+            }
+            leaf last-member-query-interval {
+              type uint16;
+            }
+            leaf querier {
+              type empty;
+            }
+          }
+          leaf static-group {
+            type inet:ipv4-address;
+          }
+          leaf version {
+            type uint8;
+          }
+        }
+        leaf local-proxy-arp {
+          type empty;
+        }
+        leaf poison-reverse {
+          type empty;
+        }
+        leaf proxy-arp {
+          type empty;
+        }
+        leaf split-horizon {
+          type empty;
+        }
+        leaf unreachables {
+          type empty;
+        }
+      }
+      container ipv6 {
+        list access-group {
+          tailf:cli-suppress-mode;
+          tailf:cli-compact-syntax;
+          key "inout";
+          leaf inout {
+            type enumeration {
+              enum in;
+              enum out;
+            }
+          }
+          leaf group {
+            tailf:cli-drop-node-name;
+            tailf:cli-prefix-key;
+            type string;
+          }
+        }
+        leaf address {
+          type ipv6-prefix;
+        }
+      }
+      leaf keepalive {
+        type empty;
+      }
+      leaf mtu {
+        type uint16;
+      }
+      leaf name {
+        tailf:cli-multi-value;
+        type string;
+      }
+      list tagged {
+        tailf:cli-suppress-mode;
+        key "interface range";
+        leaf interface {
+          type string;
+        }
+        leaf range {
+          type string;
+        }
+      }
+      list untagged {
+        tailf:cli-suppress-mode;
+        key "interface range";
+        leaf interface {
+          type string;
+        }
+        leaf range {
+          type string;
+        }
+      }
+      list vrrp-group {
+        key "id";
+        leaf id {
+          type uint32;
+        }
+        list virtual-address {
+          tailf:cli-compact-syntax;
+          tailf:cli-suppress-mode;
+          key "address";
+          leaf address {
+            type inet:ipv4-address;
+          }
+        }
+      }
+      leaf shutdown {
+        type boolean;
+      }
+    }
+    list twentyFiveGigE {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping {
+        refine "shutdown";
+      }
+    }
+    list Loopback {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping;
+    }
+    list hundredGigE {
+      key "id";
+      leaf id {
+        type string;
+      }
+      uses interface-grouping;
+    }
+  }
+  container management {
+    list route {
+      tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
+      key "id";
+      leaf id {
+        type tailf:ip-address-and-prefix-length;
+      }
+      choice dest-choice {
+        leaf forwarding-router-ip {
+          tailf:cli-drop-node-name;
+          type inet:ip-address;
+        }
+        leaf ManagementEthernet {
+          type empty;
+        }
+      }
+    }
+  }
+  container banner {
+    leaf login {
+      type string;
+    }
+  }
+  container service-class {
+    container dynamic {
+      leaf dot1p {
+        type empty;
+      }
+    }
+    list Port-channel {
+      key "port-id";
+      leaf port-id {
+        type uint8;
+      }
+      container ip {
+        leaf address {
+          type inet:ipv4-address;
+        }
+      }
+      leaf shutdown {
+        type empty;
+      }
+    }
+  }
+  container cam-acl {
+    tailf:cli-compact-syntax;
+    tailf:cli-sequence-commands;
+    leaf l2acl {
+      type uint8;
+    }
+    leaf ipv4acl {
+      type uint8;
+    }
+    leaf ipv6acl {
+      type uint8;
+    }
+    leaf ipv4qos {
+      type uint8;
+    }
+    leaf l2qos {
+      type uint8;
+    }
+    leaf l2pt {
+      type uint8;
+    }
+    leaf ipmacacl {
+      type uint8;
+    }
+    choice vman-choice {
+      leaf vman-qos {
+        type uint8;
+      }
+      leaf vman-qos-dual-fp {
+        type uint8;
+      }
+    }
+    leaf ecfmacl {
+      type uint8;
+    }
+    leaf openflow {
+      tailf:cli-break-sequence-commands;
+      type uint8;
+    }
+    leaf fcoeacl {
+      type uint8;
+    }
+    leaf iscsioptacl {
+      type uint8;
+    }
+  }
+  list class-map {
+    key "name";
+    leaf name {
+      type string;
+    }
+    leaf op {
+      tailf:cli-drop-node-name;
+      tailf:cli-prefix-key;
+      type enumeration {
+        enum match-all;
+        enum match-any;
+      }
+    }
+    container match {
+      container ip {
+        container access-group {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands {
+            tailf:cli-reset-siblings;
+          }
+          leaf name {
+            tailf:cli-drop-node-name;
+            type string;
+          }
+          leaf set-ip-dscp {
+            type uint8;
+          }
+        }
+        container dscp {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands {
+            tailf:cli-reset-siblings;
+          }
+          leaf codepoint {
+            tailf:cli-drop-node-name;
+            type uint8;
+          }
+          leaf set-ip-dscp {
+            type uint8;
+          }
+        }
+        container precedence {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands {
+            tailf:cli-reset-siblings;
+          }
+          leaf precedence {
+            tailf:cli-drop-node-name;
+            type uint8;
+          }
+          leaf set-ip-dscp {
+            type uint8;
+          }
+        }
+      }
+      container mac {
+        leaf access-group {
+          type string;
+        }
+        leaf dot1p {
+          type uint8;
+        }
+        leaf vlan {
+          type uint16;
+        }
+      }
+    }
+  }
+  container mac {
+    container access-list {
+      list extended {
+        key "id";
+        leaf id {
+          type string;
+        }
+        leaf description {
+          tailf:cli-multi-value;
+          type string;
+        }
+        list seq {
+          tailf:cli-suppress-mode;
+          key "id";
+          leaf id {
+            type uint16;
+          }
+          choice seq-choice {
+            container deny {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type yang:mac-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv6-address;
+                    }
+                  }
+                }
+              }
+            }
+            container permit {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type yang:mac-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv6-address;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      list standard {
+        key "id";
+        leaf id {
+          type string;
+        }
+        leaf description {
+          tailf:cli-multi-value;
+          type string;
+        }
+        list seq {
+          tailf:cli-suppress-mode;
+          key "id";
+          leaf id {
+            type uint16;
+          }
+          choice seq-choice {
+            container deny {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type yang:mac-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv6-address;
+                    }
+                  }
+                }
+              }
+            }
+            container permit {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-siblings;
+              }
+              container source {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice source-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type yang:mac-address;
+                    }
+                  }
+                }
+              }
+              container dest {
+                tailf:cli-sequence-commands;
+                tailf:cli-flatten-container;
+                tailf:cli-compact-syntax;
+                tailf:cli-drop-node-name;
+                choice dest-choice {
+                  case a {
+                    leaf address {
+                      tailf:cli-drop-node-name;
+                      type yang:mac-address;
+                    }
+                  }
+                  case b {
+                    leaf any {
+                      type empty;
+                    }
+                  }
+                  case c {
+                    leaf host {
+                      type inet:ipv6-address;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  container monitor {
+    list session {
+      key "id";
+      leaf id {
+        type uint16;
+      }
+      leaf description {
+        tailf:cli-multi-value;
+        type string;
+      }
+      container source {
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-siblings;
+        }
+        choice source-interface {
+          leaf FortyGigE {
+            type string;
+          }
+          leaf TenGigabitEthernet {
+            type string;
+          }
+        }
+        container destination {
+          tailf:cli-flatten-container;
+          choice dest-interface {
+            leaf FortyGigE {
+              type string;
+            }
+            leaf TenGigabitEthernet {
+              type string;
+            }
+          }
+        }
+        leaf direction {
+          type enumeration {
+            enum both;
+            enum rx;
+            enum tx;
+          }
+        }
+      }
+    }
+  }
+  container clock {
+    container timezone {
+      tailf:cli-compact-syntax;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      leaf name {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+      leaf hours-offset-from-utc {
+        tailf:cli-drop-node-name;
+        type int8;
+      }
+    }
+    container summer-time {
+      tailf:cli-compact-syntax;
+      leaf name {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+      container recurring-conf {
+        tailf:cli-drop-node-name;
+        tailf:cli-compact-syntax;
+        tailf:cli-flatten-container;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-siblings;
+        }
+        leaf recurring {
+          type empty;
+        }
+        leaf week-to-start {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum 1;
+            enum 2;
+            enum 3;
+            enum 4;
+            enum first;
+            enum last;
+          }
+        }
+        leaf weekday-to-start {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf month-to-start {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf time-to-start {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf week-to-end {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum 1;
+            enum 2;
+            enum 3;
+            enum 4;
+            enum first;
+            enum last;
+          }
+        }
+        leaf weekday-to-end {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf month-to-end {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf time-to-end {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+      }
+    }
+  }
+  container ipv6 {
+    list access-list {
+      key "id";
+      leaf id {
+        type string;
+      }
+      leaf cpu-qos {
+        tailf:cli-hide-in-submode;
+        type empty;
+      }
+      leaf description {
+        tailf:cli-multi-value;
+        type string;
+      }
+      list seq {
+        tailf:cli-suppress-mode;
+        key "id";
+        leaf id {
+          type uint32;
+        }
+        choice seq-choice {
+          container deny {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            choice proto-choice {
+              leaf proto-number {
+                tailf:cli-drop-node-name;
+                type uint8;
+              }
+              leaf icmp {
+                type empty;
+              }
+              leaf ipv6 {
+                type empty;
+              }
+              leaf tcp {
+                type empty;
+              }
+              leaf udp {
+                type empty;
+              }
+            }
+            container source {
+              tailf:cli-sequence-commands;
+              tailf:cli-flatten-container;
+              tailf:cli-compact-syntax;
+              tailf:cli-drop-node-name;
+              choice source-choice {
+                case a {
+                  leaf address {
+                    tailf:cli-drop-node-name;
+                    type ipv6-prefix;
+                  }
+                }
+                case b {
+                  leaf any {
+                    type empty;
+                  }
+                }
+                case c {
+                  leaf host {
+                    type inet:ipv6-address;
+                  }
+                }
+              }
+            }
+            container dest {
+              tailf:cli-sequence-commands;
+              tailf:cli-flatten-container;
+              tailf:cli-compact-syntax;
+              tailf:cli-drop-node-name;
+              choice dest-choice {
+                case a {
+                  leaf address {
+                    tailf:cli-drop-node-name;
+                    type ipv6-prefix;
+                  }
+                }
+                case b {
+                  leaf any {
+                    type empty;
+                  }
+                }
+                case c {
+                  leaf host {
+                    type inet:ipv6-address;
+                  }
+                }
+              }
+            }
+            leaf count {
+              type empty;
+            }
+            leaf bytes {
+              type empty;
+            }
+          }
+          container permit {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            choice proto-choice {
+              leaf proto-number {
+                tailf:cli-drop-node-name;
+                type uint8;
+              }
+              leaf icmp {
+                type empty;
+              }
+              leaf ipv6 {
+                type empty;
+              }
+              leaf tcp {
+                type empty;
+              }
+              leaf udp {
+                type empty;
+              }
+            }
+            container source {
+              tailf:cli-sequence-commands;
+              tailf:cli-flatten-container;
+              tailf:cli-compact-syntax;
+              choice source-choice {
+                case a {
+                  leaf address {
+                    tailf:cli-drop-node-name;
+                    type ipv6-prefix;
+                  }
+                }
+                case b {
+                  leaf any {
+                    type empty;
+                  }
+                }
+                case c {
+                  leaf host {
+                    type inet:ipv6-address;
+                  }
+                }
+              }
+            }
+            container dest {
+              tailf:cli-sequence-commands;
+              tailf:cli-flatten-container;
+              tailf:cli-compact-syntax;
+              choice dest-choice {
+                case a {
+                  leaf address {
+                    tailf:cli-drop-node-name;
+                    type ipv6-prefix;
+                  }
+                }
+                case b {
+                  leaf any {
+                    type empty;
+                  }
+                }
+                case c {
+                  leaf host {
+                    type inet:ipv6-address;
+                  }
+                }
+              }
+            }
+            leaf count {
+              type empty;
+            }
+            leaf bytes {
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+  container ntp {
+    list server {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      tailf:cli-delete-when-empty;
+      key "id";
+      leaf id {
+        type string;
+      }
+      leaf key {
+        type uint32;
+      }
+      leaf prefer {
+        type empty;
+      }
+      leaf version {
+        type uint8;
+      }
+    }
+    leaf authenticate {
+      type empty;
+    }
+    list authentication-key {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      tailf:cli-delete-when-empty;
+      key "number";
+      leaf number {
+        type uint32;
+      }
+      leaf md5 {
+        type empty;
+      }
+      uses password-grouping {
+        refine "password";
+      }
+    }
+    list trusted-key {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "number";
+      leaf number {
+        type uint32;
+      }
+    }
+    container source {
+      choice interface {
+        leaf FortyGigE {
+          type string;
+        }
+        leaf TenGigabitEthernet {
+          type string;
+        }
+        leaf Vlan {
+          type uint16;
+        }
+      }
+    }
+  }
+  list policy-map-input {
+    key "id";
+    leaf id {
+      type string;
+    }
+    leaf description {
+      tailf:cli-multi-value;
+      type string;
+    }
+    list service-queue {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "id";
+      leaf id {
+        type uint8;
+      }
+      leaf class-map {
+        type string;
+      }
+      leaf qos-policy {
+        type string;
+      }
+    }
+    container trust {
+      container diffserv {
+        presence "true";
+        leaf fallback {
+          type empty;
+        }
+      }
+      container dot1p {
+        presence "true";
+        leaf fallback {
+          type empty;
+        }
+      }
+    }
+  }
+  list policy-map-output {
+    key "id";
+    leaf id {
+      type string;
+    }
+    leaf description {
+      tailf:cli-multi-value;
+      type string;
+    }
+    leaf policy-aggregate {
+      type string;
+    }
+    list service-queue {
+      key "id";
+      leaf id {
+        type uint8;
+      }
+      leaf qos-policy {
+        type string;
+      }
+    }
+  }
+  container reload-type {
+    tailf:cli-add-mode;
+    leaf boot-type {
+      type enumeration {
+        enum bmp-reload;
+        enum normal-reload;
+      }
+    }
+    leaf config-scr-download {
+      type enumeration {
+        enum enable;
+        enum disable;
+      }
+    }
+    leaf auto-save {
+      type enumeration {
+        enum enable;
+        enum disable;
+      }
+    }
+  }
+  container reload-type-no-mode {
+    tailf:cli-drop-node-name;
+    container reload-type {
+      tailf:cli-compact-syntax;
+      choice normal-bmp {
+        leaf normal-reload {
+          type empty;
+        }
+        container bmp {
+          tailf:cli-compact-syntax;
+          leaf config-scr-download {
+            type enumeration {
+              enum enable;
+              enum disable;
+            }
+          }
+          leaf auto-save {
+            type enumeration {
+              enum enable;
+              enum disable;
+            }
+          }
+        }
+      }
+    }
+  }
+  leaf wred-profile {
+    type string;
+  }
+  container line {
+    list console {
+      key "number";
+      leaf number {
+        type uint8;
+      }
+      container exec-timeout {
+        tailf:cli-compact-syntax;
+        leaf timeout-min {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+        leaf timeout-sec {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+      }
+      container logging {
+        container synchronous {
+          tailf:cli-compact-syntax;
+          leaf level {
+            type uint8;
+          }
+          leaf limit {
+            type uint8;
+          }
+        }
+      }
+      leaf access-class {
+        type string;
+      }
+    }
+    list vty {
+      key "id";
+      leaf id {
+        type uint8;
+      }
+      container exec-timeout {
+        tailf:cli-compact-syntax;
+        leaf timeout-min {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+        leaf timeout-sec {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+      }
+      container logging {
+        container synchronous {
+          tailf:cli-compact-syntax;
+          leaf level {
+            type uint8;
+          }
+          leaf limit {
+            type uint8;
+          }
+        }
+      }
+      leaf access-class {
+        type string;
+      }
+    }
+  }
+  container protocol {
+    leaf frrp {
+      type uint8;
+    }
+    leaf gvrp {
+      type empty;
+    }
+    container lldp {
+      presence "true";
+      tailf:cli-add-mode;
+      leaf hello {
+        type int8;
+      }
+      container advertise {
+        container management-tlv {
+          leaf management-address {
+            type empty;
+          }
+          leaf system-name {
+            type empty;
+          }
+          leaf system-capabilities {
+            type empty;
+          }
+          leaf system-description {
+            type empty;
+          }
+        }
+        leaf interface-port-desc {
+          type empty;
+        }
+      }
+      leaf mode {
+        type enumeration {
+          enum rx;
+          enum tx;
+        }
+      }
+    }
+    list spanning-tree {
+      key "type";
+      leaf type {
+        type enumeration {
+          enum 0;
+          enum mstp;
+          enum pvst;
+          enum rstp;
+        }
+      }
+      leaf disable {
+        type boolean;
+      }
+      list vlan {
+        tailf:cli-suppress-mode;
+        tailf:cli-range-list-syntax;
+        tailf:cli-delete-when-empty;
+        key "id";
+        leaf id {
+          type uint32;
+        }
+        leaf bridge-priority {
+          type uint32;
+        }
+      }
+      leaf bridge-priority {
+        type uint32;
+      }
+    }
+  }
+  container snmp-server {
+    container engineID {
+      list remote {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "ip-address udp-port";
+        leaf ip-address {
+          type inet:ipv4-address;
+        }
+        leaf udp-port {
+          type uint32;
+        }
+        leaf octet {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+      }
+      leaf local {
+        type string;
+      }
+    }
+    list community {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      tailf:cli-delete-when-empty;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf read-write {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum ro;
+          enum rw;
+        }
+      }
+      leaf security-name {
+        type string;
+      }
+      leaf acl-name {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+    }
+    leaf contact {
+      tailf:cli-multi-value;
+      type string;
+    }
+    container enable {
+      container traps {
+        leaf bgp {
+          type empty;
+        }
+        container snmp {
+          tailf:cli-compact-syntax;
+          leaf authentication {
+            type empty;
+          }
+          leaf coldstart {
+            type empty;
+          }
+          leaf linkdown {
+            type empty;
+          }
+          leaf linkup {
+            type empty;
+          }
+        }
+        leaf vrrp {
+          type empty;
+        }
+        leaf lacp {
+          type empty;
+        }
+        leaf entity {
+          type empty;
+        }
+        leaf stack {
+          type empty;
+        }
+        leaf stp {
+          type empty;
+        }
+        leaf ecfm {
+          type empty;
+        }
+        leaf vlt {
+          type empty;
+        }
+        leaf fips {
+          type empty;
+        }
+        leaf ets {
+          type empty;
+        }
+        leaf xstp {
+          type empty;
+        }
+        leaf isis {
+          type empty;
+        }
+        leaf config {
+          type empty;
+        }
+        leaf pfc {
+          type empty;
+        }
+        container envmon {
+          container cam-utilization {
+            leaf temperature {
+              type empty;
+            }
+          }
+        }
+        leaf ecmp {
+          type empty;
+        }
+      }
+    }
+    list group {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      tailf:cli-delete-when-empty;
+      key "name security-model";
+      leaf name {
+        type string;
+      }
+      leaf security-model {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum 1;
+          enum 2c;
+          enum 3;
+        }
+      }
+      leaf access {
+        type string;
+      }
+      leaf notify {
+        type string;
+      }
+      list context {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf access {
+          type string;
+        }
+        leaf notify {
+          type string;
+        }
+      }
+      list security-level {
+        tailf:cli-drop-node-name;
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        key "type";
+        leaf type {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum auth;
+            enum noauth;
+            enum priv;
+          }
+        }
+        leaf access {
+          type string;
+        }
+        leaf notify {
+          type string;
+        }
+        list context {
+          tailf:cli-suppress-mode;
+          tailf:cli-compact-syntax;
+          key "name";
+          leaf name {
+            type string;
+          }
+          leaf access {
+            type string;
+          }
+          leaf notify {
+            type string;
+          }
+        }
+      }
+    }
+    list host {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      tailf:cli-delete-when-empty;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      key "name snmp-name udp-port";
+      leaf name {
+        type inet:ipv4-address;
+      }
+      leaf message {
+        tailf:cli-drop-node-name;
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type enumeration {
+          enum informs;
+          enum traps;
+        }
+      }
+      leaf version {
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type enumeration {
+          enum 1;
+          enum 2c;
+          enum 3;
+        }
+      }
+      leaf security-level {
+        tailf:cli-drop-node-name;
+        tailf:cli-optional-in-sequence;
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type enumeration {
+          enum auth;
+          enum noauth;
+          enum priv;
+        }
+      }
+      leaf snmp-name {
+        type string;
+      }
+      leaf udp-port {
+        type uint32;
+      }
+    }
+    leaf location {
+      tailf:cli-multi-value;
+      type string;
+    }
+    list user {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "user-name security-model";
+      leaf user-name {
+        type string;
+      }
+      leaf security-model {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum 1;
+          enum 2c;
+          enum 3;
+        }
+      }
+      leaf group-name {
+        tailf:cli-drop-node-name;
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type string;
+      }
+      leaf remote {
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type inet:ipv4-address;
+      }
+      leaf udp-port {
+        tailf:cli-prefix-key {
+          tailf:cli-before-key "2";
+        }
+        type uint32;
+      }
+      leaf encrypted {
+        type empty;
+      }
+      leaf auth {
+        type enumeration {
+          enum sha;
+          enum md5;
+        }
+      }
+      leaf auth-password {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+      leaf priv {
+        type enumeration {
+          enum aes128;
+          enum des56;
+        }
+      }
+      leaf privacy-password {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+      leaf access {
+        type string;
+      }
+      leaf ipv6 {
+        type string;
+      }
+    }
+    list view {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "name oid-subTree";
+      leaf name {
+        type string;
+      }
+      leaf oid-subTree {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+      leaf mib {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum excluded;
+          enum included;
+        }
+      }
+    }
+    container trap-source {
+      choice interface {
+        leaf FortyGigE {
+          type string;
+        }
+        leaf TenGigabitEthernet {
+          type string;
+        }
+        leaf Vlan {
+          type uint16;
+        }
+      }
+    }
+  }
+  container mac-address-table {
+    container station-move {
+      leaf refresh-arp {
+        type empty;
+      }
+    }
+  }
+  container tacacs-server {
+    list host {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "name";
+      leaf name {
+        type inet:ipv4-address;
+      }
+      leaf key {
+        type enumeration {
+          enum 0;
+          enum 7;
+        }
+      }
+      leaf user-key {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+    }
+    container key {
+      tailf:cli-compact-syntax;
+      leaf key-value {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum 0;
+          enum 7;
+        }
+      }
+      leaf key-name {
+        tailf:cli-drop-node-name;
+        type string;
+      }
+    }
+  }
+  container aaa {
+    container authentication {
+      list enable {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf enable {
+          type empty;
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+      }
+      list login {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+        leaf local {
+          type empty;
+        }
+      }
+    }
+    container authorization {
+      list exec {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+        leaf local {
+          type empty;
+        }
+        leaf radius {
+          type empty;
+        }
+        leaf none {
+          type empty;
+        }
+      }
+      list commands {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "level name";
+        leaf level {
+          type int8;
+        }
+        leaf name {
+          tailf:cli-drop-node-name;
+          type string;
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+        leaf local {
+          type empty;
+        }
+        leaf none {
+          type empty;
+        }
+      }
+    }
+    container accounting {
+      list exec {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf start-stop {
+          type empty;
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+      }
+      list commands {
+        tailf:cli-suppress-mode;
+        tailf:cli-compact-syntax;
+        tailf:cli-delete-when-empty;
+        key "level name";
+        leaf level {
+          type int8;
+        }
+        leaf name {
+          type string;
+        }
+        leaf record {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum start-stop;
+            enum stop-only;
+          }
+        }
+        leaf tacacs-plus {
+          tailf:alt-name "tacacs+";
+          type empty;
+        }
+      }
+    }
+  }
+  container dcb {
+    leaf enable {
+      type boolean;
+    }
+  }
+  list dcb-map {
+    key "name";
+    leaf name {
+      type string;
+    }
+    container pfc {
+      container mode {
+        leaf on {
+          type boolean;
+        }
+      }
+    }
+  }
+  list uplink-state-group {
+    key "number";
+    leaf number {
+      type uint8;
+    }
+    container downstream {
+      list TenGigabitEthernet {
+        tailf:cli-suppress-mode;
+        key "slot";
+        leaf slot {
+          type string;
+        }
+      }
+      list twentyFiveGigE {
+        tailf:cli-suppress-mode;
+        key "slot";
+        leaf slot {
+          type string;
+        }
+      }
+    }
+    container upstream {
+      list Port-channel {
+        tailf:cli-suppress-mode;
+        key "port-id";
+        leaf port-id {
+          type uint32;
+        }
+      }
+      list hundredGigE {
+        tailf:cli-suppress-mode;
+        key "slot";
+        leaf slot {
+          type string;
+        }
+      }
+    }
+    leaf description {
+      type string;
+    }
+  }
+  container vlt {
+    list domain {
+      key "id";
+      leaf id {
+        type uint32;
+      }
+      container peer-link {
+        leaf port-channel {
+          type uint32;
+        }
+      }
+      container back-up {
+        leaf destination {
+          type inet:ipv4-address;
+        }
+      }
+      leaf primary-priority {
+        type uint32;
+      }
+      container system-mac {
+        leaf mac-address {
+          type string;
+        }
+      }
+      leaf unit-id {
+        type int8;
+      }
+      leaf peer-routing {
+        type empty;
+      }
+    }
+  }
+  list route-map {
+    tailf:cli-compact-syntax;
+    key "name";
+    leaf name {
+      type string;
+    }
+    leaf deny-permit {
+      tailf:cli-drop-node-name;
+      tailf:cli-hide-in-submode;
+      type enumeration {
+        enum deny;
+        enum permit;
+      }
+    }
+    leaf sequence {
+      tailf:cli-drop-node-name;
+      tailf:cli-hide-in-submode;
+      type uint32;
+    }
+    container match {
+      container ip {
+        list address {
+          tailf:cli-suppress-mode;
+          key "name";
+          leaf name {
+            type string;
+          }
+        }
+      }
+    }
+  }
+  container router {
+    list ospf {
+      key "id";
+      leaf id {
+        type uint32;
+      }
+      leaf log-adjacency-changes {
+        type empty;
+      }
+      list network {
+        tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        key "number";
+        leaf number {
+          type ipv4-prefix;
+        }
+        leaf area {
+          type uint32;
+        }
+      }
+      leaf maximum-paths {
+        type uint32;
+      }
+      container default-information {
+        leaf originate {
+          type empty;
+        }
+      }
+      container bfd {
+        tailf:cli-compact-syntax;
+        leaf all-neighbors {
+          type empty;
+        }
+        leaf interval {
+          type uint16;
+        }
+        leaf min_rx {
+          type uint16;
+        }
+        leaf multiplier {
+          type uint16;
+        }
+        leaf role {
+          type enumeration {
+            enum active;
+            enum passive;
+          }
+        }
+      }
+      container redistribute {
+        tailf:cli-compact-syntax;
+        container static {
+          leaf route-map {
+            type string;
+          }
+        }
+        container connected {
+          leaf route-map {
+            type string;
+          }
+        }
+      }
+    }
+  }
+  list ecmp-group {
+    key "id";
+    leaf id {
+      type uint32;
+    }
+    container interface {
+      list hundredGigE {
+        tailf:cli-suppress-mode;
+        key "slot";
+        leaf slot {
+          type string;
+        }
+      }
+    }
+    container link-bundle-monitor {
+      leaf enable {
+        type empty;
+      }
+    }
+  }
+  container load-balance {
+    container mac {
+      leaf source-dest-mac {
+        type empty;
+      }
+      leaf dest-mac {
+        type empty;
+      }
+      leaf ethertype {
+        type empty;
+      }
+      leaf source-mac {
+        type empty;
+      }
+    }
+  }
+}

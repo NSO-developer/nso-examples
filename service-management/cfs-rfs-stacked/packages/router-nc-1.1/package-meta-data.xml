@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!-- This file has been generated. Do NOT edit it.
+     For changes edit the original instead.
+-->
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>router-nc-1.1</name>
+  <package-version>1.1</package-version>
+  <description>Generated netconf package</description>
+  <ncs-min-version>5.7</ncs-min-version>
+  <component>
+    <name>router</name>
+    <ned>
+      <netconf>
+        <ned-id xmlns:id="http://tail-f.com/ns/ned-id/router-nc-1.1">id:router-nc-1.1</ned-id>
+      </netconf>
+      <device>
+        <vendor>Acme</vendor>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

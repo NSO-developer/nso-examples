@@ -32,7 +32,8 @@ YANGPATH += $(NCS_DIR)/src/ncs/yang
 NCSCPATH   = $(YANGPATH:%=--yangpath %)
 
 .NOTPARALLEL: fxs
-fxs: $(DIRS) ../package-meta-data.xml $(FXS) ncscj
+$(FXS): | $(DIRS)
+fxs: ../package-meta-data.xml $(FXS) ncscj
 .PHONY: fxs
 
 $(DIRS):

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- This file has been generated. Do NOT edit it.
+     For changes edit the original instead.
+-->
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>router-gen-1.0</name>
+  <package-version>1.0</package-version>
+  <display-name>Tail-f Router</display-name>
+  <description>
+    Model driven generic NED for J style CLI using SSHClient API
+  </description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <component>
+    <name>router-gen</name>
+    <ned>
+      <generic>
+        <ned-id xmlns:id="http://tail-f.com/ns/ned-id/router-gen-1.0">id:router-gen-1.0</ned-id>
+        <management-protocol>J Style CLI</management-protocol>
+        <java-class-name>
+          com.tailf.packages.ned.netsimgen.NetsimGen
+        </java-class-name>
+      </generic>
+      <device>
+        <vendor>Tail-f</vendor>
+        <product-family>Tail-f generic router 1.0</product-family>
+        <operating-system>Generic</operating-system>
+      </device>
+    </ned>
+  </component>
+</ncs-package>
