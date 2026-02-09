@@ -1,0 +1,87 @@
+module netsim-ned-cisco-asa-stats {
+  namespace "http://cisco.com/ned/asa-stats";
+  prefix asa-stats;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  container version {
+    config false;
+    presence "true";
+    leaf name {
+      type string;
+    }
+    leaf version {
+      type string;
+    }
+    leaf model {
+      type string;
+    }
+    leaf serial-number {
+      type string;
+    }
+    tailf:alt-name "version-stats";
+  }
+  container vpn-sessiondb {
+    config false;
+    list anyconnect {
+      key "username index";
+      leaf username {
+        type string;
+      }
+      leaf index {
+        type uint32;
+      }
+      leaf login-time {
+        type string;
+      }
+      leaf duration {
+        type string;
+      }
+      leaf inactivity {
+        type string;
+      }
+      leaf tx-bytes {
+        type uint64;
+      }
+      leaf rx-bytes {
+        type uint64;
+      }
+      leaf status {
+        type enumeration {
+          enum active;
+          enum inactive;
+        }
+      }
+    }
+    tailf:alt-name "vpn-sessiondb-stats";
+  }
+  container ssl {
+    config false;
+    leaf post-decrypt-octets {
+      type uint64;
+    }
+    leaf post-encrypt-octets {
+      type uint64;
+    }
+    tailf:alt-name "ssl-stats";
+  }
+  list inventory {
+    config false;
+    key "name";
+    leaf name {
+      type string;
+    }
+    leaf descr {
+      type string;
+    }
+    leaf sn {
+      type string;
+    }
+    tailf:alt-name "inventory-stats";
+  }
+  container exec {
+    tailf:alt-name "exec-stats";
+  }
+}

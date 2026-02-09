@@ -1,0 +1,13 @@
+module cisco-asa-netsim-cli-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/cisco-asa-netsim-cli-1.0";
+  prefix cisco-asa-netsim-cli-1.0;
+
+  import cisco-asa-netsim-cli {
+    prefix family;
+  }
+
+  identity cisco-asa-netsim-cli-1.0 {
+    base family:cisco-asa-netsim-cli;
+  }
+}

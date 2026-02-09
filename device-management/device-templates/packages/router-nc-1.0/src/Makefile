@@ -38,10 +38,10 @@ $(DIRS):
 	fi
 	chmod -w $@
 
-fxs: $(DIRS) ../package-meta-data.xml ncsc-out/.done
+fxs: ncsc-out/.done
 .PHONY: fxs
 
-ncsc-out/.done: $(SRC) $(DIRS)
+ncsc-out/.done: $(SRC) ../package-meta-data.xml | $(DIRS)
 	$(NCSC) --ncs-compile-bundle yang    \
 	        --ncs-device-dir ncsc-out    \
 	        --ncs-device-type netconf    \

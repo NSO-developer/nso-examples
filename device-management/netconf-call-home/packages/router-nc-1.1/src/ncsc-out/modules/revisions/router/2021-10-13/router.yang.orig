@@ -1,0 +1,88 @@
+module router {
+  yang-version 1.1;
+  namespace "http://example.com/router";
+  prefix r;
+
+  include router-types;
+  include router-interfaces;
+  include router-syslog;
+  include router-dns;
+  include router-ntp;
+  include router-routes;
+
+  organization "tail-f";
+  description
+     "An example module describing some common components typically found
+      on routers
+
+       interfaces - configuration and status of network interfaces
+       routes     - configuration of static routes
+       syslog     - configuration of logging to remote syslog servers
+       dns        - configuration of the DNS resolver
+       ntp        - configuration and status of the NTP daemon
+
+     This module is the main YANG module, and each component has its
+     own YANG submodule.";
+
+  revision 2021-10-13 {
+    description
+      "YANG 1.1 compatible." +
+      "Added a link-status notification and an admin-state.";
+  }
+  revision 2008-11-04 {
+    description
+      "draft-ietf-netmod-yang-02 compatible.";
+  }
+  revision 2007-08-29 {
+    description
+      "Syntax fixes after pyang validation.";
+  }
+  revision 2007-06-08 {
+    description
+      "Initial revision.";
+  }
+
+  typedef admin-state {
+    type enumeration {
+      enum locked;
+      enum unlocked;
+    }
+    default unlocked;
+  }
+
+  container sys {
+    container interfaces {
+      uses interfaces;
+    }
+    container routes {
+      uses routes;
+    }
+    container syslog {
+      uses syslog;
+    }
+    container ntp {
+      uses ntp;
+    }
+    container dns {
+      uses dns;
+    }
+    container state {
+      config false;
+      leaf admin-state {
+        type admin-state;
+      }
+    }
+  }
+  notification link-status {
+    leaf name {
+      type string;
+    }
+    leaf status {
+      type enumeration {
+        enum up;
+        enum down;
+      }
+      mandatory true;
+    }
+  }
+}
