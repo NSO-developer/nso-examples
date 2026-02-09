@@ -1,0 +1,19 @@
+   <sys xmlns="http://example.com/router">
+      <interfaces>
+        <interface>
+          <name>eth0</name>
+          <status>
+            <link>up</link>
+            <speed>ten</speed>
+            <duplex>full</duplex>
+            <mtu>2048</mtu>
+            <receive>
+              <bytes>12345</bytes>
+              <packets>99</packets>
+              <errors>0</errors>
+              <dropped>2</dropped>
+            </receive>
+          </status>
+        </interface>
+      </interfaces>
+   </sys>

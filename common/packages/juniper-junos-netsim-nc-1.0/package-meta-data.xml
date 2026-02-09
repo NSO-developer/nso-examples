@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- This file has been generated. Do NOT edit it.
+     For changes edit the original instead.
+-->
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>juniper-junos-netsim-nc-1.0</name>
+  <package-version>1.0</package-version>
+  <description>Juniper Junos netsim NETCONF NEDe</description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <component>
+    <name>netsim-netconf</name>
+    <ned>
+      <netconf>
+        <ned-id xmlns:id="http://tail-f.com/ns/ned-id/juniper-junos-netsim-nc-1.0">id:juniper-junos-netsim-nc-1.0</ned-id>
+      </netconf>
+      <device>
+        <vendor>Tail-f</vendor>
+        <product-family>Tail-f netsim NETCONF 1.0</product-family>
+        <operating-system>netsim</operating-system>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

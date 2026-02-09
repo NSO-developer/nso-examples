@@ -1,0 +1,13 @@
+module router-cli-1.0 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/router-cli-1.0";
+  prefix router-cli-1.0;
+
+  import router-cli {
+    prefix family;
+  }
+
+  identity router-cli-1.0 {
+    base family:router-cli;
+  }
+}

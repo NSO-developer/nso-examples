@@ -1,0 +1,19 @@
+module router-gen {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/router-gen";
+  prefix router-gen;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  identity router-gen {
+    tailf:abstract;
+    base ned:generic-ned-id;
+    base ned:netconf-ned-id;
+  }
+}

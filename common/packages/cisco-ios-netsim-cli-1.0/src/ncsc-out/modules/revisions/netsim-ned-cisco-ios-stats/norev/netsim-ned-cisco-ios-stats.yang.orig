@@ -1,0 +1,728 @@
+module netsim-ned-cisco-ios-stats {
+  namespace "urn:ios-stats";
+  prefix ios-stats;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import ietf-interfaces {
+    prefix ietf-interfaces;
+  }
+  import ietf-ip {
+    prefix ietf-ip;
+  }
+
+  typedef ipv4-prefix {
+    type string;
+  }
+
+  typedef ipv6-prefix {
+    type string;
+  }
+
+  container access-tunnel {
+    config false;
+    list summary {
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf source-ip {
+        type string;
+      }
+      leaf source-port {
+        type string;
+      }
+      leaf destination-ip {
+        type string;
+      }
+      leaf destination-port {
+        type string;
+      }
+      leaf vrf-id {
+        type string;
+      }
+    }
+    list detail {
+      key "ifId";
+      leaf name {
+        type string;
+      }
+      leaf ifId {
+        type string;
+      }
+      leaf up-time {
+        type string;
+      }
+    }
+    tailf:alt-name "access-tunnel-stats";
+  }
+  container arp {
+    config false;
+    uses arp-grouping {
+      refine "address";
+    }
+    list vrf {
+      key "name";
+      leaf name {
+        type string;
+      }
+      uses arp-grouping {
+        refine "address";
+      }
+    }
+    tailf:alt-name "arp-stats";
+  }
+
+  grouping arp-grouping {
+    list address {
+      key "ip";
+      leaf ip {
+        type string;
+      }
+      leaf protocol {
+        type string;
+      }
+      leaf age-mins {
+        type uint32;
+      }
+      leaf hardware-addr {
+        type string;
+      }
+      leaf type {
+        type string;
+      }
+      leaf interface {
+        type string;
+      }
+    }
+  }
+
+  container bgp {
+    config false;
+    container ipv4 {
+      container unicast {
+        list neighbors {
+          key "id";
+          leaf id {
+            type string;
+          }
+          uses bgp-neighbor-content-grouping;
+        }
+      }
+    }
+    container vpnv4 {
+      container unicast {
+        list neighbors {
+          key "id";
+          leaf id {
+            type string;
+          }
+          uses bgp-neighbor-content-grouping;
+        }
+        container all {
+          list neighbors {
+            key "id vrf";
+            leaf id {
+              type string;
+            }
+            leaf vrf {
+              type string;
+            }
+            uses bgp-neighbor-content-grouping;
+          }
+        }
+        list vrf {
+          key "name";
+          leaf name {
+            type string;
+          }
+          list neighbors {
+            key "id";
+            leaf id {
+              type string;
+            }
+            uses bgp-neighbor-content-grouping;
+          }
+        }
+      }
+    }
+    tailf:alt-name "bgp-stats";
+  }
+
+  grouping bgp-neighbor-content-grouping {
+    leaf remote-as {
+      type string;
+    }
+    leaf link {
+      type enumeration {
+        enum internal;
+        enum external;
+      }
+    }
+    leaf peer-group {
+      type string;
+    }
+    leaf admin-state {
+      type string;
+    }
+    leaf bgp-state {
+      type string;
+    }
+    leaf bgp-state-uptime {
+      type string;
+    }
+    leaf last-reset {
+      type string;
+    }
+    list address-family {
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf prefixes-current-sent {
+        type uint32;
+      }
+      leaf prefixes-current-rcvd {
+        type uint32;
+      }
+    }
+  }
+
+  container cdp {
+    config false;
+    list neighbors {
+      key "local-interface";
+      leaf local-interface {
+        type string;
+      }
+      leaf device-id {
+        type string;
+      }
+      leaf hold-time {
+        type string;
+      }
+      leaf capability {
+        type string;
+      }
+      leaf platform {
+        type string;
+      }
+      leaf port-id {
+        type string;
+      }
+    }
+    tailf:alt-name "cdp-stats";
+  }
+  container crypto {
+    config false;
+    container session {
+      list interface {
+        key "name";
+        leaf name {
+          type string;
+        }
+        container data {
+          tailf:cli-drop-node-name;
+          presence "true";
+          leaf status {
+            type string;
+          }
+          container peer {
+            leaf address {
+              type string;
+            }
+            leaf port {
+              type uint16;
+            }
+            leaf fvrf {
+              type string;
+            }
+            leaf ivrf {
+              type string;
+            }
+          }
+          container ipsec-flow {
+            leaf active-sa {
+              type uint32;
+            }
+            leaf origin {
+              type string;
+            }
+            leaf inbound-decrp-pkts {
+              type uint32;
+            }
+            leaf outbound-encrp-pkts {
+              type uint32;
+            }
+          }
+        }
+      }
+    }
+    tailf:alt-name "crypto-stats";
+  }
+  list device-tracking-database {
+    config false;
+    key "network-layer-address";
+    leaf network-layer-address {
+      type string;
+    }
+    leaf code {
+      type string;
+    }
+    leaf link-layer-address {
+      type string;
+    }
+    leaf interface {
+      type string;
+    }
+    leaf vlan {
+      type uint16;
+    }
+    leaf prlvl {
+      type string;
+    }
+    leaf age {
+      type string;
+    }
+    leaf state {
+      type string;
+    }
+    leaf time-left-secs {
+      type uint32;
+    }
+    leaf try {
+      type uint32;
+    }
+    tailf:alt-name "device-tracking-database-stats";
+  }
+  list interfaces {
+    config false;
+    key "type name";
+    leaf type {
+      type string;
+    }
+    leaf name {
+      type string;
+    }
+    leaf admin-status {
+      type enumeration {
+        enum up {
+          value 1;
+        }
+        enum down {
+          value 2;
+        }
+      }
+    }
+    leaf ip-address {
+      type union {
+        type ipv4-prefix;
+        type ipv6-prefix;
+      }
+    }
+    leaf mac-address {
+      type string;
+    }
+    tailf:alt-name "interfaces-stats";
+  }
+  list inventory {
+    config false;
+    key "name";
+    leaf name {
+      type string;
+    }
+    leaf descr {
+      type string;
+    }
+    leaf sn {
+      type string;
+    }
+    leaf pid {
+      type string;
+    }
+    leaf vid {
+      type string;
+    }
+    tailf:alt-name "inventory-stats";
+  }
+  container ip {
+    config false;
+    container dhcp {
+      container snooping {
+        list binding {
+          key "mac-address";
+          leaf mac-address {
+            type string;
+          }
+          leaf ip-address {
+            type string;
+          }
+          leaf lease {
+            type int16;
+          }
+          leaf type {
+            type string;
+          }
+          leaf vlan {
+            type int16;
+          }
+          leaf interface {
+            type string;
+          }
+        }
+      }
+    }
+    container pim {
+      container tunnel {
+        list Tunnel {
+          key "id";
+          leaf id {
+            type int32;
+          }
+          leaf type {
+            type string;
+          }
+          leaf rp {
+            type string;
+          }
+          leaf source {
+            type string;
+          }
+          leaf state {
+            type string;
+          }
+          leaf last-event {
+            type string;
+          }
+          leaf vrf {
+            type string;
+          }
+        }
+      }
+      list vrf {
+        key "name";
+        leaf name {
+          type string;
+        }
+        list neighbor {
+          key "address";
+          leaf address {
+            type string;
+          }
+          leaf interface {
+            type string;
+          }
+          leaf time {
+            type string;
+          }
+          leaf version {
+            type string;
+          }
+          leaf dr {
+            type string;
+          }
+        }
+      }
+    }
+    container mroute {
+      list vrf {
+        key "name";
+        leaf name {
+          type string;
+        }
+        list address {
+          key "address";
+          leaf address {
+            type string;
+          }
+          leaf up-time {
+            type string;
+          }
+          leaf rp {
+            type string;
+          }
+          leaf flags {
+            type string;
+          }
+          list outgoing {
+            key "interface";
+            leaf interface {
+              type string;
+            }
+            leaf address {
+              type string;
+            }
+            leaf mode {
+              type string;
+            }
+            leaf up-time {
+              type string;
+            }
+          }
+          container incoming {
+            leaf interface {
+              type string;
+            }
+            leaf flags {
+              type string;
+            }
+            leaf address {
+              type string;
+            }
+          }
+        }
+      }
+    }
+    tailf:alt-name "ip-stats";
+  }
+  container lisp {
+    config false;
+    list session {
+      key "peer";
+      leaf peer {
+        type string;
+      }
+      leaf state {
+        type string;
+      }
+      leaf up-down {
+        type string;
+      }
+      leaf in-out {
+        type string;
+      }
+      leaf users {
+        type uint32;
+      }
+    }
+    list site {
+      key "name";
+      leaf name {
+        type string;
+      }
+      list registrations {
+        key "instance EID-prefix";
+        leaf instance {
+          type int16;
+        }
+        leaf EID-prefix {
+          type string;
+        }
+        leaf last-register {
+          type string;
+        }
+        leaf up {
+          type string;
+        }
+        leaf last-registered-by {
+          type string;
+        }
+      }
+    }
+    list eid-table-vrf {
+      key "vrf";
+      leaf vrf {
+        type string;
+      }
+      list dynamic-eid {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf eid-prefix {
+          type string;
+        }
+        leaf locator-set {
+          type string;
+        }
+        leaf map-servers {
+          type string;
+        }
+        leaf map-notify-group {
+          type string;
+        }
+        leaf roam-dyneid-discovered {
+          type uint32;
+        }
+      }
+    }
+    container map-cache {
+      list instance-id {
+        key "id";
+        leaf id {
+          type uint32;
+        }
+        list host {
+          key "ip";
+          leaf ip {
+            type string;
+          }
+          leaf host-uptime {
+            type string;
+          }
+          leaf expires {
+            type string;
+          }
+          leaf via {
+            type string;
+          }
+          leaf action {
+            type string;
+          }
+          leaf locator {
+            type string;
+          }
+          leaf locator-uptime {
+            type string;
+          }
+          leaf state {
+            type string;
+          }
+          leaf pri-wgt {
+            type string;
+          }
+          leaf encap-iid {
+            type string;
+          }
+        }
+      }
+    }
+    tailf:alt-name "lisp-stats";
+  }
+  container lldp {
+    config false;
+    list neighbors {
+      key "local-interface";
+      leaf local-interface {
+        type string;
+      }
+      leaf chassis-id {
+        type string;
+      }
+      leaf port-id {
+        type string;
+      }
+      leaf device-id {
+        type string;
+      }
+      leaf time-remaining {
+        type string;
+      }
+      leaf capability {
+        type string;
+      }
+    }
+    tailf:alt-name "lldp-stats";
+  }
+  container running-config {
+    presence "true";
+    config false;
+    container license {
+      container udi {
+        leaf pid {
+          type string;
+        }
+        leaf sn {
+          type string;
+        }
+      }
+    }
+    tailf:alt-name "running-config-stats";
+  }
+  container version {
+    config false;
+    presence "true";
+    leaf name {
+      type string;
+    }
+    leaf version {
+      type string;
+    }
+    leaf xe-version {
+      type string;
+    }
+    leaf model {
+      type string;
+    }
+    leaf serial-number {
+      type string;
+    }
+    container license {
+      leaf level {
+        type string;
+      }
+      leaf type {
+        type string;
+      }
+    }
+    tailf:alt-name "version-stats";
+  }
+  list vrf {
+    key "name";
+    leaf name {
+      type string;
+    }
+    tailf:alt-name "vrf-stats";
+  }
+  container voice {
+    presence "true";
+    config false;
+    container register {
+      container global {
+        container create {
+          container profile {
+            leaf sync {
+              type string;
+            }
+          }
+        }
+      }
+    }
+    tailf:alt-name "voice-stats";
+  }
+  container config-register {
+    config false;
+    presence "true";
+    leaf config-register {
+      type string;
+    }
+    leaf next-config-register {
+      type string;
+    }
+    container standby {
+      leaf config-register {
+        type string;
+      }
+      leaf next-config-register {
+        type string;
+      }
+    }
+    tailf:alt-name "config-register-stats";
+  }
+  container test {
+    list policy-map {
+      config false;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf description {
+        type string;
+      }
+      list class {
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf priority {
+          type string;
+        }
+      }
+    }
+    tailf:alt-name "test-stats";
+  }
+  container exec {
+    tailf:alt-name "exec-stats";
+  }
+}

@@ -1,0 +1,18 @@
+module dell-ftos-netsim-cli {
+  yang-version 1.1;
+  namespace "http://tail-f.com/ns/ned-id/dell-ftos-netsim-cli";
+  prefix dell-ftos-netsim-cli;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  import tailf-ncs-ned {
+    prefix ned;
+  }
+
+  identity dell-ftos-netsim-cli {
+    tailf:abstract;
+    base ned:cli-ned-id;
+  }
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- This file has been generated. Do NOT edit it.
+     For changes edit the original instead.
+-->
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>router-cli-1.0</name>
+  <package-version>1.0</package-version>
+  <description>Model driven CLI NED using the SSHClient API</description>
+  <ncs-min-version>6.0</ncs-min-version>
+  <component>
+    <name>router-cli</name>
+    <ned>
+      <cli>
+        <ned-id xmlns:id="http://tail-f.com/ns/ned-id/router-cli-1.0">id:router-cli-1.0</ned-id>
+        <java-class-name>
+          com.tailf.packages.ned.netsimcli.NetsimCli
+        </java-class-name>
+      </cli>
+      <device>
+        <vendor>Tail-f</vendor>
+        <product-family>Tail-f CLI router 1.0</product-family>
+        <operating-system>CLI</operating-system>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

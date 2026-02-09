@@ -1,0 +1,25 @@
+module router-config {
+  yang-version 1.1;
+  namespace "http://example.com/router-config";
+  prefix sc;
+
+  import router {
+    prefix r;
+  }
+
+  augment /r:sys {
+    container router-config {
+      leaf want-reverse {
+        type boolean;
+        default "false";
+      }
+      leaf trans-id-mode {
+        type enumeration {
+          enum unique_string;
+          enum none;
+        }
+        default "unique_string";
+      }
+    }
+  }
+}
