@@ -1,0 +1,10 @@
+**/ebin
+**/lux_logs
+test/ncs/*/*
+
+**/build/classes
+
+
+
+/ebin
+/bin

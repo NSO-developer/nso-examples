@@ -92,10 +92,10 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _up_time_ = "up-time";
     public static final int    _last_reset = 619509748;
     public static final String _last_reset_ = "last-reset";
-    public static final int    _binding = 164810373;
-    public static final String _binding_ = "binding";
     public static final int    _outgoing = 450766237;
     public static final String _outgoing_ = "outgoing";
+    public static final int    _binding = 164810373;
+    public static final String _binding_ = "binding";
     public static final int    _site = 407467135;
     public static final String _site_ = "site";
     public static final int    _host_uptime = 1065484016;
@@ -310,12 +310,12 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _class_ = "class";
     public static final int    _last_registered_by = 487953794;
     public static final String _last_registered_by_ = "last-registered-by";
-    public static final int    _try = 1765478308;
-    public static final String _try_ = "try";
     public static final int    _ipv4 = 268057062;
     public static final String _ipv4_ = "ipv4";
     public static final int    _ip_address = 36594129;
     public static final String _ip_address_ = "ip-address";
+    public static final int    _try = 1765478308;
+    public static final String _try_ = "try";
     public static final int    _level = 2112619197;
     public static final String _level_ = "level";
     public static final int    _age = 304093784;

@@ -302,11 +302,10 @@ public class NetsimGen extends NedGenericBase {
             if (pendingYangPatchJson != null) {
                 log.trace("PATCH with body: {}", pendingYangPatchJson);
                 var resp = restconf.patchYang("data", pendingYangPatchJson);  // PATCH /restconf/data
-                //FIXME: enable error handling when ENG-38449 is fixed
-                /* if (resp.statusCode() / 100 != 2) {
+                if (resp.statusCode() / 100 != 2) {
                     throw new NedException(NedErrorCode.NED_EXTERNAL_ERROR,
                         "PATCH failed: HTTP " + resp.statusCode() + " " + resp.body());
-                } */
+                }
                 pendingYangPatchJson = null;
             }
             worker.commitResponse();
