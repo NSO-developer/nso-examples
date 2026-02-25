@@ -1,0 +1,4 @@
+src/java/src/com/tailf/packages/ned/netsimcli/namespaces/
+src/router-cli*.yang
+src/ncsc-out
+package-meta-data.xml
