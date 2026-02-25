@@ -78,10 +78,10 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _up_time_ = "up-time";
     public static final int    _last_reset = 619509748;
     public static final String _last_reset_ = "last-reset";
-    public static final int    _site = 407467135;
-    public static final String _site_ = "site";
     public static final int    _binding = 164810373;
     public static final String _binding_ = "binding";
+    public static final int    _site = 407467135;
+    public static final String _site_ = "site";
     public static final int    _host_uptime = 1065484016;
     public static final String _host_uptime_ = "host-uptime";
     public static final int    _platform = 688179959;
@@ -282,10 +282,10 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _vlan_ = "vlan";
     public static final int    _tunnel = 1120006729;
     public static final String _tunnel_ = "tunnel";
-    public static final int    _lisp = 1303297170;
-    public static final String _lisp_ = "lisp";
     public static final int    _create = 116701318;
     public static final String _create_ = "create";
+    public static final int    _lisp = 1303297170;
+    public static final String _lisp_ = "lisp";
     public static final int    _time = 190171445;
     public static final String _time_ = "time";
     public static final int    _expires = 217663303;
