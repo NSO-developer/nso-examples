@@ -68,6 +68,14 @@ module vrouter {
           }
         }
       }
+      action do-sync-from {
+        tailf:actionpoint do-sync-from;
+        output {
+          leaf result {
+            type boolean;
+          }
+        }
+      }
     }
   }
 
@@ -156,8 +164,8 @@ module vrouter {
           // Invoke a Python callback to initialize the netsim vrouter,
           // then do a sync-from
           ncs:nano-callback;
-          ncs:post-action-node "/ncs:devices/device[name=$NAME]" {
-            ncs:action-name "sync-from";
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "do-sync-from";
             ncs:result-expr "result = 'true'";
           }
         }

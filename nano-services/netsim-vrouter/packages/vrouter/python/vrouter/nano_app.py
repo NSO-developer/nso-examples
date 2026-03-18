@@ -224,6 +224,22 @@ class DeleteActionHandler(Action):
         aoutput.result = True
 
 
+class DoSyncFromActionHandler(Action):
+    '''DoSyncFrom action handler'''
+    @Action.action
+    def cb_action(self, uinfo, name, keypath, ainput, aoutput):
+        '''Action callback'''
+        name = str(keypath[0][0])
+        self.log.info("Nano do-sync-from action(name={})".format(name))
+        with ncs.maapi.Maapi() as m:
+            with ncs.maapi.Session(m, 'admin', 'system'):
+                root = ncs.maagic.get_root(m)
+                inputs = root.devices.device[name].sync_from.get_input()
+                inputs['wait-for-lock'].create()
+                root.devices.device[name].sync_from(inputs)
+        aoutput.result = True
+
+
 # ---------------------------------------------
 # COMPONENT THREAD THAT WILL BE STARTED BY NSO.
 # ---------------------------------------------
@@ -247,6 +263,7 @@ class NanoApp(ncs.application.Application):
         init_args = [action_semaphore]
         self.register_action('create-vrouter', CreateActionHandler, init_args)
         self.register_action('delete-vrouter', DeleteActionHandler, init_args)
+        self.register_action('do-sync-from', DoSyncFromActionHandler)
 
         # If we registered any callback(s) above, the Application class
         # took care of creating a daemon (related to the service/action point).

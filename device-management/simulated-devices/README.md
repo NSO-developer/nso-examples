@@ -1,9 +1,9 @@
-Configuring Three Simulated Cisco IOS Routers
-=============================================
+Configuring Simulated Devices
+=============================
 
-This example will show how to set up a simulated network of Cisco IOS routers
-and how to manage these with NSO. NSO will use Cisco IOS CLI commands to manage
-the routers.
+This example will show how to set up a simulated network of Cisco IOS, Juniper
+Junos, and ALU SR routers and how to manage these with NSO. NSO will use Cisco
+IOS CLI commands and NETCONF to manage the routers.
 
 NSO interfaces the devices by using Network Element Drivers, NEDs. NSO ships
 with a few example NEDs under `$NCS_DIR/examples.ncs/common/packages`. See the
@@ -22,9 +22,9 @@ must cover those parts. It is a essential first phase in any NSO deployment to
 make sure that the required NEDs and corresponding YANG models cover the
 configuration scenarios.
 
-To understand the capabilities of the simulated Cisco IOS device used in this
-example, you can print a tree structure of the YANG model as described by IETF
-RFC 8340 using the NSO yanger tool:
+To understand the capabilities of the simulated devices used in this example,
+you can print a tree structure of the YANG model as described by IETF RFC 8340
+using the NSO yanger tool:
 
     yanger -W none -f tree \
     $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src/yang/\
@@ -56,19 +56,40 @@ Preparations
 Setting up and Running the Simulator
 ------------------------------------
 
-The package describing the device is
-`$NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0`. The
-`ncs-netsim create-network` command takes three parameters: the NED package,
-number of simulated devices, and the name prefix.
+The simulated network for this example:
+
+                     -------
+                     | NSO |
+                     -------
+                        |
+                        |
+    --------------------------------------------
+         |          |          |          |
+         |          |          |          |
+       ------     ------     ------     ------
+       | c0 |     | c1 |     | j0 |     | n0 |
+       ------     ------     ------     ------
+
+The NED packages describing the devices are found under
+`$NCS_DIR/examples.ncs/common/packages/`. The `ncs-netsim create-network`
+command takes three parameters: the NED package, number of simulated devices,
+and the name prefix.
 
 Create the simulated network:
 
     ncs-netsim create-network \
-    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 3 c
+    $NCS_DIR/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 2 c
+
+Add the Junos and SR routers to the network:
+
+    ncs-netsim add-to-network \
+    ${NCS_DIR}/examples.ncs/common/packages/juniper-junos-netsim-nc-1.0 1 j
+    ncs-netsim add-to-network \
+    ${NCS_DIR}/examples.ncs/common/packages/alu-sr-netsim-cli-1.0 1 n
 
 This creates the simulated network in a `./netsim` directory. The simulated
-network consists of three devices, `c0`, `c1`, and `c2`, which can be managed
-using Cisco I-style CLI commands.
+network consists of four devices, `c0`, `c1`, `j0`, and `n0`, which can be
+managed using, for example, Cisco I-style CLI commands.
 
 Start the simulated devices:
 
@@ -108,7 +129,7 @@ created a `./netsim` directory.
 
 This performs the following:
    - Create directories needed for NSO (`ncs-cdb`, `state`, `logs`, `packages`)
-   - Link the `cisco-ios` NED package into the `packages` directory
+   - Link the NED packages into the `packages` directory
    - Populates the NSO database with meta-data about the simulated devices. IP
      address, port, SSH host keys, authentication, and NED type.
 
@@ -126,7 +147,7 @@ Start the NSO J-style CLI:
 
     ncs_cli -u admin
 
-    > show packages packages package cisco-ios
+    > show packages
     ...
     component cisco-ios
       ned cli ned-id cisco-ios-netsim-cli-1.0
@@ -196,9 +217,9 @@ Enter configuration mode to change the configuration:
     > configure
     Entering configuration mode private
 
-Add some configuration across the devices:
+Add some configuration across the IOS devices:
 
-    % set devices device c0..2 config ios:router bgp 64512 neighbor 1.2.3.4 \
+    % set devices device c0..1 config ios:router bgp 64512 neighbor 1.2.3.4 \
     remote-as 2
 
 We must pause here and explain how NSO applies configuration changes to the
@@ -238,7 +259,7 @@ rolled back manually.
 
 Take a look at the `rollback` file:
 
-    % run file show logs/rollback10006
+    % run request rollback-files get-rollback-file id 0
     # Created by: admin
     # Date: 2012-11-05 10:06:02
     # Via: cli
@@ -259,7 +280,7 @@ Take a look at the `rollback` file:
 
 Load the rollback file:
 
-    % rollback 10006
+    % request rollback-files apply-rollback-file id 0
 
 Show the diff:
 

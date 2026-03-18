@@ -464,10 +464,10 @@ public class netsimNedAluSrStats extends ConfNamespace {
     public static final String _ipsec_next_hop_entries_ = "ipsec-next-hop-entries";
     public static final int    _offered_uncolor = 1509223143;
     public static final String _offered_uncolor_ = "offered-uncolor";
-    public static final int    _protocol = 943257313;
-    public static final String _protocol_ = "protocol";
     public static final int    _dropped = 1815365056;
     public static final String _dropped_ = "dropped";
+    public static final int    _protocol = 943257313;
+    public static final String _protocol_ = "protocol";
     public static final int    _cpm_ingress = 843938805;
     public static final String _cpm_ingress_ = "cpm-ingress";
     public static final int    _per_fp_egress_queuing = 1912833123;

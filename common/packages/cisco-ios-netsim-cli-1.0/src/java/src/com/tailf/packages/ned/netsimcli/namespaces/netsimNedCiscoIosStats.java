@@ -310,10 +310,10 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _class_ = "class";
     public static final int    _last_registered_by = 487953794;
     public static final String _last_registered_by_ = "last-registered-by";
-    public static final int    _try = 1765478308;
-    public static final String _try_ = "try";
     public static final int    _ipv4 = 268057062;
     public static final String _ipv4_ = "ipv4";
+    public static final int    _try = 1765478308;
+    public static final String _try_ = "try";
     public static final int    _ip_address = 36594129;
     public static final String _ip_address_ = "ip-address";
     public static final int    _level = 2112619197;

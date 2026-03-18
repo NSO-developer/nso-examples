@@ -28,7 +28,7 @@ a NETCONF-enabled ConfD device that simulates a hardware system without netsim
 to simulate configuring an actual device. See the NSO Development Guide chapter
 NETCONF NED Development for documentation.
 
-### simulated-cisco-ios
+### simulated-devices
 A README and demo script showcasing how to set up a simulated network of Cisco
 IOS routers and how to manage these with NSO. Various NSO Operation & Usage
 Guide chapters use the example to get going with the NSO basics, network

@@ -8,7 +8,7 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
-printf "\n${GREEN}##### Simulate a Cisco IOS device demo\n${NC}"
+printf "\n${GREEN}##### Simulate devices demo\n${NC}"
 
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -17,20 +17,17 @@ ncs-netsim --dir nso-rundir/netsim stop &> /dev/null
 set -e
 rm -rf nso-rundir
 
-printf "\n${GREEN}##### Print an IETF RFC 8340 tree structure of the Cisco IOS YANG model\n${NC}"
+printf "\n${GREEN}##### Setting up and running netsim\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
 fi
-yanger -W none -f tree ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang
+printf "${PURPLE}##### Create the simulated network, initially with two IOS routers\n${NC}"
+ncs-netsim --dir nso-rundir/netsim create-network ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 2 c
 
-printf "\n${GREEN}##### Setting up and Running the Simulator\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
-printf "${PURPLE}##### Create the simulated network\n${NC}"
-ncs-netsim --dir nso-rundir/netsim create-network ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 3 c
+printf "${PURPLE}##### Add the Junos and SR routers to the network\n${NC}"
+ncs-netsim --dir nso-rundir/netsim add-to-network ${NCS_DIR}/examples.ncs/common/packages/juniper-junos-netsim-nc-1.0 1 j
+ncs-netsim --dir nso-rundir/netsim add-to-network ${NCS_DIR}/examples.ncs/common/packages/alu-sr-netsim-cli-1.0 1 n
 
 printf "\n${PURPLE}##### Start the simulated devices\n${NC}"
 ncs-netsim --dir nso-rundir/netsim start
@@ -41,10 +38,20 @@ enable
 show running-config | nomore
 EOF
 
+printf "\n${PURPLE}##### Use the J-style CLI with the Junos device\n${NC}"
+ncs-netsim --dir nso-rundir/netsim cli j0 << EOF
+show configuration
+EOF
+
+printf "\n${PURPLE}##### Use the C-style CLI with the SR device\n${NC}"
+ncs-netsim --dir nso-rundir/netsim cli-c n0 << EOF
+show running-config
+EOF
+
 printf "\n${PURPLE}##### Run 'ncs-netsim -h' to list all available commands\n${NC}"
 ncs-netsim -h
 
-printf "${GREEN}##### Setting up and Starting NSO\n${NC}"
+printf "${GREEN}##### Setting up and starting NSO\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r
@@ -59,9 +66,15 @@ printf "${PURPLE}##### Ensure that the netsim devices still exist and are runnin
 ncs-netsim --dir ./nso-rundir/netsim list
 ncs-netsim --dir ./nso-rundir/netsim is-alive
 
-printf "\n${PURPLE}##### Start the NSO J-style CLI\n${NC}"
+printf "\n${GREEN}##### Configuring devices from NSO\n${NC}"
+if [ -z "$NONINTERACTIVE" ]; then
+    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    read -n 1 -s -r
+fi
+
+printf "\n${PURPLE}##### Start the NSO J-style CLI and show the packages and NED and connection configuration for the devices\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
-show packages package cisco-ios | nomore
+show packages | nomore
 show configuration devices device | nomore
 EOF
 
@@ -81,28 +94,28 @@ ncs_cli -n --cwd ./nso-rundir -u admin << EOF
 show configuration devices device c0..2 config ios:router | nomore
 EOF
 
-printf "\n\n${PURPLE}##### Enter configuration mode and add some configuration across the devices. Preview the changes before committing them\n${NC}"
+printf "\n\n${PURPLE}##### Enter configuration mode and add some configuration across the IOS devices. Preview the changes before committing them\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
 configure
-set devices device c0..2 config ios:router bgp 64512 neighbor 1.2.3.4 remote-as 2
+set devices device c0..1 config ios:router bgp 64512 neighbor 1.2.3.4 remote-as 2
 commit dry-run
 commit | details
 EOF
 
 printf "\n\n${PURPLE}##### Take a look at the 'rollback' file\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
-file show logs/rollback10005 | nomore
+request rollback-files get-rollback-file id 0
 EOF
 
 printf "\n\n${PURPLE}##### Load the rollback file and preview the changes before committing them\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
 configure
-rollback 10005
+request rollback-files apply-rollback-file id 0
 compare running brief | nomore
 commit
 EOF
 
-printf "\n\n${PURPLE}##### Enable the trace to see what is going on between NSO and the device CLI\n${NC}"
+printf "\n\n${PURPLE}##### Enable the NED trace to see what is going on between NSO and the device CLI\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
 configure
 set devices global-settings trace raw trace-dir logs

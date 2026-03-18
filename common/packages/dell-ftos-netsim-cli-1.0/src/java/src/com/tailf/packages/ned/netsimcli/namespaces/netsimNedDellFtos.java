@@ -264,10 +264,10 @@ public class netsimNedDellFtos extends ConfNamespace {
     public static final String _stack_unit_ = "stack-unit";
     public static final int    _stp = 1701853972;
     public static final String _stp_ = "stp";
-    public static final int    _seq = 1774006065;
-    public static final String _seq_ = "seq";
     public static final int    _partition = 885857725;
     public static final String _partition_ = "partition";
+    public static final int    _seq = 1774006065;
+    public static final String _seq_ = "seq";
     public static final int    _log_adjacency_changes = 721748979;
     public static final String _log_adjacency_changes_ = "log-adjacency-changes";
     public static final int    _recurring = 1872811486;
@@ -532,10 +532,10 @@ public class netsimNedDellFtos extends ConfNamespace {
     public static final String _access_list_ = "access-list";
     public static final int    _default = 515137925;
     public static final String _default_ = "default";
-    public static final int    _bytes = 1113108825;
-    public static final String _bytes_ = "bytes";
     public static final int    _octet = 422604326;
     public static final String _octet_ = "octet";
+    public static final int    _bytes = 1113108825;
+    public static final String _bytes_ = "bytes";
     public static final int    _peer_link = 1686163334;
     public static final String _peer_link_ = "peer-link";
     public static final int    _access = 304644663;

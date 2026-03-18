@@ -1,0 +1,13 @@
+*.access
+*.1
+*.idx
+*siz
+n1/logs/
+n2/logs/
+n1/ncs-cdb/
+n2/ncs-cdb/
+n1/packages
+n2/packages
+netsim/
+!packages/lb/netsim
+!packages/webserver/netsim

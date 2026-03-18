@@ -1,0 +1,8 @@
+upper-nso/logs/
+upper-nso/packages/rfs-ned/
+upper-nso/state/
+lower-nso-1/logs/
+lower-nso-1/state/
+lower-nso-2/logs/
+lower-nso-2/state/
+netsim/

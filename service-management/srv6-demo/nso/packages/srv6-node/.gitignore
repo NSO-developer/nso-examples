@@ -1,0 +1,6 @@
+__pycache__/
+load-dir/
+private-jar/
+shared-jar/
+ncsc-out/
+templates/srv6-node-intf-*.xml

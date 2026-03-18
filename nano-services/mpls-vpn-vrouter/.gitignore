@@ -1,0 +1,19 @@
+# Ignore logs directory
+logs/
+
+# Ignore ncs-cdb directory
+ncs-cdb/
+
+# Ignore netsim directory
+netsim/
+
+# Ignore entire package directories and generated/build subfolders
+packages/cisco-ios-netsim-cli-1.0
+packages/cisco-iosxr-netsim-cli-1.0
+packages/esc/netsim/
+packages/esc/
+packages/l3vpn/src/java/src/
+packages/vm-manager/src/java/src/
+
+# Ignore state directory
+state/

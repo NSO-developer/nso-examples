@@ -1,0 +1,12 @@
+*.sw[a-z]
+ncs-cdb
+netsim
+logs
+state
+_tmp_ncs*
+device-nodes/packages/alu-sr-netsim-cli-1.0
+device-nodes/packages/cisco-ios-netsim-cli-1.0
+device-nodes/packages/cisco-iosxr-netsim-cli-1.0
+device-nodes/packages/juniper-junos-netsim-nc-1.0
+device-nodes/nso-*/packages
+service-node/packages/l3vpn-ned/
