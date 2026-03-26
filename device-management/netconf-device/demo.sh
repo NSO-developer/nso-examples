@@ -38,6 +38,15 @@ show packages
 devices sync-from
 EOF
 
+printf "\n${PURPLE}##### Add configuration to the devices from NSO and show the NETCONF operations NSO will use to configure them\n${NC}"
+ncs_cli -u admin -C << EOF
+config
+devices device h* config system ntp server 1.1.1.1 enabled
+commit dry-run
+commit dry-run outformat native
+commit
+EOF
+
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"

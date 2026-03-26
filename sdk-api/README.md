@@ -58,6 +58,12 @@ any NSO instance.
 ### alarms
 Illustrates how to submit alarms to NSO using the Java `AlarmSinkCentral`.
 
+### netsim-confd-py
+Demonstrates how to add an application to a ConfD netsim device to enable
+simulating device behavior. The application implements CDB subscribers for
+configuration and operational data changes, and an action handler that sends a
+notification to NSO.
+
 ### scripting
 Illustrates how to use plug-and-play scripts to add CLI commands, policy
 scripts, and post-commit callbacks.

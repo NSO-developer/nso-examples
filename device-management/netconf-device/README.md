@@ -44,10 +44,20 @@ Start and sync the configuration from the netsim devices to NSO:
 
     > show packages
     > request devices sync-from
-    > exit
 
 The simulated devices will already be added to the config. For real devices add
 them using, for example, the CLI. See the `netconf-ned` example.
+
+Add configuration to the devices from NSO and show the NETCONF operations NSO
+will use to configure them:
+
+    > configure
+    % set devices device h* config system ntp server 1.1.1.1 enabled
+    % commit dry-run
+    % commit dry-run outformat native
+    % commit
+    % exit
+    > exit
 
 Cleanup
 -------
