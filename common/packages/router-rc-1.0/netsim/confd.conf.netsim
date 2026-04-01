@@ -155,7 +155,7 @@
     <spaceCompletion>
       <enabled>false</enabled>
     </spaceCompletion>
-    <style>j</style>
+    <style>c</style>
     <historyRemoveDuplicates>true</historyRemoveDuplicates>
     <cHelp>false</cHelp>
     <docWrap>false</docWrap>

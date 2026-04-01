@@ -1,7 +1,7 @@
 """IETF Hardware NMDA system controller example
 See the README file for more information
 """
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import multiprocessing
 from multiprocessing import Process
@@ -117,11 +117,11 @@ class LastChangeIter:
                 'hardware_state')
         d.start()
 
-    def update_last_change(self, dt):
+    def update_last_change(self, dt_string):
         with tm.maapi.single_write_trans('admin', 'sys-last-change',
                                          port=self.port, path=None,
                                          db=tm.OPERATIONAL) as t:
-            t.set_elem(dt, '/hw:hardware/last-change')
+            t.set_elem(dt_string, '/hw:hardware/last-change')
             t.apply()
 
     def pre_iterate(self):
@@ -135,8 +135,9 @@ class LastChangeIter:
         # print(f'\niterate last change kp={kp} op={op} oldv={oldv}
         #       newv={newv}\n', flush=True)
         if state[0] is True:
-            dt = datetime.utcnow().isoformat()
-            p = Process(target=self.update_last_change, args=(dt,))
+            dt_string = \
+                datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
+            p = Process(target=self.update_last_change, args=(dt_string,))
             p.start()
             now = datetime.now()
             tmnow = tm.DateTime(
@@ -159,7 +160,7 @@ class LastChangeIter:
                 tm.TagValue(xmltag=tm.XmlTag(ns, tag),
                             v=tm.Value((tag, ns), tm.C_XMLBEGIN)),
                 tm.TagValue(xmltag=tm.XmlTag(sns, stag),
-                            v=tm.Value(dt, tm.C_DATETIME)),
+                            v=tm.Value(dt_string, tm.C_DATETIME)),
                 tm.TagValue(xmltag=tm.XmlTag(ns, tag),
                             v=tm.Value((tag, ns), tm.C_XMLEND))
             ]

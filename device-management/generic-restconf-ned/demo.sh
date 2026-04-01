@@ -15,10 +15,10 @@ make stop &> /dev/null
 set -e
 make clean
 
-printf "\n${PURPLE}##### Build the generic RESTCONFNED package and generate netsim devies\n${NC}"
+printf "\n${PURPLE}##### Build the generic RESTCONF NED package and generate netsim devies\n${NC}"
 make all
 
-printf "\n${PURPLE}##### Start the NSO and the ncs-netsim network\n${NC}"
+printf "\n${PURPLE}##### Start the NSO and the ConfD netsim network\n${NC}"
 make start
 
 printf "\n${PURPLE}##### List the devices in the simulated network using 'ncs-netsim list'\n${NC}"
@@ -31,7 +31,7 @@ devices device ex0..2 trace pretty trace-output file,external
 commit
 EOF
 
-printf "\n${PURPLE}##### Sync the configuration from the J-style CLI devices\n${NC}"
+printf "\n${PURPLE}##### Sync the configuration from the RESTCONF devices\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     read -n 1 -s -r

@@ -2,7 +2,7 @@
 See the README file for more information
 """
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import multiprocessing
 from multiprocessing import Process
@@ -156,7 +156,7 @@ def register_card(confd_port, card_name, firmware_rev, serial_number, mfg_name,
         # Set the global variable for the card's serial number
         card_serial_number.append(serial_number)
         # Set the last-change leaf
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
         t.set_elem(now, '/hw:hardware/last-change')
         t.apply()
 

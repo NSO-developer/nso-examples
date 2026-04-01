@@ -1,0 +1,29 @@
+module dummy {
+  yang-version 1.1;
+  namespace "http://example.com/dummy";
+  prefix dummy;
+  import tailf-common { prefix tailf; }
+  container dummy {
+    config true;
+    leaf name {
+      type string;
+    }
+    leaf state {
+      type string;
+      config false;
+    }
+    action do-something {
+      tailf:actionpoint do-something;
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  }
+  notification something-done {
+    leaf payload {
+      type string;
+    }
+  }
+}
