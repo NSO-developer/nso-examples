@@ -58,10 +58,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _underruns_ = "underruns";
     public static final int    _state = 630973766;
     public static final String _state_ = "state";
-    public static final int    _pkts_over_255_byte = 1831081435;
-    public static final String _pkts_over_255_byte_ = "pkts-over-255-byte";
     public static final int    _pkts_over_511_byte = 542466306;
     public static final String _pkts_over_511_byte_ = "pkts-over-511-byte";
+    public static final int    _pkts_over_255_byte = 1831081435;
+    public static final String _pkts_over_255_byte_ = "pkts-over-255-byte";
     public static final int    _arp_type = 463658930;
     public static final String _arp_type_ = "arp-type";
     public static final int    _crc = 1279813618;
@@ -144,8 +144,8 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _input_ = "input";
     public static final int    _collisions = 71575584;
     public static final String _collisions_ = "collisions";
-    public static final int    _time_since_last_status_change = 1043251045;
-    public static final String _time_since_last_status_change_ = "time-since-last-status-change";
     public static final int    _index = 827593980;
     public static final String _index_ = "index";
+    public static final int    _time_since_last_status_change = 1043251045;
+    public static final String _time_since_last_status_change_ = "time-since-last-status-change";
 }

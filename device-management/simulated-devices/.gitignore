@@ -9,3 +9,4 @@ ncs.conf
 netsim/
 packages/
 state/
+nso-rundir/

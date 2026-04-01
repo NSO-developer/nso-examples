@@ -72,10 +72,10 @@ public class netsimNedCiscoIosXrStats extends ConfNamespace {
     public static final String _date_code_ = "date-code";
     public static final int    _id = 1279252765;
     public static final String _id_ = "id";
-    public static final int    _parent_interface = 169482247;
-    public static final String _parent_interface_ = "parent-interface";
     public static final int    _serial_number = 544353266;
     public static final String _serial_number_ = "serial-number";
+    public static final int    _parent_interface = 169482247;
+    public static final String _parent_interface_ = "parent-interface";
     public static final int    _lldp = 830250803;
     public static final String _lldp_ = "lldp";
     public static final int    _vid = 1545846517;

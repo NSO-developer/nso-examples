@@ -5,7 +5,15 @@ This example runs three devices that provides a RESTCONF interface for
 configuration and statistics. The Java code for the NSO generic RESTCONF NED is
 provided by a NED package:
 
-    ./packages/router-rc-1.0
+    $NCS_DIR/examples.ncs/common/packages/router-rc-1.0/src/java/src/com/\
+    tailf/packages/ned/netsimgen/*.java
+
+NSO manages three devices using RESTCONF commands through the Java code
+implementing the NSO Java NED API. The implementation of the NSO Java NED API
+can be found in the `NetsimGen.java` file.
+
+Running the Example
+-------------------
 
 The simulated network for this example:
 
@@ -20,15 +28,6 @@ The simulated network for this example:
       -------                -------                -------
       | ex0 |                | ex1 |                | ex2 |
       -------                -------                -------
-
-NSO manages three devices using RESTCONF commands through the Java code
-implementing the NSO Java NED API:
-
-    ./packages/router-rc-1.0/src/java/src/com/tailf/packages/ned/netsimgen/ \
-    NetsimGen.java
-
-Running the Example
--------------------
 
 To run the steps below in this README from a demo shell script:
 
@@ -55,7 +54,7 @@ Sync the configuration from the RESTCONF devices:
 
 Show the device configuration and status:
 
-    > show running-config devices device * config sys
+    > show configuration devices device * config sys
     > show devices device * live-status sys
 
 Add configuration to the devices:
@@ -70,11 +69,11 @@ Add configuration to the devices:
     % exit
     > exit
 
-Show the routes configuration logging into the ex1 device:
+Show the routes configuration logging into the `ex1` device:
 
     ncs-netsim cli-c ex1
-     show running-config sys routes
-    > exit
+    # show running-config sys routes
+    # exit
 
 Execute the `archive-log` action from NSO:
 
@@ -83,7 +82,7 @@ Execute the `archive-log` action from NSO:
     archive-log archive-path test compress true
     > exit
 
-Introduce a configuration mismatch by changing the configuration on the ex1
+Introduce a configuration mismatch by changing the configuration on the `ex1`
 device:
 
     ncs-netsim cli-c ex1
@@ -99,14 +98,14 @@ Check if the devices are in sync with NSO:
     > request devices check-sync
 
 Check the diff between NSO and the device configuration and sync from NSO to
-the ex1 device:
+the `ex1` device:
 
-    > devices device ex1 sync-to dry-run
-    > devices device ex1 sync-to
+    > request devices device ex1 sync-to dry-run
+    > request devices device ex1 sync-to
 
 Check again if the devices are in sync with NSO:
 
-    > devices check-sync
+    > request devices check-sync
 
 Cleanup
 -------
