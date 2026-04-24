@@ -110,8 +110,8 @@
       <fromLoadPath>true</fromLoadPath>
     </mibs>
     <snmpVersions>
-      <v1>true</v1>
-      <v2c>true</v2c>
+      <v1>false</v1>
+      <v2c>false</v2c>
       <v3>true</v3>
     </snmpVersions>
     <snmpEngine>

@@ -1,30 +1,33 @@
-all: certs packages-all node1 node2 node3
-	$(MAKE) install-certs
+# Make example run smoother - this is not recommended for production.
+NCSCERT_NOCIPHER=1
+export NCSCERT_NOCIPHER
 
-packages-%:
-	for p in packages/*/src; do \
-		$(MAKE) -C $$p $* || exit 1; \
-	done
 
-certs:
-	cp tpl/certext.in ncsd1.cnf
-	cp tpl/certext.in ncsd2.cnf
-	cp tpl/certext.in ncsd3.cnf
-	# creates ca.crt, ca.key, ncsd[1-3].crt and ncsd[1-3].key in raft/
-	./gen_tls_certs.sh -d raft ncsd1 ncsd2 ncsd3
+all: node1/.ready node2/.ready node3/.ready packages/.ready
 
-install-certs:
-	cp -f raft/certs/ca.crt raft/certs/ncsd1.crt raft/private/ncsd1.key node1
-	cp -f raft/certs/ca.crt raft/certs/ncsd2.crt raft/private/ncsd2.key node2
-	cp -f raft/certs/ca.crt raft/certs/ncsd3.crt raft/private/ncsd3.key node3
-	# ensure only the user running the ncs.smp process has read access to
-	# the private TLS key
-	chmod 600 node*/*.key
+node%/.ready:
+	# Create base file structure with ncs-setup
+	ncs-setup --dest node$*
+	# Generate node's TLS certificate and use it
+	../ca/create-cert n$* 127.0.0.1 ::1 || true
+	../ca/export-cert n$* node$*/ha-tls
+	# Copy node-specific config to the ncs.conf.d directory
+	cp -rv n$*.config node$*/ncs.conf.d
+	# Tweak ncs.conf to make example behave nicely
+	# (optional, because instances share the same host)
+	../common/reconfigure node$*/ncs.conf $*
+	@touch $@
 
-node%:
-	ncs-setup --dest $@
-	NODE_ID=$* helpers/update-conf.sh $@/ncs.conf \
-		$$(ls tpl/ncs-conf/*.xml tpl/ncs-conf/*.val | sort)
+packages/.ready:
+	@mkdir -p packages
+	ncs-make-package --service-skeleton template --dest packages/dummy \
+		--build --no-test --root-container dummies dummy
+	@touch $@
+
+reset: all
+	( cd node1 && ncs-setup --reset )
+	( cd node2 && ncs-setup --reset )
+	( cd node3 && ncs-setup --reset )
 
 start:
 	( cd node1 && ncs )
@@ -32,9 +35,21 @@ start:
 	( cd node3 && ncs )
 
 stop:
-	NCS_IPC_PORT=4561 ncs --stop || true
-	NCS_IPC_PORT=4562 ncs --stop || true
-	NCS_IPC_PORT=4563 ncs --stop || true
+	NCS_IPC_PATH=/tmp/nso/nso-ipc1 ncs --stop || true
+	NCS_IPC_PATH=/tmp/nso/nso-ipc2 ncs --stop || true
+	NCS_IPC_PATH=/tmp/nso/nso-ipc3 ncs --stop || true
+
+configure:
+	printf 'ha-raft create-cluster member [ %s ]\n' \
+		'ncsd2@127.0.0.1:4572 ncsd3@127.0.0.1:4573' | \
+		NCS_IPC_PATH=/tmp/nso/nso-ipc1 ncs_cli -nsCu admin -g admin
+
+test:
+	$(MAKE) stop
+	$(MAKE) reset
+	$(MAKE) start
+	$(MAKE) configure
+	$(MAKE) stop
 
 demo:
 	./demo.sh
@@ -42,6 +57,7 @@ demo:
 demo-nonstop:
 	./demo.sh -n
 
-clean:  packages-clean
-	$(RM) -r node* raft
-	$(RM) ./*.cnf
+clean:
+	rm -rf node* ca-* packages
+
+include ../common/node-ops.mk

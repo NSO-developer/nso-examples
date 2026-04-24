@@ -3,8 +3,8 @@ A Basic NSO Rule-based High Availability Two Node Automatic Failover Example
 
 This basic example uses the NSO rule-based high availability manager to setup
 and manage two NSO nodes, one primary and one secondary node, that implements a
-single `dummy` service package. The high-availability configuration, see the
-Makefile, enable automatic start-up and failover.
+single `dummy` service package. The high-availability configuration in the
+`ha.xml` file enables automatic start-up and failover.
 
 Running the Example
 -------------------
@@ -22,11 +22,11 @@ interface. Run it by typing:
 
 See the Python pip `requirements.txt` file for the required Python packages.
 
-This example require unique IP addresses for the two NSO nodes. Non-default IP
-addresses can be set in the `Makefile` + using flags with the scripts:
+This example requires unique IP addresses for the two NSO nodes and non-default
+IP addresses can be set in the `Makefile` and `n*.config/ha.conf`:
 
-    -a  IP address for node 1. Default: 127.0.1.1
-    -b  IP address for node 2. Default: 127.0.2.1
+    Default IP address for node 1: 127.0.1.1
+    Default IP address for node 2: 127.0.2.1
 
 On most Linux distributions the above default IP addresses are configured for
 the loopback interface by default. On macOS the two unique IP addresses can be

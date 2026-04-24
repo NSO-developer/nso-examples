@@ -1,0 +1,17 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>{$BGP_AS}</as-no>
+            <bgp>
+              <router-id>{$ROUTER_ID}</router-id>
+            </bgp>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

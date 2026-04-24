@@ -1,72 +1,63 @@
 PKG_DIR = $(NCS_DIR)/packages/auth/cisco-nso-ldap-auth
-DOCKER_CONTAINER_NAME ?= nso-ldap-example
-DOCKER_OPTS ?= --ulimit nofile=1024
-SLAPD_OPTS ?= -d 1 -h "ldap:/// ldapi:///"
 
-.PHONY: all
-all: packages/cisco-nso-ldap-auth cisco-nso-ldap-auth-deps pyvenv \
-     build-container
-	$(MAKE) -C packages/cisco-nso-ldap-auth/src all
+all: ncs-run/.ready
 
-packages:
-	mkdir packages
+.PHONY: all start stop configure reset test clean cli-c cli-j
 
-packages/cisco-nso-ldap-auth: packages
-	cp -a $(PKG_DIR) $@
+ncs-run/.ready: aaa.conf pyvenv/.ready
+	ncs-setup --dest ncs-run --no-config-section aaa --use-copy \
+		--package $(PKG_DIR)
+	@mkdir -p ncs-run/ncs.conf.d
+	cp aaa.conf ncs-run/ncs.conf.d/
+	for f in ncs-run/packages/*/src; do \
+		$(MAKE) -C $$f || exit 1; \
+	done
+	@touch $@
 
-pyvenv:
-	python3 -m venv $@
-	$@/bin/pip $(PIP_OPTS) install pip --upgrade
+pyvenv/.ready:
+	python3 -m venv pyvenv
+	pyvenv/bin/pip $(PIP_OPTS) install pip --upgrade
+	pyvenv/bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
+	@touch $@
 
-cisco-nso-ldap-auth-deps: pyvenv
-	$</bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
-	touch $@
+start:
+	. pyvenv/bin/activate ; cd ncs-run && ncs
 
-.PHONY: build-container
-build-container: Dockerfile
-	docker build $(DOCKER_OPTS) -t $(DOCKER_CONTAINER_NAME) .
+.PHONY: start-ldap
+start-ldap:
+	$(MAKE) -C server-pyldap start
 
-.PHONY: start-container
-start-container:
-	# Run OpenLDAP in the foreground
-	docker run -d -p 1389:389 $(DOCKER_OPTS) --name $(DOCKER_CONTAINER_NAME) \
-		$(DOCKER_CONTAINER_NAME) slapd $(SLAPD_OPTS)
+.PHONY: start-openldap
+start-openldap:
+	$(MAKE) -C server-openldap start
 
-start-container-fg:
-	# Run OpenLDAP in the foreground
-	docker run -p 1389:389 $(DOCKER_OPTS) --name $(DOCKER_CONTAINER_NAME) \
-		$(DOCKER_CONTAINER_NAME) slapd $(SLAPD_OPTS)
+stop:
+	ncs --stop || true
+	$(MAKE) -C server-pyldap stop
+	$(MAKE) -C server-openldap stop
 
-.PHONY: stop-container
-stop-container:
-	docker rm -f $(DOCKER_CONTAINER_NAME) || true
+configure:
+	ncs_load -l -m -u admin cisco-nso-ldap-auth.xml
 
-.PHONY: clean
+reset: all
+	ncs-setup --reset --dest ncs-run
+
+test:
+	$(MAKE) stop
+	$(MAKE) all
+	$(MAKE) start start-ldap
+	$(MAKE) configure
+	sleep 1
+	curl -isfS -u sbrown:sbrown http://localhost:8080/restconf
+	$(MAKE) stop
+
 clean:
-	rm -rf ncs-cdb netsim logs packages scripts state
-	rm -rf pyvenv* __pycache__
-	rm -f README.n* cisco-nso-ldap-auth-deps ncs.conf
+	rm -rf ncs-run pyvenv
+	$(MAKE) -C server-pyldap clean
+	$(MAKE) -C server-openldap clean
 
-.PHONY: clean-logs reset
-clean-logs:
-	rm -f logs/*
-
-ncs.conf: ncs.conf.example
-	ncs-setup --dest .
-	cp $< $@
-
-.PHONY: start
-start: pyvenv start-container ncs.conf
-	(. pyvenv/bin/activate; NCS_LOG_DIR=$(PWD)/logs ncs -c ./ncs.conf)
-
-.PHONY: stop
-stop: stop-container
-	-ncs --stop
-
-.PHONY: cli-c
 cli-c:
 	ncs_cli -C -uadmin
 
-.PHONY: cli-j
 cli-j:
 	ncs_cli -J -uadmin

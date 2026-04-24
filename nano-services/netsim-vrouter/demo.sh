@@ -13,6 +13,12 @@ printf "\n${PURPLE}###### Reset and setup the example\n${NC}"
 make stop &> /dev/null
 make clean all start
 
+ncs_cli -n -u admin -C << 'EOF'
+config
+session dry-run-drift-detection disabled
+commit
+EOF
+
 printf "\n${PURPLE}##### Deploy and configure $1 vrouter through the vrouter nano service, but immediately delete the service during init so that the nano service backtrack\n${NC}"
 
 VROUTERS=""

@@ -3,10 +3,10 @@ NODES =  upper-nso lower-nso-1 lower-nso-2
 NCSVER= $(shell ncs --version | sed 's/\([0-9]*\.[0-9]*\).*/\1/')
 MNAME = cisco-nso-nc-$(NCSVER)
 
-ifeq ($(NCS_IPC_PATH),)
+ifneq ($(NCS_IPC_PORT),)
 ENV = NCS_IPC_PORT=
 else
-ENV = NCS_IPC_PATH=$(NCS_IPC_PATH).
+ENV = NCS_IPC_PATH=$(or $(NCS_IPC_PATH),/tmp/nso/nso-ipc).
 endif
 
 all:    upper-nso-all    lower-nso-1 lower-nso-2 netsim

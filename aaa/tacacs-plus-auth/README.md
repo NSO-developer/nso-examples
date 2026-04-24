@@ -4,30 +4,23 @@ Package authentication using TACACS+
 This example demonstrates integrating and using the cisco-nso-tacacs-auth
 Authentication Package to enable TACACS+ authentication for NSO.
 
+This particular NSO authentication package depends on additional Python
+packages, specified in its requirements.txt file. A simple way to fulfill
+this requirement is to create a Python virtualenv and start NSO within
+this virtualenv, in the way the Makefile target 'start' does.
+
 For more information on using the `cisco-nso-tacacs-auth` package, refer to the
 `README` file distributed with the package, e.g., in
 `$NCS_DIR/packages/auth/cisco-nso-tacacs-auth`.
 
-For the `cisco-nso-tacacs-auth` package to run, the `tacacs_plus` Python
-package is required. A simple way to fulfill this requirement is to create
-a Python virtualenv and start NSO within this virtualenv. The build steps
-needed are done with the `Makefile` targets, but note that the virtualenv
-needs to be activated manually before starting NSO.
+This example requires an existing TACACS+ server defining users.
 
 Running the Example
 -------------------
 
-Build the necessary files, copy the example `ncs.conf`, activate the Python
-virtualenv, and start NSO:
+Build the necessary files, activate the Python virtualenv, and start NSO:
 
-    make clean all
-    . pyvenv/bin/activate
-    (pyvenv) $ make start
-
-Start the CLI and reload packages
-
-    ncs_cli -u admin -g admin -C
-    packages reload
+    make all start
 
 Configure the `cisco-nso-tacacs-auth.yang` model. This is done by
 loading a prepared config XML file, but it can also be done manually
@@ -35,17 +28,17 @@ in the CLI (see the `cisco-nso-tacacs-auth` documentation for details).
 
 You need to specify the IP address of the TACACS+ server,
 the Port used, and the Shared Secret. You can modify the supplied
-file: `cisco-nso-tacacs-auth.xml` and then load it as:
+file `cisco-nso-tacacs-auth.xml` and then load it as:
 
-    ncs_load -l -m cisco-nso-tacacs-auth.xml
+    ncs_load -l -m -u admin cisco-nso-tacacs-auth.xml
 
 Make a login request of some sort, e.g., a RESTCONF request:
 
-    curl -is -u admin:<password> http://127.0.0.1:8080/restconf/data
+    curl -is -u admin:<password> http://127.0.0.1:8080/restconf
 
 Check package and audit logs for debug and authentication information:
 
-    tail logs/audit.log
+    tail ncs-run/logs/audit.log
 
 You should see something like (output is formatted to fit):
 

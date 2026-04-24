@@ -19,11 +19,55 @@ import com.tailf.conf.*;
 import com.tailf.maapi.DryRunResult;
 import com.tailf.maapi.DryRunResult.DryRunEntry;
 import java.util.Iterator;
+import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class commitparamsjavaRFS {
     private static Logger log = LogManager.getLogger(commitparamsjavaRFS.class);
+    private static final ConfNamespace CUSTOM_NS = new commitParamsJava();
+    private static final String AUDIT_CONTEXT = "audit-context";
+    private static final String TICKET_ID = "ticket-id";
+    private static final String ACTION_LABEL = "java-action-demo";
+    private static final String ACTION_TICKET_ID = "JAVA-ACTION-001";
+
+    private static String getCustomTicketId(CommitParams cp) {
+        boolean insideAuditContext = false;
+
+        for (ConfXMLParam param : cp.getConfXMLParam()) {
+            if (!param.getNSHash().equals(CUSTOM_NS.hash())) {
+                continue;
+            }
+
+            if (param instanceof ConfXMLParamStart
+                    && AUDIT_CONTEXT.equals(param.getTag())) {
+                insideAuditContext = true;
+            } else if (param instanceof ConfXMLParamStop
+                    && AUDIT_CONTEXT.equals(param.getTag())) {
+                insideAuditContext = false;
+            } else if (insideAuditContext
+                    && param instanceof ConfXMLParamValue
+                    && TICKET_ID.equals(param.getTag())) {
+                return param.getValue().toString();
+            }
+        }
+
+        return null;
+    }
+
+    private static CommitParams setCustomTicketId(CommitParams cp,
+                                                  String ticketId) {
+        List<ConfXMLParam> params = new ArrayList<>(cp.getConfXMLParam());
+        params.add(new ConfXMLParamStart(CUSTOM_NS, AUDIT_CONTEXT));
+        params.add(new ConfXMLParamValue(CUSTOM_NS, TICKET_ID,
+                                         new ConfBuf(ticketId)));
+        params.add(new ConfXMLParamStop(CUSTOM_NS, AUDIT_CONTEXT));
+
+        ConfResponse response = new ConfResponse();
+        response.term = ConfXMLParam.encodeHKP(
+            params.toArray(new ConfXMLParam[0]));
+        return new CommitParams(response);
+    }
 
     /**
      * Create callback method.
@@ -77,6 +121,10 @@ public class commitparamsjavaRFS {
             if (cp.getLabel() != null) {
                 log.info("Commit label detected: " + cp.getLabel());
             }
+            String ticketId = getCustomTicketId(cp);
+            if (ticketId != null) {
+                log.info("Custom commit param ticket-id=" + ticketId);
+            }
 
             myTemplate.apply(service, myVars);
 
@@ -120,15 +168,21 @@ public class commitparamsjavaRFS {
             maapi.setElem(th, enum_speed, confPath + "/speed");
 
             // Init and set commit parameters
-            log.info("Apply commit param label and dry-run with an action");
+            log.info("Apply commit parameter label, dry-run, and " +
+                     "audit-context/ticket-id with a Java action");
             CommitParams cp = maapi.getTransParams(th);
-            cp.setLabel("foobar");
+            cp.setLabel(ACTION_LABEL);
             cp.setDryRunNative();
+            cp = setCustomTicketId(cp, ACTION_TICKET_ID);
 
             // Detect transaction commit parameters
             log.info("Commit parameters: " + cp);
             if (cp.getLabel() != null) {
                 log.info("Commit label detected: " + cp.getLabel());
+            }
+            String ticketId = getCustomTicketId(cp);
+            if (ticketId != null) {
+                log.info("Custom commit param ticket-id=" + ticketId);
             }
 
             // Apply the transaction and print out the dry-run results

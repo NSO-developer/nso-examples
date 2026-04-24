@@ -1,0 +1,46 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <config>
+        <sys xmlns="http://example.com/router">
+          <interfaces>
+            <interface>
+              <name>{/interface}</name>
+              <unit>
+                <name>0</name>
+                <family>
+                  <inet>
+                    <address>
+                      <name>{/ip-address}</name>
+                      <prefix-length>{/cidr-netmask}</prefix-length>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+        </sys>
+      </config>
+
+      <telemetry>
+        <subscription>
+          <name>iface-{/name}</name>
+          <datastore>operational</datastore>
+          <xpath>/r:sys/interfaces/interface[name='{/interface}']/status</xpath>
+          <on-change/>
+          <local-user>admin</local-user>
+        </subscription>
+      </telemetry>
+    </device>
+  </devices>
+
+  <kickers xmlns="http://tail-f.com/ns/kicker">
+    <telemetry-kicker xmlns="http://tail-f.com/ns/ncs-kicker">
+      <id>iface-{/name}</id>
+      <selector-expr>/devices/device[name='{/device}']/live-status/r:sys/interfaces/interface[name='{/interface}']/status/link</selector-expr>
+      <kick-node>/iface:iface[name='{/name}']</kick-node>
+      <action-name>update-status</action-name>
+    </telemetry-kicker>
+  </kickers>
+</config-template>

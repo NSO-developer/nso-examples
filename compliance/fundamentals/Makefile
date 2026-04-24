@@ -1,0 +1,83 @@
+# Directory of example packages
+PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
+
+# The create-network argument to ncs-netsim
+NETWORK = \
+	create-network $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0     9 ce \
+	create-network $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0   2 pe \
+	create-network $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0  1 pe \
+	create-network $(PACKAGE_STORE)/alu-sr-netsim-cli-1.0        1 pe \
+	create-network $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0   4 p
+
+NETSIM_DIR = netsim
+
+all: packages netsim ncs
+.PHONY: all
+
+packages:
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-ios-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/alu-sr-netsim-cli-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0/src all
+	$(MAKE) -C $(PACKAGE_STORE)/l3vpn/src all
+.PHONY: packages
+
+netsim:
+	ncs-netsim --dir $@ $(NETWORK)
+	cp initial_data/ios.xml netsim/ce/ce0/cdb
+	cp initial_data/ios.xml netsim/ce/ce1/cdb
+	cp initial_data/ios.xml netsim/ce/ce2/cdb
+	cp initial_data/ios.xml netsim/ce/ce3/cdb
+	cp initial_data/ios.xml netsim/ce/ce4/cdb
+	cp initial_data/ios.xml netsim/ce/ce5/cdb
+	cp initial_data/ios.xml netsim/ce/ce6/cdb
+	cp initial_data/ios.xml netsim/ce/ce7/cdb
+	cp initial_data/ios.xml netsim/ce/ce8/cdb
+	cp initial_data/iosxr.xml netsim/pe/pe0/cdb
+	cp initial_data/iosxr.xml netsim/pe/pe1/cdb
+	cp initial_data/alu-sr.xml netsim/pe/pe3/cdb
+	cp initial_data/iosxr.xml netsim/p/p0/cdb
+	cp initial_data/iosxr.xml netsim/p/p1/cdb
+	cp initial_data/iosxr.xml netsim/p/p2/cdb
+	cp initial_data/iosxr.xml netsim/p/p3/cdb
+
+ncs:
+	ncs-setup --package $(PACKAGE_STORE)/l3vpn --netsim-dir netsim --dest .
+	cp initial_data/topology.xml ncs-cdb
+	cp initial_data/qos.xml ncs-cdb
+	cp initial_data/vpn.xml ncs-cdb
+	cp initial_data/device-groups.xml ncs-cdb
+	ncs-netsim ncs-xml-init > ncs-cdb/netsim_devices_init.xml
+.PHONY: ncs
+
+clean:
+	rm -f README.ncs README.netsim
+	rm -rf netsim logs state ncs-cdb *.trace
+	rm -f packages/alu-sr-netsim-cli-1.0
+	rm -f packages/cisco-ios-netsim-cli-1.0
+	rm -f packages/cisco-iosxr-netsim-cli-1.0
+	rm -f packages/juniper-junos-netsim-nc-1.0
+	rm -f packages/l3vpn
+	rm -rf bin
+.PHONY: clean
+
+start:
+	ncs-netsim --async start
+	ncs
+.PHONY: start
+
+stop:
+	-ncs-netsim --async stop
+	-ncs --stop
+.PHONY: stop
+
+reset:
+	ncs-setup --reset
+.PHONY: reset
+
+cli:
+	ncs_cli -u admin
+.PHONY: cli
+
+demo:
+	./demo.sh

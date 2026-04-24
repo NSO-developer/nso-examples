@@ -1,6 +1,10 @@
 <config xmlns="http://tail-f.com/ns/config/1.0">
+  <os-major xmlns="http://tail-f.com/ned/a10-acos">3</os-major>
+  <os-minor xmlns="http://tail-f.com/ned/a10-acos">0</os-minor>
   <clock xmlns="http://tail-f.com/ned/a10-acos">
-    <timezone>Europe/Dublin</timezone>
+    <timezone>
+      <timezone>Europe/Dublin</timezone>
+    </timezone>
   </clock>
   <ntp xmlns="http://tail-f.com/ned/a10-acos">
     <server>
@@ -30,9 +34,7 @@
     <ethernet>
       <nr>1</nr>
       <name>eth1</name>
-      <enable-disable>
-        <enabled-disabled>enable</enabled-disabled>
-      </enable-disable>
+      <state>enable</state>
       <lacp>
         <timeout>long</timeout>
         <trunk>
@@ -44,9 +46,7 @@
     <ethernet>
       <nr>2</nr>
       <name>eth2</name>
-      <enable-disable>
-        <enabled-disabled>enable</enabled-disabled>
-      </enable-disable>
+      <state>enable</state>
       <lacp>
         <timeout>long</timeout>
         <trunk>
@@ -57,87 +57,59 @@
     </ethernet>
     <ethernet>
       <nr>3</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>4</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>5</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>6</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>7</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>8</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>9</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>10</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>11</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>12</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>13</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>14</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>15</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>16</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>17</nr>
@@ -145,21 +117,15 @@
     </ethernet>
     <ethernet>
       <nr>18</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>19</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
     <ethernet>
       <nr>20</nr>
-      <enable-disable>
-        <enabled-disabled>disable</enabled-disabled>
-      </enable-disable>
+      <state>disable</state>
     </ethernet>
   </interface>
   <vlan xmlns="http://tail-f.com/ned/a10-acos">

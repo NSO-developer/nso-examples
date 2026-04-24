@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Timeout and locks demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -21,10 +33,7 @@ ncs
 
 printf "\n${GREEN}##### Timeouts\n${NC}"
 printf "\n${GREEN}##### Action and Data provider timeouts\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Set the action and query timeout to 4s in ncs.conf\n${NC}"
 sed 's/PT4000S/PT4S/g' ncs.conf > ncs.conf.tmp && mv ncs.conf.tmp ncs.conf
 ncs --reload
@@ -58,10 +67,7 @@ printf "\n${PURPLE}##### Check the ncs-java-vm.log\n${NC}"
 cat ./logs/ncs-java-vm.log
 
 printf "\n${GREEN}##### FASTMAP service create() timeout\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Set the service callback timeout to four seconds\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -93,8 +99,7 @@ cat ./logs/ncs.log | grep "CRIT"
 
 printf "\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop NSO and clean all created files\n${NC}"
     ncs --stop
     make reset clean

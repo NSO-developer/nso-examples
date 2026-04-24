@@ -62,8 +62,8 @@ install:
 	cp -af $(NCS_DIR)/netsim/confd/etc/confd/ssh $${DEST_DIR}
 	cp -f $(BIN) $${DEST_DIR}
 	@echo '<SNMP-USER-BASED-SM-MIB xmlns="http://tail-f.com/ns/mibs/SNMP-USER-BASED-SM-MIB/200210160000Z"><usmUserTable>' > $${DEST_DIR}/cdb/usm_init.xml
-	- # create a user 'admin' with passphrase 'admin'
-	$(CONFDC) --snmpuser 80:00:61:81:05:$(TWO_DIGIT_COUNTER) admin sha aes admin \
+	- # create a user 'admin' with passphrase 'adminpass'
+	$(CONFDC) --snmpuser 80:00:61:81:05:$(TWO_DIGIT_COUNTER) admin sha aes adminpass \
 	  >> $${DEST_DIR}/cdb/usm_init.xml
 	@echo '</usmUserTable></SNMP-USER-BASED-SM-MIB>' >> $${DEST_DIR}/cdb/usm_init.xml
 

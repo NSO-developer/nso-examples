@@ -1,0 +1,156 @@
+module tenant-edge-service {
+  yang-version 1.1;
+  namespace "http://tail-f.com/examples/tenant-edge-service";
+  prefix tenant-edge;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  revision 2026-03-31 {
+    description
+      "Initial revision.";
+  }
+
+  typedef site-vendor {
+    type enumeration {
+      enum iosxr;
+      enum eos;
+    }
+  }
+
+  container tenant-edge-catalog {
+    description
+      "Brownfield site inventory that maps logical service sites to the
+       existing devices and interfaces used by this example.";
+
+    list site {
+      key name;
+
+      leaf name {
+        type string {
+          pattern "[a-z][a-z0-9-]{2,31}";
+        }
+      }
+
+      leaf vendor {
+        mandatory true;
+        type site-vendor;
+      }
+
+      leaf device {
+        mandatory true;
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf interface-id {
+        description
+          "For IOS-XR this is the interface id under GigabitEthernet,
+           for EOS this is the Ethernet list key.";
+        mandatory true;
+        type string {
+          length "1..32";
+        }
+      }
+
+      leaf local-prefix {
+        description
+          "Local interface IPv4 address with prefix length for the tenant
+           attachment.";
+        mandatory true;
+        type tailf:ipv4-address-and-prefix-length;
+      }
+
+      leaf peer-address {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+
+      leaf peer-as {
+        mandatory true;
+        type inet:as-number;
+      }
+    }
+  }
+
+  list tenant-edge {
+    description
+      "Intent-driven tenant edge service that renders a tenant VRF, BGP
+       neighbor, and simple prefix policy on IOS-XR and EOS.";
+
+    uses ncs:service-data;
+    ncs:servicepoint tenant-edge-service;
+
+    key name;
+    leaf name {
+      type string {
+        pattern "[A-Za-z][A-Za-z0-9-]{2,31}";
+      }
+      tailf:cli-allow-range;
+    }
+
+    leaf customer {
+      mandatory true;
+      type string {
+        length "2..32";
+      }
+    }
+
+    leaf tenant-id {
+      mandatory true;
+      type uint16 {
+        range "100..4094";
+      }
+    }
+
+    leaf vrf-name {
+      type string {
+        pattern "[A-Z][A-Z0-9-]{2,31}";
+      }
+    }
+
+    leaf local-as {
+      mandatory true;
+      type inet:as-number;
+      must ". >= 64512 and . <= 65534" {
+        error-message
+          "This example expects a private enterprise AS number.";
+      }
+    }
+
+    leaf max-prefix {
+      type uint16 {
+        range "1..1000";
+      }
+      default 50;
+    }
+
+    leaf-list export-prefix {
+      min-elements 1;
+      type inet:ipv4-prefix;
+
+      must ". != '0.0.0.0/0'" {
+        error-message
+          "Exporting a default route is blocked by the example guardrails.";
+      }
+    }
+
+    leaf-list site {
+      ordered-by user;
+      min-elements 2;
+      max-elements 2;
+      type leafref {
+        path "/tenant-edge:tenant-edge-catalog/tenant-edge:site/"
+           + "tenant-edge:name";
+      }
+    }
+  }
+}

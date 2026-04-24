@@ -1,0 +1,37 @@
+#!/bin/sh
+# Copyright 2026 Cisco Systems, Inc.
+# SPDX-License-Identifier: MIT
+
+BASE=$(cd "$(dirname "$0")" && pwd)
+. "$BASE"/util/ca.sh
+
+
+usage()
+{
+    cat <<EOF
+usage: create-cert <hostname> [hostname...]
+
+    Generate a TLS certificate for a given hostname by creating a private key
+    and a Certificate Signing Request (CSR), which is then signed by the
+    Certificate Authority (CA).
+
+    In case a CSR already exists for the given hostname, key generation is
+    skipped and the existing CSR is signed instead.
+
+    Multiple hostnames or IP addresses may be provided; they are included as
+    Subject Alternative Name (SAN) attributes in the certificate.
+
+    In case multiple CAs are available, selects the most-recently-created
+    CA unless NCSCERT_CAPATH is used to select a specific CA. If no existing
+    CA is found, a new one is provisioned.
+EOF
+    exit "${1:-0}"
+}
+
+if [ -z "$1" ]; then
+    usage 1
+fi
+show_usage_maybe "$@"
+validate_hosts "$@"
+find_ca || create_ca ""
+create_cert "$@"

@@ -1,0 +1,142 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <banner xmlns="urn:ios">
+          <login>{$BANNER}</login>
+        </banner>
+        <ip xmlns="urn:ios">
+          <domain>
+            <name>{$DOMAIN_NAME}</name>
+          </domain>
+          <routing>true</routing>
+        </ip>
+        <logging xmlns="urn:ios">
+          <facility>local7</facility>
+          <userinfo/>
+          <origin-id>
+            <hostname/>
+          </origin-id>
+          <source-interface>
+            <name>Loopback0</name>
+          </source-interface>
+          <trap>{$SYSLOG_IOS_SEVERITY}</trap>
+          <host>
+            <ipv4>
+              <host>{$SYSLOG_SERVER}</host>
+            </ipv4>
+          </host>
+        </logging>
+        <ntp xmlns="urn:ios">
+          <logging/>
+          <?if {$NTP_SOURCE_LOOPBACK='true'}?>
+          <source>
+            <Loopback>0</Loopback>
+          </source>
+          <?end?>
+        </ntp>
+        <?if {$IOS_CONFIG_ARCHIVE='true'}?>
+        <archive xmlns="urn:ios">
+          <log>
+            <config>
+              <logging>
+                <enable/>
+                <size>100</size>
+              </logging>
+              <hidekeys/>
+              <notify>
+                <syslog>
+                  <contenttype>plaintext</contenttype>
+                </syslog>
+              </notify>
+            </config>
+          </log>
+          <maximum>10</maximum>
+          <write-memory/>
+        </archive>
+        <?end?>
+        <interface xmlns="urn:ios">
+          <Loopback tags="replace">
+            <name>0</name>
+            <description>NSO enterprise fabric router-id</description>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LOOPBACK_IP}</address>
+                  <mask>{$LOOPBACK_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+          </Loopback>
+        </interface>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <system>
+            <domain-name>{$DOMAIN_NAME}</domain-name>
+            <time-zone>UTC</time-zone>
+            <login>
+              <message>{$BANNER}</message>
+            </login>
+            <services>
+              <ssh>
+                <root-login>deny</root-login>
+                <protocol-version>v2</protocol-version>
+              </ssh>
+              <netconf>
+                <ssh/>
+              </netconf>
+            </services>
+            <syslog>
+              <host>
+                <name>{$SYSLOG_SERVER}</name>
+                <source-address>{$LOOPBACK_IP}</source-address>
+                <contents>
+                  <name>any</name>
+                  <?if {$SYSLOG_JUNOS_SEVERITY='alert'}?>
+                  <alert/>
+                  <?elif {$SYSLOG_JUNOS_SEVERITY='critical'}?>
+                  <critical/>
+                  <?elif {$SYSLOG_JUNOS_SEVERITY='error'}?>
+                  <error/>
+                  <?elif {$SYSLOG_JUNOS_SEVERITY='warning'}?>
+                  <warning/>
+                  <?elif {$SYSLOG_JUNOS_SEVERITY='notice'}?>
+                  <notice/>
+                  <?else?>
+                  <info/>
+                  <?end?>
+                </contents>
+              </host>
+              <file>
+                <name>messages</name>
+                <contents>
+                  <name>any</name>
+                  <any/>
+                </contents>
+              </file>
+            </syslog>
+          </system>
+          <routing-options>
+            <router-id>{$ROUTER_ID}</router-id>
+          </routing-options>
+          <interfaces>
+            <interface>
+              <name>lo0</name>
+              <unit tags="replace">
+                <name>0</name>
+                <description>NSO enterprise fabric router-id</description>
+                <family>
+                  <inet>
+                    <address>
+                      <name>{$LOOPBACK_PREFIX}</name>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

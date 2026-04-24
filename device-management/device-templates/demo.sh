@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Using device templates demo\n${NC}"
 
 printf "${PURPLE}##### Reset\n${NC}"
@@ -33,10 +45,7 @@ devices sync-from
 EOF
 
 printf "\n\n${GREEN}##### Static templates\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Create a 'servers-static' template\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -65,10 +74,7 @@ commit dry-run
 EOF
 
 printf "\n\n${GREEN}##### Templates with variables\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Create a 'servers-variables' template\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -97,10 +103,7 @@ commit dry-run
 EOF
 
 printf "\n\n${GREEN}##### Templates with expressions\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Evaluate XPath expressions for debug purposes\n${NC}"
 ncs_cli -n -u admin -C << EOF
 devtools true
@@ -146,10 +149,7 @@ commit dry-run
 EOF
 
 printf "\n\n${GREEN}##### Templates combined\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Combining the usage of variables and selections\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -180,17 +180,11 @@ commit
 EOF
 
 printf "\n\n${PURPLE}##### The resulting NSO XPath trace log\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 cat logs/xpath.trace
 
 printf "\n${GREEN}##### RESTCONF\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Apply the created templates over RESTCONF using the 'curl' tool\n${NC}"
 if hash curl 2> /dev/null; then
 printf "\n${PURPLE}##### Apply the servers-static template\n${NC}"
@@ -206,10 +200,7 @@ else
 fi
 
 printf "\n${GREEN}##### NETCONF\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Apply the created templates over NETCONF using the NSO 'netconf-console' tool\n${NC}"
 printf "\n${PURPLE}##### Apply the servers-static template\n${NC}"
 netconf-console --rpc=NETCONF/nc-servers-static.xml
@@ -222,17 +213,13 @@ netconf-console --rpc=NETCONF/nc-servers-combined-ex2.xml
 
 printf "\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     ncs --stop
     ncs-netsim stop
 
     printf "\n${PURPLE}##### Reset the example to its original files\n${NC}"
-    if [ -z "$NONINTERACTIVE" ]; then
-        printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-        read -n 1 -s -r
-    fi
+    pause
     make clean
 fi
 

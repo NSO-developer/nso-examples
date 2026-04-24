@@ -1,6 +1,6 @@
 package com.example.websiteservice.websiteservice;
 
-import java.net.InetSocketAddress;
+import java.net.UnixDomainSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +69,7 @@ public class WebserverOnFire {
 
         try {
             Maapi maapi = new Maapi(
-                    new InetSocketAddress("localhost", Conf.NCS_PORT));
+                    UnixDomainSocketAddress.of(Conf.NCS_PATH));
 
             //Create a new Simulated incident ...
             Incident inc = Incident.generate();
@@ -94,8 +94,6 @@ public class WebserverOnFire {
             e.printStackTrace();
         }
     }
-
-
 
 
     /* The incident class just need for this simulation example */

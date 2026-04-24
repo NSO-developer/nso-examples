@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-if [ -n "${NCS_IPC_PATH}" ]; then
+if [ -n "${NCS_IPC_PORT}" ]; then
+ENV="NCS_IPC_PORT="
+elif [ -n "${NCS_IPC_PATH}" ]; then
 ENV="NCS_IPC_PATH=${NCS_IPC_PATH}."
 else
-ENV="NCS_IPC_PORT="
+ENV="NCS_IPC_PATH=/tmp/nso/nso-ipc."
 fi
 
 set -eu # Abort the script if a command returns with a non-zero exit code or if
@@ -13,6 +15,18 @@ GREEN='\033[0;32m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
+
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
 
 printf "\n${GREEN}##### Layered Services Architecture Scaling Demo\n${NC}"
 printf "${GREEN}##### Running the Example\n${NC}"
@@ -56,10 +70,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Moving a Device\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Move device ex0 from lower-nso-1 to lower-nso-2\n${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
@@ -74,10 +85,7 @@ cfs-vlan v1 get-modifications
 EOF
 
 printf "\n\n${GREEN}##### Re-balancing the Lower Layer\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Dry run a re-balance of the lower LSA layer\n${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
@@ -100,10 +108,7 @@ show running-config dispatch-map | nomore
 EOF
 
 printf "\n\n${GREEN}##### Evacuating a Lower LSA Node\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Dry run moving all devices on lower-nso-1 to the other lower LSA nodes in the cluster\n${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 move-device evacuate node lower-nso-1 dry-run
@@ -121,8 +126,7 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
     make stop clean
 fi

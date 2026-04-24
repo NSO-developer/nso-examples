@@ -22,7 +22,7 @@ filterList = [
     f'{p}disabled-info', f'{p}disallow-value', f'{p}display-empty-config',
     f'{p}display-joined', f'{p}display-separated',
     f'{p}embed-no-on-delete', f'{p}enforce-table',
-    f'{p}exit-command', f'{p}explicit-exit', f'{p}expose-key-name',
+    f'{p}exit-command', f'{p}explicit-exit',
     f'{p}expose-ns-prefix', f'{p}full-command', f'{p}full-no',
     f'{p}full-show-path', f'{p}ignore-modified',
     f'{p}incomplete-command', f'{p}incomplete-no', f'{p}incomplete-show-path',
@@ -57,7 +57,7 @@ def tailf_ned_sanitize(yang_file, stats_suffix):
     ncs_dir = os.environ['NCS_DIR']
     yang_path = yang_file.rsplit('/', 1)[0]
     result = subprocess.run(
-        ['pyang', '--path', yang_path, '--path', ncs_dir,
+        ['yanger', '--path', yang_path, '--path', ncs_dir,
          '--format', 'yin', yang_file], stdout=subprocess.PIPE, env=my_env,
         encoding='utf-8')
     yin_content = result.stdout

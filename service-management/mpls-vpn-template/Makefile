@@ -1,7 +1,3 @@
-# The order of packages is significant as there are dependencies between
-# the packages. Typically generated namespaces are used by other packages.
-PACKAGES = l3vpn
-
 # Directory of example packages
 PACKAGE_STORE=$(NCS_DIR)/examples.ncs/common/packages
 
@@ -23,9 +19,7 @@ packages:
 	$(MAKE) -C $(PACKAGE_STORE)/cisco-iosxr-netsim-cli-1.0/src all
 	$(MAKE) -C $(PACKAGE_STORE)/alu-sr-netsim-cli-1.0/src all
 	$(MAKE) -C $(PACKAGE_STORE)/juniper-junos-netsim-nc-1.0/src all
-	for i in $(PACKAGES); do \
-		$(MAKE) -C packages/$${i}/src all || exit 1; \
-	done
+	$(MAKE) -C $(PACKAGE_STORE)/l3vpn/src all
 .PHONY: packages
 
 netsim:
@@ -48,7 +42,7 @@ netsim:
 	cp initial_data/iosxr.xml netsim/p/p3/cdb
 
 ncs:
-	ncs-setup --netsim-dir netsim --dest .
+	ncs-setup --package $(PACKAGE_STORE)/l3vpn --netsim-dir netsim --dest .
 	sed -i.bkp -e 's!<cli>!<cli><default-table-behavior>dynamic</default-table-behavior>!' ncs.conf
 	cp initial_data/topology.xml ncs-cdb
 	cp initial_data/qos.xml ncs-cdb
@@ -59,15 +53,13 @@ ncs:
 .PHONY: ncs
 
 clean:
-	for i in $(PACKAGES); do                           \
-	    $(MAKE) -C packages/$${i}/src clean || exit 1; \
-	done
 	rm -f README.ncs README.netsim
 	rm -rf netsim logs state ncs-cdb *.trace
 	rm -f packages/alu-sr-netsim-cli-1.0
 	rm -f packages/cisco-ios-netsim-cli-1.0
 	rm -f packages/cisco-iosxr-netsim-cli-1.0
 	rm -f packages/juniper-junos-netsim-nc-1.0
+	rm -f packages/l3vpn
 	rm -rf bin
 .PHONY: clean
 

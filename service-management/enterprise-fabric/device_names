@@ -1,0 +1,10 @@
+s/=dev0/=lon-core1/
+s/=dev1/=man-core1/
+s/=dev2/=nyc-core1/
+s/=dev3/=sgp-core1/
+s/=dev4/=lon-br1/
+s/=dev5/=man-br1/
+s/=dev6/=sgp-br1/
+s/=dev7/=nyc-br1/
+s/=dev8/=lon-tr1/
+s/=dev9/=nyc-tr1/

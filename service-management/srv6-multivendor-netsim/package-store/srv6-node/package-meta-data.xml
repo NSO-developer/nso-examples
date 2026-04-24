@@ -1,0 +1,22 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>srv6-node</name>
+  <package-version>1.0</package-version>
+  <description>Node configuration for a SRv6 core network</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+  <required-package>
+    <name>core-network</name>
+  </required-package>
+
+  <supported-ned-id xmlns:id="never-match">id:safely-ignore</supported-ned-id>
+  <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>juniper-junos-netsim-nc.*</supported-ned-id-match>
+  <supported-ned-id-match>alu-sr-netsim-cli.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>srv6_node.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

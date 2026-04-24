@@ -15,23 +15,19 @@ echo "Note: To run this example without pausing, use: ./demo.sh -n"
 next_step "Reset the example"
 make stop clean
 
-next_step "Create a self-signed CA to use for node authentication
-and create a certificate for all three nodes"
-make certs
-
 next_step "Reset and prepare 3 new NSO nodes for the HA Raft cluster
 Note: This example creates a new certificate on-demand during node setup
       if one is not found."
 make all
 
 next_step "Check Raft configuration in ncs.conf (node1)"
-print_section node1/ncs.conf ha-raft | grep -v '^ *<!-- *<'
+cat node1/ncs.conf.d/raft.conf
 
 next_step "Start NSO processes"
 make start
 
 next_step "Initialize the HA cluster with create-cluster action"
-node_cli 1 'ha-raft create-cluster member [ ncsd2@127.0.0.1 ncsd3@127.0.0.1 ]'
+node_cli 1 'ha-raft create-cluster member [ ncsd2@127.0.0.1:4572 ncsd3@127.0.0.1:4573 ]'
 wait_for follower node_role 2
 wait_for follower node_role 3
 
@@ -63,7 +59,7 @@ next_step "Observe fail over by bringing down node 1 (current leader)"
 echo "Status of nodes pre-failover:"
 show_ha_roles 3
 echo ""
-NCS_IPC_PORT=4561 ncs --stop
+NCS_IPC_PATH=/tmp/nso/nso-ipc1 ncs --stop
 echo "Waiting for new leader"
 wait_while none find_leader 3 0
 leader=$(find_leader 3)
@@ -94,6 +90,7 @@ node_cli 1 show ha-raft status role
 node_cli $leader show ha-raft status connected-node
 
 next_step " Observe the new data is replicated as well"
+wait_while "1" node_cmd 1 -c 'num_instances /dummies/dummy'
 node_show 1 running-config dummies
 
 show_done

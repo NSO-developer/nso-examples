@@ -9,6 +9,11 @@ pointers to further reading.
 Suggested Order of Consumption:
 -------------------------------
 
+### certificate
+Example showing how to use the scripts in `ca/` directory to set up a private
+CA and provision certificates for securing NSO TLS connections required for
+High Availability.
+
 ### raft-cluster
 The example shows the steps to set up an HA Raft cluster initially. It includes
 securing the cluster by provisioning node certificates and how it behaves when

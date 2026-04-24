@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Creating a resource facing service demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -53,10 +65,7 @@ commit dry-run
 EOF
 
 printf "\n\n${GREEN}##### The vlan package - shared data among services\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Add configuration shared between multiple service instances\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -76,8 +85,7 @@ ncs_load -M -Fp -P /devices/device/config/sys/interfaces/interface
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
 
     printf "\n${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     ncs --stop
@@ -88,8 +96,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     ncs-setup --reset
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make clean
 fi
 printf "\n${GREEN}##### Done!\n${NC}"

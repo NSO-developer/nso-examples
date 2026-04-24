@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Simple MPLS layer3 VPN demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -16,10 +28,7 @@ set -e
 make clean
 
 printf "\n${GREEN}##### Running the example\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Setup the environment and start the simulated network\n${NC}"
 make all start
 
@@ -29,10 +38,7 @@ devices sync-from
 EOF
 
 printf "\n\n${GREEN}##### VPN service configuration\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Configure a VPN network\n${NC}"
 ncs_cli -n -u admin -C << EOF
 autowizard false
@@ -52,8 +58,7 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
 
     printf "\n${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     make stop

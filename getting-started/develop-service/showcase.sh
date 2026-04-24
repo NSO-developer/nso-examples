@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -euo pipefail
 
 set -eu # Abort the script if a command returns with a non-zero exit code or if
         # a variable name is dereferenced when the variable hasn't been set
@@ -8,6 +9,20 @@ GREEN='\033[0;32m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 EXAMPLE_DIR=$(pwd)
+
+NONINTERACTIVE=${NONINTERACTIVE-}
+
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
 
 printf "\n${GREEN}##### Setup the demo\n${NC}"
 
@@ -66,7 +81,7 @@ show full-configuration devices device ex1 config sys dns server
 EOF
 
 printf "\n\n${GREEN}##### Done\n${NC}"
-read -n 1 -s -r -p "##### [Press ENTER to continue to the next showcase]"
+pause "##### [Press ENTER to continue to the next showcase]"
 
 printf "\n${GREEN}##### Setup the demo\n${NC}"
 cd "$EXAMPLE_DIR"

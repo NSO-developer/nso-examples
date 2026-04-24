@@ -1,0 +1,11 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <oidc-auth xmlns="http://tail-f.com/ns/cisco-nso-oidc-auth">
+    <issuer>http://127.0.0.1:8081/realms/NSO</issuer>
+    <grant-type>
+      <authorization-code/>
+    </grant-type>
+    <client-id>nso-client</client-id>
+    <client-secret>RRfnNHzKppLe0Gq9yf0Dx3L66t9Nfxc2</client-secret>
+    <redirect-uri>http://localhost:8080/sso/oauth2/callback</redirect-uri>
+  </oidc-auth>
+</config>

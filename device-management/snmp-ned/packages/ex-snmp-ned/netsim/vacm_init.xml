@@ -2,30 +2,9 @@
     xmlns="http://tail-f.com/ns/mibs/SNMP-VIEW-BASED-ACM-MIB/200210160000Z">
 
   <vacmSecurityToGroupTable>
-
-    <!-- The 'public' security name is mapped to the group 'all-rights' -->
-
-   <vacmSecurityToGroupEntry>
-      <vacmSecurityModel>1</vacmSecurityModel>
-      <vacmSecurityName>public</vacmSecurityName>
-      <vacmGroupName>all-rights</vacmGroupName>
-    </vacmSecurityToGroupEntry>
-
-    <vacmSecurityToGroupEntry>
-      <vacmSecurityModel>2</vacmSecurityModel>
-      <vacmSecurityName>public</vacmSecurityName>
-      <vacmGroupName>all-rights</vacmGroupName>
-    </vacmSecurityToGroupEntry>
-
     <vacmSecurityToGroupEntry>
       <vacmSecurityModel>3</vacmSecurityModel>
       <vacmSecurityName>admin</vacmSecurityName>
-      <vacmGroupName>all-rights</vacmGroupName>
-    </vacmSecurityToGroupEntry>
-
-    <vacmSecurityToGroupEntry>
-      <vacmSecurityModel>3</vacmSecurityModel>
-      <vacmSecurityName>xadmin</vacmSecurityName>
       <vacmGroupName>all-rights</vacmGroupName>
     </vacmSecurityToGroupEntry>
 
@@ -38,8 +17,8 @@
     <vacmAccessEntry>
       <vacmGroupName>all-rights</vacmGroupName>
       <vacmAccessContextPrefix></vacmAccessContextPrefix>
-      <vacmAccessSecurityModel>0</vacmAccessSecurityModel>
-      <vacmAccessSecurityLevel>noAuthNoPriv</vacmAccessSecurityLevel>
+      <vacmAccessSecurityModel>3</vacmAccessSecurityModel>
+      <vacmAccessSecurityLevel>authPriv</vacmAccessSecurityLevel>
       <vacmAccessContextMatch>exact</vacmAccessContextMatch>
       <vacmAccessReadViewName>internet</vacmAccessReadViewName>
       <vacmAccessWriteViewName>internet</vacmAccessWriteViewName>

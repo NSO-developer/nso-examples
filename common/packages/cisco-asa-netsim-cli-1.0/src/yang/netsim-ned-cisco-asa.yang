@@ -9,7 +9,7 @@ module netsim-ned-cisco-asa {
     prefix inet;
   }
 
-  revision 2025-03-07;
+  revision 2025-06-26;
 
   typedef percentage-type {
     type uint8;
@@ -44,30 +44,30 @@ module netsim-ned-cisco-asa {
 
   typedef weekday-type {
     type enumeration {
-      enum Mon;
-      enum Tue;
-      enum Wed;
-      enum Thu;
-      enum Fri;
-      enum Sat;
-      enum Sun;
+      enum "Mon";
+      enum "Tue";
+      enum "Wed";
+      enum "Thu";
+      enum "Fri";
+      enum "Sat";
+      enum "Sun";
     }
   }
 
   typedef month-type {
     type enumeration {
-      enum Jan;
-      enum Feb;
-      enum Mar;
-      enum Apr;
-      enum May;
-      enum Jun;
-      enum Jul;
-      enum Aug;
-      enum Sep;
-      enum Oct;
-      enum Nov;
-      enum Dec;
+      enum "Jan";
+      enum "Feb";
+      enum "Mar";
+      enum "Apr";
+      enum "May";
+      enum "Jun";
+      enum "Jul";
+      enum "Aug";
+      enum "Sep";
+      enum "Oct";
+      enum "Nov";
+      enum "Dec";
     }
   }
 
@@ -83,74 +83,74 @@ module netsim-ned-cisco-asa {
     type union {
       type uint8;
       type enumeration {
-        enum af11 {
+        enum "af11" {
           value 10011;
         }
-        enum af12 {
+        enum "af12" {
           value 10012;
         }
-        enum af13 {
+        enum "af13" {
           value 10013;
         }
-        enum af21 {
+        enum "af21" {
           value 10021;
         }
-        enum af22 {
+        enum "af22" {
           value 10022;
         }
-        enum af23 {
+        enum "af23" {
           value 10023;
         }
-        enum af31 {
+        enum "af31" {
           value 10031;
         }
-        enum af32 {
+        enum "af32" {
           value 10032;
         }
-        enum af33 {
+        enum "af33" {
           value 10033;
         }
-        enum af41 {
+        enum "af41" {
           value 10041;
         }
-        enum af42 {
+        enum "af42" {
           value 10042;
         }
-        enum af43 {
+        enum "af43" {
           value 10043;
         }
-        enum cs1 {
+        enum "cs1" {
           value 10001;
         }
-        enum cs2 {
+        enum "cs2" {
           value 10002;
         }
-        enum cs3 {
+        enum "cs3" {
           value 10003;
         }
-        enum cs4 {
+        enum "cs4" {
           value 10004;
         }
-        enum cs5 {
+        enum "cs5" {
           value 10005;
         }
-        enum cs6 {
+        enum "cs6" {
           value 10006;
         }
-        enum cs7 {
+        enum "cs7" {
           value 10007;
         }
-        enum default {
+        enum "default" {
           tailf:code-name "dscp_default";
           value 1000;
         }
-        enum dscp {
+        enum "dscp" {
           value 1001;
         }
-        enum ef {
+        enum "ef" {
           value 1002;
         }
-        enum precedence {
+        enum "precedence" {
           value 1003;
         }
       }
@@ -161,26 +161,26 @@ module netsim-ned-cisco-asa {
     type union {
       type uint8;
       type enumeration {
-        enum critical;
-        enum flash;
-        enum flash-override;
-        enum immediate;
-        enum internet {
+        enum "critical";
+        enum "flash";
+        enum "flash-override";
+        enum "immediate";
+        enum "internet" {
           tailf:code-name "prec_internet";
         }
-        enum network;
-        enum priority {
+        enum "network";
+        enum "priority" {
           tailf:code-name "prec_priority";
         }
-        enum routine;
+        enum "routine";
       }
     }
   }
 
   typedef access-list-in-out-type {
     type enumeration {
-      enum in;
-      enum out;
+      enum "in";
+      enum "out";
     }
   }
 
@@ -197,14 +197,14 @@ module netsim-ned-cisco-asa {
 
   typedef logging-level-type {
     type enumeration {
-      enum alerts;
-      enum critical;
-      enum debugging;
-      enum emergencies;
-      enum errors;
-      enum informational;
-      enum notifications;
-      enum warnings;
+      enum "alerts";
+      enum "critical";
+      enum "debugging";
+      enum "emergencies";
+      enum "errors";
+      enum "informational";
+      enum "notifications";
+      enum "warnings";
     }
   }
 
@@ -228,31 +228,31 @@ module netsim-ned-cisco-asa {
 
   typedef attribute-type {
     type enumeration {
-      enum C;
-      enum CN;
-      enum DNQ;
-      enum EA;
-      enum GENQ;
-      enum GN;
-      enum I;
-      enum L;
-      enum N;
-      enum O;
-      enum OU;
-      enum SER;
-      enum SN;
-      enum SP;
-      enum T;
-      enum UID;
-      enum UPN;
+      enum "C";
+      enum "CN";
+      enum "DNQ";
+      enum "EA";
+      enum "GENQ";
+      enum "GN";
+      enum "I";
+      enum "L";
+      enum "N";
+      enum "O";
+      enum "OU";
+      enum "SER";
+      enum "SN";
+      enum "SP";
+      enum "T";
+      enum "UID";
+      enum "UPN";
     }
   }
 
   typedef tls-version-type {
     type enumeration {
-      enum tlsv1;
-      enum tlsv1.1;
-      enum tlsv1.2;
+      enum "tlsv1";
+      enum "tlsv1.1";
+      enum "tlsv1.2";
     }
   }
 
@@ -261,8 +261,8 @@ module netsim-ned-cisco-asa {
       tailf:cli-drop-node-name;
       tailf:cli-optional-in-sequence;
       type enumeration {
-        enum 0;
-        enum 8;
+        enum "0";
+        enum "8";
       }
     }
     leaf secret {
@@ -325,11 +325,12 @@ module netsim-ned-cisco-asa {
         key "direction interface";
         leaf direction {
           type enumeration {
-            enum in;
-            enum out;
+            enum "in";
+            enum "out";
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         uses distribute-list-content-grouping;
@@ -341,8 +342,8 @@ module netsim-ned-cisco-asa {
       key "direction";
       leaf direction {
         type enumeration {
-          enum in;
-          enum out;
+          enum "in";
+          enum "out";
         }
       }
       uses distribute-list-content-grouping;
@@ -625,8 +626,8 @@ module netsim-ned-cisco-asa {
         leaf type {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum message-digest;
-            enum null;
+            enum "message-digest";
+            enum "null";
           }
         }
       }
@@ -667,18 +668,18 @@ module netsim-ned-cisco-asa {
   grouping interface-ethernet-grouping {
     leaf speed {
       type enumeration {
-        enum 10;
-        enum 100;
-        enum 1000;
-        enum auto;
-        enum nonegotiate;
+        enum "10";
+        enum "100";
+        enum "1000";
+        enum "auto";
+        enum "nonegotiate";
       }
     }
     leaf duplex {
       type enumeration {
-        enum auto;
-        enum full;
-        enum half;
+        enum "auto";
+        enum "full";
+        enum "half";
       }
     }
     container channel-group {
@@ -692,9 +693,9 @@ module netsim-ned-cisco-asa {
       }
       leaf mode {
         type enumeration {
-          enum active;
-          enum on;
-          enum passive;
+          enum "active";
+          enum "on";
+          enum "passive";
         }
       }
       leaf vss-id {
@@ -782,7 +783,7 @@ module netsim-ned-cisco-asa {
       tailf:cli-flatten-container;
       leaf external {
         type enumeration {
-          enum 1;
+          enum "1";
         }
       }
     }
@@ -791,7 +792,7 @@ module netsim-ned-cisco-asa {
       tailf:cli-flatten-container;
       leaf external {
         type enumeration {
-          enum 2;
+          enum "2";
         }
       }
     }
@@ -800,7 +801,7 @@ module netsim-ned-cisco-asa {
       tailf:cli-flatten-container;
       leaf nssa-external {
         type enumeration {
-          enum 1;
+          enum "1";
         }
       }
     }
@@ -809,7 +810,7 @@ module netsim-ned-cisco-asa {
       tailf:cli-flatten-container;
       leaf nssa-external {
         type enumeration {
-          enum 2;
+          enum "2";
         }
       }
     }
@@ -820,7 +821,7 @@ module netsim-ned-cisco-asa {
       type union {
         type uint8;
         type enumeration {
-          enum transparent;
+          enum "transparent";
         }
       }
     }
@@ -847,8 +848,8 @@ module netsim-ned-cisco-asa {
     }
     leaf metric-type {
       type enumeration {
-        enum 1;
-        enum 2;
+        enum "1";
+        enum "2";
       }
     }
     leaf nssa-only {
@@ -909,8 +910,8 @@ module netsim-ned-cisco-asa {
     container transport {
       leaf connection-mode {
         type enumeration {
-          enum active;
-          enum passive;
+          enum "active";
+          enum "passive";
         }
       }
     }
@@ -999,8 +1000,8 @@ module netsim-ned-cisco-asa {
       key "direction";
       leaf direction {
         type enumeration {
-          enum in;
-          enum out;
+          enum "in";
+          enum "out";
         }
       }
       leaf route-map-name {
@@ -1038,8 +1039,8 @@ module netsim-ned-cisco-asa {
       key "direction";
       leaf direction {
         type enumeration {
-          enum in;
-          enum out;
+          enum "in";
+          enum "out";
         }
       }
       leaf as-path-list {
@@ -1057,8 +1058,8 @@ module netsim-ned-cisco-asa {
       key "direction";
       leaf direction {
         type enumeration {
-          enum in;
-          enum out;
+          enum "in";
+          enum "out";
         }
       }
       leaf prefix-list-name {
@@ -1485,8 +1486,8 @@ module netsim-ned-cisco-asa {
         key "direction";
         leaf direction {
           type enumeration {
-            enum in;
-            enum out;
+            enum "in";
+            enum "out";
           }
         }
         leaf prefix {
@@ -1508,8 +1509,8 @@ module netsim-ned-cisco-asa {
         leaf range-status {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum advertise;
-            enum not-advertise;
+            enum "advertise";
+            enum "not-advertise";
           }
         }
       }
@@ -1923,14 +1924,14 @@ module netsim-ned-cisco-asa {
     }
     leaf conform-action {
       type enumeration {
-        enum drop;
-        enum transmit;
+        enum "drop";
+        enum "transmit";
       }
     }
     leaf exceed-action {
       type enumeration {
-        enum drop;
-        enum transmit;
+        enum "drop";
+        enum "transmit";
       }
     }
   }
@@ -1940,8 +1941,8 @@ module netsim-ned-cisco-asa {
       type union {
         type string;
         type enumeration {
-          enum radius;
-          enum tacacs+;
+          enum "radius";
+          enum "tacacs+";
         }
       }
     }
@@ -2001,9 +2002,9 @@ module netsim-ned-cisco-asa {
       leaf version {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum 1;
-          enum 2c;
-          enum 3;
+          enum "1";
+          enum "2c";
+          enum "3";
         }
       }
       leaf username {
@@ -2021,11 +2022,11 @@ module netsim-ned-cisco-asa {
       leaf level {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum all;
-          enum low;
-          enum medium;
-          enum fips;
-          enum high;
+          enum "all";
+          enum "low";
+          enum "medium";
+          enum "fips";
+          enum "high";
         }
       }
       container level-custom {
@@ -2041,11 +2042,11 @@ module netsim-ned-cisco-asa {
     leaf operator {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum eq;
-        enum gt;
-        enum lt;
-        enum neq;
-        enum range;
+        enum "eq";
+        enum "gt";
+        enum "lt";
+        enum "neq";
+        enum "range";
       }
     }
     leaf port {
@@ -2417,7 +2418,7 @@ module netsim-ned-cisco-asa {
     container ftp {
       leaf mode {
         type enumeration {
-          enum passive;
+          enum "passive";
         }
       }
     }
@@ -2486,9 +2487,9 @@ module netsim-ned-cisco-asa {
       }
       leaf action {
         type enumeration {
-          enum continue;
-          enum quarantine;
-          enum terminate;
+          enum "continue";
+          enum "quarantine";
+          enum "terminate";
         }
       }
       leaf priority {
@@ -2539,10 +2540,10 @@ module netsim-ned-cisco-asa {
       key "id";
       leaf id {
         type enumeration {
-          enum basic-threat;
-          enum rate;
-          enum scanning-threat;
-          enum statistics;
+          enum "basic-threat";
+          enum "rate";
+          enum "scanning-threat";
+          enum "statistics";
         }
       }
       container host {
@@ -2633,16 +2634,16 @@ module netsim-ned-cisco-asa {
       container key-exchange {
         leaf group {
           type enumeration {
-            enum dh-group1-sha1;
-            enum dh-group14-sha1;
-            enum dh-group14-sha256;
+            enum "dh-group1-sha1";
+            enum "dh-group14-sha1";
+            enum "dh-group14-sha256";
           }
         }
         leaf hostkey {
           type enumeration {
-            enum rsa;
-            enum ecdsa;
-            enum eddsa;
+            enum "rsa";
+            enum "ecdsa";
+            enum "eddsa";
           }
         }
       }
@@ -2660,8 +2661,8 @@ module netsim-ned-cisco-asa {
       leaf-list version {
         tailf:cli-flat-list-syntax;
         type enumeration {
-          enum 1;
-          enum 2;
+          enum "1";
+          enum "2";
         }
       }
       container pubkey-chain {
@@ -2679,8 +2680,8 @@ module netsim-ned-cisco-asa {
             leaf alg {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum md5;
-                enum sha256;
+                enum "md5";
+                enum "sha256";
               }
             }
             leaf fingerprint {
@@ -2699,11 +2700,11 @@ module netsim-ned-cisco-asa {
             leaf level {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum all;
-                enum low;
-                enum medium;
-                enum fips;
-                enum high;
+                enum "all";
+                enum "low";
+                enum "medium";
+                enum "fips";
+                enum "high";
               }
             }
             leaf custom {
@@ -2773,6 +2774,7 @@ module netsim-ned-cisco-asa {
           tailf:cli-sequence-commands;
           key "interface";
           leaf interface {
+            tailf:cli-expose-key-name;
             type nameif-type;
           }
           leaf seconds {
@@ -2810,6 +2812,15 @@ module netsim-ned-cisco-asa {
       leaf minimum-special {
         type uint8;
       }
+      leaf lifetime {
+        type uint16;
+      }
+      leaf username-check {
+        type empty;
+      }
+      leaf reuse-interval {
+        type uint8;
+      }
     }
     container quota {
       leaf management-session {
@@ -2839,10 +2850,10 @@ module netsim-ned-cisco-asa {
             tailf:cli-drop-node-name;
             tailf:cli-optional-in-sequence;
             type enumeration {
-              enum encrypted;
-              enum mschap;
-              enum nt-encrypted;
-              enum pbkdf2;
+              enum "encrypted";
+              enum "mschap";
+              enum "nt-encrypted";
+              enum "pbkdf2";
             }
           }
           leaf privilege {
@@ -2862,9 +2873,9 @@ module netsim-ned-cisco-asa {
         tailf:cli-add-mode;
         leaf service-type {
           type enumeration {
-            enum admin;
-            enum nas-prompt;
-            enum remote-access;
+            enum "admin";
+            enum "nas-prompt";
+            enum "remote-access";
           }
         }
         leaf vpn-group-policy {
@@ -3156,7 +3167,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type logging-level-type;
                 type enumeration {
-                  enum default {
+                  enum "default" {
                     value 106023;
                   }
                 }
@@ -3216,7 +3227,7 @@ module netsim-ned-cisco-asa {
         type union {
           type string;
           type enumeration {
-            enum interface;
+            enum "interface";
           }
         }
       }
@@ -3274,8 +3285,8 @@ module netsim-ned-cisco-asa {
         leaf priority {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum primary;
-            enum secondary;
+            enum "primary";
+            enum "secondary";
           }
         }
         container preempt {
@@ -3302,8 +3313,8 @@ module netsim-ned-cisco-asa {
       container lan {
         leaf unit {
           type enumeration {
-            enum primary;
-            enum secondary;
+            enum "primary";
+            enum "secondary";
           }
         }
         list interface {
@@ -3468,13 +3479,13 @@ module netsim-ned-cisco-asa {
         }
         leaf media-type {
           type enumeration {
-            enum rj45;
-            enum sfp;
+            enum "rj45";
+            enum "sfp";
           }
         }
         leaf port-type {
           type enumeration {
-            enum nni;
+            enum "nni";
           }
         }
         uses interface-ethernet-grouping;
@@ -3489,13 +3500,13 @@ module netsim-ned-cisco-asa {
         }
         leaf media-type {
           type enumeration {
-            enum rj45;
-            enum sfp;
+            enum "rj45";
+            enum "sfp";
           }
         }
         leaf port-type {
           type enumeration {
-            enum nni;
+            enum "nni";
           }
         }
         uses interface-ethernet-grouping;
@@ -3669,17 +3680,17 @@ module netsim-ned-cisco-asa {
         key "name";
         leaf name {
           type enumeration {
-            enum ASDM;
-            enum All;
-            enum Conns;
-            enum Hosts;
-            enum Mac-addresses;
-            enum Routes;
-            enum SSH;
-            enum Telnet;
-            enum VPN;
-            enum Xlates;
-            enum Storage;
+            enum "ASDM";
+            enum "All";
+            enum "Conns";
+            enum "Hosts";
+            enum "Mac-addresses";
+            enum "Routes";
+            enum "SSH";
+            enum "Telnet";
+            enum "VPN";
+            enum "Xlates";
+            enum "Storage";
           }
         }
         leaf value {
@@ -3767,8 +3778,8 @@ module netsim-ned-cisco-asa {
               tailf:cli-drop-node-name;
               tailf:cli-optional-in-sequence;
               type enumeration {
-                enum v4;
-                enum v6;
+                enum "v4";
+                enum "v6";
               }
             }
             leaf domain {
@@ -3789,8 +3800,8 @@ module netsim-ned-cisco-asa {
           leaf type {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum dynamic;
-              enum static;
+              enum "dynamic";
+              enum "static";
             }
           }
           choice mapped-choice {
@@ -3801,6 +3812,10 @@ module netsim-ned-cisco-asa {
             }
             leaf mapped-obj {
               tailf:cli-drop-node-name;
+              tailf:cli-optional-in-sequence;
+              type string;
+            }
+            leaf pat-pool {
               tailf:cli-optional-in-sequence;
               type string;
             }
@@ -3838,8 +3853,8 @@ module netsim-ned-cisco-asa {
             leaf protocol {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum tcp;
-                enum udp;
+                enum "tcp";
+                enum "udp";
               }
             }
             leaf real-port {
@@ -3906,61 +3921,61 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint8;
                 type enumeration {
-                  enum echo-reply {
+                  enum "echo-reply" {
                     value 0;
                   }
-                  enum unreachable {
+                  enum "unreachable" {
                     value 3;
                   }
-                  enum source-quench {
+                  enum "source-quench" {
                     value 4;
                   }
-                  enum redirect {
+                  enum "redirect" {
                     value 5;
                   }
-                  enum alternate-address {
+                  enum "alternate-address" {
                     value 6;
                   }
-                  enum echo {
+                  enum "echo" {
                     value 8;
                   }
-                  enum router-advertisement {
+                  enum "router-advertisement" {
                     value 9;
                   }
-                  enum router-solicitation {
+                  enum "router-solicitation" {
                     value 10;
                   }
-                  enum time-exceeded {
+                  enum "time-exceeded" {
                     value 11;
                   }
-                  enum parameter-problem {
+                  enum "parameter-problem" {
                     value 12;
                   }
-                  enum timestamp-request {
+                  enum "timestamp-request" {
                     value 13;
                   }
-                  enum timestamp-reply {
+                  enum "timestamp-reply" {
                     value 14;
                   }
-                  enum information-request {
+                  enum "information-request" {
                     value 15;
                   }
-                  enum information-reply {
+                  enum "information-reply" {
                     value 16;
                   }
-                  enum mask-request {
+                  enum "mask-request" {
                     value 17;
                   }
-                  enum mask-reply {
+                  enum "mask-reply" {
                     value 18;
                   }
-                  enum traceroute {
+                  enum "traceroute" {
                     value 30;
                   }
-                  enum conversion-error {
+                  enum "conversion-error" {
                     value 31;
                   }
-                  enum mobile-redirect {
+                  enum "mobile-redirect" {
                     value 32;
                   }
                 }
@@ -4031,9 +4046,9 @@ module netsim-ned-cisco-asa {
           type union {
             type uint8;
             type enumeration {
-              enum tcp;
-              enum tcp-udp;
-              enum udp;
+              enum "tcp";
+              enum "tcp-udp";
+              enum "udp";
             }
           }
         }
@@ -4184,7 +4199,7 @@ module netsim-ned-cisco-asa {
             type union {
               type logging-level-type;
               type enumeration {
-                enum default {
+                enum "default" {
                   value 106023;
                 }
               }
@@ -4214,11 +4229,12 @@ module netsim-ned-cisco-asa {
         key "direction interface";
         leaf direction {
           type enumeration {
-            enum in;
-            enum out;
+            enum "in";
+            enum "out";
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         leaf access-list {
@@ -4236,10 +4252,11 @@ module netsim-ned-cisco-asa {
         key "direction interface";
         leaf direction {
           type enumeration {
-            enum in;
+            enum "in";
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         leaf access-list {
@@ -4260,7 +4277,7 @@ module netsim-ned-cisco-asa {
         key "global";
         leaf global {
           type enumeration {
-            enum global;
+            enum "global";
           }
         }
         leaf access-list {
@@ -4343,8 +4360,8 @@ module netsim-ned-cisco-asa {
         tailf:cli-drop-node-name;
         tailf:cli-hide-in-submode;
         type enumeration {
-          enum deny;
-          enum permit;
+          enum "deny";
+          enum "permit";
         }
       }
     }
@@ -4393,7 +4410,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type string;
                 type enumeration {
-                  enum auto;
+                  enum "auto";
                 }
               }
             }
@@ -4424,16 +4441,16 @@ module netsim-ned-cisco-asa {
           leaf action {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum allow;
-              enum drop;
+              enum "allow";
+              enum "drop";
             }
           }
         }
       }
       leaf urgent-flag {
         type enumeration {
-          enum clear;
-          enum allow;
+          enum "clear";
+          enum "allow";
         }
       }
     }
@@ -4452,8 +4469,8 @@ module netsim-ned-cisco-asa {
           tailf:cli-before-key "2";
         }
         type enumeration {
-          enum deny;
-          enum permit;
+          enum "deny";
+          enum "permit";
         }
       }
       container match {
@@ -4465,7 +4482,7 @@ module netsim-ned-cisco-asa {
             type union {
               type string;
               type enumeration {
-                enum exact-match;
+                enum "exact-match";
               }
             }
           }
@@ -4496,7 +4513,7 @@ module netsim-ned-cisco-asa {
             tailf:cli-flatten-container;
             leaf external {
               type enumeration {
-                enum type-2;
+                enum "type-2";
               }
             }
           }
@@ -4505,7 +4522,7 @@ module netsim-ned-cisco-asa {
             tailf:cli-flatten-container;
             leaf nssa-external {
               type enumeration {
-                enum type-1;
+                enum "type-1";
               }
             }
           }
@@ -4517,7 +4534,7 @@ module netsim-ned-cisco-asa {
             tailf:cli-flatten-container;
             leaf external {
               type enumeration {
-                enum type-1;
+                enum "type-1";
               }
             }
           }
@@ -4529,7 +4546,7 @@ module netsim-ned-cisco-asa {
             tailf:cli-flatten-container;
             leaf nssa-external {
               type enumeration {
-                enum type-2;
+                enum "type-2";
               }
             }
           }
@@ -4558,8 +4575,8 @@ module netsim-ned-cisco-asa {
         }
         leaf origin {
           type enumeration {
-            enum igp;
-            enum incomplete;
+            enum "igp";
+            enum "incomplete";
           }
         }
         container as-path {
@@ -4594,12 +4611,12 @@ module netsim-ned-cisco-asa {
               type uint32;
               type string;
               type enumeration {
-                enum additive;
-                enum internet;
-                enum local-AS;
-                enum no-advertise;
-                enum no-export;
-                enum none;
+                enum "additive";
+                enum "internet";
+                enum "local-AS";
+                enum "no-advertise";
+                enum "no-export";
+                enum "none";
               }
             }
           }
@@ -4617,9 +4634,9 @@ module netsim-ned-cisco-asa {
         }
         leaf metric-type {
           type enumeration {
-            enum internal;
-            enum type-1;
-            enum type-2;
+            enum "internal";
+            enum "type-1";
+            enum "type-2";
           }
         }
       }
@@ -4648,9 +4665,9 @@ module netsim-ned-cisco-asa {
         tailf:cli-optional-in-sequence;
         tailf:cli-prefix-key;
         type enumeration {
-          enum inspect;
-          enum management;
-          enum regex;
+          enum "inspect";
+          enum "management";
+          enum "regex";
         }
       }
       leaf protocol {
@@ -4658,14 +4675,14 @@ module netsim-ned-cisco-asa {
         tailf:cli-prefix-key;
         tailf:cli-optional-in-sequence;
         type enumeration {
-          enum dns;
-          enum ftp;
-          enum h323;
-          enum http;
-          enum im;
-          enum rtsp;
-          enum scansafe;
-          enum sip;
+          enum "dns";
+          enum "ftp";
+          enum "h323";
+          enum "http";
+          enum "im";
+          enum "rtsp";
+          enum "scansafe";
+          enum "sip";
         }
       }
       leaf prematch {
@@ -4673,8 +4690,8 @@ module netsim-ned-cisco-asa {
         tailf:cli-prefix-key;
         tailf:cli-optional-in-sequence;
         type enumeration {
-          enum match-all;
-          enum match-any;
+          enum "match-all";
+          enum "match-any";
         }
       }
       leaf description {
@@ -4701,8 +4718,8 @@ module netsim-ned-cisco-asa {
           leaf protocol {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum tcp;
-              enum udp;
+              enum "tcp";
+              enum "udp";
             }
           }
           choice port-choice {
@@ -4758,7 +4775,7 @@ module netsim-ned-cisco-asa {
         tailf:cli-prefix-key;
         tailf:cli-optional-in-sequence;
         type enumeration {
-          enum inspect;
+          enum "inspect";
         }
       }
       leaf protocol {
@@ -4766,24 +4783,24 @@ module netsim-ned-cisco-asa {
         tailf:cli-prefix-key;
         tailf:cli-optional-in-sequence;
         type enumeration {
-          enum dcerpc;
-          enum dns;
-          enum esmtp;
-          enum ftp;
-          enum gtp;
-          enum h323;
-          enum http;
-          enum im;
-          enum ip-options;
-          enum ipsec-pass-thru;
-          enum ipv6;
-          enum mgcp;
-          enum netbios;
-          enum radius-accounting;
-          enum rtsp;
-          enum scansafe;
-          enum sip;
-          enum skinny;
+          enum "dcerpc";
+          enum "dns";
+          enum "esmtp";
+          enum "ftp";
+          enum "gtp";
+          enum "h323";
+          enum "http";
+          enum "im";
+          enum "ip-options";
+          enum "ipsec-pass-thru";
+          enum "ipv6";
+          enum "mgcp";
+          enum "netbios";
+          enum "radius-accounting";
+          enum "rtsp";
+          enum "scansafe";
+          enum "sip";
+          enum "skinny";
         }
       }
       leaf description {
@@ -4799,7 +4816,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint16;
                 type enumeration {
-                  enum auto;
+                  enum "auto";
                 }
               }
             }
@@ -4811,7 +4828,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint16;
                 type enumeration {
-                  enum auto;
+                  enum "auto";
                 }
               }
             }
@@ -4860,16 +4877,16 @@ module netsim-ned-cisco-asa {
           type union {
             type string;
             type enumeration {
-              enum class-default;
+              enum "class-default";
             }
           }
         }
         leaf type {
           tailf:cli-prefix-key;
           type enumeration {
-            enum inspect;
-            enum management;
-            enum regex;
+            enum "inspect";
+            enum "management";
+            enum "regex";
           }
         }
         container drop-connection {
@@ -4895,8 +4912,8 @@ module netsim-ned-cisco-asa {
             }
             leaf random-sequence-number {
               type enumeration {
-                enum disable;
-                enum enable;
+                enum "disable";
+                enum "enable";
               }
             }
             container timeout {
@@ -4995,11 +5012,11 @@ module netsim-ned-cisco-asa {
             key "name";
             leaf name {
               type enumeration {
-                enum all;
-                enum flow-create;
-                enum flow-denied;
-                enum flow-teardown;
-                enum flow-update;
+                enum "all";
+                enum "flow-create";
+                enum "flow-denied";
+                enum "flow-teardown";
+                enum "flow-update";
               }
             }
             leaf-list destination {
@@ -5114,15 +5131,15 @@ module netsim-ned-cisco-asa {
           leaf mode {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum inline;
-              enum promiscuous;
+              enum "inline";
+              enum "promiscuous";
             }
           }
           leaf action {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum fail-close;
-              enum fail-open;
+              enum "fail-close";
+              enum "fail-open";
             }
           }
           leaf sensor {
@@ -5193,8 +5210,8 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint8;
                 type enumeration {
-                  enum first;
-                  enum last;
+                  enum "first";
+                  enum "last";
                 }
               }
             }
@@ -5215,8 +5232,8 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint8;
                 type enumeration {
-                  enum first;
-                  enum last;
+                  enum "first";
+                  enum "last";
                 }
               }
             }
@@ -5301,13 +5318,13 @@ module netsim-ned-cisco-asa {
         leaf destination {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum asdm;
-            enum buffered;
-            enum console;
-            enum history;
-            enum mail;
-            enum monitor;
-            enum trap;
+            enum "asdm";
+            enum "buffered";
+            enum "console";
+            enum "history";
+            enum "mail";
+            enum "monitor";
+            enum "trap";
           }
         }
         leaf level {
@@ -5408,6 +5425,7 @@ module netsim-ned-cisco-asa {
         }
         key "level";
         leaf level {
+          tailf:cli-expose-key-name;
           type union {
             type uint8;
             type logging-level-type;
@@ -5577,12 +5595,12 @@ module netsim-ned-cisco-asa {
       leaf protocol {
         tailf:cli-hide-in-submode;
         type enumeration {
-          enum http-form;
-          enum kerberos;
-          enum ldap;
-          enum radius;
-          enum sdi;
-          enum tacacs+;
+          enum "http-form";
+          enum "kerberos";
+          enum "ldap";
+          enum "radius";
+          enum "sdi";
+          enum "tacacs+";
         }
       }
       container interim-accounting-update {
@@ -5594,8 +5612,8 @@ module netsim-ned-cisco-asa {
       }
       leaf accounting-mode {
         type enumeration {
-          enum single;
-          enum simultaneous;
+          enum "single";
+          enum "simultaneous";
         }
       }
       container reactivation-mode {
@@ -5606,8 +5624,8 @@ module netsim-ned-cisco-asa {
         leaf mode {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum timed;
-            enum depletion;
+            enum "timed";
+            enum "depletion";
           }
         }
         leaf deadtime {
@@ -5636,6 +5654,7 @@ module netsim-ned-cisco-asa {
           type string;
         }
         leaf host {
+          tailf:cli-expose-key-name;
           type inet:host;
         }
         leaf retry-interval {
@@ -5652,8 +5671,8 @@ module netsim-ned-cisco-asa {
         }
         leaf ldap-scope {
           type enumeration {
-            enum onelevel;
-            enum subtree;
+            enum "onelevel";
+            enum "subtree";
           }
         }
         leaf ldap-naming-attribute {
@@ -5698,11 +5717,11 @@ module netsim-ned-cisco-asa {
         }
         leaf server-type {
           type enumeration {
-            enum auto-detect;
-            enum microsoft;
-            enum novell;
-            enum openldap;
-            enum sun;
+            enum "auto-detect";
+            enum "microsoft";
+            enum "novell";
+            enum "openldap";
+            enum "sun";
           }
         }
         leaf group-search-timeout {
@@ -5786,7 +5805,7 @@ module netsim-ned-cisco-asa {
           leaf console {
             type union {
               type enumeration {
-                enum LOCAL;
+                enum "LOCAL";
               }
               type string;
             }
@@ -5865,8 +5884,8 @@ module netsim-ned-cisco-asa {
         leaf status {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "disable";
+            enum "enable";
           }
         }
       }
@@ -5952,12 +5971,12 @@ module netsim-ned-cisco-asa {
                 tailf:cli-drop-node-name;
                 tailf:cli-prefix-key;
                 type enumeration {
-                  enum ca;
-                  enum ra-encrypt;
-                  enum ra-general;
-                  enum ra-sign;
-                  enum rollover;
-                  enum self-signed;
+                  enum "ca";
+                  enum "ra-encrypt";
+                  enum "ra-general";
+                  enum "ra-sign";
+                  enum "rollover";
+                  enum "self-signed";
                 }
               }
               leaf rollover {
@@ -5989,33 +6008,33 @@ module netsim-ned-cisco-asa {
                 key "name sign compare";
                 leaf name {
                   type enumeration {
-                    enum c;
-                    enum cn;
-                    enum dc;
-                    enum dnq;
-                    enum ea;
-                    enum genq;
-                    enum gn;
-                    enum i;
-                    enum ip;
-                    enum l;
-                    enum n;
-                    enum o;
-                    enum ou;
-                    enum ser;
-                    enum sn;
-                    enum sp;
-                    enum t;
-                    enum uid;
-                    enum uname;
+                    enum "c";
+                    enum "cn";
+                    enum "dc";
+                    enum "dnq";
+                    enum "ea";
+                    enum "genq";
+                    enum "gn";
+                    enum "i";
+                    enum "ip";
+                    enum "l";
+                    enum "n";
+                    enum "o";
+                    enum "ou";
+                    enum "ser";
+                    enum "sn";
+                    enum "sp";
+                    enum "t";
+                    enum "uid";
+                    enum "uname";
                   }
                 }
                 leaf sign {
                   type enumeration {
-                    enum co;
-                    enum eq;
-                    enum nc;
-                    enum ne;
+                    enum "co";
+                    enum "eq";
+                    enum "nc";
+                    enum "ne";
                   }
                 }
                 leaf compare {
@@ -6032,9 +6051,9 @@ module netsim-ned-cisco-asa {
             presence "true";
             leaf revocation-check {
               type enumeration {
-                enum crl;
-                enum none;
-                enum ocsp;
+                enum "crl";
+                enum "none";
+                enum "ocsp";
               }
             }
             container auto-import {
@@ -6092,9 +6111,10 @@ module netsim-ned-cisco-asa {
                 type string;
               }
               leaf override {
+                tailf:cli-expose-key-name;
                 type enumeration {
-                  enum cdp;
-                  enum ocsp;
+                  enum "cdp";
+                  enum "ocsp";
                 }
               }
               leaf sequence {
@@ -6115,9 +6135,9 @@ module netsim-ned-cisco-asa {
               leaf-list validation-usage {
                 tailf:cli-flat-list-syntax;
                 type enumeration {
-                  enum ipsec-client;
-                  enum ssl-client;
-                  enum ssl-server;
+                  enum "ipsec-client";
+                  enum "ssl-client";
+                  enum "ssl-server";
                 }
               }
             }
@@ -6161,7 +6181,7 @@ module netsim-ned-cisco-asa {
             type union {
               type string;
               type enumeration {
-                enum none;
+                enum "none";
               }
             }
           }
@@ -6195,20 +6215,20 @@ module netsim-ned-cisco-asa {
           leaf encryption {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum esp-3des;
-              enum esp-aes;
-              enum esp-aes-192;
-              enum esp-aes-256;
-              enum esp-des;
-              enum esp-null;
+              enum "esp-3des";
+              enum "esp-aes";
+              enum "esp-aes-192";
+              enum "esp-aes-256";
+              enum "esp-des";
+              enum "esp-null";
             }
           }
           leaf authentication {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum esp-md5-hmac;
-              enum esp-none;
-              enum esp-sha-hmac;
+              enum "esp-md5-hmac";
+              enum "esp-none";
+              enum "esp-sha-hmac";
             }
           }
           container mode {
@@ -6231,20 +6251,20 @@ module netsim-ned-cisco-asa {
               leaf encryption {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum esp-3des;
-                  enum esp-aes;
-                  enum esp-aes-192;
-                  enum esp-aes-256;
-                  enum esp-des;
-                  enum esp-null;
+                  enum "esp-3des";
+                  enum "esp-aes";
+                  enum "esp-aes-192";
+                  enum "esp-aes-256";
+                  enum "esp-des";
+                  enum "esp-null";
                 }
               }
               leaf authentication {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum esp-md5-hmac;
-                  enum esp-none;
-                  enum esp-sha-hmac;
+                  enum "esp-md5-hmac";
+                  enum "esp-none";
+                  enum "esp-sha-hmac";
                 }
               }
             }
@@ -6266,29 +6286,29 @@ module netsim-ned-cisco-asa {
                 leaf-list encryption {
                   tailf:cli-flat-list-syntax;
                   type enumeration {
-                    enum 3des;
-                    enum aes;
-                    enum aes-192;
-                    enum aes-256;
-                    enum aes-gcm;
-                    enum aes-gcm-192;
-                    enum aes-gcm-256;
-                    enum aes-gmac;
-                    enum aes-gmac-192;
-                    enum aes-gmac-256;
-                    enum des;
-                    enum null;
+                    enum "3des";
+                    enum "aes";
+                    enum "aes-192";
+                    enum "aes-256";
+                    enum "aes-gcm";
+                    enum "aes-gcm-192";
+                    enum "aes-gcm-256";
+                    enum "aes-gmac";
+                    enum "aes-gmac-192";
+                    enum "aes-gmac-256";
+                    enum "des";
+                    enum "null";
                   }
                 }
                 leaf-list integrity {
                   tailf:cli-flat-list-syntax;
                   type enumeration {
-                    enum md5;
-                    enum null;
-                    enum sha-1;
-                    enum sha-256;
-                    enum sha-384;
-                    enum sha-512;
+                    enum "md5";
+                    enum "null";
+                    enum "sha-1";
+                    enum "sha-256";
+                    enum "sha-384";
+                    enum "sha-512";
                   }
                 }
               }
@@ -6315,9 +6335,9 @@ module netsim-ned-cisco-asa {
             }
             leaf pfs {
               type enumeration {
-                enum group2;
-                enum group5;
-                enum group14;
+                enum "group2";
+                enum "group5";
+                enum "group14";
               }
             }
             container security-association {
@@ -6329,7 +6349,7 @@ module netsim-ned-cisco-asa {
                   type union {
                     type uint32;
                     type enumeration {
-                      enum unlimited;
+                      enum "unlimited";
                     }
                   }
                 }
@@ -6346,7 +6366,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint32;
                 type enumeration {
-                  enum unlimited;
+                  enum "unlimited";
                 }
               }
             }
@@ -6357,11 +6377,11 @@ module netsim-ned-cisco-asa {
             }
             leaf window-size {
               type enumeration {
-                enum 64;
-                enum 128;
-                enum 256;
-                enum 512;
-                enum 1024;
+                enum "64";
+                enum "128";
+                enum "256";
+                enum "512";
+                enum "1024";
               }
             }
           }
@@ -6369,7 +6389,7 @@ module netsim-ned-cisco-asa {
             type union {
               type uint8;
               type enumeration {
-                enum infinite;
+                enum "infinite";
               }
             }
           }
@@ -6389,9 +6409,9 @@ module netsim-ned-cisco-asa {
             tailf:cli-drop-node-name;
             tailf:cli-prefix-key;
             type enumeration {
-              enum clear-df;
-              enum copy-df;
-              enum set-df;
+              enum "clear-df";
+              enum "copy-df";
+              enum "set-df";
             }
           }
         }
@@ -6413,14 +6433,14 @@ module netsim-ned-cisco-asa {
             leaf group {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum group1;
-                enum group14;
-                enum group19;
-                enum group2;
-                enum group20;
-                enum group21;
-                enum group24;
-                enum group5;
+                enum "group1";
+                enum "group14";
+                enum "group19";
+                enum "group2";
+                enum "group20";
+                enum "group21";
+                enum "group24";
+                enum "group5";
               }
             }
           }
@@ -6452,7 +6472,7 @@ module netsim-ned-cisco-asa {
                 type union {
                   type uint32;
                   type enumeration {
-                    enum unlimited;
+                    enum "unlimited";
                   }
                 }
               }
@@ -6495,14 +6515,14 @@ module netsim-ned-cisco-asa {
               leaf group {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum group1;
-                  enum group14;
-                  enum group19;
-                  enum group2;
-                  enum group20;
-                  enum group21;
-                  enum group24;
-                  enum group5;
+                  enum "group1";
+                  enum "group14";
+                  enum "group19";
+                  enum "group2";
+                  enum "group20";
+                  enum "group21";
+                  enum "group24";
+                  enum "group5";
                 }
               }
             }
@@ -6515,7 +6535,7 @@ module netsim-ned-cisco-asa {
                   type union {
                     type uint32;
                     type enumeration {
-                      enum unlimited;
+                      enum "unlimited";
                     }
                   }
                 }
@@ -6569,48 +6589,48 @@ module netsim-ned-cisco-asa {
           leaf-list encryption {
             tailf:cli-flat-list-syntax;
             type enumeration {
-              enum 3des;
-              enum aes;
-              enum aes-192;
-              enum aes-256;
-              enum aes-gcm;
-              enum aes-gcm-192;
-              enum aes-gcm-256;
-              enum des;
-              enum null;
+              enum "3des";
+              enum "aes";
+              enum "aes-192";
+              enum "aes-256";
+              enum "aes-gcm";
+              enum "aes-gcm-192";
+              enum "aes-gcm-256";
+              enum "des";
+              enum "null";
             }
           }
           leaf-list integrity {
             tailf:cli-flat-list-syntax;
             type enumeration {
-              enum md5;
-              enum sha;
-              enum sha256;
-              enum sha384;
-              enum sha512;
+              enum "md5";
+              enum "sha";
+              enum "sha256";
+              enum "sha384";
+              enum "sha512";
             }
           }
           leaf-list group {
             tailf:cli-flat-list-syntax;
             type enumeration {
-              enum 1;
-              enum 14;
-              enum 19;
-              enum 2;
-              enum 20;
-              enum 21;
-              enum 24;
-              enum 5;
+              enum "1";
+              enum "14";
+              enum "19";
+              enum "2";
+              enum "20";
+              enum "21";
+              enum "24";
+              enum "5";
             }
           }
           leaf-list prf {
             tailf:cli-flat-list-syntax;
             type enumeration {
-              enum md5;
-              enum sha;
-              enum sha256;
-              enum sha384;
-              enum sha512;
+              enum "md5";
+              enum "sha";
+              enum "sha256";
+              enum "sha384";
+              enum "sha512";
             }
           }
           container lifetime {
@@ -6618,7 +6638,7 @@ module netsim-ned-cisco-asa {
               type union {
                 type uint32;
                 type enumeration {
-                  enum none;
+                  enum "none";
                 }
               }
             }
@@ -6644,8 +6664,8 @@ module netsim-ned-cisco-asa {
         }
         leaf redirect {
           type enumeration {
-            enum during-auth;
-            enum during-init;
+            enum "during-auth";
+            enum "during-init";
           }
         }
         container remote-access {
@@ -6667,40 +6687,40 @@ module netsim-ned-cisco-asa {
           }
           leaf authentication {
             type enumeration {
-              enum crack;
-              enum pre-share;
-              enum rsa-sig;
+              enum "crack";
+              enum "pre-share";
+              enum "rsa-sig";
             }
           }
           leaf encryption {
             type enumeration {
-              enum 3des;
-              enum aes;
-              enum aes-192;
-              enum aes-256;
-              enum des;
+              enum "3des";
+              enum "aes";
+              enum "aes-192";
+              enum "aes-256";
+              enum "des";
             }
           }
           leaf hash {
             type enumeration {
-              enum md5;
-              enum sha;
+              enum "md5";
+              enum "sha";
             }
           }
           leaf group {
             type enumeration {
-              enum 1;
-              enum 2;
-              enum 5;
-              enum 7;
-              enum 14;
+              enum "1";
+              enum "2";
+              enum "5";
+              enum "7";
+              enum "14";
             }
           }
           leaf lifetime {
             type union {
               type uint32;
               type enumeration {
-                enum none;
+                enum "none";
               }
             }
           }
@@ -6734,39 +6754,39 @@ module netsim-ned-cisco-asa {
           }
           leaf authentication {
             type enumeration {
-              enum crack;
-              enum pre-share;
-              enum rsa-sig;
+              enum "crack";
+              enum "pre-share";
+              enum "rsa-sig";
             }
           }
           leaf encryption {
             type enumeration {
-              enum 3des;
-              enum aes;
-              enum aes-192;
-              enum aes-256;
-              enum des;
+              enum "3des";
+              enum "aes";
+              enum "aes-192";
+              enum "aes-256";
+              enum "des";
             }
           }
           leaf hash {
             type enumeration {
-              enum md5;
-              enum sha;
+              enum "md5";
+              enum "sha";
             }
           }
           leaf group {
             type enumeration {
-              enum 1;
-              enum 2;
-              enum 5;
-              enum 7;
+              enum "1";
+              enum "2";
+              enum "5";
+              enum "7";
             }
           }
           leaf lifetime {
             type union {
               type uint32;
               type enumeration {
-                enum none;
+                enum "none";
               }
             }
           }
@@ -6973,9 +6993,9 @@ module netsim-ned-cisco-asa {
         leaf security-level {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum auth;
-            enum noauth;
-            enum priv;
+            enum "auth";
+            enum "noauth";
+            enum "priv";
           }
         }
       }
@@ -7007,8 +7027,8 @@ module netsim-ned-cisco-asa {
         }
         leaf auth {
           type enumeration {
-            enum md5;
-            enum sha;
+            enum "md5";
+            enum "sha";
           }
         }
         leaf auth-password {
@@ -7017,17 +7037,17 @@ module netsim-ned-cisco-asa {
         }
         leaf priv {
           type enumeration {
-            enum 3des;
-            enum aes;
-            enum des;
+            enum "3des";
+            enum "aes";
+            enum "des";
           }
         }
         leaf bits {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum 128;
-            enum 192;
-            enum 256;
+            enum "128";
+            enum "192";
+            enum "256";
           }
         }
         leaf password {
@@ -7127,7 +7147,7 @@ module netsim-ned-cisco-asa {
           leaf life {
             type union {
               type enumeration {
-                enum forever;
+                enum "forever";
               }
               type uint32;
             }
@@ -7298,13 +7318,13 @@ module netsim-ned-cisco-asa {
       tailf:cli-flat-list-syntax;
       ordered-by user;
       type enumeration {
-        enum hostname;
-        enum domain;
-        enum context;
-        enum cluster-unit;
-        enum management-mode;
-        enum priority;
-        enum state;
+        enum "hostname";
+        enum "domain";
+        enum "context";
+        enum "cluster-unit";
+        enum "management-mode";
+        enum "priority";
+        enum "state";
       }
     }
     container jumbo-frame {
@@ -7353,8 +7373,8 @@ module netsim-ned-cisco-asa {
         leaf dtls-version {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum dtlsv1;
-            enum dtlsv1.2;
+            enum "dtlsv1";
+            enum "dtlsv1.2";
           }
         }
       }
@@ -7386,15 +7406,15 @@ module netsim-ned-cisco-asa {
         tailf:cli-flat-list-syntax;
         ordered-by user;
         type enumeration {
-          enum 3des-sha1;
-          enum aes128-sha1;
-          enum aes256-sha1;
-          enum des-sha1;
-          enum dhe-aes128-sha1;
-          enum dhe-aes256-sha1;
-          enum null-sha1;
-          enum rc4-md5;
-          enum rc4-sha1;
+          enum "3des-sha1";
+          enum "aes128-sha1";
+          enum "aes256-sha1";
+          enum "des-sha1";
+          enum "dhe-aes128-sha1";
+          enum "dhe-aes256-sha1";
+          enum "null-sha1";
+          enum "rc4-md5";
+          enum "rc4-sha1";
         }
       }
     }
@@ -7522,10 +7542,10 @@ module netsim-ned-cisco-asa {
           }
           leaf signature {
             type enumeration {
-              enum rsa-sha1;
-              enum rsa-sha256;
-              enum rsa-sha384;
-              enum rsa-sha512;
+              enum "rsa-sha1";
+              enum "rsa-sha256";
+              enum "rsa-sha384";
+              enum "rsa-sha512";
             }
           }
           container force {
@@ -7540,7 +7560,7 @@ module netsim-ned-cisco-asa {
       }
       leaf tunnel-group-preference {
         type enumeration {
-          enum group-url;
+          enum "group-url";
         }
       }
       container cache {
@@ -7638,8 +7658,8 @@ module netsim-ned-cisco-asa {
         }
         leaf user-authentication {
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "disable";
+            enum "enable";
           }
         }
         container address-pools {
@@ -7655,9 +7675,9 @@ module netsim-ned-cisco-asa {
         }
         leaf split-tunnel-policy {
           type enumeration {
-            enum excludespecified;
-            enum tunnelall;
-            enum tunnelspecified;
+            enum "excludespecified";
+            enum "tunnelall";
+            enum "tunnelspecified";
           }
         }
         container split-tunnel-network-list {
@@ -7719,21 +7739,21 @@ module netsim-ned-cisco-asa {
         }
         leaf pfs {
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "disable";
+            enum "enable";
           }
         }
         leaf-list vpn-tunnel-protocol {
           tailf:cli-flat-list-syntax;
           type enumeration {
-            enum IPSec;
-            enum ikev1;
-            enum ikev2;
-            enum l2tp-ipsec;
-            enum ssl-client;
-            enum ssl-clientless;
-            enum svc;
-            enum webvpn;
+            enum "IPSec";
+            enum "ikev1";
+            enum "ikev2";
+            enum "l2tp-ipsec";
+            enum "ssl-client";
+            enum "ssl-clientless";
+            enum "svc";
+            enum "webvpn";
           }
         }
         container split-dns {
@@ -7759,7 +7779,7 @@ module netsim-ned-cisco-asa {
           leaf alert-interval {
             type union {
               type enumeration {
-                enum none;
+                enum "none";
               }
               type uint8;
             }
@@ -7788,18 +7808,18 @@ module netsim-ned-cisco-asa {
           }
           leaf lockdown {
             type enumeration {
-              enum disable;
-              enum enable;
+              enum "disable";
+              enum "enable";
             }
           }
           leaf method {
             type enumeration {
-              enum auto-detect;
-              enum no-modify;
-              enum no-proxy;
-              enum none;
-              enum use-pac;
-              enum use-server;
+              enum "auto-detect";
+              enum "no-modify";
+              enum "no-proxy";
+              enum "none";
+              enum "use-pac";
+              enum "use-server";
             }
           }
           container except-list {
@@ -7815,14 +7835,14 @@ module netsim-ned-cisco-asa {
         }
         leaf split-tunnel-all-dns {
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "disable";
+            enum "enable";
           }
         }
         leaf smartcard-removal-disconnect {
           type enumeration {
-            enum enable;
-            enum disable;
+            enum "enable";
+            enum "disable";
           }
         }
         list anyconnect-custom {
@@ -7860,7 +7880,7 @@ module netsim-ned-cisco-asa {
               }
               leaf value {
                 type enumeration {
-                  enum DfltCustomization;
+                  enum "DfltCustomization";
                 }
               }
             }
@@ -7869,15 +7889,15 @@ module netsim-ned-cisco-asa {
             container ssl {
               leaf dtls {
                 type enumeration {
-                  enum none;
-                  enum enable;
+                  enum "none";
+                  enum "enable";
                 }
               }
               leaf keepalive {
                 type union {
                   type uint16;
                   type enumeration {
-                    enum none;
+                    enum "none";
                   }
                 }
               }
@@ -7886,30 +7906,30 @@ module netsim-ned-cisco-asa {
                   type union {
                     type uint16;
                     type enumeration {
-                      enum none;
+                      enum "none";
                     }
                   }
                 }
                 leaf method {
                   type enumeration {
-                    enum none;
-                    enum new-tunnel;
-                    enum ssl;
+                    enum "none";
+                    enum "new-tunnel";
+                    enum "ssl";
                   }
                 }
               }
               leaf df-bit-ignore {
                 type enumeration {
-                  enum disable;
-                  enum enable;
+                  enum "disable";
+                  enum "enable";
                 }
               }
             }
             container dtls {
               leaf compression {
                 type enumeration {
-                  enum none;
-                  enum lzs;
+                  enum "none";
+                  enum "lzs";
                 }
               }
             }
@@ -7918,7 +7938,7 @@ module netsim-ned-cisco-asa {
                 type union {
                   type uint16;
                   type enumeration {
-                    enum none;
+                    enum "none";
                   }
                 }
               }
@@ -7926,7 +7946,7 @@ module netsim-ned-cisco-asa {
                 type union {
                   type uint16;
                   type enumeration {
-                    enum none;
+                    enum "none";
                   }
                 }
               }
@@ -7939,15 +7959,15 @@ module netsim-ned-cisco-asa {
               leaf enable-none {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum enable;
-                  enum none;
+                  enum "enable";
+                  enum "none";
                 }
               }
               leaf default {
                 type enumeration {
-                  enum anyconnect;
-                  enum webvpn;
-                  enum svc;
+                  enum "anyconnect";
+                  enum "webvpn";
+                  enum "svc";
                 }
               }
               leaf timeout {
@@ -7991,8 +8011,8 @@ module netsim-ned-cisco-asa {
           container svc {
             leaf dtls {
               type enumeration {
-                enum enable;
-                enum none;
+                enum "enable";
+                enum "none";
               }
             }
           }
@@ -8038,14 +8058,14 @@ module netsim-ned-cisco-asa {
         leaf name {
           type union {
             type enumeration {
-              enum web-cache;
+              enum "web-cache";
             }
             type uint8;
           }
         }
         leaf redirect {
           type enumeration {
-            enum in;
+            enum "in";
           }
         }
       }
@@ -8061,10 +8081,10 @@ module netsim-ned-cisco-asa {
         }
         leaf type {
           type enumeration {
-            enum ipsec-l2l;
-            enum ipsec-ra;
-            enum remote-access;
-            enum webvpn;
+            enum "ipsec-l2l";
+            enum "ipsec-ra";
+            enum "remote-access";
+            enum "webvpn";
           }
         }
       }
@@ -8126,14 +8146,14 @@ module netsim-ned-cisco-asa {
         }
         leaf authentication-attr-from-server {
           type enumeration {
-            enum primary;
-            enum secondary;
+            enum "primary";
+            enum "secondary";
           }
         }
         leaf authenticated-session-username {
           type enumeration {
-            enum primary;
-            enum secondary;
+            enum "primary";
+            enum "secondary";
           }
         }
         list dhcp-server {
@@ -8145,8 +8165,8 @@ module netsim-ned-cisco-asa {
             tailf:cli-drop-node-name;
             tailf:cli-prefix-key;
             type enumeration {
-              enum link-selection;
-              enum subnet-selection;
+              enum "link-selection";
+              enum "subnet-selection";
             }
           }
           leaf address {
@@ -8200,10 +8220,10 @@ module netsim-ned-cisco-asa {
         leaf-list authentication {
           tailf:cli-flat-list-syntax;
           type enumeration {
-            enum aaa;
-            enum certificate;
-            enum multiple-certificate;
-            enum saml;
+            enum "aaa";
+            enum "certificate";
+            enum "multiple-certificate";
+            enum "saml";
           }
         }
         leaf radius-reject-message {
@@ -8220,8 +8240,8 @@ module netsim-ned-cisco-asa {
           leaf status {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum disable;
-              enum enable;
+              enum "disable";
+              enum "enable";
             }
           }
         }
@@ -8235,8 +8255,8 @@ module netsim-ned-cisco-asa {
           leaf status {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum disable;
-              enum enable;
+              enum "disable";
+              enum "enable";
             }
           }
         }
@@ -8276,9 +8296,9 @@ module netsim-ned-cisco-asa {
             leaf type {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum hybrid;
-                enum none;
-                enum xauth;
+                enum "hybrid";
+                enum "none";
+                enum "xauth";
               }
             }
           }
@@ -8316,9 +8336,9 @@ module netsim-ned-cisco-asa {
         }
         leaf peer-id-validate {
           type enumeration {
-            enum cert;
-            enum nocheck;
-            enum req;
+            enum "cert";
+            enum "nocheck";
+            enum "req";
           }
         }
         leaf pre-shared-key {
@@ -8400,8 +8420,8 @@ module netsim-ned-cisco-asa {
         }
         leaf redirect-fqdn {
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "disable";
+            enum "enable";
           }
         }
         leaf priority {
@@ -8468,10 +8488,10 @@ module netsim-ned-cisco-asa {
         container throughput {
           leaf level {
             type enumeration {
-              enum 100m;
-              enum 1G;
-              enum 2G;
-              enum 10G;
+              enum "100m";
+              enum "1G";
+              enum "2G";
+              enum "10G";
             }
           }
         }
@@ -8642,8 +8662,8 @@ module netsim-ned-cisco-asa {
       leaf flag {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum invisible;
-          enum visible;
+          enum "invisible";
+          enum "visible";
         }
       }
     }
@@ -8726,8 +8746,8 @@ module netsim-ned-cisco-asa {
         }
         leaf transport-method {
           type enumeration {
-            enum email;
-            enum http;
+            enum "email";
+            enum "http";
           }
         }
       }
@@ -8738,14 +8758,14 @@ module netsim-ned-cisco-asa {
         key "id";
         leaf id {
           type enumeration {
-            enum configuration;
-            enum diagnostic;
-            enum environment;
-            enum inventory;
-            enum snapshot;
-            enum syslog;
-            enum telemetry;
-            enum threat;
+            enum "configuration";
+            enum "diagnostic";
+            enum "environment";
+            enum "inventory";
+            enum "snapshot";
+            enum "syslog";
+            enum "telemetry";
+            enum "threat";
           }
         }
         container periodic {
@@ -8822,6 +8842,7 @@ module netsim-ned-cisco-asa {
             tailf:cli-delete-when-empty;
             key "id";
             leaf id {
+              tailf:cli-expose-key-name;
               type string;
             }
           }

@@ -14,8 +14,8 @@ module netsim-ned-alu-sr-stats {
 
   typedef state {
     type enumeration {
-      enum Up;
-      enum Down;
+      enum "Up";
+      enum "Down";
       enum "Not configured";
     }
   }
@@ -971,12 +971,12 @@ module netsim-ned-alu-sr-stats {
       }
       leaf state {
         type enumeration {
-          enum Established;
-          enum Idle;
-          enum Connect;
-          enum Active;
-          enum OpenSent;
-          enum OpenConfirm;
+          enum "Established";
+          enum "Idle";
+          enum "Connect";
+          enum "Active";
+          enum "OpenSent";
+          enum "OpenConfirm";
         }
       }
       list stats {
@@ -1052,7 +1052,7 @@ module netsim-ned-alu-sr-stats {
           type union {
             type string;
             type enumeration {
-              enum -;
+              enum "-";
             }
           }
         }
@@ -1136,23 +1136,23 @@ module netsim-ned-alu-sr-stats {
       }
       leaf state {
         type enumeration {
-          enum incomplete;
-          enum reachable;
-          enum stale;
-          enum delay;
-          enum probe;
+          enum "incomplete";
+          enum "reachable";
+          enum "stale";
+          enum "delay";
+          enum "probe";
         }
       }
       leaf origin {
         type enumeration {
-          enum dynamic;
-          enum static;
+          enum "dynamic";
+          enum "static";
         }
       }
       leaf is-router {
         type enumeration {
-          enum Yes;
-          enum No;
+          enum "Yes";
+          enum "No";
         }
       }
     }
@@ -1464,9 +1464,9 @@ module netsim-ned-alu-sr-stats {
         }
         leaf scope {
           type enumeration {
-            enum NB;
-            enum NTPMR;
-            enum NC;
+            enum "NB";
+            enum "NTPMR";
+            enum "NC";
           }
         }
         leaf remote-chassis-id {

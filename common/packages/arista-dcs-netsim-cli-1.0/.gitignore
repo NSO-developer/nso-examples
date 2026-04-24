@@ -1,0 +1,5 @@
+src/java/src/com/tailf/packages/ned/netsimcli/namespaces/
+src/*netsim-cli*.yang
+src/augmented
+src/ncsc-out
+package-meta-data.xml

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <hostname xmlns="http://tail-f.com/ned/arista-dcs">eos-leaf-1</hostname>
+  <username xmlns="http://tail-f.com/ned/arista-dcs">
+    <name>admin</name>
+    <role>network-admin</role>
+    <secret>
+      <encryption>0</encryption>
+      <secret>admin</secret>
+    </secret>
+  </username>
+  <interface xmlns="http://tail-f.com/ned/arista-dcs">
+    <Ethernet>
+      <name>1/1</name>
+      <description>tenant-edge-uplink</description>
+    </Ethernet>
+  </interface>
+</config>

@@ -26,8 +26,8 @@ module netsim-ned-dell-ftos {
     leaf encryption {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum 0;
-        enum 5;
+        enum "0";
+        enum "5";
       }
     }
     leaf password {
@@ -40,8 +40,8 @@ module netsim-ned-dell-ftos {
     leaf encryption {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum 0;
-        enum 7;
+        enum "0";
+        enum "7";
       }
     }
     leaf password {
@@ -54,8 +54,8 @@ module netsim-ned-dell-ftos {
     leaf encryption {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum 0;
-        enum 8;
+        enum "0";
+        enum "8";
       }
     }
     leaf password {
@@ -68,15 +68,15 @@ module netsim-ned-dell-ftos {
     leaf location {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum system:;
-        enum tftp:;
+        enum "system:";
+        enum "tftp:";
       }
     }
     leaf partition {
       tailf:cli-drop-node-name;
       type enumeration {
-        enum A:;
-        enum B:;
+        enum "A:";
+        enum "B:";
       }
     }
   }
@@ -101,8 +101,8 @@ module netsim-ned-dell-ftos {
         key "inout";
         leaf inout {
           type enumeration {
-            enum in;
-            enum out;
+            enum "in";
+            enum "out";
           }
         }
         choice acl-choice {
@@ -159,8 +159,8 @@ module netsim-ned-dell-ftos {
         key "inout";
         leaf inout {
           type enumeration {
-            enum in;
-            enum out;
+            enum "in";
+            enum "out";
           }
         }
         leaf group {
@@ -196,14 +196,14 @@ module netsim-ned-dell-ftos {
       }
       leaf rx {
         type enumeration {
-          enum off;
-          enum on;
+          enum "off";
+          enum "on";
         }
       }
       leaf tx {
         type enumeration {
-          enum off;
-          enum on;
+          enum "off";
+          enum "on";
         }
       }
     }
@@ -262,8 +262,8 @@ module netsim-ned-dell-ftos {
         }
         leaf mode {
           type enumeration {
-            enum rx;
-            enum tx;
+            enum "rx";
+            enum "tx";
           }
         }
       }
@@ -280,9 +280,9 @@ module netsim-ned-dell-ftos {
           }
           leaf mode {
             type enumeration {
-              enum active;
-              enum off;
-              enum passive;
+              enum "active";
+              enum "off";
+              enum "passive";
             }
           }
         }
@@ -306,7 +306,7 @@ module netsim-ned-dell-ftos {
           type union {
             type uint8;
             type enumeration {
-              enum all;
+              enum "all";
             }
           }
         }
@@ -337,7 +337,7 @@ module netsim-ned-dell-ftos {
           type union {
             type uint8;
             type enumeration {
-              enum members;
+              enum "members";
             }
           }
         }
@@ -345,13 +345,13 @@ module netsim-ned-dell-ftos {
     }
     leaf protocol {
       type enumeration {
-        enum lacp;
-        enum xstp;
+        enum "lacp";
+        enum "xstp";
       }
     }
     leaf auto-synchronize {
       type enumeration {
-        enum full;
+        enum "full";
       }
     }
   }
@@ -447,14 +447,14 @@ module netsim-ned-dell-ftos {
           leaf severity-level {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum emergencies;
-              enum alerts;
-              enum critical;
-              enum errors;
-              enum warnings;
-              enum notifications;
-              enum informational;
-              enum debugging;
+              enum "emergencies";
+              enum "alerts";
+              enum "critical";
+              enum "errors";
+              enum "warnings";
+              enum "notifications";
+              enum "informational";
+              enum "debugging";
             }
           }
         }
@@ -470,14 +470,14 @@ module netsim-ned-dell-ftos {
           leaf severity-level {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum emergencies;
-              enum alerts;
-              enum critical;
-              enum errors;
-              enum warnings;
-              enum notifications;
-              enum informational;
-              enum debugging;
+              enum "emergencies";
+              enum "alerts";
+              enum "critical";
+              enum "errors";
+              enum "warnings";
+              enum "notifications";
+              enum "informational";
+              enum "debugging";
             }
           }
         }
@@ -499,14 +499,14 @@ module netsim-ned-dell-ftos {
     }
     leaf trap {
       type enumeration {
-        enum notifications;
-        enum alerts;
-        enum critical;
-        enum debugging;
-        enum emergencies;
-        enum errors;
-        enum informational;
-        enum warnings;
+        enum "notifications";
+        enum "alerts";
+        enum "critical";
+        enum "debugging";
+        enum "emergencies";
+        enum "errors";
+        enum "informational";
+        enum "warnings";
       }
     }
     container source-interface {
@@ -516,8 +516,8 @@ module netsim-ned-dell-ftos {
     }
     leaf version {
       type enumeration {
-        enum 0;
-        enum 1;
+        enum "0";
+        enum "1";
       }
     }
   }
@@ -649,10 +649,10 @@ module netsim-ned-dell-ftos {
     }
     leaf role {
       type enumeration {
-        enum netadmin;
-        enum netoperator;
-        enum secadmin;
-        enum sysadmin;
+        enum "netadmin";
+        enum "netoperator";
+        enum "secadmin";
+        enum "sysadmin";
       }
     }
   }
@@ -718,13 +718,13 @@ module netsim-ned-dell-ftos {
       }
       leaf portmode {
         type enumeration {
-          enum quad;
+          enum "quad";
         }
       }
       leaf speed {
         type enumeration {
-          enum 10G;
-          enum 25G;
+          enum "10G";
+          enum "25G";
         }
       }
     }
@@ -1108,8 +1108,8 @@ module netsim-ned-dell-ftos {
             tailf:cli-before-key "2";
           }
           type enumeration {
-            enum permit;
-            enum deny;
+            enum "permit";
+            enum "deny";
           }
         }
         leaf address {
@@ -1156,7 +1156,7 @@ module netsim-ned-dell-ftos {
       }
       leaf rsa-authentication {
         type enumeration {
-          enum enable;
+          enum "enable";
         }
       }
       container server {
@@ -1175,25 +1175,25 @@ module netsim-ned-dell-ftos {
           leaf add-cipher-first {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum 3des-cbc;
-              enum aes128-cbc;
-              enum aes192-cbc;
-              enum aes256-cbc;
-              enum aes128-ctr;
-              enum aes192-ctr;
-              enum aes256-ctr;
+              enum "3des-cbc";
+              enum "aes128-cbc";
+              enum "aes192-cbc";
+              enum "aes256-cbc";
+              enum "aes128-ctr";
+              enum "aes192-ctr";
+              enum "aes256-ctr";
             }
           }
           leaf add-cipher-second {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum aes128-cbc;
-              enum aes192-cbc;
-              enum aes256-cbc;
-              enum 3des-cbc;
-              enum aes128-ctr;
-              enum aes192-ctr;
-              enum aes256-ctr;
+              enum "aes128-cbc";
+              enum "aes192-cbc";
+              enum "aes256-cbc";
+              enum "3des-cbc";
+              enum "aes128-ctr";
+              enum "aes192-ctr";
+              enum "aes256-ctr";
             }
           }
         }
@@ -1203,23 +1203,23 @@ module netsim-ned-dell-ftos {
           leaf add-mac-first {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum hmac-md5;
-              enum hmac-md5-96;
-              enum hmac-sha1;
-              enum hmac-sha1-96;
-              enum hmac-sha2-256;
-              enum hmac-sha2-256-96;
+              enum "hmac-md5";
+              enum "hmac-md5-96";
+              enum "hmac-sha1";
+              enum "hmac-sha1-96";
+              enum "hmac-sha2-256";
+              enum "hmac-sha2-256-96";
             }
           }
           leaf add-mac-second {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum hmac-md5-96;
-              enum hmac-sha1;
-              enum hmac-sha1-96;
-              enum hmac-sha2-256;
-              enum hmac-sha2-256-96;
-              enum hmac-md5;
+              enum "hmac-md5-96";
+              enum "hmac-sha1";
+              enum "hmac-sha1-96";
+              enum "hmac-sha2-256";
+              enum "hmac-sha2-256-96";
+              enum "hmac-md5";
             }
           }
         }
@@ -1296,8 +1296,8 @@ module netsim-ned-dell-ftos {
       uses interface-grouping;
       leaf lacp {
         type enumeration {
-          enum fast-switchover;
-          enum long-timeout;
+          enum "fast-switchover";
+          enum "long-timeout";
         }
       }
       container vlt-peer-lag {
@@ -1346,8 +1346,8 @@ module netsim-ned-dell-ftos {
           key "inout";
           leaf inout {
             type enumeration {
-              enum in;
-              enum out;
+              enum "in";
+              enum "out";
             }
           }
           choice acl-choice {
@@ -1459,8 +1459,8 @@ module netsim-ned-dell-ftos {
           key "inout";
           leaf inout {
             type enumeration {
-              enum in;
-              enum out;
+              enum "in";
+              enum "out";
             }
           }
           leaf group {
@@ -1645,8 +1645,8 @@ module netsim-ned-dell-ftos {
       tailf:cli-drop-node-name;
       tailf:cli-prefix-key;
       type enumeration {
-        enum match-all;
-        enum match-any;
+        enum "match-all";
+        enum "match-any";
       }
     }
     container match {
@@ -1998,9 +1998,9 @@ module netsim-ned-dell-ftos {
         }
         leaf direction {
           type enumeration {
-            enum both;
-            enum rx;
-            enum tx;
+            enum "both";
+            enum "rx";
+            enum "tx";
           }
         }
       }
@@ -2040,12 +2040,12 @@ module netsim-ned-dell-ftos {
         leaf week-to-start {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum 1;
-            enum 2;
-            enum 3;
-            enum 4;
-            enum first;
-            enum last;
+            enum "1";
+            enum "2";
+            enum "3";
+            enum "4";
+            enum "first";
+            enum "last";
           }
         }
         leaf weekday-to-start {
@@ -2063,12 +2063,12 @@ module netsim-ned-dell-ftos {
         leaf week-to-end {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum 1;
-            enum 2;
-            enum 3;
-            enum 4;
-            enum first;
-            enum last;
+            enum "1";
+            enum "2";
+            enum "3";
+            enum "4";
+            enum "first";
+            enum "last";
           }
         }
         leaf weekday-to-end {
@@ -2388,20 +2388,20 @@ module netsim-ned-dell-ftos {
     tailf:cli-add-mode;
     leaf boot-type {
       type enumeration {
-        enum bmp-reload;
-        enum normal-reload;
+        enum "bmp-reload";
+        enum "normal-reload";
       }
     }
     leaf config-scr-download {
       type enumeration {
-        enum enable;
-        enum disable;
+        enum "enable";
+        enum "disable";
       }
     }
     leaf auto-save {
       type enumeration {
-        enum enable;
-        enum disable;
+        enum "enable";
+        enum "disable";
       }
     }
   }
@@ -2417,14 +2417,14 @@ module netsim-ned-dell-ftos {
           tailf:cli-compact-syntax;
           leaf config-scr-download {
             type enumeration {
-              enum enable;
-              enum disable;
+              enum "enable";
+              enum "disable";
             }
           }
           leaf auto-save {
             type enumeration {
-              enum enable;
-              enum disable;
+              enum "enable";
+              enum "disable";
             }
           }
         }
@@ -2532,8 +2532,8 @@ module netsim-ned-dell-ftos {
       }
       leaf mode {
         type enumeration {
-          enum rx;
-          enum tx;
+          enum "rx";
+          enum "tx";
         }
       }
     }
@@ -2541,10 +2541,10 @@ module netsim-ned-dell-ftos {
       key "type";
       leaf type {
         type enumeration {
-          enum 0;
-          enum mstp;
-          enum pvst;
-          enum rstp;
+          enum "0";
+          enum "mstp";
+          enum "pvst";
+          enum "rstp";
         }
       }
       leaf disable {
@@ -2578,6 +2578,7 @@ module netsim-ned-dell-ftos {
           type inet:ipv4-address;
         }
         leaf udp-port {
+          tailf:cli-expose-key-name;
           type uint32;
         }
         leaf octet {
@@ -2600,8 +2601,8 @@ module netsim-ned-dell-ftos {
       leaf read-write {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum ro;
-          enum rw;
+          enum "ro";
+          enum "rw";
         }
       }
       leaf security-name {
@@ -2698,9 +2699,9 @@ module netsim-ned-dell-ftos {
       leaf security-model {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum 1;
-          enum 2c;
-          enum 3;
+          enum "1";
+          enum "2c";
+          enum "3";
         }
       }
       leaf access {
@@ -2731,9 +2732,9 @@ module netsim-ned-dell-ftos {
         leaf type {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum auth;
-            enum noauth;
-            enum priv;
+            enum "auth";
+            enum "noauth";
+            enum "priv";
           }
         }
         leaf access {
@@ -2775,8 +2776,8 @@ module netsim-ned-dell-ftos {
           tailf:cli-before-key "2";
         }
         type enumeration {
-          enum informs;
-          enum traps;
+          enum "informs";
+          enum "traps";
         }
       }
       leaf version {
@@ -2784,9 +2785,9 @@ module netsim-ned-dell-ftos {
           tailf:cli-before-key "2";
         }
         type enumeration {
-          enum 1;
-          enum 2c;
-          enum 3;
+          enum "1";
+          enum "2c";
+          enum "3";
         }
       }
       leaf security-level {
@@ -2796,15 +2797,16 @@ module netsim-ned-dell-ftos {
           tailf:cli-before-key "2";
         }
         type enumeration {
-          enum auth;
-          enum noauth;
-          enum priv;
+          enum "auth";
+          enum "noauth";
+          enum "priv";
         }
       }
       leaf snmp-name {
         type string;
       }
       leaf udp-port {
+        tailf:cli-expose-key-name;
         type uint32;
       }
     }
@@ -2822,9 +2824,9 @@ module netsim-ned-dell-ftos {
       leaf security-model {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum 1;
-          enum 2c;
-          enum 3;
+          enum "1";
+          enum "2c";
+          enum "3";
         }
       }
       leaf group-name {
@@ -2851,8 +2853,8 @@ module netsim-ned-dell-ftos {
       }
       leaf auth {
         type enumeration {
-          enum sha;
-          enum md5;
+          enum "sha";
+          enum "md5";
         }
       }
       leaf auth-password {
@@ -2861,8 +2863,8 @@ module netsim-ned-dell-ftos {
       }
       leaf priv {
         type enumeration {
-          enum aes128;
-          enum des56;
+          enum "aes128";
+          enum "des56";
         }
       }
       leaf privacy-password {
@@ -2890,8 +2892,8 @@ module netsim-ned-dell-ftos {
       leaf mib {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum excluded;
-          enum included;
+          enum "excluded";
+          enum "included";
         }
       }
     }
@@ -2926,8 +2928,8 @@ module netsim-ned-dell-ftos {
       }
       leaf key {
         type enumeration {
-          enum 0;
-          enum 7;
+          enum "0";
+          enum "7";
         }
       }
       leaf user-key {
@@ -2940,8 +2942,8 @@ module netsim-ned-dell-ftos {
       leaf key-value {
         tailf:cli-drop-node-name;
         type enumeration {
-          enum 0;
-          enum 7;
+          enum "0";
+          enum "7";
         }
       }
       leaf key-name {
@@ -3063,8 +3065,8 @@ module netsim-ned-dell-ftos {
         leaf record {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum start-stop;
-            enum stop-only;
+            enum "start-stop";
+            enum "stop-only";
           }
         }
         leaf tacacs-plus {
@@ -3175,8 +3177,8 @@ module netsim-ned-dell-ftos {
       tailf:cli-drop-node-name;
       tailf:cli-hide-in-submode;
       type enumeration {
-        enum deny;
-        enum permit;
+        enum "deny";
+        enum "permit";
       }
     }
     leaf sequence {
@@ -3240,8 +3242,8 @@ module netsim-ned-dell-ftos {
         }
         leaf role {
           type enumeration {
-            enum active;
-            enum passive;
+            enum "active";
+            enum "passive";
           }
         }
       }

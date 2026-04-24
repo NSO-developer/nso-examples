@@ -23,6 +23,10 @@ Guide on the NETCONF and RESTCONF Northbound APIs.
 Demonstrates how to use and update a custom Web UI package using the
 JSON-RPC API to query data from NSO.
 
+### commit-parameters
+Shows how the shared commit-parameter model is used from the CLI, RESTCONF,
+NETCONF, and JSON-RPC interfaces.
+
 ### snmp-mib
 Show how a simple proprietary SNMP MIB is used to access data from a YANG
 module called `simple.yang`.

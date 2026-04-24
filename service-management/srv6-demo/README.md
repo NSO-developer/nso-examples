@@ -437,6 +437,15 @@ inventory to see if a managed CE is connected to the selected access port
 and configures the CE accordingly.
 
 
+Resource Management
+-------------------
+
+Each service instance must be assigned a unique VNI number. The `shared-code`
+package implements a simplistic assignment algorithm. The algorithm does
+not support recycling previously assigned IDs. For a more robust resource
+handling see [README.rm](README.rm).
+
+
 Next Steps
 ----------
 

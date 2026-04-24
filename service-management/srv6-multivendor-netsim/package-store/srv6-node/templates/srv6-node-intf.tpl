@@ -1,0 +1,130 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{name}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet>
+            <id>{$INTERFACE_NO}</id>
+            <ipv6>
+              <enable/>
+            </ipv6>
+            <?if {$USE_CDP}?>
+              <cdp/>
+            <?end?>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <isis>
+            <tag>
+              <name>1</name>
+              <interface>
+                <name>GigabitEthernet{$INTERFACE_NO}</name>
+                <point-to-point/>
+                <address-family>
+                  <ipv6>
+                    <unicast>
+                      <?if {$USE_FRR}?>
+                        <fast-reroute>
+                          <enable>
+                            <per-prefix/>
+                          </enable>
+                          <per-prefix>
+                            <ti-lfa/>
+                          </per-prefix>
+                        </fast-reroute>
+                      <?end?>
+                    </unicast>
+                  </ipv6>
+                </address-family>
+              </interface>
+            </tag>
+          </isis>
+        </router>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <interfaces>
+            <interface>
+              <name>{$JUNOS_IFD}</name>
+              <unit>
+                <name>0</name>
+                <family>
+                  <iso/>
+                  <inet6/>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+          <protocols>
+            <isis>
+              <interface>
+                <name>{$JUNOS_IFL}</name>
+                <point-to-point/>
+                <?if {$USE_FRR}?>
+                  <node-link-protection/>
+                <?end?>
+                <level>
+                  <name>2</name>
+                  <srv6-adjacency-segment>
+                    <?if {$USE_FRR}?>
+                      <protected>
+                        <locator>
+                          <name>VPNLAB</name>
+                          <end-x-sid>
+                            <name>{$JUNOS_END_X_SID}</name>
+                            <flavor>
+                              <psp/>
+                            </flavor>
+                          </end-x-sid>
+                        </locator>
+                      </protected>
+                    <?else?>
+                      <unprotected>
+                        <locator>
+                          <name>VPNLAB</name>
+                          <end-x-sid>
+                            <name>{$JUNOS_END_X_SID}</name>
+                            <flavor>
+                              <psp/>
+                            </flavor>
+                          </end-x-sid>
+                        </locator>
+                      </unprotected>
+                    <?end?>
+                  </srv6-adjacency-segment>
+                </level>
+              </interface>
+            </isis>
+          </protocols>
+        </configuration>
+        <port xmlns="http://tail-f.com/ned/alu-sr">
+          <port-id>{$ALU_PORT}</port-id>
+          <ethernet>
+            <mode>network</mode>
+            <mtu>9194</mtu>
+          </ethernet>
+        </port>
+        <router xmlns="http://tail-f.com/ned/alu-sr">
+          <router-name>Base</router-name>
+          <interface>
+            <interface-name>{$ALU_PORT}</interface-name>
+            <port>{$ALU_PORT}</port>
+            <ip-mtu>9194</ip-mtu>
+            <ipv6/>
+            <shutdown>false</shutdown>
+          </interface>
+          <isis-list>
+            <id>1</id>
+            <interface>
+              <name>{$ALU_PORT}</name>
+              <interface-type>point-to-point</interface-type>
+              <level>
+                <id>2</id>
+              </level>
+            </interface>
+          </isis-list>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

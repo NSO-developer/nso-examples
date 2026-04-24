@@ -111,7 +111,7 @@ merge functionality, described in the NSO Administration Guide chapter Revision
 Merge Functionality.
 
 ### snmp-notification-receiver
-Showcases the NSO SNMP notification receiver (v1, v2c, v3) that can be used
+Showcases the NSO SNMP notification receiver (v3) that can be used
 with devices managed by NSO or external sources. The Java handler example
 raises an alarm whenever it receives an SNMP notification. Used by the NSO
 Development Guide chapter SNMP Notification Receiver.

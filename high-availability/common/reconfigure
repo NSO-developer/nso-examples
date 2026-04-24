@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# This script updates ncs.conf to avoid port conflicts
+# when multiple instances run on the same host.
+#
+set -e
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: reconfigure <ncs.conf> <N>" >&2
+    exit 1
+fi
+
+CONFIG_FILE=$1
+NODE_ID=$2
+
+CONFIG=$(cat "$CONFIG_FILE")
+for f in "$0".d/*.op ; do
+    HEAD=$(head -n1 "$f")
+    CMD=$(echo "$HEAD" | cut -d':' -f2)
+    TAGPATH=$(echo "$HEAD" | cut -d':' -f3 | cut -d' ' -f1 | sed -e 's|/| |g')
+    DATA=$(tail -n +2 "$f" | sed -e "s/~{ID}/$NODE_ID/g")
+
+    TAGS_IN_DATA=''
+    case $CMD in
+        add)
+            SWITCH='-a'
+            ;;
+        delete)
+            SWITCH='-d'
+            TAGS_IN_DATA='yes'
+            ;;
+        replace)
+            SWITCH='-R'
+            ;;
+        set)
+            SWITCH='-e'
+            ;;
+    esac
+
+    if [ -n "$TAGS_IN_DATA" ] ; then
+        for tag in $DATA ; do
+            CONFIG=$(echo "$CONFIG" | ncs_conf_tool $SWITCH $TAGPATH $tag)
+        done
+    else
+        CONFIG=$(echo "$CONFIG" | ncs_conf_tool $SWITCH "$DATA" $TAGPATH)
+    fi
+done
+
+echo "$CONFIG" > "$CONFIG_FILE"

@@ -20,7 +20,7 @@ $(DIRS):
 
 $(FXS): | $(DIRS)
 
-../package-meta-data.xml: package-meta-data.xml.in
+../package-meta-data.xml: package-meta-data.xml.in $(NCSC)
 	rm -rf $@
 	if [ -x ${NCS_DIR}/support/ned-make-package-meta-data ]; then \
 	    ${NCS_DIR}/support/ned-make-package-meta-data $<;         \
@@ -29,7 +29,7 @@ $(FXS): | $(DIRS)
 	fi
 	chmod -w $@
 
-ncsc-out/.done:	$(SRC) ../package-meta-data.xml | $(DIRS)
+ncsc-out/.done:	$(SRC) ../package-meta-data.xml $(NCSC) | $(DIRS)
 	$(NCSC) --ncs-compile-bundle yang                   \
 	    --ncs-device-dir ncsc-out                       \
 	    --fail-on-warnings                              \

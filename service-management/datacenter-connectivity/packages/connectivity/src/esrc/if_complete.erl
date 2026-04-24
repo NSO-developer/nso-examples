@@ -15,14 +15,27 @@ start() ->
     start(0).
 
 start(Restarts) ->
-    {ok, MaapiSock} = econfd_maapi:connect({127,0,0,1}, ?NCS_PORT),
+    {ok, MaapiSock} =
+        case confd_ia:get_connect_address() of
+            {local, Path} ->
+                econfd_maapi:connect(Path);
+            {ip, {Ip, Port, _, _}} ->
+                econfd_maapi:connect(Ip, Port)
+        end,
     Action = #confd_action_cb{actionpoint = 'if-complete',
                               completion = fun complete/9
                              },
-
-
-    {ok,Daemon} = econfd:init_daemon(if_complete, ?CONFD_SILENT,user, MaapiSock,
-                                    {127,0,0,1}, ?NCS_PORT),
+    {ok, Daemon} =
+        case confd_ia:get_connect_address() of
+            {local, DPath} ->
+                econfd:init_daemon(
+                  if_complete, ?CONFD_SILENT,
+                  user, MaapiSock, DPath);
+            {ip, {DIp, DPort, _, _}} ->
+                econfd:init_daemon(
+                  if_complete, ?CONFD_SILENT,
+                  user, MaapiSock, DIp, DPort)
+        end,
     ok = econfd:register_action_cb(Daemon, Action),
     ok = econfd:register_done(Daemon),
     supervise(Restarts, MaapiSock, Daemon).

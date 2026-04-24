@@ -1,0 +1,28 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <prefix-set xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$XR_PREFIX_SET_NAME}</name>
+          <set>
+            <value>{$PREFIX_ENTRY}</value>
+          </set>
+        </prefix-set>
+        <ip xmlns="http://tail-f.com/ned/arista-dcs">
+          <prefix-list>
+            <prefixes>
+              <name>{$EOS_PREFIX_LIST_NAME}</name>
+              <seq>
+                <no>{$SEQ}</no>
+                <permit>
+                  <ip>{$PREFIX_ENTRY}</ip>
+                </permit>
+              </seq>
+            </prefixes>
+          </prefix-list>
+        </ip>
+      </config>
+    </device>
+  </devices>
+</config-template>

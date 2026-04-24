@@ -3,10 +3,10 @@
 
 set -e
 
-if [ -n "$NCS_IPC_PATH" ]; then
-    ENV="--socket-path $NCS_IPC_PATH."
-else
+if [ -n "$NCS_IPC_PORT" ]; then
     ENV="--port "
+else
+    ENV="--socket-path ${NCS_IPC_PATH:-/tmp/nso/nso-ipc}."
 fi
 
 echo "Initialize NSO nodes:"

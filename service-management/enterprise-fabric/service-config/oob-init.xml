@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <global-settings>
+      <confirm-network-state>
+        <enabled-by-default>true</enabled-by-default>
+      </confirm-network-state>
+    </global-settings>
+  </devices>
+  <services xmlns="http://tail-f.com/ns/ncs">
+    <out-of-band>
+      <policy>
+        <servicepoint>enterprise-fabric-service</servicepoint>
+        <rule>
+          <label>allow-ios-link-description</label>
+          <path>ios:interface/GigabitEthernet/description</path>
+          <at-create>sync-from-device</at-create>
+          <at-delete>sync-from-device</at-delete>
+          <at-value-set>sync-from-device</at-value-set>
+        </rule>
+        <rule>
+          <label>reject-ios-loopback-address</label>
+          <path>ios:interface/Loopback/ip/address/primary/address</path>
+          <at-create>sync-to-device</at-create>
+          <at-delete>sync-to-device</at-delete>
+          <at-value-set>sync-to-device</at-value-set>
+        </rule>
+      </policy>
+    </out-of-band>
+  </services>
+</config>

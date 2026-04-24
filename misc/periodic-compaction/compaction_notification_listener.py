@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import select
 import socket
 import sys
@@ -42,10 +43,13 @@ def loop(event_sock):
 
 
 def setup():
-    if _ncs.PATH is None:
+    port_env = os.environ.get('NCS_IPC_PORT')
+    if port_env:
         event_sock = socket.socket()
+        connect_kwargs = dict(ip='127.0.0.1', port=int(port_env))
     else:
         event_sock = socket.socket(family=socket.AF_UNIX)
+        connect_kwargs = dict(path=_ncs.PATH)
     mask = events.NOTIF_COMPACTION
     noexists = _ncs.Value(init=1, type=_ncs.C_NOEXISTS)
     data = events.NotificationsData(heartbeat_interval=1000,
@@ -56,10 +60,8 @@ def setup():
 
     events.notifications_connect2(sock=event_sock,
                                   mask=mask,
-                                  ip='127.0.0.1',
-                                  port=_ncs.PORT,
-                                  path=_ncs.PATH,
-                                  data=data)
+                                  data=data,
+                                  **connect_kwargs)
     return event_sock
 
 

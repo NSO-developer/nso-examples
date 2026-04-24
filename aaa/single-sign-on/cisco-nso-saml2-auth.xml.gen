@@ -1,14 +1,28 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-# extract cert data
-idp_certificate=$(sed 's/.*CERTIFICATE-*\(.*\)-*.*$/\1/g' keys/idp.crt \
-               | tr -d ' \n')
-sp_certificate=$(sed 's/.*CERTIFICATE-*\(.*\)-*.*$/\1/g' keys/sp.crt \
-               | tr -d ' \n')
-sp_privkey="$(cat keys/idp.key)"
+import sys
 
-# replace placeholders
-sed "s#@IDP_CERTIFICATE@#$idp_certificate#g" cisco-nso-saml2-auth.xml.in \
-| sed "s#@SP_CERTIFICATE@#$sp_certificate#g" \
-| gawk -v r="$sp_privkey" '{gsub(/@SP_PRIVKEY@/,r)}1' \
-> cisco-nso-saml2-auth.xml
+
+def extract_cert(file_path):
+    with open(file_path, 'r') as f:
+        content = f.read()
+        content = content.partition('-----BEGIN CERTIFICATE-----')[2]
+        content = content.partition('-----END CERTIFICATE-----')[0]
+        return content.replace('\n', '').replace(' ', '')
+
+
+idp_certificate = extract_cert('idp/keys/idp.crt')
+sp_certificate = extract_cert('idp/keys/sp.crt')
+
+with open('idp/keys/idp.key', 'r') as f:
+    sp_privkey = f.read().strip()
+
+# Read template and replace placeholders
+with open('cisco-nso-saml2-auth.xml.in', 'r') as f:
+    content = f.read()
+    content = content.replace('@IDP_CERTIFICATE@', idp_certificate)
+    content = content.replace('@SP_CERTIFICATE@', sp_certificate)
+    content = content.replace('@SP_PRIVKEY@', sp_privkey)
+
+with open('cisco-nso-saml2-auth.xml', 'w') as f:
+    f.write(content)

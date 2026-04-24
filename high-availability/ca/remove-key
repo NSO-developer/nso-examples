@@ -1,0 +1,22 @@
+#!/bin/sh
+# Copyright 2026 Cisco Systems, Inc.
+# SPDX-License-Identifier: MIT
+
+BASE=$(cd "$(dirname "$0")" && pwd)
+. "$BASE"/util/ca.sh
+
+
+usage()
+{
+    cat <<EOF
+usage: remove-key <cert-name>
+
+    Remove private key for a specified TLS certificate.
+
+    In case multiple CAs are available, selects the most-recently-created
+    CA unless NCSCERT_CAPATH is used to select a specific CA.
+EOF
+    exit "${1:-0}"
+}
+
+with_cert_do remove_key "$@"

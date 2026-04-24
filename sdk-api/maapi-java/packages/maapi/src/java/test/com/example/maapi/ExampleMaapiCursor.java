@@ -36,7 +36,7 @@ public class ExampleMaapiCursor {
         } else if (args.length == 2) {
             address = new InetSocketAddress(args[0], Integer.valueOf(args[1]));
         } else {
-            address = new InetSocketAddress("localhost", Conf.NCS_PORT);
+            address = UnixDomainSocketAddress.of(Conf.NCS_PATH);
         }
 
         new ExampleMaapiCursor(address);

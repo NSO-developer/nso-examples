@@ -1,0 +1,16 @@
+<compliance xmlns="http://tail-f.com/ns/ncs">
+  <template>
+    <name>service_small_servers</name>
+    <description>Ensure that small servers are disabled. Prevents DoS attacks.</description>
+    <ned-id>
+      <id xmlns:cisco-ios-netsim-cli-1.0="http://tail-f.com/ns/ned-id/cisco-ios-netsim-cli-1.0">
+      cisco-ios-netsim-cli-1.0:cisco-ios-netsim-cli-1.0</id>
+      <config>
+        <service xmlns="urn:ios">
+          <udp-small-servers tags="absent"/>
+          <tcp-small-servers tags="absent"/>
+        </service>
+      </config>
+    </ned-id>
+  </template>
+</compliance>

@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+    <version>netsim</version>
+    <system>
+      <host-name>pe-01</host-name>
+      <domain-name>example.com</domain-name>
+      <time-zone>UTC</time-zone>
+      <name-server>
+        <name>10.10.10.1</name>
+      </name-server>
+      <name-server>
+        <name>10.10.20.1</name>
+      </name-server>
+      <login>
+        <message>This is pe-01</message>
+      </login>
+      <services>
+        <ssh>
+          <root-login>deny</root-login>
+          <protocol-version>v2</protocol-version>
+        </ssh>
+        <netconf>
+          <ssh/>
+        </netconf>
+      </services>
+      <syslog>
+        <console>
+          <name>j</name>
+          <any/>
+        </console>
+        <file>
+          <name>messages</name>
+          <contents>
+            <name>any</name>
+            <any/>
+          </contents>
+        </file>
+      </syslog>
+      <ntp>
+        <server>
+          <name>10.20.10.110</name>
+        </server>
+        <server>
+          <name>10.30.10.120</name>
+        </server>
+      </ntp>
+    </system>
+    <chassis>
+      <network-services>enhanced-ip</network-services>
+    </chassis>
+    <interfaces>
+      <interface>
+        <name>lo0</name>
+        <description>Router ID / management loopback</description>
+        <unit>
+          <name>0</name>
+          <family>
+            <inet>
+              <address>
+                <name>10.10.20.111/32</name>
+              </address>
+            </inet>
+          </family>
+        </unit>
+      </interface>
+      <interface>
+        <name>xe-0/0/0:0</name>
+        <description>to core-1 1/1/5</description>
+      </interface>
+      <interface>
+        <name>xe-0/0/0:2</name>
+        <description>to core-4 Gi0/0/0/4</description>
+      </interface>
+      <interface>
+        <name>xe-0/0/1:0</name>
+        <description>customer access pe-01-2</description>
+      </interface>
+      <interface>
+        <name>xe-0/0/1:1</name>
+        <description>customer access pe-01-3</description>
+      </interface>
+    </interfaces>
+    <routing-options>
+      <router-id>10.10.20.111</router-id>
+    </routing-options>
+  </configuration>
+</config>

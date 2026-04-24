@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}#### Kicker demo\n${NC}"
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
@@ -28,10 +40,7 @@ devices sync-from
 EOF
 
 printf "\n\n${GREEN}#### Data kicker demo\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Create a data-kicker\n${NC}"
 ncs_cli -n -u admin -C << EOF
 unhide debug
@@ -60,10 +69,7 @@ printf "\n\n${PURPLE}##### Check the result of the action by looking into the nc
 cat logs/ncs-java-vm.log
 
 printf "\n${GREEN}#### Notification kicker demo\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Create a notification-kicker\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -93,10 +99,7 @@ printf "\n\n${PURPLE}##### Check for notifications that have been received in th
 cat logs/ncs-java-vm.log
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Removing the kicker and the subscription\n${NC}"
 ncs_cli -n -u admin -C << EOF
 unhide debug
@@ -109,8 +112,7 @@ EOF
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make stop clean
 fi
 printf "\n${GREEN}##### Done!\n${NC}"

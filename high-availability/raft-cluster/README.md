@@ -7,16 +7,16 @@ and the way the cluster behaves when nodes go down and come up again.
 
 Cluster setup steps consist of first preparing each individual node
 (`ncs.conf`, certificate and key pair) and then running the
-`ha-raft create-cluster` action.
+`ha-raft create-cluster` action. The certificates are generated with
+the help of certificate management scripts in `../ca/`.
 
 Note that when using seed nodes for discovery, the potential cluster
 member nodes will show in the `ha-raft status connected-node` list
 before you actually join them to the cluster. This signifies the
 underlying transport (TCP/TLS) connection is working correctly.
 
-A `gen_tls_certs.sh` shell script is used to create a dedicated CA for
-signing PKI certificates for individual nodes and a do-nothing service
-called`'dummies` is used for observing how the replication takes place.
+A simple, do-nothing service called `dummies` is used for observing
+how the replication takes place.
 
 To start the example, run:
 
@@ -28,16 +28,16 @@ providing explanations along the way. Alternatively, you can use
 
 If you wish to simply use this example as a sandbox for your own
 exploration or testing, you can start with a clean state where the
-cluster is initiated with `n1` as the leader and `n2` and `n3` as followers:
+cluster is initiated with `n1` as the leader and `n2` and `n3` as
+followers:
 
     make stop clean
     make all start
+    make configure
 
-    NCS_IPC_PORT=4561 ncs_cli -C -u admin -g admin
+Also available are individual node management targets, such as
+`make start-nodeX`, `make stop-nodeX`, and `make cliX` for `nX`.
 
-    admin connected from 127.0.0.1 using console on rhubarb
-    admin@n1# ha-raft create-cluster member [ ncsd2@127.0.0.1 ncsd3@127.0.0.1 ]
-    admin@n1#
 
 Cleanup
 -------

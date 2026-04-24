@@ -1,0 +1,31 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <router xmlns="urn:ios">
+          <bgp>
+            <as-no>{$BGP_AS}</as-no>
+            <neighbor>
+              <id>{$PEER_ADDRESS}</id>
+              <remote-as>{$REMOTE_AS}</remote-as>
+              <description>iBGP to {$PEER_NODE}</description>
+              <update-source>
+                <Loopback>0</Loopback>
+              </update-source>
+            </neighbor>
+            <address-family>
+              <ipv4>
+                <af>unicast</af>
+                <neighbor>
+                  <id>{$PEER_ADDRESS}</id>
+                  <activate/>
+                </neighbor>
+              </ipv4>
+            </address-family>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

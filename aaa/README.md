@@ -25,16 +25,21 @@ Administration Guide section Authenticating IPC Access.
 ### packageauth
 This example demonstrates configuring Package Authentication to authenticate
 RESTCONF with a JSON Web Token (JWT). See the NSO Administration Guide chapter
-The AAA Infrastructure section Authentication for package authentication
-documentation.
+The AAA Infrastructure section Authentication to learn what package
+authentication is.
 
 ### packageauth-ldap
-This example demonstrates configuring Package Authentication to authenticate
-RESTCONF with LDAP. See the NSO Administration Guide chapter The AAA
-Infrastructure section Authentication for package authentication
-documentation.
+Demonstrates using Package Authentication with the `cisco-nso-ldap-auth`
+Authentication Package for authenticating users through LDAP.
+
+### tacacs-plus-auth
+Shows how to enable TACACS+ authentication for NSO with the help of the
+`cisco-nso-tacacs-auth` Authentication Package.
 
 ### single-sign-on
-This example demonstrates integrating and using the `cisco-nso-saml2-auth`
-Authentication Package to enable SAMLv2 Single Sign-On for NSO. See the
-Development Guide chapter Single Sign-on for documentation.
+Example demonstrates integrating and using the `cisco-nso-saml2-auth`
+Authentication Package to enable SAMLv2 Single Sign-On for NSO.
+
+### oidc-auth
+This example showcases integrating and using the `cisco-nso-oidc-auth`
+Authentication Package for OpenID Connect authentication in NSO.

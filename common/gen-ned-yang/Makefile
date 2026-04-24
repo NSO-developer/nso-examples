@@ -1,14 +1,15 @@
 # Makefile for NED Package Processing
 
 # Version definitions
-A10_ACOS_VSN      := 3.23
-ALU_SR_VSN        := 8.58
+A10_ACOS_VSN      := 3.27
+ALU_SR_VSN        := 8.69
+ARISTA_DCS_VSN    := 5.31
 CISCO_ASA_VSN     := 6.18
-CISCO_IOS_VSN     := 6.109
-CISCO_IOSXR_VSN   := 7.64
-CISCO_NX_VSN      := 5.27
+CISCO_IOS_VSN     := 6.114
+CISCO_IOSXR_VSN   := 7.75
+CISCO_NX_VSN      := 5.32
 DELL_FTOS_VSN     := 3.4
-JUNIPER_JUNOS_VSN := 4.18
+JUNIPER_JUNOS_VSN := 4.19
 
 # Python command
 PYTHON := python3
@@ -30,6 +31,8 @@ TARGETS := \
 	$(NETSIM_YANG_DIR)/netsim-ned-a10-acos-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-alu-sr.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-arista-dcs.yang \
+	$(NETSIM_YANG_DIR)/netsim-ned-arista-dcs-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-asa-stats.yang \
 	$(NETSIM_YANG_DIR)/netsim-ned-cisco-ios.yang \
@@ -48,6 +51,8 @@ COPY_TARGETS := \
 	$(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang \
 	$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang \
 	$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang \
+	$(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs.yang \
+	$(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs-stats.yang \
 	$(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang \
 	$(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang \
 	$(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang \
@@ -75,6 +80,12 @@ $(NETSIM_YANG_DIR)/netsim-ned-alu-sr.yang: $(NED_PACKAGES_DIR)/alu-sr-cli-$(ALU_
 	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
 
 $(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang: $(NED_PACKAGES_DIR)/alu-sr-cli-$(ALU_SR_VSN)/src/yang/tailf-ned-alu-sr-stats.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
+
+$(NETSIM_YANG_DIR)/netsim-ned-arista-dcs.yang: $(NED_PACKAGES_DIR)/arista-dcs-cli-$(ARISTA_DCS_VSN)/netsim/tailf-ned-arista-dcs.yang $(SANITIZE_SCRIPT)
+	$(PYTHON) $(SANITIZE_SCRIPT) $< > $@
+
+$(NETSIM_YANG_DIR)/netsim-ned-arista-dcs-stats.yang: $(NED_PACKAGES_DIR)/arista-dcs-cli-$(ARISTA_DCS_VSN)/src/yang/tailf-ned-arista-dcs-stats.yang $(SANITIZE_SCRIPT)
 	$(PYTHON) $(SANITIZE_SCRIPT) -s $< > $@
 
 $(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang: $(NED_PACKAGES_DIR)/cisco-asa-cli-$(CISCO_ASA_VSN)/netsim/tailf-ned-cisco-asa.yang $(SANITIZE_SCRIPT)
@@ -125,6 +136,12 @@ $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang: $(NETSIM_YAN
 $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-alu-sr-stats.yang
 	cp $< $@
 
+$(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs.yang: $(NETSIM_YANG_DIR)/netsim-ned-arista-dcs.yang
+	cp $< $@
+
+$(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-arista-dcs-stats.yang
+	cp $< $@
+
 $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-asa.yang
 	cp $< $@
 
@@ -170,12 +187,14 @@ clean: clean-iosxr
 	rm -rf $(NETSIM_YANG_DIR)
 
 # Individual device targets for convenience
-.PHONY: a10-acos alu-sr cisco-asa cisco-ios cisco-iosxr cisco-nx dell-ftos
+.PHONY: a10-acos alu-sr arista-dcs cisco-asa cisco-ios cisco-iosxr cisco-nx dell-ftos
 
 a10-acos: $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang \
 		  $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang
 alu-sr: $(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr.yang \
 		$(DEST_BASE)/alu-sr-netsim-cli-1.0/src/yang/netsim-ned-alu-sr-stats.yang
+arista-dcs: $(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs.yang \
+		    $(DEST_BASE)/arista-dcs-netsim-cli-1.0/src/yang/netsim-ned-arista-dcs-stats.yang
 cisco-asa: $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.yang \
 		   $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang
 cisco-ios: $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang \
@@ -198,6 +217,7 @@ help:
 	@echo "Individual device targets:"
 	@echo "  a10-acos   - Build A10 ACOS YANG files"
 	@echo "  alu-sr     - Build ALU SR YANG files"
+	@echo "  arista-dcs - Build Arista DCS YANG files"
 	@echo "  cisco-asa  - Build Cisco ASA YANG files"
 	@echo "  cisco-ios  - Build Cisco IOS YANG files"
 	@echo "  cisco-iosxr - Build Cisco IOS-XR YANG files"

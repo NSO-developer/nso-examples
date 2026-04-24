@@ -26,6 +26,18 @@ USECQ="True" # Use commit queues
 DEV_DELAY=1 # Simulated work on devices in seconds
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 while getopts ':d:t:w:r:q:y:' opt
 do
     case $opt in
@@ -135,8 +147,7 @@ printf "${PURPLE}##### Progress trace written to nso-rundir/logs/t3-$RUNID.csv\n
 
 printf "${PURPLE}##### Show a graph representation of the progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py nso-rundir/logs/t3-$RUNID.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n${NC}"
 else

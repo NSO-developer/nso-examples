@@ -1,4 +1,5 @@
 # -*- mode: python; python-indent: 4 -*-
+import os
 import socket
 import ncs
 import _ncs
@@ -12,12 +13,15 @@ class CompactionTask(Action):
     @Action.action
     def cb_action(self, uinfo, name, kp, input, output):
         self.log.info(f'CompactionTask {name}')
-        if _ncs.PATH is None:
+        if os.environ.get('NCS_IPC_PORT'):
             c_sock = socket.socket()
+            _ncs.cdb.connect(c_sock, ip=_ncs.ADDR,
+                             port=int(os.environ['NCS_IPC_PORT']),
+                             type=_ncs.cdb.DATA_SOCKET)
         else:
             c_sock = socket.socket(family=socket.AF_UNIX)
-        _ncs.cdb.connect(c_sock, ip='127.0.0.1', port=_ncs.NCS_PORT,
-                         path=_ncs.PATH, type=_ncs.cdb.DATA_SOCKET)
+            _ncs.cdb.connect(c_sock, path=_ncs.PATH,
+                             type=_ncs.cdb.DATA_SOCKET)
 
         for db in DBFILES:
             if self.is_compaction_needed(c_sock, db):

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-if [ -n "${NCS_IPC_PATH}" ]; then
-ENV="NCS_IPC_PATH=${NCS_IPC_PATH}."
-else
+if [ -n "${NCS_IPC_PORT}" ]; then
 ENV="NCS_IPC_PORT="
+else
+ENV="NCS_IPC_PATH=${NCS_IPC_PATH:-/tmp/nso/nso-ipc}."
 fi
 
 set -eu # Abort the script if a command returns with a non-zero exit code or if
@@ -14,6 +14,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### MPLS Layer3 VPN LSA Demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -22,10 +34,7 @@ set -e
 make clean
 
 printf "\n${GREEN}##### Running the example\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Setup the environment\n${NC}"
 make all
 
@@ -57,14 +66,12 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     make stop
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make clean
 fi
 

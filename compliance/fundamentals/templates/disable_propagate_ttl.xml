@@ -1,0 +1,32 @@
+<compliance xmlns="http://tail-f.com/ns/ncs">
+  <template>
+    <name>disable_propagate_ttl</name>
+    <description>Ensure TTL propagation is disabled. Hides the internal provider network from customers, preventing topology leaks.</description>
+    <ned-id>
+      <id xmlns:cisco-iosxr-netsim-cli-1.0="http://tail-f.com/ns/ned-id/cisco-iosxr-netsim-cli-1.0">
+      cisco-iosxr-netsim-cli-1.0:cisco-iosxr-netsim-cli-1.0</id>
+      <config>
+        <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ip-ttl-propagate>
+            <disable/>
+          </ip-ttl-propagate>
+        </mpls>
+      </config>
+    </ned-id>
+    <ned-id>
+      <id xmlns:cisco-ios-netsim-cli-1.0="http://tail-f.com/ns/ned-id/cisco-ios-netsim-cli-1.0">
+      cisco-ios-netsim-cli-1.0:cisco-ios-netsim-cli-1.0</id>
+      <config>
+        <mpls xmlns="urn:ios">
+          <mpls-ip-conf>
+            <ip>
+              <propagate-ttl-conf>
+                <propagate-ttl>false</propagate-ttl>
+              </propagate-ttl-conf>
+            </ip>
+          </mpls-ip-conf>
+        </mpls>
+      </config>
+    </ned-id>
+  </template>
+</compliance>

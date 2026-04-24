@@ -15,7 +15,7 @@ class HAStatusHTTPHandler(BaseHTTPRequestHandler):
         try:
             if self.path in ['/ha_status', '/ha_writable']:
                 with ncs.maapi.single_read_trans('admin', 'system') as t:
-                    mode = ncs.maagic.get_node(t, '/ncs-state/tfnm2:ha/mode')
+                    mode = ncs.maagic.get_node(t, '/ncs-state/ha/mode')
 
                     if self.path == '/ha_writable':
                         if mode == 'primary':

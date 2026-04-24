@@ -33,17 +33,14 @@ be created using for example the ip or ifconfig command:
 def ha_demo(ip1, ip2, ip3):
     """Run the demo"""
     auth = ('admin', 'admin')
-    node1_url = 'http://{}:8080/restconf'.format(ip1)
-    node2_url = 'http://{}:8080/restconf'.format(ip2)
-    node3_url = 'http://{}:8080/restconf'.format(ip3)
+    node1_url = 'http://localhost:8081/restconf'
+    node2_url = 'http://localhost:8082/restconf'
+    node3_url = 'http://localhost:8083/restconf'
     header = '\033[95m'
     okblue = '\033[94m'
     okgreen = '\033[92m'
     endc = '\033[0m'
     bold = '\033[1m'
-    ipc1 = 4561
-    # ipc2 = 4562
-    # ipc3 = 4563
 
     session = requests.Session()
     session.auth = auth
@@ -116,11 +113,7 @@ def ha_demo(ip1, ip2, ip3):
     print(f"\n{okblue}##### Stop node 1 to make node 2 failover to primary"
           f" role and node 3 connect to the new primary\n{endc}")
     my_env = os.environ.copy()
-    if "NCS_IPC_PATH" in my_env:
-        my_env["NCS_IPC_PATH"] = my_env["NCS_IPC_PATH"] + "." + str(ipc1)
-    else:
-        my_env["NCS_IPC_ADDR"] = '127.0.0.1'
-        my_env["NCS_IPC_PORT"] = str(ipc1)
+    my_env["NCS_IPC_PATH"] = "/tmp/nso/nso-ipc1"
     subprocess.run(['ncs', '--stop'], check=True, env=my_env, encoding='utf-8')
 
     path = '/data/tailf-ncs:high-availability/settings/reconnect-interval' \
@@ -179,9 +172,8 @@ def ha_demo(ip1, ip2, ip3):
 
     print(f"\n{okblue}##### Start node 1 that will now assume secondary"
           f" role\n{endc}")
-    subprocess.run(['ncs', '--cd', 'nso-node1', '-c',
-                    '{}/nso-node1/ncs.conf'.format(os.getcwd())],
-                   check=True, encoding='utf-8')
+    subprocess.run(['ncs'], cwd='{}/node1'.format(os.getcwd()),
+                   check=True, env=my_env, encoding='utf-8')
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'
@@ -190,6 +182,16 @@ def ha_demo(ip1, ip2, ip3):
         if "secondary" in r.text:
             break
         print(f"{header}#### Waiting for node 1 to become secondary to node"
+              f" 2...{endc}")
+        time.sleep(1)
+
+    while True:
+        path = '/data/tailf-ncs:high-availability/status/mode'
+        print(f"{bold}GET " + node1_url + path + f"{endc}")
+        r = session.get(node1_url + path, headers=headers)
+        if "secondary" in r.text:
+            break
+        print(f"{header}#### Waiting for node 3 to become secondary to node"
               f" 2...{endc}")
         time.sleep(1)
 

@@ -97,12 +97,20 @@ register_callbacks(DebugLevel) ->
     ServicePoint = vlanspnt,
     ServiceCbs = #ncs_service_cbs{create = fun create/4,
                                   servicepoint = ServicePoint},
-    Host = {127,0,0,1},
-    Port = ?NCS_PORT,
     ServiceCtx = #service_ctx{servicepoint=ServicePoint},
-    DaemonName = list_to_atom(lists:concat([?MODULE, "_", ServicePoint])),
-    {ok, Daemon} = econfd:init_daemon(DaemonName, DebugLevel, user,
-                                      ServiceCtx, Host, Port),
+    DaemonName = list_to_atom(
+                   lists:concat([?MODULE, "_", ServicePoint])),
+    {ok, Daemon} =
+        case confd_ia:get_connect_address() of
+            {local, Path} ->
+                econfd:init_daemon(
+                  DaemonName, DebugLevel, user,
+                  ServiceCtx, Path);
+            {ip, {Ip, Port, _, _}} ->
+                econfd:init_daemon(
+                  DaemonName, DebugLevel, user,
+                  ServiceCtx, Ip, Port)
+        end,
     ok = econfd:register_trans_cb(Daemon, TransCbs),
     ok = econfd:register_service_cb(Daemon,ServiceCbs),
     ok = econfd:register_done(Daemon),
@@ -111,7 +119,13 @@ register_callbacks(DebugLevel) ->
 
 trans_init(TransCtx) ->
     %% Use a separate maapi socket for each transaction
-    {ok, MaapiSock} = econfd_maapi:connect({127,0,0,1}, ?NCS_PORT),
+    {ok, MaapiSock} =
+        case confd_ia:get_connect_address() of
+            {local, Path} ->
+                econfd_maapi:connect(Path);
+            {ip, {Ip, Port, _, _}} ->
+                econfd_maapi:connect(Ip, Port)
+        end,
     {ok, TransCtx#confd_trans_ctx{opaque = MaapiSock}}.
 
 trans_abort(TransCtx) ->

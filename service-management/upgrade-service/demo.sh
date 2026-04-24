@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Upgrade a Service with Non-backward Compatible Changes Demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -55,10 +67,7 @@ printf "\n${GREEN}##### Backup the CDB directory\n${NC}"
 cp -rf ncs-cdb ncs-cdb-bak
 
 printf "\n\n${GREEN}##### Upgrade the vlan package with the vlan_v2 package\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs --stop
 rm -rf packages/vlan
 cp -r ./package-store/vlan_v2 ./packages/vlan
@@ -78,10 +87,7 @@ show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
 printf "\n\n${GREEN}##### Upgrade the vlan_v2 package with the *Java* tunnel package\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "\n${PURPLE}##### Undeploy the service instances with no-networking to remove the vlan service meta-data before upgrading to the *Java* tunnel package\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -127,10 +133,7 @@ show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
 printf "\n\n${PURPLE}##### Setup the Python demo: Stop NSO, restore the CDB directory backup and vlan package, and start with package reload\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs --stop
 rm -rf ncs-cdb
 mv ncs-cdb-bak ncs-cdb
@@ -139,10 +142,7 @@ cp -r ./package-store/vlan ./packages/
 ncs --with-package-reload-force
 
 printf "\n\n${GREEN}##### Upgrade the vlan package with the *Python* vlan_v2-py package\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs --stop
 rm -rf packages/vlan
 cp -r ./package-store/vlan_v2-py ./packages/vlan
@@ -162,10 +162,7 @@ show running-config devices device ex0 | display service-meta-data | nomore
 EOF
 
 printf "\n\n${GREEN}##### Upgrade the vlan_v2 package with the *Python* tunnel package\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "\n${PURPLE}##### Undeploy the service instances with no-networking to remove the vlan service meta-data before upgrading to the *Python* tunnel package\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -212,16 +209,14 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
 
     printf "\n${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     ncs --stop
     ncs-netsim stop
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make clean
 fi
 

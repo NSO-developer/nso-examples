@@ -39,10 +39,13 @@ demo:
 	@echo; echo; cat README.md; echo
 	@$(MAKE) cli
 
+demo-nonstop: test
+
 test:
 	$(MAKE) stop clean all start
 	ncs_cmd -u admin -c 'maction /devices/device{c1}/compare-config'
 	ncs_cmd -u admin -c 'maction /devices/device{c1}/sync-from'
+	ncs_cmd -u admin -c 'mset /iface{instance1}/interface 0/4'
 	$(MAKE) stop clean
 
 clean:

@@ -1,0 +1,7 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>shared-code</name>
+  <package-version>1.0</package-version>
+  <description>Helper package holding shared Python code</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+</ncs-package>

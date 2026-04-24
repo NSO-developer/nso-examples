@@ -4,50 +4,40 @@ SAMLv2 Single Sign-On
 This example demonstrates integrating and using the `cisco-nso-saml2-auth`
 Authentication Package to enable SAMLv2 Single Sign-On for NSO.
 
+This particular NSO authentication package depends on additional Python
+packages, specified in its requirements.txt file. A simple way to fulfill
+this requirement is to create a Python virtualenv and start NSO within
+this virtualenv, in the way the Makefile target 'start' does.
+
 For more information on using the `cisco-nso-saml2-auth` package refer to the
 README file distributed with the package, e.g., in
 `$NCS_DIR/packages/auth/cisco-nso-saml2-auth`.
 
-For the `cisco-nso-saml2-auth` package to run, the `flask-saml2` Python package
-is required and it also needs patching to use SHA-256 instead of SHA-1 digest.
-A simple way to fulfill this requirement is to create a Python virtualenv and
-start NSO within this virtualenv. The build steps needed are done with the
-`Makefile` targets, but note that the virtualenv needs to be activated manually
-before starting NSO.
+This example requires a SAMLv2 Identity Provider (IdP) defining users. If
+you do not have an existing server to use with the example, you can use
+a demo IdP based on the `flask-saml2` Python package (requires git).
 
-Note that `idp.py` uses the `flask-saml2` test certificates and keys.
+Note that the included demo IdP does not actually authenticate users and is
+unsuitable for production use.
 
 Running the Example
 -------------------
 
-Build the necessary files, copy the example `ncs.conf`
+Build the necessary files, activate the Python virtualenv, and start NSO:
 
-    make clean all
-    ncs-setup --dest .
-    cp ncs.conf.example ncs.conf
+    make all start
 
-Install flask-saml2 and patch to use SHA-256 instead of SHA-1 digest to a
-Python virtualenv:
-
-    make flask-saml2
-
-Activate the Python virtualenv and start NSO by typing:
-
-    . pyvenv/bin/activate
-    (pyvenv) $ make start
-
-Start the CLI and reload packages:
-
-    ncs_cli -u admin -g admin -C
-    # packages reload
-
-Configure the `cisco-nso-saml2-auth` model. This is simplest done by loading
-the prepared config XML file, but it can also be done manually in the CLI. See
+Configure the `cisco-nso-saml2-auth` model. This is done by loading the
+prepared config XML file, but it can also be done manually in the CLI. See
 `cisco-nso-saml2-auth` documentation for details:
 
-    ncs_load -l -m cisco-nso-saml2-auth.xml
+    ncs_load -l -m -u admin cisco-nso-saml2-auth.xml
 
-Start the bundled IdP server in another terminal:
+The generated `cisco-nso-saml2-auth.xml` contains URL endpoints and certificate
+data that correspond to the demo IdP. Integration with a different IdP will
+require you to update this configuration correspondingly.
+
+If you are using the included demo IdP, start it with:
 
     make start-idp
 
@@ -75,8 +65,8 @@ NSO WebUI. This time, access is granted:
 
 Check package and audit logs for debug and authentication information:
 
-    tail logs/ncs-python-saml2-auth.log
-    tail logs/audit.log
+    tail ncs-run/logs/ncs-python-saml2-auth.log
+    tail ncs-run/logs/audit.log
 
 Logout with Single Logout by visiting the SAML SLO endpoint. The NSO session is
 deleted:
@@ -113,5 +103,5 @@ flask-saml2
 License
 -------
 
-The idp.py file is based on example/idp.py from flask-saml2.
-See LICENSE and flask-saml2/LICENSE for further details.
+The demo IdP is based on example/idp.py from flask-saml2.
+See idp/LICENSE and flask-saml2/LICENSE for further details.

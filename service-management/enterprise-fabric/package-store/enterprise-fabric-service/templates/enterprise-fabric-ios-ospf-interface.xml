@@ -1,0 +1,33 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet>
+            <name>{$INTERFACE_NAME}</name>
+            <?if {$BFD_ENABLED='true'}?>
+            <bfd>
+              <interval>
+                <msecs>{$BFD_MIN_INTERVAL}</msecs>
+                <min_rx>{$BFD_MIN_INTERVAL}</min_rx>
+                <multiplier>{$BFD_MULTIPLIER}</multiplier>
+              </interval>
+            </bfd>
+            <?end?>
+            <ip>
+              <ospf>
+                <cost>{$OSPF_COST}</cost>
+                <?if {$BFD_ENABLED='true'}?>
+                <bfd>
+                  <enable>strict-mode</enable>
+                </bfd>
+                <?end?>
+              </ospf>
+            </ip>
+          </GigabitEthernet>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

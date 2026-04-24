@@ -21,6 +21,7 @@ quick-remake:
 reset:
 	rm -f rollback* *.log ncserr* 2>/dev/null || true
 	rm -f *.trace ncs-cdb/*.cdb 2>/dev/null || true
+	rm -rf ncs-cdb/{A,O,S} 2>/dev/null || true
 	find  devices -name '*.ser' | xargs rm  2>/dev/null || true
 	find  devices -name 'log4j.log' | xargs rm  2>/dev/null || true
 
@@ -51,10 +52,11 @@ packs:
 
 stop:	env-check
 	$(NCS) --stop || true
-	$(MAKE) stop-x1
-	$(MAKE) stop-x2
-	$(MAKE) stop-x3
+	$(MAKE) dev_stop
 	@echo "##### All NSO and netsim instances stopped"
+
+dev_stop:
+	cd devices; $(MAKE) stop-devices
 
 clean:	env-check
 	$(MAKE) -k ncs_clean

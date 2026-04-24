@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Router network CLI NED demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -32,10 +44,7 @@ commit
 EOF
 
 printf "\n${PURPLE}##### Sync the configuration from the CLI devices\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 devices sync-from dry-run
 devices sync-from
@@ -48,10 +57,7 @@ printf "\n\n${PURPLE}##### Show the device status\n${NC}"
 ncs_cli -n -u admin -C <<< "show devices device * live-status sys | nomore"
 
 printf "\n\n${PURPLE}##### Add configuration to the devices\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 config
 devices device ex0..2 config r:sys routes inet route 10.2.0.0 24
@@ -64,17 +70,11 @@ printf "\n\n${PURPLE}##### Show the routes configuration logging into the ex1 de
 ncs-netsim cli-c ex1 <<< "show running-config sys routes | nomore"
 
 printf "\n\n${PURPLE}##### Execute the "archive-log" action from NSO\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C <<< "devices device ex0..2 config sys syslog server 10.3.4.5 archive-log archive-path test compress true"
 
 printf "\n\n${PURPLE}##### Introduce a configuration mismatch by changing the configuration on the ex1 device\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs-netsim cli-c ex1 << EOF
 config
 no sys routes
@@ -85,10 +85,7 @@ printf "\n\n${PURPLE}##### Check if the devices are in sync with NSO\n${NC}"
 ncs_cli -n -u admin -C <<< "devices check-sync"
 
 printf "\n\n${PURPLE}##### Check the diff between NSO and the device configuration and sync from NSO to the ex1 device\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 devices device ex1 sync-to dry-run
 devices device ex1 sync-to
@@ -99,8 +96,7 @@ ncs_cli -n -u admin -C <<< "devices check-sync"
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop NSO and clean all created files\n${NC}"
     make stop clean
 fi

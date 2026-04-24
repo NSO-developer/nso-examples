@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### NSO ConfD netsim Python SDK application demo\n${NC}"
 
 printf "${PURPLE}##### Reset\n${NC}"
@@ -18,10 +30,7 @@ set -e
 rm -rf nso-rundir
 
 printf "\n${GREEN}##### Setting up and running netsim\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Set up NSO and create a single device simulated network\n${NC}"
 ncs-setup --package package-repository/dummy --use-copy --dest nso-rundir
@@ -40,10 +49,7 @@ devices sync-from
 EOF
 
 printf "\n\n${GREEN}##### Run a netsim ConfD application Demo\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Change the device configuration to trigger the config subscriber\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -81,15 +87,13 @@ echo "show devices device d0 notifications received-notifications | nomore" | nc
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop NSO and the simulated device\n${NC}"
     ncs --stop
     ncs-netsim --dir nso-rundir/netsim stop
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     rm -rf ./nso-rundir
 fi
 

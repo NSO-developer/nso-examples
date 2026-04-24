@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### MPLS Layer3 VPN Demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -16,10 +28,7 @@ set -e
 make clean
 
 printf "\n${GREEN}##### Running the example\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Setup the environment\n${NC}"
 make all
 
@@ -27,10 +36,7 @@ printf "\n${PURPLE}##### Start the simulated network and NSO\n${NC}"
 make start
 
 printf "\n${GREEN}##### VPN service configuration\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Sync the configuration from all network devices\n${NC}"
 ncs_cli -n -u admin -C << EOF
 devices sync-from
@@ -58,10 +64,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Adding new devices\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Add two new CE devices to the topology\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -104,10 +107,7 @@ vpn l3vpn * re-deploy
 EOF
 
 printf "\n\n${GREEN}##### QOS Configuration\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Add QOS to the VPN customers\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -118,10 +118,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### External QOS Policy Changes\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Set DSCP values for each class will be set on all CE routers and matched against the PE router and used within the MPLS cloud\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -141,10 +138,7 @@ vpn l3vpn * re-deploy
 EOF
 
 printf "\n\n${GREEN}##### Decommissioning VPNs\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Decommission the volvo L3VPN\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -154,14 +148,12 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     make stop
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make clean
 fi
 

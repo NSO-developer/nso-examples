@@ -31,15 +31,13 @@ created using for example the ip or ifconfig command:
 def ha_demo(ip1, ip2):
     """Run the demo"""
     auth = ('admin', 'admin')
-    node1_url = 'http://{}:8080/restconf'.format(ip1)
-    node2_url = 'http://{}:8080/restconf'.format(ip2)
+    node1_url = 'http://localhost:8081/restconf'
+    node2_url = 'http://localhost:8082/restconf'
     header = '\033[95m'
     okblue = '\033[94m'
     okgreen = '\033[92m'
     endc = '\033[0m'
     bold = '\033[1m'
-    ipc1 = 4561
-    # ipc2 = 4562
 
     session = requests.Session()
     session.auth = auth
@@ -101,11 +99,7 @@ def ha_demo(ip1, ip2):
     print(f"\n{okblue}##### Stop node 1 to make node 2 failover to primary"
           f" role\n{endc}")
     my_env = os.environ.copy()
-    if "NCS_IPC_PATH" in my_env:
-        my_env["NCS_IPC_PATH"] = my_env["NCS_IPC_PATH"] + "." + str(ipc1)
-    else:
-        my_env['NCS_IPC_ADDR'] = '127.0.0.1'
-        my_env["NCS_IPC_PORT"] = str(ipc1)
+    my_env["NCS_IPC_PATH"] = "/tmp/nso/nso-ipc1"
     subprocess.run(['ncs', '--stop'], check=True, env=my_env, encoding='utf-8')
 
     while True:
@@ -130,9 +124,8 @@ def ha_demo(ip1, ip2):
 
     print(f"\n{okblue}##### ##### ##### Start node 1 that will now assume"
           f" secondary role\n{endc}")
-    subprocess.run(['ncs', '--cd', 'nso-node1', '-c',
-                    '{}/nso-node1/ncs.conf'.format(os.getcwd())],
-                   check=True, encoding='utf-8')
+    subprocess.run(['ncs'], cwd='{}/node1'.format(os.getcwd()),
+                   check=True, env=my_env, encoding='utf-8')
 
     while True:
         path = '/data/tailf-ncs:high-availability/status/mode'

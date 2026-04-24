@@ -29,9 +29,8 @@ clean:
 	for i in $(PACKAGES); do \
 		$(MAKE) -C packages/$${i}/src clean || exit 1; \
 	done
-	rm -rf netsim logs/* state/* ncs-cdb/*.cdb
-	rm -f ncs-cdb/netsim_devices_init.xml
-	rm -rf state/*
+	rm -rf netsim logs/* state/* ncs-cdb/{A,O,S}
+	rm -f ncs-cdb/netsim_devices_init.xml ncs-cdb/*.cdb
 
 demo:
 	./demo.sh

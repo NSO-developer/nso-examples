@@ -58,10 +58,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _underruns_ = "underruns";
     public static final int    _state = 630973766;
     public static final String _state_ = "state";
-    public static final int    _pkts_over_511_byte = 542466306;
-    public static final String _pkts_over_511_byte_ = "pkts-over-511-byte";
     public static final int    _pkts_over_255_byte = 1831081435;
     public static final String _pkts_over_255_byte_ = "pkts-over-255-byte";
+    public static final int    _pkts_over_511_byte = 542466306;
+    public static final String _pkts_over_511_byte_ = "pkts-over-511-byte";
     public static final int    _arp_type = 463658930;
     public static final String _arp_type_ = "arp-type";
     public static final int    _crc = 1279813618;
@@ -118,10 +118,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _percent_line_rate_ = "percent-line-rate";
     public static final int    _packets_p_sec = 1387428172;
     public static final String _packets_p_sec_ = "packets-p-sec";
-    public static final int    _last_clearing_counter = 2004021148;
-    public static final String _last_clearing_counter_ = "last-clearing-counter";
     public static final int    _discarded = 1973722861;
     public static final String _discarded_ = "discarded";
+    public static final int    _last_clearing_counter = 2004021148;
+    public static final String _last_clearing_counter_ = "last-clearing-counter";
     public static final int    _unicasts = 766465200;
     public static final String _unicasts_ = "unicasts";
     public static final int    _multicasts = 776393491;
@@ -138,14 +138,14 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _pkts_over_127_byte_ = "pkts-over-127-byte";
     public static final int    _throttles = 2085366271;
     public static final String _throttles_ = "throttles";
-    public static final int    _interface = 221572658;
-    public static final String _interface_ = "interface";
     public static final int    _input = 1427240772;
     public static final String _input_ = "input";
+    public static final int    _interface = 221572658;
+    public static final String _interface_ = "interface";
     public static final int    _collisions = 71575584;
     public static final String _collisions_ = "collisions";
-    public static final int    _index = 827593980;
-    public static final String _index_ = "index";
     public static final int    _time_since_last_status_change = 1043251045;
     public static final String _time_since_last_status_change_ = "time-since-last-status-change";
+    public static final int    _index = 827593980;
+    public static final String _index_ = "index";
 }

@@ -1,0 +1,131 @@
+module l3vpn-service {
+  namespace "http://tail-f.com/srlab/l3vpn-service";
+  prefix l3vpn;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import inventory {
+    prefix inv;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  identity l3vpn {
+    base inv:service-kind;
+  }
+
+  list l3vpn {
+    description "Ethernet multi-point service (EVPN).";
+
+    uses ncs:service-data;
+    ncs:servicepoint l3vpn-service;
+
+    key name;
+    leaf name {
+      description "Service instance name";
+      type string {
+        pattern "[A-Za-z0-9-]{3,24}";
+      }
+      tailf:cli-allow-range;
+    }
+
+    leaf customer {
+      mandatory true;
+      type leafref {
+        path "/inv:inventory/inv:customer/inv:name";
+      }
+    }
+
+    list link {
+      key link-id;
+      min-elements 1;
+
+      leaf link-id {
+        type uint8 {
+          range "1..max";
+        }
+      }
+      leaf enabled {
+        type boolean;
+        default true;
+      }
+      leaf port {
+        mandatory true;
+        type leafref {
+          path "/inv:inventory/inv:port/inv:pid";
+        }
+      }
+      leaf subnet {
+        type inet:ip-prefix;
+      }
+      leaf pe-ip {
+        description
+         "Nth address in the subnet that is assigned to the PE side of
+          the link.";
+        type uint16;
+        default 2;
+      }
+      leaf ce-ip {
+        description
+         "Nth address in the subnet that is assigned to the CE side of
+          the link (if CE is managed or BGP peering).";
+        type uint16;
+        default 3;
+      }
+
+      must "pe-ip != ce-ip" {
+        error-message "PE and CE must use different IPs.";
+      }
+
+      container bgp-peering {
+        leaf enabled {
+          type boolean;
+          default false;
+        }
+        leaf peer-as {
+          type inet:as-number;
+          must ". != 65000";
+        }
+
+        must "(enabled = 'false') or peer-as" {
+          error-message "Peer AS is required if BGP peering is enabled.";
+        }
+      }
+    }
+
+    leaf-list vpn-routes {
+      description
+       "List of routes to install in a managed CE if BGP is not in use.";
+      type inet:ip-prefix;
+      // Some versions don't support leaf-list defaults, so this might not work.
+      default 10.0.0.0/8;
+    }
+
+    leaf vni {
+      description "Manually assigned VNI (EVI); optional.";
+      type leafref {
+        path "/inv:inventory/inv:vni/inv:vnid";
+      }
+    }
+
+    leaf force {
+      description
+       "Provision port to this service even if it is already in use.";
+      type boolean;
+      default false;
+    }
+  }
+}

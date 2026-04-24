@@ -96,8 +96,8 @@ diff-iterated. The result of the diff-iteration is printed in the
                 ConfUInt32 val = (ConfUInt32) params[2].getValue();
                 int tid = (int)val.longValue();
 
-                Socket s3 = new Socket("127.0.0.1", Conf.NCS_PORT);
-                Maapi maapi3 = new Maapi(s3);
+                Maapi maapi3 = new Maapi(
+                    UnixDomainSocketAddress.of(Conf.NCS_PATH));
                 maapi3.attach(tid, -1);
 
                 maapi3.diffIterate(tid, new MaapiDiffIterate() {

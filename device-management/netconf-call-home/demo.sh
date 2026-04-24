@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### NETCONF SSH call home demo\n${NC}"
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
@@ -46,8 +58,12 @@ devices sync-from
 EOF
 
 printf "\n\n${PURPLE}##### Start a Python app that subsribes to the NCS_NOTIF_CALL_HOME_INFO event from NSO\n${NC}"
-python3 notif.py -C </dev/null &
+rm -f state/notif.ready
+NOTIF_READY_FILE=state/notif.ready python3 -u notif.py -C </dev/null &
 echo $! > notif-app.pid
+while [ ! -f state/notif.ready ]; do
+  sleep 0.1
+done
 
 printf "\n\n${PURPLE}##### Configure a device and commit through the commit queue\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -87,8 +103,7 @@ kill $(cat notif-app.pid)
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
     ncs --stop
     ncs-netsim stop

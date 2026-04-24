@@ -1,0 +1,30 @@
+#!/bin/sh
+# Copyright 2026 Cisco Systems, Inc.
+# SPDX-License-Identifier: MIT
+
+BASE=$(cd "$(dirname "$0")" && pwd)
+. "$BASE"/util/ca.sh
+
+
+usage()
+{
+    cat <<EOF
+usage: export-cert <cert-name> [outdir]
+
+    Copy certificate and other files relevant for a host to <outdir>.
+    If <outdir> is not specified, current directory is used.
+
+    Included files are:
+      - node.crt: certificate for the host
+      - node.key: private key for the host (if available)
+      - ca.crt: CA certificate
+      - crls/crl.pem: CA certificate revocation list (if available)
+
+    In case multiple CAs are available, selects the most-recently-created
+    CA unless NCSCERT_CAPATH is used to select a specific CA.
+EOF
+    exit "${1:-0}"
+}
+
+INITIAL_DIR=$(pwd)
+with_cert_do export_dir "$@"

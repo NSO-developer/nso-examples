@@ -1,51 +1,49 @@
 PKG_DIR = $(NCS_DIR)/packages/auth/cisco-nso-tacacs-auth
 
-.PHONY: all
-all: packages/cisco-nso-tacacs-auth cisco-nso-tacacs-auth-deps ncs.conf logs
-	$(MAKE) -C packages/cisco-nso-tacacs-auth/src all
+all: ncs-run/.ready
 
-packages/cisco-nso-tacacs-auth:
-	cp -a $(PKG_DIR) $@
+.PHONY: all start stop configure reset test clean cli-c cli-j
 
-ncs.conf:
-	cp ncs.conf.example $@
+ncs-run/.ready: aaa.conf pyvenv/.ready
+	ncs-setup --dest ncs-run --no-config-section aaa --use-copy \
+		--package $(PKG_DIR)
+	@mkdir -p ncs-run/ncs.conf.d
+	cp aaa.conf ncs-run/ncs.conf.d/
+	for f in ncs-run/packages/*/src; do \
+		$(MAKE) -C $$f || exit 1; \
+	done
+	@touch $@
 
-logs:
-	mkdir logs
+pyvenv/.ready:
+	python3 -m venv pyvenv
+	pyvenv/bin/pip $(PIP_OPTS) install pip --upgrade
+	pyvenv/bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
+	@touch $@
 
-pyvenv:
-	python3 -m venv $@
-	$@/bin/pip $(PIP_OPTS) install pip --upgrade
-
-
-cisco-nso-tacacs-auth-deps: pyvenv
-	$</bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
-	touch $@
-
-
-.PHONY: clean
-clean:
-	rm -rf packages/cisco-nso-tacacs-auth
-	rm -rf ./netsim running.DB logs/* state/* ncs-cdb/*
-	rm -rf pyvenv* __pycache__
-	rm -f README.n* cisco-nso-tacacs-auth-deps ncs.conf
-
-.PHONY: clean
-clean-logs:
-	rm -f logs/*
-
-.PHONY: start
 start:
-	ncs -c ./ncs.conf
+	. pyvenv/bin/activate ; cd ncs-run && ncs
 
-.PHONY: stop
 stop:
-	-ncs --stop
+	ncs --stop || true
 
-.PHONY: cli-c
+configure:
+	ncs_load -l -m -u admin cisco-nso-tacacs-auth.xml
+
+reset: all
+	ncs-setup --reset --dest ncs-run
+
+test:
+	$(MAKE) stop
+	$(MAKE) reset
+	$(MAKE) start
+	$(MAKE) configure
+	$(MAKE) stop
+
+clean:
+	rm -rf ncs-run pyvenv
+
 cli-c:
 	ncs_cli -C -uadmin
 
-.PHONY: cli-j
 cli-j:
 	ncs_cli -J -uadmin

@@ -1,0 +1,34 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+    <high-availability xmlns="http://tail-f.com/ns/ncs">
+        <token>super-secret</token>
+        <ha-node>
+            <id>n1</id>
+            <address>127.0.1.1</address>
+            <nominal-role>primary</nominal-role>
+        </ha-node>
+        <ha-node>
+            <id>n2</id>
+            <address>127.0.2.1</address>
+            <nominal-role>secondary</nominal-role>
+            <failover-primary>true</failover-primary>
+        </ha-node>
+        <ha-node>
+            <id>n3</id>
+            <address>127.0.3.1</address>
+            <nominal-role>secondary</nominal-role>
+        </ha-node>
+        <settings>
+            <start-up>
+                <assume-nominal-role>true</assume-nominal-role>
+                <join-ha>true</join-ha>
+            </start-up>
+            <enable-failover>true</enable-failover>
+            <!--
+                Tweak these values to your environment; the example values
+                are deliberately low to make the demo run faster.
+              -->
+            <reconnect-interval>5</reconnect-interval>
+            <reconnect-attempts>4</reconnect-attempts>
+        </settings>
+    </high-availability>
+</config>

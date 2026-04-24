@@ -51,7 +51,8 @@ clean:
 	rm -rf logs/*
 	rm -rf state/*
 	rm -f storedstate
-	rm -rf ncs-cdb/*.cdb
+	rm -f ncs-cdb/*.cdb
+	rm -rf ncs-cdb/{A,O,S}
 	rm -rf ncs-cdb/*.xml
 
 stop:
@@ -99,7 +100,7 @@ del_netsim:
 	rm -rf netsim/*_vpn_CSR
 
 clean_cdb:
-	rm -f ncs-cdb/*.cdb
+	rm -f ncs-cdb/*.cdb ncs-cdb/{A,O,S}
 
 restart_test: del_netsim stop start
 

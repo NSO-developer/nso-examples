@@ -1,7 +1,7 @@
 # Makefile for Cisco IOS-XR netsim YANG Extraction
 
 # Default version (can be overridden from command line or parent Makefile)
-CISCO_IOSXR_VSN ?= 7.64
+CISCO_IOSXR_VSN ?= 7.75
 
 # Commands
 NCS_NETSIM := ncs-netsim

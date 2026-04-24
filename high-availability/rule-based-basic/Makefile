@@ -1,62 +1,58 @@
-# To use custom addresses, uncomment and change the following lines
-#NSO_IP1 = 127.0.1.1
-#NSO_IP2 = 127.0.2.1
+# Make example run smoother - this is not recommended for production.
+NCSCERT_NOCIPHER=1
+export NCSCERT_NOCIPHER
 
 
-define init_xml
-	printf "<config xmlns=\"http://tail-f.com/ns/config/1.0\">\n\
-	<high-availability xmlns=\"http://tail-f.com/ns/ncs\">\n\
-		<token>super-secret</token>\n\
-		<ha-node>\n\
-			<id>n1</id>\n\
-			<address>$(1)</address>\n\
-			<nominal-role>primary</nominal-role>\n\
-		</ha-node>\n\
-		<ha-node>\n\
-			<id>n2</id>\n\
-			<address>$(2)</address>\n\
-			<nominal-role>secondary</nominal-role>\n\
-			<failover-primary>true</failover-primary>\n\
-		</ha-node>\n\
-		<settings>\n\
-			<start-up>\n\
-				<assume-nominal-role>true</assume-nominal-role>\n\
-				<join-ha>true</join-ha>\n\
-			</start-up>\n\
-			<enable-failover>true</enable-failover>\n\
-			<reconnect-interval>10</reconnect-interval>\n\
-			<reconnect-attempts>6</reconnect-attempts>\n\
-		</settings>\n\
-	</high-availability>\n\
-</config>"
-endef
+all: node1/.ready node2/.ready
 
-all: build
+node%/.ready: packages/.ready
+	# Create base file structure with ncs-setup
+	ncs-setup --dest node$* --package packages/dummy
+	cp ha.xml node$*/ncs-cdb/
+	# Generate node's TLS certificate and use it
+	../ca/create-cert n$* 127.0.$*.1 ::1 || true
+	../ca/export-cert n$* node$*/ha-tls
+	# Copy node-specific config to the ncs.conf.d directory
+	cp -rv n$*.config node$*/ncs.conf.d
+	# Tweak ncs.conf to make example behave nicely
+	# (optional, because instances share the same host)
+	../common/reconfigure node$*/ncs.conf $*
+	@touch $@
 
-include ../common/node.mk
-
-build: nso-node1 nso-node2
-
-cdb-init/init.xml:
-	@mkdir -p cdb-init
-	$(call init_xml,$(NSO_IP1),$(NSO_IP2)) >$@
-
-packages:
+packages/.ready:
 	@mkdir -p packages
-	ncs-make-package --service-skeleton template --dest packages/dummy --build --no-test --root-container dummies dummy
+	ncs-make-package --service-skeleton template --dest packages/dummy \
+		--build --no-test --root-container dummies dummy
+	@touch $@
 
-clean: clean-nodes
-	-rm -rf cdb-init packages
+reset: all
+	( cd node1 && ncs-setup --reset )
+	( cd node2 && ncs-setup --reset )
 
-start: start-node1 start-node2
-	$(NODE_IPC)1 ../common/wait-ha-connected n2
+start:
+	( cd node1 && ncs )
+	( cd node2 && ncs )
+	NCS_IPC_PATH=/tmp/nso/nso-ipc1 ncs_cmd -c 'maction /high-availability/enable'
+	NCS_IPC_PATH=/tmp/nso/nso-ipc2 ncs_cmd -c 'maction /high-availability/enable'
+	NCS_IPC_PATH=/tmp/nso/nso-ipc1 ../common/wait-ha-connected n2
 
-stop: stop-node1 stop-node2
-	-ncs --stop
-	@echo "##### All NSO instances stopped"
+stop:
+	NCS_IPC_PATH=/tmp/nso/nso-ipc1 ncs --stop || true
+	NCS_IPC_PATH=/tmp/nso/nso-ipc2 ncs --stop || true
+
+configure:
+
+test:
+	$(MAKE) demo
+	$(MAKE) demo-rc
 
 demo:
-	./demo.sh -a $(NSO_IP1) -b $(NSO_IP2)
+	./demo.sh -a 127.0.1.1 -b 127.0.2.1
 
 demo-rc:
-	python3 ./demo_rc.py -a $(NSO_IP1) -b $(NSO_IP2)
+	python3 ./demo_rc.py -a 127.0.1.1 -b 127.0.2.1
+
+clean:
+	rm -rf node* ca-* packages
+
+include ../common/node-ops.mk

@@ -3,10 +3,10 @@ MNAME = cisco-nso-nc-$(shell ncs --version | sed 's/\([0-9]*\.[0-9]*\).*/\1/')
 LDEVS := 3 # Number of devices per lower node
 NDEVS = $$(($(LDEVS) * 2))
 
-ifeq ($(NCS_IPC_PATH),)
+ifneq ($(NCS_IPC_PORT),)
 ENV = NCS_IPC_PORT=$1
 else
-ENV = NCS_IPC_PATH=$(NCS_IPC_PATH).$1
+ENV = NCS_IPC_PATH=$(or $(NCS_IPC_PATH),/tmp/nso/nso-ipc).$1
 endif
 
 all: upper-nso lower-nso-1 lower-nso-2 netsim

@@ -84,8 +84,8 @@ development environment to monitor NSO event notifications.
       -z USER_ID, --user-id USER_ID
                             User ID
       -I ADDRESS, --address ADDRESS
-                            Connect to NSO at ADDRESS. Default: 127.0.0.1
-      -p PORT, --port PORT  Connect to NSO at PORT. Default: 4569
+                            Connect to NSO at ADDRESS
+      -p PORT, --port PORT  Connect to NSO at PORT
       -n, --non-interactive
                             No actions or input required from user
 

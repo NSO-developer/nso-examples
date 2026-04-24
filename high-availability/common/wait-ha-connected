@@ -5,7 +5,7 @@ KEY="/high-availability/status/connected-secondary{${NODE}}/address"
 
 printf "Waiting for %s to connect: " "$NODE"
 
-until [ $(ncs_cmd -c "mexists $KEY") = "yes" ]; do
+until [ "$(ncs_cmd -c "mexists $KEY" 2>/dev/null)" = "yes" ]; do
     printf .
     sleep 1
 done

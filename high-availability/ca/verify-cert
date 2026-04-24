@@ -1,0 +1,22 @@
+#!/bin/sh
+# Copyright 2026 Cisco Systems, Inc.
+# SPDX-License-Identifier: MIT
+
+BASE=$(cd "$(dirname "$0")" && pwd)
+. "$BASE"/util/ca.sh
+
+
+usage()
+{
+    cat <<EOF
+usage: verify-cert <cert-name>
+
+    Verify the specified TLS certificate is still valid.
+
+    In case multiple CAs are available, selects the most-recently-created
+    CA unless NCSCERT_CAPATH is used to select a specific CA.
+EOF
+    exit "${1:-0}"
+}
+
+with_cert_do verify_cert "$@" && echo ok || echo not-valid

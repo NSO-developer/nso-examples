@@ -1,0 +1,304 @@
+module enterprise-fabric-service {
+  yang-version 1.1;
+  namespace "http://tail-f.com/examples/enterprise-fabric-service";
+  prefix enterprise-fabric;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  revision 2026-04-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef vendor-type {
+    type enumeration {
+      enum ios;
+      enum junos;
+    }
+  }
+
+  typedef node-role {
+    type enumeration {
+      enum core;
+      enum edge;
+      enum transit;
+    }
+  }
+
+  typedef routing-role {
+    type enumeration {
+      enum edge-static;
+      enum core-primary;
+      enum transit-backup;
+    }
+  }
+
+  typedef path-role {
+    type enumeration {
+      enum primary;
+      enum backup;
+    }
+  }
+
+  typedef syslog-severity {
+    type enumeration {
+      enum alert;
+      enum critical;
+      enum error;
+      enum warning;
+      enum notice;
+      enum informational;
+    }
+  }
+
+  container enterprise-fabric-catalog {
+    description
+      "Brownfield device, link, and peering inventory for the enterprise
+       fabric example.";
+
+    list ntp-server {
+      key name;
+
+      leaf name {
+        type string {
+          pattern "[a-z][a-z0-9-]{1,31}";
+        }
+      }
+
+      leaf address {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+    }
+
+    list node {
+      key name;
+
+      leaf name {
+        type string {
+          pattern "[a-z][a-z0-9-]{1,31}";
+        }
+      }
+
+      leaf device {
+        mandatory true;
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf vendor {
+        mandatory true;
+        type vendor-type;
+      }
+
+      leaf role {
+        mandatory true;
+        type node-role;
+      }
+
+      leaf loopback {
+        mandatory true;
+        type tailf:ipv4-address-and-prefix-length;
+      }
+
+      leaf loopback-ospf-area {
+        mandatory true;
+        type uint32;
+      }
+
+      leaf static-next-hop {
+        type inet:ipv4-address;
+      }
+    }
+
+    list link {
+      key name;
+
+      leaf name {
+        type string {
+          pattern "[a-z][a-z0-9-]{2,63}";
+        }
+      }
+
+      leaf node {
+        mandatory true;
+        type leafref {
+          path "/enterprise-fabric:enterprise-fabric-catalog/"
+             + "enterprise-fabric:node/enterprise-fabric:name";
+        }
+      }
+
+      leaf interface-name {
+        mandatory true;
+        type string {
+          length "1..64";
+        }
+      }
+
+      leaf description {
+        mandatory true;
+        type string {
+          length "1..128";
+        }
+      }
+
+      leaf provider {
+        mandatory true;
+        type string {
+          length "2..32";
+        }
+      }
+
+      leaf circuit-id {
+        mandatory true;
+        type string {
+          length "3..48";
+        }
+      }
+
+      leaf bandwidth-mbps {
+        mandatory true;
+        type uint32;
+      }
+
+      leaf path-role {
+        type path-role;
+        default primary;
+      }
+
+      leaf bfd-enabled {
+        type boolean;
+        default false;
+      }
+
+      leaf address {
+        mandatory true;
+        type tailf:ipv4-address-and-prefix-length;
+      }
+
+      leaf ospf-area {
+        mandatory true;
+        type uint32;
+      }
+
+      leaf routing-role {
+        type routing-role;
+        default edge-static;
+      }
+    }
+
+    list bgp-neighbor {
+      key "node peer-address";
+
+      leaf node {
+        mandatory true;
+        type leafref {
+          path "/enterprise-fabric:enterprise-fabric-catalog/"
+             + "enterprise-fabric:node/enterprise-fabric:name";
+        }
+      }
+
+      leaf peer-node {
+        mandatory true;
+        type leafref {
+          path "/enterprise-fabric:enterprise-fabric-catalog/"
+             + "enterprise-fabric:node/enterprise-fabric:name";
+        }
+      }
+
+      leaf peer-address {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+
+      leaf remote-as {
+        mandatory true;
+        type inet:as-number;
+      }
+    }
+  }
+
+  list enterprise-fabric {
+    description
+      "Intent-driven enterprise lab service that turns brownfield inventory
+       into IOS and Junos automation.";
+
+    uses ncs:service-data;
+    ncs:servicepoint enterprise-fabric-service;
+
+    key name;
+    leaf name {
+      type string {
+        pattern "[A-Za-z][A-Za-z0-9-]{2,31}";
+      }
+      tailf:cli-allow-range;
+    }
+
+    leaf banner {
+      type string {
+        length "4..120";
+      }
+      default "Authorized access only. Managed by NSO.";
+    }
+
+    leaf ibgp-as {
+      type inet:as-number;
+      default 65000;
+    }
+
+    container management-profile {
+      description
+        "Enterprise Day-0 and Day-1 management baseline, covering domain
+         naming, DNS, syslog, NTP sourcing, and IOS config archive.";
+
+      leaf domain-name {
+        type string {
+          length "3..64";
+        }
+        default "corp.example";
+      }
+
+      leaf-list dns-server {
+        ordered-by user;
+        type inet:ipv4-address;
+      }
+
+      leaf syslog-server {
+        type inet:ipv4-address;
+        default 192.0.2.200;
+      }
+
+      leaf syslog-severity {
+        type syslog-severity;
+        default informational;
+      }
+
+      leaf ntp-source-loopback {
+        type boolean;
+        default true;
+      }
+
+      leaf ios-config-archive {
+        type boolean;
+        default true;
+      }
+    }
+
+    leaf-list ntp-server {
+      ordered-by user;
+      type leafref {
+        path "/enterprise-fabric:enterprise-fabric-catalog/"
+           + "enterprise-fabric:ntp-server/enterprise-fabric:name";
+      }
+    }
+  }
+}

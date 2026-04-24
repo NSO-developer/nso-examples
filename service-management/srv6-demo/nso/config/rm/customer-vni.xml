@@ -1,0 +1,11 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <resource-pools xmlns="http://tail-f.com/pkg/resource-allocator">
+    <id-pool xmlns="http://tail-f.com/pkg/id-allocator">
+      <name>customer-vni</name>
+      <range>
+        <start>1000</start>
+        <end>2000</end>
+      </range>
+    </id-pool>
+  </resource-pools>
+</config>

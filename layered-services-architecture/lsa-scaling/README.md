@@ -178,9 +178,12 @@ Start the simulated network and the NSO nodes:
     DEVICE ex3 OK STARTED
     DEVICE ex4 OK STARTED
     DEVICE ex5 OK STARTED
-    cd upper-nso;   NCS_IPC_PORT=4569 sname=upper-nso ncs -c ncs.conf
-    cd lower-nso-1; NCS_IPC_PORT=4570 sname=lower-nso-1 ncs -c ncs.conf
-    cd lower-nso-2; NCS_IPC_PORT=4571 sname=lower-nso-2 ncs -c ncs.conf
+    cd upper-nso
+    NCS_IPC_PATH=/tmp/nso/nso-ipc.4569 sname=upper-nso ncs -c ncs.conf
+    cd lower-nso-1
+    NCS_IPC_PATH=/tmp/nso/nso-ipc.4570 sname=lower-nso-1 ncs -c ncs.conf
+    cd lower-nso-2
+    NCS_IPC_PATH=/tmp/nso/nso-ipc.4571 sname=lower-nso-2 ncs -c ncs.conf
     ./init.sh
 
 Sync the configuration from the remote LSA-nodes:

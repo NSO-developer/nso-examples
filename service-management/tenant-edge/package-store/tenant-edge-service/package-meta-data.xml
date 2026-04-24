@@ -1,0 +1,17 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>tenant-edge-service</name>
+  <package-version>1.0</package-version>
+  <description>Closed-loop tenant VRF intent for IOS-XR and EOS</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+
+  <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>arista-dcs-netsim-cli.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>tenant_edge_service.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

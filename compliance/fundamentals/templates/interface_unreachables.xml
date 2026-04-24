@@ -1,0 +1,26 @@
+<compliance xmlns="http://tail-f.com/ns/ncs">
+  <template>
+    <name>interface_unreachables</name>
+    <description>Ensure routers don't send ICMP Unreachable messages. Prevent attackers from mapping networks via ICMP, stop flooding.</description>
+    <ned-id>
+      <id xmlns:cisco-ios-netsim-cli-1.0="http://tail-f.com/ns/ned-id/cisco-ios-netsim-cli-1.0">
+      cisco-ios-netsim-cli-1.0:cisco-ios-netsim-cli-1.0</id>
+      <config>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet tags="allow-empty">
+            <name>.*</name>
+            <ip>
+              <unreachables>false</unreachables>
+            </ip>
+          </GigabitEthernet>
+          <TenGigabitEthernet tags="allow-empty">
+            <name>.*</name>
+            <ip>
+              <unreachables>false</unreachables>
+            </ip>
+          </TenGigabitEthernet>
+        </interface>
+      </config>
+    </ned-id>
+  </template>
+</compliance>

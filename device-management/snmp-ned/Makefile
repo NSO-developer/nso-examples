@@ -11,7 +11,7 @@ clean:
 		$(MAKE) -C $${f} clean || exit 1; \
 	done
 	rm -f logs/* ncs-cdb/*.cdb
-	rm -rf netsim state/*
+	rm -rf netsim state/* ncs-cdb/{A,O,S}
 .PHONY: clean
 
 ### Shortcuts
@@ -43,6 +43,7 @@ quick-remake:
 reset:
 	ncs-netsim reset
 	rm -rf logs/* state/* ncs-cdb/*.cdb
+	rm -rf ncs-cdb/{A,O,S} 2>/dev/null || true
 .PHONY: reset
 
 demo:

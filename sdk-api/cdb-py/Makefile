@@ -11,7 +11,7 @@ clean:
 	for f in packages/*/src; do \
 		$(MAKE) -C $$f clean || exit 1; \
 	done
-	rm -rf ./netsim logs state/* ncs-cdb/*.cdb logs ncs.conf
+	rm -rf ./netsim logs state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S} logs ncs.conf
 	rm -rf  ncs-cdb/netsim_devices_init.xml ./netsim
 
 stop:

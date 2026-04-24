@@ -16,7 +16,7 @@ module netsim-ned-cisco-nx {
     prefix ncs;
   }
 
-  revision 2025-03-27;
+  revision 2026-03-19;
 
   typedef ncs_compliance_template_ip-mask {
     type string;
@@ -27,6 +27,10 @@ module netsim-ned-cisco-nx {
   }
 
   typedef ncs_compliance_template_vlan-list-type {
+    type string;
+  }
+
+  typedef ncs_compliance_template_vlan-list-type-all {
     type string;
   }
 
@@ -139,6 +143,10 @@ module netsim-ned-cisco-nx {
   }
 
   typedef ncs_template_vlan-list-type {
+    type string;
+  }
+
+  typedef ncs_template_vlan-list-type-all {
     type string;
   }
 
@@ -257,6 +265,15 @@ module netsim-ned-cisco-nx {
 
   typedef ncs_rpc_notif_vlan-list-type {
     type uint16;
+  }
+
+  typedef ncs_rpc_notif_vlan-list-type-all {
+    type union {
+      type uint16;
+      type enumeration {
+        enum "all";
+      }
+    }
   }
 
   typedef ncs_rpc_notif_vrf-member-type {
@@ -601,6 +618,15 @@ module netsim-ned-cisco-nx {
 
   typedef vlan-list-type {
     type uint16;
+  }
+
+  typedef vlan-list-type-all {
+    type union {
+      type uint16;
+      type enumeration {
+        enum "all";
+      }
+    }
   }
 
   typedef vrf-member-type {
@@ -1034,7 +1060,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-suppress-mode;
             key "from to";
             leaf from {
-              type ncs_compliance_template_vlan-list-type;
+              type ncs_compliance_template_vlan-list-type-all;
             }
             leaf to {
               type ncs_compliance_template_vlan-list-type;
@@ -1048,7 +1074,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-range-list-syntax;
             key "from";
             leaf from {
-              type ncs_compliance_template_vlan-list-type;
+              type ncs_compliance_template_vlan-list-type-all;
             }
             leaf dot1q-tunnel {
               type empty;
@@ -1742,8 +1768,8 @@ module netsim-ned-cisco-nx {
           list addresses {
             // NCS patched for predictable order
             ordered-by user;
-            tailf:cli-suppress-mode;
             tailf:cli-drop-node-name;
+            tailf:cli-suppress-mode;
             key "addr";
             leaf addr {
               type string;
@@ -1812,15 +1838,13 @@ module netsim-ned-cisco-nx {
         leaf other-config-flag {
           type empty;
         }
-        container prefix {
-          choice prefix-choice {
-            leaf prefix {
-              tailf:cli-drop-node-name;
-              type string;
-            }
-            leaf default {
-              type empty;
-            }
+        list prefix {
+          // NCS patched for predictable order
+          ordered-by user;
+          tailf:cli-suppress-mode;
+          key "prefix";
+          leaf prefix {
+            type string;
           }
           container valid-lifetime {
             tailf:cli-drop-node-name;
@@ -2064,6 +2088,30 @@ module netsim-ned-cisco-nx {
       }
     }
     container ospfv3 {
+      container authentication {
+        choice authentication-choice {
+          leaf disable {
+            type empty;
+          }
+          container ipsec {
+            leaf spi {
+              type string;
+            }
+            leaf alg {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf encryption-type {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf key {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+          }
+        }
+      }
       leaf cost {
         type string;
       }
@@ -2581,8 +2629,15 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -2780,6 +2835,33 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_compliance_template_if-service-policy-grouping {
+    container service-policy {
+      container type {
+        container qos {
+          container input {
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_compliance_template_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+          container output {
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_compliance_template_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+
   grouping ncs_compliance_template_interface-ethernet-grouping {
     // NCS expand uses statement
     container bandwidth {
@@ -2868,8 +2950,15 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -3614,209 +3703,6 @@ module netsim-ned-cisco-nx {
     }
   }
 
-  grouping ncs_compliance_template_policy-map-class-network-qos-grouping {
-    container class {
-      container type {
-        list network-qos {
-          // NCS patched for predictable order
-          ordered-by user;
-          key "name";
-          leaf name {
-            type ncs_compliance_template_class-name-type;
-          }
-          container dpp {
-            leaf set-qos-group {
-              type string;
-            }
-          }
-          leaf mtu {
-            type string;
-          }
-          leaf multicast-optimize {
-            type empty;
-          }
-          container pause {
-            container no-drop {
-              presence "Enable no-drop for the CoS";
-              leaf buffer-size {
-                type string;
-              }
-              leaf pause-threshold {
-                type string;
-              }
-              leaf resume-threshold {
-                type string;
-              }
-              leaf-list pfc-cos {
-                // NCS patched for predictable order
-                ordered-by user;
-                tailf:cli-range-list-syntax;
-                type string;
-              }
-            }
-          }
-          container queue-limit {
-            leaf count {
-              tailf:cli-drop-node-name;
-              type string;
-              // NCS drop must statement
-            }
-            leaf bytes {
-              type empty;
-            }
-          }
-          container set {
-            leaf cos {
-              type string;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  grouping ncs_compliance_template_policy-map-class-queuing-grouping {
-    container class {
-      container type {
-        list queuing {
-          // NCS patched for predictable order
-          ordered-by user;
-          key "name";
-          leaf name {
-            type ncs_compliance_template_class-name-type;
-          }
-          container afd {
-            leaf queue-desired {
-              type string;
-            }
-            leaf unit {
-              tailf:cli-drop-node-name;
-              type string;
-            }
-            leaf ecn {
-              type empty;
-            }
-          }
-          container bandwidth {
-            container remaining {
-              leaf percent {
-                type string;
-              }
-            }
-            leaf percent {
-              type string;
-            }
-          }
-          container priority {
-            leaf level {
-              type string;
-            }
-          }
-          container queue-limit {
-            uses ncs_compliance_template_queue-limit-grouping;
-          }
-          container queue-limit-per-cos {
-            tailf:cli-drop-node-name;
-            list queue-limit {
-              // NCS patched for predictable order
-              ordered-by user;
-              tailf:cli-suppress-mode;
-              key "cos";
-              leaf cos {
-                type string;
-              }
-              uses ncs_compliance_template_queue-limit-grouping;
-            }
-          }
-          container shape {
-            container average {
-              choice shape-type {
-                case bit-rate {
-                  leaf rate {
-                    tailf:cli-drop-node-name;
-                    // NCS drop must statement
-                    type string;
-                  }
-                  leaf unit {
-                    type string;
-                  }
-                }
-                case percent {
-                  leaf percent {
-                    type string;
-                  }
-                }
-              }
-            }
-            container min-max {
-              tailf:cli-drop-node-name;
-              leaf min {
-                type string;
-              }
-              leaf min-unit {
-                tailf:cli-drop-node-name;
-                type string;
-              }
-              leaf max {
-                type string;
-              }
-              leaf max-unit {
-                tailf:cli-drop-node-name;
-                type string;
-              }
-            }
-          }
-          container random-detect {
-            container cos-based {
-              presence "true";
-            }
-          }
-          container random-detect-wred {
-            tailf:cli-drop-node-name;
-            choice threshold-choice {
-              list random-detect {
-                // NCS patched for predictable order
-                ordered-by user;
-                tailf:cli-suppress-mode;
-                key "cos";
-                leaf cos {
-                  type string;
-                }
-                uses ncs_compliance_template_random-detect-grouping;
-              }
-              container random-detect-no-cos {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  uses ncs_compliance_template_random-detect-grouping;
-                  leaf drop-probability {
-                    type string;
-                  }
-                  leaf weight {
-                    type string;
-                  }
-                }
-              }
-              container random-detect-threshold {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  container threshold {
-                    leaf type {
-                      tailf:cli-drop-node-name;
-                      type string;
-                    }
-                    leaf ecn {
-                      type empty;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   grouping ncs_compliance_template_common-base-redistribute-grouping {
     container default-information {
       container originate {
@@ -4357,6 +4243,24 @@ module netsim-ned-cisco-nx {
         }
         leaf cost {
           type string;
+        }
+      }
+      container range-ipv6 {
+        tailf:cli-drop-node-name;
+        list range {
+          // NCS patched for predictable order
+          ordered-by user;
+          tailf:cli-suppress-mode;
+          key "ipv6";
+          leaf ipv6 {
+            type string;
+          }
+          leaf not-advertise {
+            type empty;
+          }
+          leaf cost {
+            type string;
+          }
         }
       }
       list sham-link {
@@ -5459,12 +5363,14 @@ module netsim-ned-cisco-nx {
     leaf rewrite-evpn-rt-asn {
       type empty;
     }
-    container send-community {
-      presence "true";
-      leaf attr {
-        tailf:cli-drop-node-name;
+    container send-community-attr {
+      tailf:cli-drop-node-name;
+      leaf send-community {
         type string;
       }
+    }
+    leaf send-community {
+      type empty;
     }
     container soft-reconfiguration {
       leaf inbound {
@@ -5558,6 +5464,23 @@ module netsim-ned-cisco-nx {
     }
     leaf as-override {
       type empty;
+    }
+    list advertise-map {
+      // NCS patched for predictable order
+      ordered-by user;
+      tailf:cli-suppress-mode;
+      key "name";
+      leaf name {
+        type string;
+      }
+      choice map-choice {
+        leaf exist-map {
+          type string;
+        }
+        leaf non-exist-map {
+          type string;
+        }
+      }
     }
     leaf advertisement-interval {
       type string;
@@ -5751,6 +5674,13 @@ module netsim-ned-cisco-nx {
     }
     leaf router-id {
       type string;
+    }
+    container rd {
+      container dual {
+        leaf id {
+          type string;
+        }
+      }
     }
     leaf cluster-id {
       type string;
@@ -6534,16 +6464,16 @@ module netsim-ned-cisco-nx {
       list rp-address {
         // NCS patched for predictable order
         ordered-by user;
-        key "ip-address";
         tailf:cli-suppress-mode;
+        key "ip-address";
         leaf ip-address {
           type string;
         }
         list group-list {
           // NCS patched for predictable order
           ordered-by user;
-          key "group-range-prefix";
           tailf:cli-suppress-mode;
+          key "group-range-prefix";
           leaf group-range-prefix {
             type string;
           }
@@ -6610,6 +6540,23 @@ module netsim-ned-cisco-nx {
 
   grouping ncs_compliance_template_ipv6-grouping {
     container route {
+      list ipv6-route-interface-list {
+        // NCS patched for predictable order
+        ordered-by user;
+        tailf:cli-drop-node-name;
+        tailf:cli-suppress-mode;
+        key "prefix-mask interface next-hop";
+        leaf prefix-mask {
+          type string;
+        }
+        leaf interface {
+          type string;
+        }
+        leaf next-hop {
+          type string;
+        }
+        uses ncs_compliance_template_ip-route-options-grouping;
+      }
       list ipv6-route-list {
         // NCS patched for predictable order
         ordered-by user;
@@ -6617,10 +6564,6 @@ module netsim-ned-cisco-nx {
         tailf:cli-suppress-mode;
         key "prefix-mask next-hop";
         leaf prefix-mask {
-          type string;
-        }
-        leaf interface {
-          tailf:cli-drop-node-name;
           type string;
         }
         leaf next-hop {
@@ -7899,6 +7842,38 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_compliance_template_role-rule-type-choice {
+    choice rule-type {
+      leaf command {
+        type string;
+      }
+      container read {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+      container read-write {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+    }
+  }
+
   grouping ncs_compliance_template_itd-probe-grouping {
     container probe {
       leaf protocol {
@@ -8041,7 +8016,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-suppress-mode;
             key "from to";
             leaf from {
-              type ncs_template_vlan-list-type;
+              type ncs_template_vlan-list-type-all;
             }
             leaf to {
               type ncs_template_vlan-list-type;
@@ -8055,7 +8030,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-range-list-syntax;
             key "from";
             leaf from {
-              type ncs_template_vlan-list-type;
+              type ncs_template_vlan-list-type-all;
             }
             leaf dot1q-tunnel {
               type empty;
@@ -8749,8 +8724,8 @@ module netsim-ned-cisco-nx {
           list addresses {
             // NCS patched for predictable order
             ordered-by user;
-            tailf:cli-suppress-mode;
             tailf:cli-drop-node-name;
+            tailf:cli-suppress-mode;
             key "addr";
             leaf addr {
               type string;
@@ -8819,15 +8794,13 @@ module netsim-ned-cisco-nx {
         leaf other-config-flag {
           type empty;
         }
-        container prefix {
-          choice prefix-choice {
-            leaf prefix {
-              tailf:cli-drop-node-name;
-              type string;
-            }
-            leaf default {
-              type empty;
-            }
+        list prefix {
+          // NCS patched for predictable order
+          ordered-by user;
+          tailf:cli-suppress-mode;
+          key "prefix";
+          leaf prefix {
+            type string;
           }
           container valid-lifetime {
             tailf:cli-drop-node-name;
@@ -9071,6 +9044,30 @@ module netsim-ned-cisco-nx {
       }
     }
     container ospfv3 {
+      container authentication {
+        choice authentication-choice {
+          leaf disable {
+            type empty;
+          }
+          container ipsec {
+            leaf spi {
+              type string;
+            }
+            leaf alg {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf encryption-type {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf key {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+          }
+        }
+      }
       leaf cost {
         type string;
       }
@@ -9588,8 +9585,15 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -9787,6 +9791,33 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_template_if-service-policy-grouping {
+    container service-policy {
+      container type {
+        container qos {
+          container input {
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_template_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+          container output {
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_template_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+
   grouping ncs_template_interface-ethernet-grouping {
     // NCS expand uses statement
     container bandwidth {
@@ -9875,8 +9906,15 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -10621,209 +10659,6 @@ module netsim-ned-cisco-nx {
     }
   }
 
-  grouping ncs_template_policy-map-class-network-qos-grouping {
-    container class {
-      container type {
-        list network-qos {
-          // NCS patched for predictable order
-          ordered-by user;
-          key "name";
-          leaf name {
-            type ncs_template_class-name-type;
-          }
-          container dpp {
-            leaf set-qos-group {
-              type string;
-            }
-          }
-          leaf mtu {
-            type string;
-          }
-          leaf multicast-optimize {
-            type empty;
-          }
-          container pause {
-            container no-drop {
-              presence "Enable no-drop for the CoS";
-              leaf buffer-size {
-                type string;
-              }
-              leaf pause-threshold {
-                type string;
-              }
-              leaf resume-threshold {
-                type string;
-              }
-              leaf-list pfc-cos {
-                // NCS patched for predictable order
-                ordered-by user;
-                tailf:cli-range-list-syntax;
-                type string;
-              }
-            }
-          }
-          container queue-limit {
-            leaf count {
-              tailf:cli-drop-node-name;
-              type string;
-              // NCS drop must statement
-            }
-            leaf bytes {
-              type empty;
-            }
-          }
-          container set {
-            leaf cos {
-              type string;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  grouping ncs_template_policy-map-class-queuing-grouping {
-    container class {
-      container type {
-        list queuing {
-          // NCS patched for predictable order
-          ordered-by user;
-          key "name";
-          leaf name {
-            type ncs_template_class-name-type;
-          }
-          container afd {
-            leaf queue-desired {
-              type string;
-            }
-            leaf unit {
-              tailf:cli-drop-node-name;
-              type string;
-            }
-            leaf ecn {
-              type empty;
-            }
-          }
-          container bandwidth {
-            container remaining {
-              leaf percent {
-                type string;
-              }
-            }
-            leaf percent {
-              type string;
-            }
-          }
-          container priority {
-            leaf level {
-              type string;
-            }
-          }
-          container queue-limit {
-            uses ncs_template_queue-limit-grouping;
-          }
-          container queue-limit-per-cos {
-            tailf:cli-drop-node-name;
-            list queue-limit {
-              // NCS patched for predictable order
-              ordered-by user;
-              tailf:cli-suppress-mode;
-              key "cos";
-              leaf cos {
-                type string;
-              }
-              uses ncs_template_queue-limit-grouping;
-            }
-          }
-          container shape {
-            container average {
-              choice shape-type {
-                case bit-rate {
-                  leaf rate {
-                    tailf:cli-drop-node-name;
-                    // NCS drop must statement
-                    type string;
-                  }
-                  leaf unit {
-                    type string;
-                  }
-                }
-                case percent {
-                  leaf percent {
-                    type string;
-                  }
-                }
-              }
-            }
-            container min-max {
-              tailf:cli-drop-node-name;
-              leaf min {
-                type string;
-              }
-              leaf min-unit {
-                tailf:cli-drop-node-name;
-                type string;
-              }
-              leaf max {
-                type string;
-              }
-              leaf max-unit {
-                tailf:cli-drop-node-name;
-                type string;
-              }
-            }
-          }
-          container random-detect {
-            container cos-based {
-              presence "true";
-            }
-          }
-          container random-detect-wred {
-            tailf:cli-drop-node-name;
-            choice threshold-choice {
-              list random-detect {
-                // NCS patched for predictable order
-                ordered-by user;
-                tailf:cli-suppress-mode;
-                key "cos";
-                leaf cos {
-                  type string;
-                }
-                uses ncs_template_random-detect-grouping;
-              }
-              container random-detect-no-cos {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  uses ncs_template_random-detect-grouping;
-                  leaf drop-probability {
-                    type string;
-                  }
-                  leaf weight {
-                    type string;
-                  }
-                }
-              }
-              container random-detect-threshold {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  container threshold {
-                    leaf type {
-                      tailf:cli-drop-node-name;
-                      type string;
-                    }
-                    leaf ecn {
-                      type empty;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   grouping ncs_template_common-base-redistribute-grouping {
     container default-information {
       container originate {
@@ -11364,6 +11199,24 @@ module netsim-ned-cisco-nx {
         }
         leaf cost {
           type string;
+        }
+      }
+      container range-ipv6 {
+        tailf:cli-drop-node-name;
+        list range {
+          // NCS patched for predictable order
+          ordered-by user;
+          tailf:cli-suppress-mode;
+          key "ipv6";
+          leaf ipv6 {
+            type string;
+          }
+          leaf not-advertise {
+            type empty;
+          }
+          leaf cost {
+            type string;
+          }
         }
       }
       list sham-link {
@@ -12466,12 +12319,14 @@ module netsim-ned-cisco-nx {
     leaf rewrite-evpn-rt-asn {
       type empty;
     }
-    container send-community {
-      presence "true";
-      leaf attr {
-        tailf:cli-drop-node-name;
+    container send-community-attr {
+      tailf:cli-drop-node-name;
+      leaf send-community {
         type string;
       }
+    }
+    leaf send-community {
+      type empty;
     }
     container soft-reconfiguration {
       leaf inbound {
@@ -12565,6 +12420,23 @@ module netsim-ned-cisco-nx {
     }
     leaf as-override {
       type empty;
+    }
+    list advertise-map {
+      // NCS patched for predictable order
+      ordered-by user;
+      tailf:cli-suppress-mode;
+      key "name";
+      leaf name {
+        type string;
+      }
+      choice map-choice {
+        leaf exist-map {
+          type string;
+        }
+        leaf non-exist-map {
+          type string;
+        }
+      }
     }
     leaf advertisement-interval {
       type string;
@@ -12758,6 +12630,13 @@ module netsim-ned-cisco-nx {
     }
     leaf router-id {
       type string;
+    }
+    container rd {
+      container dual {
+        leaf id {
+          type string;
+        }
+      }
     }
     leaf cluster-id {
       type string;
@@ -13541,16 +13420,16 @@ module netsim-ned-cisco-nx {
       list rp-address {
         // NCS patched for predictable order
         ordered-by user;
-        key "ip-address";
         tailf:cli-suppress-mode;
+        key "ip-address";
         leaf ip-address {
           type string;
         }
         list group-list {
           // NCS patched for predictable order
           ordered-by user;
-          key "group-range-prefix";
           tailf:cli-suppress-mode;
+          key "group-range-prefix";
           leaf group-range-prefix {
             type string;
           }
@@ -13617,6 +13496,23 @@ module netsim-ned-cisco-nx {
 
   grouping ncs_template_ipv6-grouping {
     container route {
+      list ipv6-route-interface-list {
+        // NCS patched for predictable order
+        ordered-by user;
+        tailf:cli-drop-node-name;
+        tailf:cli-suppress-mode;
+        key "prefix-mask interface next-hop";
+        leaf prefix-mask {
+          type string;
+        }
+        leaf interface {
+          type string;
+        }
+        leaf next-hop {
+          type string;
+        }
+        uses ncs_template_ip-route-options-grouping;
+      }
       list ipv6-route-list {
         // NCS patched for predictable order
         ordered-by user;
@@ -13624,10 +13520,6 @@ module netsim-ned-cisco-nx {
         tailf:cli-suppress-mode;
         key "prefix-mask next-hop";
         leaf prefix-mask {
-          type string;
-        }
-        leaf interface {
-          tailf:cli-drop-node-name;
           type string;
         }
         leaf next-hop {
@@ -14906,6 +14798,38 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_template_role-rule-type-choice {
+    choice rule-type {
+      leaf command {
+        type string;
+      }
+      container read {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+      container read-write {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+    }
+  }
+
   grouping ncs_template_itd-probe-grouping {
     container probe {
       leaf protocol {
@@ -15056,9 +14980,10 @@ module netsim-ned-cisco-nx {
           list map {
             tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             key "from to";
             leaf from {
-              type ncs_rpc_notif_vlan-list-type;
+              type ncs_rpc_notif_vlan-list-type-all;
             }
             leaf to {
               type ncs_rpc_notif_vlan-list-type;
@@ -15073,7 +14998,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-range-list-syntax;
             key "from";
             leaf from {
-              type ncs_rpc_notif_vlan-list-type;
+              type ncs_rpc_notif_vlan-list-type-all;
             }
             leaf dot1q-tunnel {
               type empty;
@@ -15375,6 +15300,7 @@ module netsim-ned-cisco-nx {
         list address-list {
           tailf:cli-drop-node-name;
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "address";
           leaf address {
             type inet:ipv4-address;
@@ -15460,8 +15386,8 @@ module netsim-ned-cisco-nx {
           }
         }
         container authentication-key {
-          tailf:cli-sequence-commands;
           tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
           leaf encryption-type {
             tailf:cli-drop-node-name;
             tailf:cli-optional-in-sequence;
@@ -15489,8 +15415,8 @@ module netsim-ned-cisco-nx {
           type uint16;
         }
         container message-digest-key {
-          tailf:cli-sequence-commands;
           tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
           leaf key-id {
             tailf:cli-drop-node-name;
             type uint8;
@@ -15586,6 +15512,7 @@ module netsim-ned-cisco-nx {
         }
         list eigrp {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "id";
           leaf id {
             type string;
@@ -15599,10 +15526,10 @@ module netsim-ned-cisco-nx {
         list route-filter {
           tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           key "direction";
           leaf direction {
             type enumeration {
@@ -15681,6 +15608,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv4-address;
             }
             leaf source {
+              tailf:cli-expose-key-name;
               type inet:ipv4-address;
             }
           }
@@ -15714,6 +15642,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv4-address;
             }
             leaf source {
+              tailf:cli-expose-key-name;
               type inet:ipv4-address;
             }
           }
@@ -15850,13 +15779,13 @@ module netsim-ned-cisco-nx {
         }
         choice addr-or-linklocal {
           list addresses {
+            tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-drop-node-name;
-            tailf:cli-delete-when-empty;
             key "addr";
             leaf addr {
               type tailf:ipv6-address-and-prefix-length;
@@ -15936,24 +15865,26 @@ module netsim-ned-cisco-nx {
         leaf other-config-flag {
           type empty;
         }
-        container prefix {
+        list prefix {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          choice prefix-choice {
-            leaf prefix {
-              tailf:cli-drop-node-name;
+          key "prefix";
+          leaf prefix {
+            type union {
               type tailf:ipv6-address-and-prefix-length;
-            }
-            leaf default {
-              type empty;
+              type enumeration {
+                enum "default";
+              }
             }
           }
           container valid-lifetime {
             tailf:cli-drop-node-name;
-            tailf:cli-compact-syntax;
             tailf:cli-flatten-container;
+            tailf:cli-compact-syntax;
             choice valid-lifetime-choice {
               leaf lifetime {
                 tailf:cli-drop-node-name;
@@ -15969,8 +15900,8 @@ module netsim-ned-cisco-nx {
           }
           container preferred-lifetime {
             tailf:cli-drop-node-name;
-            tailf:cli-compact-syntax;
             tailf:cli-flatten-container;
+            tailf:cli-compact-syntax;
             choice preferred-lifetime-choice {
               leaf lifetime {
                 tailf:cli-drop-node-name;
@@ -16228,6 +16159,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv6-address;
             }
             leaf use-vrf {
+              tailf:cli-expose-key-name;
               type ncs_rpc_notif_vrf-member-type;
             }
           }
@@ -16238,6 +16170,42 @@ module netsim-ned-cisco-nx {
       }
     }
     container ospfv3 {
+      container authentication {
+        choice authentication-choice {
+          leaf disable {
+            type empty;
+          }
+          container ipsec {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            leaf spi {
+              type uint32;
+            }
+            leaf alg {
+              tailf:cli-drop-node-name;
+              type enumeration {
+                enum "md5";
+                enum "sha1";
+              }
+            }
+            leaf encryption-type {
+              tailf:cli-drop-node-name;
+              tailf:cli-optional-in-sequence;
+              type enumeration {
+                enum "0";
+                enum "3";
+                enum "7";
+              }
+            }
+            leaf key {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+          }
+        }
+      }
       leaf cost {
         type uint16;
       }
@@ -16611,6 +16579,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-suppress-mode;
           key "src-ip dest-ip";
           leaf src-ip {
+            tailf:cli-expose-key-name;
             tailf:cli-suppress-range;
             type union {
               type inet:ipv4-address;
@@ -16618,6 +16587,7 @@ module netsim-ned-cisco-nx {
             }
           }
           leaf dest-ip {
+            tailf:cli-expose-key-name;
             type union {
               type inet:ipv4-address;
               type inet:ipv6-address;
@@ -16695,6 +16665,7 @@ module netsim-ned-cisco-nx {
         type uint8;
       }
       leaf address-family {
+        tailf:cli-expose-key-name;
         type enumeration {
           enum "ipv4";
           enum "ipv6";
@@ -16834,8 +16805,21 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands;
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    tailf:cli-optional-in-sequence;
+                    type enumeration {
+                      enum "0";
+                      enum "7";
+                    }
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -16863,10 +16847,10 @@ module netsim-ned-cisco-nx {
           type ncs_rpc_notif_mac-address-type;
         }
         container timers {
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           choice hello-choice {
             leaf hello-msec {
               tailf:alt-name "msec";
@@ -17054,6 +17038,37 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_rpc_notif_if-service-policy-grouping {
+    container service-policy {
+      container type {
+        container qos {
+          container input {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_rpc_notif_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+          container output {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
+            leaf name {
+              tailf:cli-drop-node-name;
+              type ncs_rpc_notif_policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+
   grouping ncs_rpc_notif_interface-ethernet-grouping {
     // NCS expand uses statement
     container bandwidth {
@@ -17147,8 +17162,21 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands;
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    tailf:cli-optional-in-sequence;
+                    type enumeration {
+                      enum "0";
+                      enum "7";
+                    }
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -17176,10 +17204,10 @@ module netsim-ned-cisco-nx {
           type ncs_rpc_notif_mac-address-type;
         }
         container timers {
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           choice hello-choice {
             leaf hello-msec {
               tailf:alt-name "msec";
@@ -17992,10 +18020,10 @@ module netsim-ned-cisco-nx {
       }
     }
     container police {
+      tailf:cli-compact-syntax;
       tailf:cli-sequence-commands {
         tailf:cli-reset-siblings;
       }
-      tailf:cli-compact-syntax;
       leaf cir {
         type union {
           type uint64;
@@ -18021,8 +18049,8 @@ module netsim-ned-cisco-nx {
       }
       container pir {
         tailf:cli-optional-in-sequence;
-        tailf:cli-compact-syntax;
         tailf:cli-flatten-container;
+        tailf:cli-compact-syntax;
         tailf:cli-sequence-commands {
           tailf:cli-reset-siblings;
         }
@@ -18054,265 +18082,6 @@ module netsim-ned-cisco-nx {
       container violate {
         tailf:cli-flatten-container;
         uses ncs_rpc_notif_policy-map-police-action-grouping;
-      }
-    }
-  }
-
-  grouping ncs_rpc_notif_policy-map-class-network-qos-grouping {
-    container class {
-      container type {
-        list network-qos {
-          key "name";
-          leaf name {
-            type ncs_rpc_notif_class-name-type;
-          }
-          container dpp {
-            leaf set-qos-group {
-              type uint8;
-            }
-          }
-          leaf mtu {
-            type uint16;
-          }
-          leaf multicast-optimize {
-            type empty;
-          }
-          container pause {
-            container no-drop {
-              presence "Enable no-drop for the CoS";
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-all-siblings;
-              }
-              tailf:cli-compact-syntax;
-              leaf buffer-size {
-                tailf:cli-optional-in-sequence;
-                type uint32;
-              }
-              leaf pause-threshold {
-                type uint32;
-              }
-              leaf resume-threshold {
-                type uint32;
-              }
-              leaf-list pfc-cos {
-                tailf:cli-range-list-syntax;
-                type uint8;
-              }
-            }
-          }
-          container queue-limit {
-            tailf:cli-sequence-commands;
-            tailf:cli-compact-syntax;
-            leaf count {
-              tailf:cli-drop-node-name;
-              type uint32;
-              must '../bytes' {
-                tailf:xpath-root 3;
-              }
-            }
-            leaf bytes {
-              type empty;
-            }
-          }
-          container set {
-            leaf cos {
-              type uint8;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  grouping ncs_rpc_notif_policy-map-class-queuing-grouping {
-    container class {
-      container type {
-        list queuing {
-          key "name";
-          leaf name {
-            type ncs_rpc_notif_class-name-type;
-          }
-          container afd {
-            tailf:cli-sequence-commands {
-              tailf:cli-reset-siblings;
-            }
-            tailf:cli-compact-syntax;
-            leaf queue-desired {
-              type uint32;
-            }
-            leaf unit {
-              tailf:cli-drop-node-name;
-              type enumeration {
-                enum "bytes";
-                enum "kbytes";
-                enum "mbytes";
-              }
-            }
-            leaf ecn {
-              type empty;
-            }
-          }
-          container bandwidth {
-            container remaining {
-              leaf percent {
-                type uint8;
-              }
-            }
-            leaf percent {
-              type uint8;
-            }
-          }
-          container priority {
-            leaf level {
-              type uint8;
-            }
-          }
-          container queue-limit {
-            tailf:cli-sequence-commands {
-              tailf:cli-reset-siblings;
-            }
-            tailf:cli-compact-syntax;
-            uses ncs_rpc_notif_queue-limit-grouping;
-          }
-          container queue-limit-per-cos {
-            tailf:cli-drop-node-name;
-            list queue-limit {
-              tailf:cli-suppress-mode;
-              tailf:cli-delete-when-empty;
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-siblings;
-              }
-              tailf:cli-compact-syntax;
-              key "cos";
-              leaf cos {
-                type uint8;
-              }
-              uses ncs_rpc_notif_queue-limit-grouping;
-            }
-          }
-          container shape {
-            container average {
-              choice shape-type {
-                case bit-rate {
-                  leaf rate {
-                    tailf:cli-drop-node-name;
-                    must '../unit' {
-                      tailf:xpath-root 3;
-                    }
-                    type uint32;
-                  }
-                  leaf unit {
-                    type enumeration {
-                      enum "bps";
-                      enum "gbps";
-                      enum "kbps";
-                      enum "mbps";
-                    }
-                  }
-                }
-                case percent {
-                  leaf percent {
-                    type uint8;
-                  }
-                }
-              }
-            }
-            container min-max {
-              tailf:cli-drop-node-name;
-              tailf:cli-compact-syntax;
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-siblings;
-              }
-              leaf min {
-                type uint64;
-              }
-              leaf min-unit {
-                tailf:cli-drop-node-name;
-                tailf:cli-optional-in-sequence;
-                type enumeration {
-                  enum "bps";
-                  enum "gbps";
-                  enum "kbps";
-                  enum "mbps";
-                  enum "pps";
-                }
-              }
-              leaf max {
-                type uint64;
-              }
-              leaf max-unit {
-                tailf:cli-drop-node-name;
-                type enumeration {
-                  enum "bps";
-                  enum "gbps";
-                  enum "kbps";
-                  enum "mbps";
-                  enum "pps";
-                }
-              }
-            }
-          }
-          container random-detect {
-            container cos-based {
-              presence "true";
-            }
-          }
-          container random-detect-wred {
-            tailf:cli-drop-node-name;
-            choice threshold-choice {
-              list random-detect {
-                tailf:cli-suppress-mode;
-                tailf:cli-delete-when-empty;
-                tailf:cli-sequence-commands {
-                  tailf:cli-reset-siblings;
-                }
-                tailf:cli-compact-syntax;
-                key "cos";
-                leaf cos {
-                  type uint8;
-                }
-                uses ncs_rpc_notif_random-detect-grouping;
-              }
-              container random-detect-no-cos {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  tailf:cli-sequence-commands {
-                    tailf:cli-reset-siblings;
-                  }
-                  tailf:cli-compact-syntax;
-                  uses ncs_rpc_notif_random-detect-grouping;
-                  leaf drop-probability {
-                    type uint8;
-                  }
-                  leaf weight {
-                    type uint8;
-                  }
-                }
-              }
-              container random-detect-threshold {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  container threshold {
-                    tailf:cli-sequence-commands {
-                      tailf:cli-reset-siblings;
-                    }
-                    tailf:cli-compact-syntax;
-                    leaf type {
-                      tailf:cli-drop-node-name;
-                      type enumeration {
-                        enum "burst-optimized";
-                        enum "mesh-optimized";
-                      }
-                    }
-                    leaf ecn {
-                      type empty;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -18855,6 +18624,7 @@ module netsim-ned-cisco-nx {
       container filter-list {
         list route-map {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "direction";
           leaf name {
             tailf:cli-prefix-key;
@@ -18871,6 +18641,7 @@ module netsim-ned-cisco-nx {
       }
       list range {
         tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
         tailf:cli-compact-syntax;
         key "ip";
         leaf ip {
@@ -18881,6 +18652,23 @@ module netsim-ned-cisco-nx {
         }
         leaf cost {
           type uint32;
+        }
+      }
+      container range-ipv6 {
+        tailf:cli-drop-node-name;
+        list range {
+          tailf:cli-suppress-mode;
+          tailf:cli-compact-syntax;
+          key "ipv6";
+          leaf ipv6 {
+            type tailf:ipv6-address-and-prefix-length;
+          }
+          leaf not-advertise {
+            type empty;
+          }
+          leaf cost {
+            type uint32;
+          }
         }
       }
       list sham-link {
@@ -19157,6 +18945,7 @@ module netsim-ned-cisco-nx {
   grouping ncs_rpc_notif_ospf-grouping {
     list summary-address {
       tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
       key "address";
       leaf address {
         type tailf:ipv4-address-and-prefix-length;
@@ -19923,12 +19712,12 @@ module netsim-ned-cisco-nx {
           }
         }
         list aggregate-address {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
-          tailf:cli-delete-when-empty;
-          tailf:cli-suppress-mode;
           key "ip";
           leaf ip {
             type union {
@@ -20122,16 +19911,18 @@ module netsim-ned-cisco-nx {
     leaf rewrite-evpn-rt-asn {
       type empty;
     }
-    container send-community {
-      presence "true";
-      leaf attr {
-        tailf:cli-drop-node-name;
+    container send-community-attr {
+      tailf:cli-drop-node-name;
+      leaf send-community {
         type enumeration {
           enum "standard";
           enum "extended";
           enum "both";
         }
       }
+    }
+    leaf send-community {
+      type empty;
     }
     container soft-reconfiguration {
       tailf:cli-compact-syntax;
@@ -20183,6 +19974,7 @@ module netsim-ned-cisco-nx {
     container inherit {
       list peer-policy {
         tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
         key "name";
         leaf name {
           type string;
@@ -20233,6 +20025,22 @@ module netsim-ned-cisco-nx {
     }
     leaf as-override {
       type empty;
+    }
+    list advertise-map {
+      tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
+      key "name";
+      leaf name {
+        type string;
+      }
+      choice map-choice {
+        leaf exist-map {
+          type string;
+        }
+        leaf non-exist-map {
+          type string;
+        }
+      }
     }
     leaf advertisement-interval {
       type uint16;
@@ -20460,6 +20268,13 @@ module netsim-ned-cisco-nx {
     }
     leaf router-id {
       type inet:ipv4-address;
+    }
+    container rd {
+      container dual {
+        leaf id {
+          type uint16;
+        }
+      }
     }
     leaf cluster-id {
       type union {
@@ -21194,6 +21009,7 @@ module netsim-ned-cisco-nx {
         tailf:cli-compact-syntax;
         key "use-vrf";
         leaf use-vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf-list servers {
@@ -21212,6 +21028,7 @@ module netsim-ned-cisco-nx {
         container bfd {
           list port-channel {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-allow-join-with-key;
             key "id";
             leaf id {
@@ -21236,9 +21053,9 @@ module netsim-ned-cisco-nx {
             }
           }
           list Ethernet {
-            tailf:cli-allow-join-with-key;
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-allow-join-with-key;
             key "name";
             leaf name {
               type string;
@@ -21320,6 +21137,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ncs_rpc_notif_ip-route-options-grouping;
@@ -21346,6 +21164,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ncs_rpc_notif_ip-route-options-grouping;
@@ -21563,18 +21382,18 @@ module netsim-ned-cisco-nx {
         type string;
       }
       list rp-address {
-        key "ip-address";
         tailf:cli-suppress-mode;
         tailf:cli-delete-when-empty;
+        key "ip-address";
         leaf ip-address {
           type inet:ipv4-address;
         }
         list group-list {
-          key "group-range-prefix";
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands;
-          tailf:cli-delete-when-empty;
+          key "group-range-prefix";
           leaf group-range-prefix {
             type tailf:ipv4-address-and-prefix-length;
           }
@@ -21647,6 +21466,32 @@ module netsim-ned-cisco-nx {
 
   grouping ncs_rpc_notif_ipv6-grouping {
     container route {
+      list ipv6-route-interface-list {
+        tailf:cli-drop-node-name;
+        tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-all-siblings;
+        }
+        key "prefix-mask interface next-hop";
+        leaf prefix-mask {
+          type tailf:ipv6-address-and-prefix-length;
+        }
+        leaf interface {
+          type string;
+        }
+        leaf next-hop {
+          type union {
+            type inet:ipv6-address;
+            type tailf:ipv6-address-and-prefix-length;
+            type enumeration {
+              enum "Null0";
+            }
+          }
+        }
+        uses ncs_rpc_notif_ip-route-options-grouping;
+      }
       list ipv6-route-list {
         tailf:cli-drop-node-name;
         tailf:cli-suppress-mode;
@@ -21658,14 +21503,6 @@ module netsim-ned-cisco-nx {
         key "prefix-mask next-hop";
         leaf prefix-mask {
           type tailf:ipv6-address-and-prefix-length;
-        }
-        leaf interface {
-          tailf:cli-optional-in-sequence;
-          tailf:cli-drop-node-name;
-          tailf:cli-prefix-key {
-            tailf:cli-before-key 2;
-          }
-          type string;
         }
         leaf next-hop {
           type union {
@@ -21708,6 +21545,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ncs_rpc_notif_ip-route-options-grouping;
@@ -21716,6 +21554,7 @@ module netsim-ned-cisco-nx {
         container bfd {
           list Vlan {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-allow-join-with-key;
             key "id next-hop";
             leaf id {
@@ -21776,6 +21615,7 @@ module netsim-ned-cisco-nx {
   grouping ncs_rpc_notif_line-access-class-grouping {
     list access-class {
       tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
       key "direction";
       leaf name {
         tailf:cli-drop-node-name;
@@ -22078,11 +21918,12 @@ module netsim-ned-cisco-nx {
         container snooping {
           list access-group {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands;
-            tailf:cli-delete-when-empty;
             key "interface";
             leaf interface {
+              tailf:cli-expose-key-name;
               type string;
             }
             choice prefix-key-choice {
@@ -22203,9 +22044,9 @@ module netsim-ned-cisco-nx {
             }
             list interface {
               tailf:cli-suppress-mode;
+              tailf:cli-delete-when-empty;
               tailf:cli-compact-syntax;
               tailf:cli-sequence-commands;
-              tailf:cli-delete-when-empty;
               key "name";
               leaf name {
                 type string;
@@ -22214,11 +22055,12 @@ module netsim-ned-cisco-nx {
           }
           list report-policy {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands;
-            tailf:cli-delete-when-empty;
             key "interface";
             leaf interface {
+              tailf:cli-expose-key-name;
               type string;
             }
             choice prefix-key-choice {
@@ -23077,6 +22919,39 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping ncs_rpc_notif_role-rule-type-choice {
+    choice rule-type {
+      leaf command {
+        tailf:cli-multi-value;
+        type string;
+      }
+      container read {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+      container read-write {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+    }
+  }
+
   grouping ncs_rpc_notif_itd-probe-grouping {
     container probe {
       tailf:cli-compact-syntax;
@@ -23243,9 +23118,10 @@ module netsim-ned-cisco-nx {
           list map {
             tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             key "from to";
             leaf from {
-              type vlan-list-type;
+              type vlan-list-type-all;
             }
             leaf to {
               type vlan-list-type;
@@ -23260,7 +23136,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-range-list-syntax;
             key "from";
             leaf from {
-              type vlan-list-type;
+              type vlan-list-type-all;
             }
             leaf dot1q-tunnel {
               type empty;
@@ -23562,6 +23438,7 @@ module netsim-ned-cisco-nx {
         list address-list {
           tailf:cli-drop-node-name;
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "address";
           leaf address {
             type inet:ipv4-address;
@@ -23647,8 +23524,8 @@ module netsim-ned-cisco-nx {
           }
         }
         container authentication-key {
-          tailf:cli-sequence-commands;
           tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
           leaf encryption-type {
             tailf:cli-drop-node-name;
             tailf:cli-optional-in-sequence;
@@ -23676,8 +23553,8 @@ module netsim-ned-cisco-nx {
           type uint16;
         }
         container message-digest-key {
-          tailf:cli-sequence-commands;
           tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands;
           leaf key-id {
             tailf:cli-drop-node-name;
             type uint8;
@@ -23773,6 +23650,7 @@ module netsim-ned-cisco-nx {
         }
         list eigrp {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "id";
           leaf id {
             type string;
@@ -23786,10 +23664,10 @@ module netsim-ned-cisco-nx {
         list route-filter {
           tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           key "direction";
           leaf direction {
             type enumeration {
@@ -23868,6 +23746,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv4-address;
             }
             leaf source {
+              tailf:cli-expose-key-name;
               type inet:ipv4-address;
             }
           }
@@ -23901,6 +23780,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv4-address;
             }
             leaf source {
+              tailf:cli-expose-key-name;
               type inet:ipv4-address;
             }
           }
@@ -24037,13 +23917,13 @@ module netsim-ned-cisco-nx {
         }
         choice addr-or-linklocal {
           list addresses {
+            tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-drop-node-name;
-            tailf:cli-delete-when-empty;
             key "addr";
             leaf addr {
               type tailf:ipv6-address-and-prefix-length;
@@ -24123,24 +24003,26 @@ module netsim-ned-cisco-nx {
         leaf other-config-flag {
           type empty;
         }
-        container prefix {
+        list prefix {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          choice prefix-choice {
-            leaf prefix {
-              tailf:cli-drop-node-name;
+          key "prefix";
+          leaf prefix {
+            type union {
               type tailf:ipv6-address-and-prefix-length;
-            }
-            leaf default {
-              type empty;
+              type enumeration {
+                enum "default";
+              }
             }
           }
           container valid-lifetime {
             tailf:cli-drop-node-name;
-            tailf:cli-compact-syntax;
             tailf:cli-flatten-container;
+            tailf:cli-compact-syntax;
             choice valid-lifetime-choice {
               leaf lifetime {
                 tailf:cli-drop-node-name;
@@ -24156,8 +24038,8 @@ module netsim-ned-cisco-nx {
           }
           container preferred-lifetime {
             tailf:cli-drop-node-name;
-            tailf:cli-compact-syntax;
             tailf:cli-flatten-container;
+            tailf:cli-compact-syntax;
             choice preferred-lifetime-choice {
               leaf lifetime {
                 tailf:cli-drop-node-name;
@@ -24415,6 +24297,7 @@ module netsim-ned-cisco-nx {
               type inet:ipv6-address;
             }
             leaf use-vrf {
+              tailf:cli-expose-key-name;
               type vrf-member-type;
             }
           }
@@ -24425,6 +24308,42 @@ module netsim-ned-cisco-nx {
       }
     }
     container ospfv3 {
+      container authentication {
+        choice authentication-choice {
+          leaf disable {
+            type empty;
+          }
+          container ipsec {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            leaf spi {
+              type uint32;
+            }
+            leaf alg {
+              tailf:cli-drop-node-name;
+              type enumeration {
+                enum "md5";
+                enum "sha1";
+              }
+            }
+            leaf encryption-type {
+              tailf:cli-drop-node-name;
+              tailf:cli-optional-in-sequence;
+              type enumeration {
+                enum "0";
+                enum "3";
+                enum "7";
+              }
+            }
+            leaf key {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+          }
+        }
+      }
       leaf cost {
         type uint16;
       }
@@ -24798,6 +24717,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-suppress-mode;
           key "src-ip dest-ip";
           leaf src-ip {
+            tailf:cli-expose-key-name;
             tailf:cli-suppress-range;
             type union {
               type inet:ipv4-address;
@@ -24805,6 +24725,7 @@ module netsim-ned-cisco-nx {
             }
           }
           leaf dest-ip {
+            tailf:cli-expose-key-name;
             type union {
               type inet:ipv4-address;
               type inet:ipv6-address;
@@ -24882,6 +24803,7 @@ module netsim-ned-cisco-nx {
         type uint8;
       }
       leaf address-family {
+        tailf:cli-expose-key-name;
         type enumeration {
           enum "ipv4";
           enum "ipv6";
@@ -25021,8 +24943,21 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands;
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    tailf:cli-optional-in-sequence;
+                    type enumeration {
+                      enum "0";
+                      enum "7";
+                    }
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -25050,10 +24985,10 @@ module netsim-ned-cisco-nx {
           type mac-address-type;
         }
         container timers {
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           choice hello-choice {
             leaf hello-msec {
               tailf:alt-name "msec";
@@ -25241,6 +25176,37 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping if-service-policy-grouping {
+    container service-policy {
+      container type {
+        container qos {
+          container input {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
+            leaf name {
+              tailf:cli-drop-node-name;
+              type policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+          container output {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
+            leaf name {
+              tailf:cli-drop-node-name;
+              type policy-map-name-type;
+            }
+            leaf no-stats {
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+
   grouping interface-ethernet-grouping {
     // NCS expand uses statement
     container bandwidth {
@@ -25334,8 +25300,21 @@ module netsim-ned-cisco-nx {
                 leaf key-chain {
                   type string;
                 }
-                leaf key-string {
-                  type string;
+                container key-string {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands;
+                  leaf key-type {
+                    tailf:cli-drop-node-name;
+                    tailf:cli-optional-in-sequence;
+                    type enumeration {
+                      enum "0";
+                      enum "7";
+                    }
+                  }
+                  leaf key-value {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
                 }
               }
             }
@@ -25363,10 +25342,10 @@ module netsim-ned-cisco-nx {
           type mac-address-type;
         }
         container timers {
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           choice hello-choice {
             leaf hello-msec {
               tailf:alt-name "msec";
@@ -26179,10 +26158,10 @@ module netsim-ned-cisco-nx {
       }
     }
     container police {
+      tailf:cli-compact-syntax;
       tailf:cli-sequence-commands {
         tailf:cli-reset-siblings;
       }
-      tailf:cli-compact-syntax;
       leaf cir {
         type union {
           type uint64;
@@ -26208,8 +26187,8 @@ module netsim-ned-cisco-nx {
       }
       container pir {
         tailf:cli-optional-in-sequence;
-        tailf:cli-compact-syntax;
         tailf:cli-flatten-container;
+        tailf:cli-compact-syntax;
         tailf:cli-sequence-commands {
           tailf:cli-reset-siblings;
         }
@@ -26241,265 +26220,6 @@ module netsim-ned-cisco-nx {
       container violate {
         tailf:cli-flatten-container;
         uses policy-map-police-action-grouping;
-      }
-    }
-  }
-
-  grouping policy-map-class-network-qos-grouping {
-    container class {
-      container type {
-        list network-qos {
-          key "name";
-          leaf name {
-            type class-name-type;
-          }
-          container dpp {
-            leaf set-qos-group {
-              type uint8;
-            }
-          }
-          leaf mtu {
-            type uint16;
-          }
-          leaf multicast-optimize {
-            type empty;
-          }
-          container pause {
-            container no-drop {
-              presence "Enable no-drop for the CoS";
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-all-siblings;
-              }
-              tailf:cli-compact-syntax;
-              leaf buffer-size {
-                tailf:cli-optional-in-sequence;
-                type uint32;
-              }
-              leaf pause-threshold {
-                type uint32;
-              }
-              leaf resume-threshold {
-                type uint32;
-              }
-              leaf-list pfc-cos {
-                tailf:cli-range-list-syntax;
-                type uint8;
-              }
-            }
-          }
-          container queue-limit {
-            tailf:cli-sequence-commands;
-            tailf:cli-compact-syntax;
-            leaf count {
-              tailf:cli-drop-node-name;
-              type uint32;
-              must '../bytes' {
-                tailf:xpath-root 3;
-              }
-            }
-            leaf bytes {
-              type empty;
-            }
-          }
-          container set {
-            leaf cos {
-              type uint8;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  grouping policy-map-class-queuing-grouping {
-    container class {
-      container type {
-        list queuing {
-          key "name";
-          leaf name {
-            type class-name-type;
-          }
-          container afd {
-            tailf:cli-sequence-commands {
-              tailf:cli-reset-siblings;
-            }
-            tailf:cli-compact-syntax;
-            leaf queue-desired {
-              type uint32;
-            }
-            leaf unit {
-              tailf:cli-drop-node-name;
-              type enumeration {
-                enum "bytes";
-                enum "kbytes";
-                enum "mbytes";
-              }
-            }
-            leaf ecn {
-              type empty;
-            }
-          }
-          container bandwidth {
-            container remaining {
-              leaf percent {
-                type uint8;
-              }
-            }
-            leaf percent {
-              type uint8;
-            }
-          }
-          container priority {
-            leaf level {
-              type uint8;
-            }
-          }
-          container queue-limit {
-            tailf:cli-sequence-commands {
-              tailf:cli-reset-siblings;
-            }
-            tailf:cli-compact-syntax;
-            uses queue-limit-grouping;
-          }
-          container queue-limit-per-cos {
-            tailf:cli-drop-node-name;
-            list queue-limit {
-              tailf:cli-suppress-mode;
-              tailf:cli-delete-when-empty;
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-siblings;
-              }
-              tailf:cli-compact-syntax;
-              key "cos";
-              leaf cos {
-                type uint8;
-              }
-              uses queue-limit-grouping;
-            }
-          }
-          container shape {
-            container average {
-              choice shape-type {
-                case bit-rate {
-                  leaf rate {
-                    tailf:cli-drop-node-name;
-                    must '../unit' {
-                      tailf:xpath-root 3;
-                    }
-                    type uint32;
-                  }
-                  leaf unit {
-                    type enumeration {
-                      enum "bps";
-                      enum "gbps";
-                      enum "kbps";
-                      enum "mbps";
-                    }
-                  }
-                }
-                case percent {
-                  leaf percent {
-                    type uint8;
-                  }
-                }
-              }
-            }
-            container min-max {
-              tailf:cli-drop-node-name;
-              tailf:cli-compact-syntax;
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-siblings;
-              }
-              leaf min {
-                type uint64;
-              }
-              leaf min-unit {
-                tailf:cli-drop-node-name;
-                tailf:cli-optional-in-sequence;
-                type enumeration {
-                  enum "bps";
-                  enum "gbps";
-                  enum "kbps";
-                  enum "mbps";
-                  enum "pps";
-                }
-              }
-              leaf max {
-                type uint64;
-              }
-              leaf max-unit {
-                tailf:cli-drop-node-name;
-                type enumeration {
-                  enum "bps";
-                  enum "gbps";
-                  enum "kbps";
-                  enum "mbps";
-                  enum "pps";
-                }
-              }
-            }
-          }
-          container random-detect {
-            container cos-based {
-              presence "true";
-            }
-          }
-          container random-detect-wred {
-            tailf:cli-drop-node-name;
-            choice threshold-choice {
-              list random-detect {
-                tailf:cli-suppress-mode;
-                tailf:cli-delete-when-empty;
-                tailf:cli-sequence-commands {
-                  tailf:cli-reset-siblings;
-                }
-                tailf:cli-compact-syntax;
-                key "cos";
-                leaf cos {
-                  type uint8;
-                }
-                uses random-detect-grouping;
-              }
-              container random-detect-no-cos {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  tailf:cli-sequence-commands {
-                    tailf:cli-reset-siblings;
-                  }
-                  tailf:cli-compact-syntax;
-                  uses random-detect-grouping;
-                  leaf drop-probability {
-                    type uint8;
-                  }
-                  leaf weight {
-                    type uint8;
-                  }
-                }
-              }
-              container random-detect-threshold {
-                tailf:cli-drop-node-name;
-                container random-detect {
-                  container threshold {
-                    tailf:cli-sequence-commands {
-                      tailf:cli-reset-siblings;
-                    }
-                    tailf:cli-compact-syntax;
-                    leaf type {
-                      tailf:cli-drop-node-name;
-                      type enumeration {
-                        enum "burst-optimized";
-                        enum "mesh-optimized";
-                      }
-                    }
-                    leaf ecn {
-                      type empty;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -27042,6 +26762,7 @@ module netsim-ned-cisco-nx {
       container filter-list {
         list route-map {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "direction";
           leaf name {
             tailf:cli-prefix-key;
@@ -27058,6 +26779,7 @@ module netsim-ned-cisco-nx {
       }
       list range {
         tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
         tailf:cli-compact-syntax;
         key "ip";
         leaf ip {
@@ -27068,6 +26790,23 @@ module netsim-ned-cisco-nx {
         }
         leaf cost {
           type uint32;
+        }
+      }
+      container range-ipv6 {
+        tailf:cli-drop-node-name;
+        list range {
+          tailf:cli-suppress-mode;
+          tailf:cli-compact-syntax;
+          key "ipv6";
+          leaf ipv6 {
+            type tailf:ipv6-address-and-prefix-length;
+          }
+          leaf not-advertise {
+            type empty;
+          }
+          leaf cost {
+            type uint32;
+          }
         }
       }
       list sham-link {
@@ -27344,6 +27083,7 @@ module netsim-ned-cisco-nx {
   grouping ospf-grouping {
     list summary-address {
       tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
       key "address";
       leaf address {
         type tailf:ipv4-address-and-prefix-length;
@@ -28110,12 +27850,12 @@ module netsim-ned-cisco-nx {
           }
         }
         list aggregate-address {
+          tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
-          tailf:cli-delete-when-empty;
-          tailf:cli-suppress-mode;
           key "ip";
           leaf ip {
             type union {
@@ -28309,16 +28049,18 @@ module netsim-ned-cisco-nx {
     leaf rewrite-evpn-rt-asn {
       type empty;
     }
-    container send-community {
-      presence "true";
-      leaf attr {
-        tailf:cli-drop-node-name;
+    container send-community-attr {
+      tailf:cli-drop-node-name;
+      leaf send-community {
         type enumeration {
           enum "standard";
           enum "extended";
           enum "both";
         }
       }
+    }
+    leaf send-community {
+      type empty;
     }
     container soft-reconfiguration {
       tailf:cli-compact-syntax;
@@ -28370,6 +28112,7 @@ module netsim-ned-cisco-nx {
     container inherit {
       list peer-policy {
         tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
         key "name";
         leaf name {
           type string;
@@ -28420,6 +28163,22 @@ module netsim-ned-cisco-nx {
     }
     leaf as-override {
       type empty;
+    }
+    list advertise-map {
+      tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
+      key "name";
+      leaf name {
+        type string;
+      }
+      choice map-choice {
+        leaf exist-map {
+          type string;
+        }
+        leaf non-exist-map {
+          type string;
+        }
+      }
     }
     leaf advertisement-interval {
       type uint16;
@@ -28647,6 +28406,13 @@ module netsim-ned-cisco-nx {
     }
     leaf router-id {
       type inet:ipv4-address;
+    }
+    container rd {
+      container dual {
+        leaf id {
+          type uint16;
+        }
+      }
     }
     leaf cluster-id {
       type union {
@@ -29381,6 +29147,7 @@ module netsim-ned-cisco-nx {
         tailf:cli-compact-syntax;
         key "use-vrf";
         leaf use-vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf-list servers {
@@ -29399,6 +29166,7 @@ module netsim-ned-cisco-nx {
         container bfd {
           list port-channel {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-allow-join-with-key;
             key "id";
             leaf id {
@@ -29423,9 +29191,9 @@ module netsim-ned-cisco-nx {
             }
           }
           list Ethernet {
-            tailf:cli-allow-join-with-key;
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-allow-join-with-key;
             key "name";
             leaf name {
               type string;
@@ -29507,6 +29275,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ip-route-options-grouping;
@@ -29533,6 +29302,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ip-route-options-grouping;
@@ -29750,18 +29520,18 @@ module netsim-ned-cisco-nx {
         type string;
       }
       list rp-address {
-        key "ip-address";
         tailf:cli-suppress-mode;
         tailf:cli-delete-when-empty;
+        key "ip-address";
         leaf ip-address {
           type inet:ipv4-address;
         }
         list group-list {
-          key "group-range-prefix";
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands;
-          tailf:cli-delete-when-empty;
+          key "group-range-prefix";
           leaf group-range-prefix {
             type tailf:ipv4-address-and-prefix-length;
           }
@@ -29834,6 +29604,32 @@ module netsim-ned-cisco-nx {
 
   grouping ipv6-grouping {
     container route {
+      list ipv6-route-interface-list {
+        tailf:cli-drop-node-name;
+        tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-all-siblings;
+        }
+        key "prefix-mask interface next-hop";
+        leaf prefix-mask {
+          type tailf:ipv6-address-and-prefix-length;
+        }
+        leaf interface {
+          type string;
+        }
+        leaf next-hop {
+          type union {
+            type inet:ipv6-address;
+            type tailf:ipv6-address-and-prefix-length;
+            type enumeration {
+              enum "Null0";
+            }
+          }
+        }
+        uses ip-route-options-grouping;
+      }
       list ipv6-route-list {
         tailf:cli-drop-node-name;
         tailf:cli-suppress-mode;
@@ -29845,14 +29641,6 @@ module netsim-ned-cisco-nx {
         key "prefix-mask next-hop";
         leaf prefix-mask {
           type tailf:ipv6-address-and-prefix-length;
-        }
-        leaf interface {
-          tailf:cli-optional-in-sequence;
-          tailf:cli-drop-node-name;
-          tailf:cli-prefix-key {
-            tailf:cli-before-key 2;
-          }
-          type string;
         }
         leaf next-hop {
           type union {
@@ -29895,6 +29683,7 @@ module netsim-ned-cisco-nx {
           }
         }
         leaf vrf {
+          tailf:cli-expose-key-name;
           type string;
         }
         uses ip-route-options-grouping;
@@ -29903,6 +29692,7 @@ module netsim-ned-cisco-nx {
         container bfd {
           list Vlan {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-allow-join-with-key;
             key "id next-hop";
             leaf id {
@@ -29963,6 +29753,7 @@ module netsim-ned-cisco-nx {
   grouping line-access-class-grouping {
     list access-class {
       tailf:cli-suppress-mode;
+      tailf:cli-delete-when-empty;
       key "direction";
       leaf name {
         tailf:cli-drop-node-name;
@@ -30265,11 +30056,12 @@ module netsim-ned-cisco-nx {
         container snooping {
           list access-group {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands;
-            tailf:cli-delete-when-empty;
             key "interface";
             leaf interface {
+              tailf:cli-expose-key-name;
               type string;
             }
             choice prefix-key-choice {
@@ -30390,9 +30182,9 @@ module netsim-ned-cisco-nx {
             }
             list interface {
               tailf:cli-suppress-mode;
+              tailf:cli-delete-when-empty;
               tailf:cli-compact-syntax;
               tailf:cli-sequence-commands;
-              tailf:cli-delete-when-empty;
               key "name";
               leaf name {
                 type string;
@@ -30401,11 +30193,12 @@ module netsim-ned-cisco-nx {
           }
           list report-policy {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             tailf:cli-compact-syntax;
             tailf:cli-sequence-commands;
-            tailf:cli-delete-when-empty;
             key "interface";
             leaf interface {
+              tailf:cli-expose-key-name;
               type string;
             }
             choice prefix-key-choice {
@@ -31264,6 +31057,39 @@ module netsim-ned-cisco-nx {
     }
   }
 
+  grouping role-rule-type-choice {
+    choice rule-type {
+      leaf command {
+        tailf:cli-multi-value;
+        type string;
+      }
+      container read {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+      container read-write {
+        presence "true";
+        leaf feature {
+          type string;
+        }
+        leaf feature-group {
+          type string;
+        }
+        leaf oid {
+          type string;
+        }
+      }
+    }
+  }
+
   grouping itd-probe-grouping {
     container probe {
       tailf:cli-compact-syntax;
@@ -31904,7 +31730,6 @@ module netsim-ned-cisco-nx {
         tailf:cli-sequence-commands;
         leaf encryption {
           tailf:cli-drop-node-name;
-          tailf:cli-optional-in-sequence;
           type enumeration {
             enum "0";
             enum "7";
@@ -32167,8 +31992,8 @@ module netsim-ned-cisco-nx {
             presence "true";
             list client {
               tailf:cli-suppress-mode;
-              tailf:cli-compact-syntax;
               tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               key "addr";
               leaf addr {
                 type union {
@@ -32342,6 +32167,21 @@ module netsim-ned-cisco-nx {
           type empty;
         }
       }
+      list bypass-user {
+        tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf accounting {
+          type empty;
+        }
+        leaf authorization {
+          type empty;
+        }
+      }
     }
     container acllog {
       tailf:ncs-device-type "cli-ned";
@@ -32495,11 +32335,11 @@ module netsim-ned-cisco-nx {
         container connection {
           list peer {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
-            tailf:cli-delete-when-empty;
             key "addr vrf";
             leaf addr {
               type inet:ipv4-address;
@@ -32539,6 +32379,7 @@ module netsim-ned-cisco-nx {
               }
             }
             leaf vrf {
+              tailf:cli-expose-key-name;
               type vrf-member-type;
             }
           }
@@ -32604,6 +32445,7 @@ module netsim-ned-cisco-nx {
           type string;
         }
         leaf role {
+          tailf:cli-expose-key-name;
           type user-role-type;
         }
       }
@@ -32987,6 +32829,7 @@ module netsim-ned-cisco-nx {
           list unsequenced {
             tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             ordered-by user;
             key "regex";
             leaf regex {
@@ -33042,6 +32885,7 @@ module netsim-ned-cisco-nx {
               tailf:cli-compact-syntax;
               key "seq";
               leaf seq {
+                tailf:cli-expose-key-name;
                 type uint32;
               }
               leaf type {
@@ -33100,12 +32944,13 @@ module netsim-ned-cisco-nx {
               tailf:cli-drop-node-name;
               tailf:cli-suppress-mode;
               tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               tailf:cli-sequence-commands {
                 tailf:cli-reset-siblings;
               }
-              tailf:cli-compact-syntax;
               key "seq";
               leaf seq {
+                tailf:cli-expose-key-name;
                 type uint32;
               }
               leaf type {
@@ -33128,9 +32973,16 @@ module netsim-ned-cisco-nx {
       container extcommunity-list {
         list expanded {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "name regex";
           leaf name {
             type string;
+          }
+          leaf seq {
+            tailf:cli-prefix-key {
+              tailf:cli-before-key 2;
+            }
+            type uint32;
           }
           leaf perm {
             tailf:cli-drop-node-name;
@@ -33148,6 +33000,7 @@ module netsim-ned-cisco-nx {
         }
         list standard {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "name spec";
           leaf name {
             type string;
@@ -33238,8 +33091,10 @@ module netsim-ned-cisco-nx {
       container dns {
         list source-interface {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "vrf";
           leaf vrf {
+            tailf:cli-expose-key-name;
             type vrf-member-type;
           }
           leaf interface-name {
@@ -33255,6 +33110,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-delete-when-empty;
           key "vrf";
           leaf vrf {
+            tailf:cli-expose-key-name;
             type vrf-member-type;
           }
           leaf interface-name {
@@ -33270,6 +33126,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-delete-when-empty;
           key "vrf";
           leaf vrf {
+            tailf:cli-expose-key-name;
             type vrf-member-type;
           }
           leaf interface-name {
@@ -33285,6 +33142,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-delete-when-empty;
           key "vrf";
           leaf vrf {
+            tailf:cli-expose-key-name;
             type vrf-member-type;
           }
           leaf interface-name {
@@ -33309,10 +33167,10 @@ module netsim-ned-cisco-nx {
             tailf:cli-drop-node-name;
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-all-siblings;
             }
-            tailf:cli-compact-syntax;
             key "id";
             leaf id {
               type uint32;
@@ -33359,6 +33217,7 @@ module netsim-ned-cisco-nx {
             type mac-address-type;
           }
           leaf vlan {
+            tailf:cli-expose-key-name;
             type uint16;
           }
           container interface {
@@ -33425,6 +33284,7 @@ module netsim-ned-cisco-nx {
       container nat {
         list pool {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
@@ -33457,13 +33317,15 @@ module netsim-ned-cisco-nx {
           container source {
             list list {
               tailf:cli-suppress-mode;
-              tailf:cli-sequence-commands;
+              tailf:cli-delete-when-empty;
               tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands;
               key "name interface ifoverload";
               leaf name {
                 type string;
               }
               leaf interface {
+                tailf:cli-expose-key-name;
                 type string;
               }
               leaf vrf {
@@ -33490,16 +33352,16 @@ module netsim-ned-cisco-nx {
               tailf:cli-drop-node-name;
               list list {
                 tailf:cli-suppress-mode;
+                tailf:cli-delete-when-empty;
+                tailf:cli-compact-syntax;
                 tailf:cli-sequence-commands {
                   tailf:cli-reset-siblings;
                 }
-                tailf:cli-compact-syntax;
                 key "name";
                 leaf name {
                   type string;
                 }
                 leaf pool {
-                  mandatory true;
                   type string;
                 }
                 leaf vrf {
@@ -33534,16 +33396,17 @@ module netsim-ned-cisco-nx {
           container source {
             list list {
               tailf:cli-suppress-mode;
+              tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               tailf:cli-sequence-commands {
                 tailf:cli-reset-siblings;
               }
-              tailf:cli-compact-syntax;
-              tailf:cli-delete-when-empty;
               key "name pool";
               leaf name {
                 type string;
               }
               leaf pool {
+                tailf:cli-expose-key-name;
                 type string;
               }
               leaf vrf {
@@ -33612,10 +33475,10 @@ module netsim-ned-cisco-nx {
       }
       container prefix-list {
         list prefixes {
-          tailf:cli-compact-syntax;
-          tailf:cli-delete-when-empty;
           tailf:cli-drop-node-name;
           tailf:cli-suppress-mode;
+          tailf:cli-compact-syntax;
+          tailf:cli-delete-when-empty;
           key "name";
           leaf name {
             type string;
@@ -33645,9 +33508,9 @@ module netsim-ned-cisco-nx {
             type uint8;
           }
           list seq {
-            tailf:cli-compact-syntax;
-            tailf:cli-delete-when-empty;
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             key "no";
             leaf no {
               type uint32;
@@ -33759,9 +33622,9 @@ module netsim-ned-cisco-nx {
           }
         }
         list schedule {
-          tailf:cli-compact-syntax;
           tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           key "id";
           leaf id {
             type uint32;
@@ -33797,16 +33660,17 @@ module netsim-ned-cisco-nx {
         }
         list reaction-configuration {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-delete-when-empty;
           key "id react";
           leaf id {
             type uint32;
           }
           leaf react {
+            tailf:cli-expose-key-name;
             type enumeration {
               enum "connectionLoss";
               enum "rtt";
@@ -33858,7 +33722,6 @@ module netsim-ned-cisco-nx {
         }
       }
       container tacacs {
-        tailf:cli-compact-syntax;
         leaf source-interface {
           type string;
         }
@@ -33921,8 +33784,10 @@ module netsim-ned-cisco-nx {
       container ssh {
         list source-interface {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "vrf";
           leaf vrf {
+            tailf:cli-expose-key-name;
             type vrf-member-type;
           }
           leaf interface-name {
@@ -33965,6 +33830,10 @@ module netsim-ned-cisco-nx {
               enum "destination";
               enum "source-destination";
             }
+          }
+          leaf exclude-l3-proto {
+            tailf:cli-optional-in-sequence;
+            type empty;
           }
           leaf concatenation {
             tailf:cli-optional-in-sequence;
@@ -34043,6 +33912,9 @@ module netsim-ned-cisco-nx {
         leaf download-on-convergence {
           type empty;
         }
+      }
+      leaf dscp-lop {
+        type dscp-value-type;
       }
     }
     container ipv6 {
@@ -34263,10 +34135,10 @@ module netsim-ned-cisco-nx {
             list test {
               tailf:cli-suppress-mode;
               tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               tailf:cli-sequence-commands {
                 tailf:cli-reset-siblings;
               }
-              tailf:cli-compact-syntax;
               key "name";
               leaf name {
                 type string;
@@ -34332,6 +34204,24 @@ module netsim-ned-cisco-nx {
         }
         leaf startup-timer {
           type uint8;
+        }
+        container multihop {
+          container interval {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            leaf tx-interval {
+              tailf:cli-drop-node-name;
+              type uint16;
+            }
+            leaf min_rx {
+              type uint16;
+            }
+            leaf multiplier {
+              type uint8;
+            }
+          }
         }
       }
     }
@@ -34483,6 +34373,7 @@ module netsim-ned-cisco-nx {
             type mac-address-type;
           }
           leaf vlan {
+            tailf:cli-expose-key-name;
             type uint16;
           }
           choice drop-or-iface {
@@ -34641,10 +34532,10 @@ module netsim-ned-cisco-nx {
       list seq {
         tailf:cli-suppress-mode;
         tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
         tailf:cli-sequence-commands {
           tailf:cli-reset-siblings;
         }
-        tailf:cli-compact-syntax;
         key "num";
         leaf num {
           type uint32;
@@ -34842,9 +34733,11 @@ module netsim-ned-cisco-nx {
           }
           key "address port";
           leaf address {
+            tailf:cli-expose-key-name;
             type inet:ipv4-address;
           }
           leaf port {
+            tailf:cli-expose-key-name;
             type uint16;
           }
           leaf protocol {
@@ -34922,9 +34815,6 @@ module netsim-ned-cisco-nx {
           tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
           tailf:cli-compact-syntax;
-          tailf:cli-sequence-commands {
-            tailf:cli-reset-siblings;
-          }
           key "dn";
           leaf dn {
             type union {
@@ -34942,7 +34832,6 @@ module netsim-ned-cisco-nx {
             }
           }
           leaf depth {
-            tailf:cli-optional-in-sequence;
             type union {
               type uint8;
               type enumeration {
@@ -34951,11 +34840,9 @@ module netsim-ned-cisco-nx {
             }
           }
           leaf query-condition {
-            tailf:cli-optional-in-sequence;
             type string;
           }
           leaf filter-condition {
-            tailf:cli-optional-in-sequence;
             type string;
           }
           leaf alias {
@@ -35285,13 +35172,14 @@ module netsim-ned-cisco-nx {
         container param {
           list rsa {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
-            tailf:cli-delete-when-empty;
             key "label";
             leaf label {
+              tailf:cli-expose-key-name;
               type string;
             }
             leaf modulus {
@@ -35305,13 +35193,14 @@ module netsim-ned-cisco-nx {
         container generate {
           list rsa {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
-            tailf:cli-delete-when-empty;
             key "label";
             leaf label {
+              tailf:cli-expose-key-name;
               type string;
             }
             leaf exportable {
@@ -35327,6 +35216,7 @@ module netsim-ned-cisco-nx {
       list certificatemap {
         key "mapname";
         leaf mapname {
+          tailf:cli-expose-key-name;
           type string;
         }
         container filter {
@@ -35344,11 +35234,11 @@ module netsim-ned-cisco-nx {
       container cert {
         list ssh-authorize {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
-          tailf:cli-delete-when-empty;
           key "name";
           leaf name {
             type string;
@@ -36027,6 +35917,7 @@ module netsim-ned-cisco-nx {
           type string;
         }
         leaf udp-port {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         leaf type {
@@ -36080,6 +35971,7 @@ module netsim-ned-cisco-nx {
             type string;
           }
           leaf udp-port {
+            tailf:cli-expose-key-name;
             type uint16;
           }
           leaf use-vrf {
@@ -36102,6 +35994,7 @@ module netsim-ned-cisco-nx {
             type string;
           }
           leaf udp-port {
+            tailf:cli-expose-key-name;
             type uint16;
           }
           leaf source-interface {
@@ -36114,8 +36007,8 @@ module netsim-ned-cisco-nx {
       }
       list context {
         tailf:cli-suppress-mode;
-        tailf:cli-compact-syntax;
         tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
         key "name";
         leaf name {
           type string;
@@ -36322,7 +36215,25 @@ module netsim-ned-cisco-nx {
     container feature-set {
       tailf:ncs-device-type "cli-ned";
       tailf:display-when "not(../../ncs:module) or ../../ncs:module[ncs:name='netsim-ned-cisco-nx']";
-      uses feature-set-grouping;
+      // NCS expand uses statement
+      leaf fabric {
+        type empty;
+      }
+      leaf fabricpath {
+        type empty;
+      }
+      leaf fcoe {
+        type empty;
+      }
+      leaf fex {
+        type empty;
+      }
+      leaf mpls {
+        type empty;
+      }
+      leaf virtualization {
+        type empty;
+      }
     }
     list fex {
       tailf:ncs-device-type "cli-ned";
@@ -36438,6 +36349,7 @@ module netsim-ned-cisco-nx {
               }
               list interface {
                 tailf:cli-suppress-mode;
+                tailf:cli-delete-when-empty;
                 key "name";
                 leaf name {
                   type string;
@@ -36609,10 +36521,10 @@ module netsim-ned-cisco-nx {
             list option {
               tailf:cli-suppress-mode;
               tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               tailf:cli-sequence-commands {
                 tailf:cli-reset-siblings;
               }
-              tailf:cli-compact-syntax;
               key "sequence";
               leaf sequence {
                 type uint16;
@@ -36702,8 +36614,8 @@ module netsim-ned-cisco-nx {
               tailf:cli-add-mode;
               presence "true";
               list prefix-format {
-                tailf:cli-suppress-mode;
                 tailf:cli-drop-node-name;
+                tailf:cli-suppress-mode;
                 tailf:cli-delete-when-empty;
                 tailf:cli-compact-syntax;
                 tailf:cli-sequence-commands {
@@ -36876,6 +36788,7 @@ module netsim-ned-cisco-nx {
           }
           list route-target {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             key "method";
             leaf method {
               type enumeration {
@@ -36914,6 +36827,7 @@ module netsim-ned-cisco-nx {
         }
         list route-target {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "method rt";
           leaf method {
             type enumeration {
@@ -36947,6 +36861,11 @@ module netsim-ned-cisco-nx {
           container delay-restore {
             leaf time {
               type uint16;
+            }
+          }
+          container split-horizon {
+            leaf per-site {
+              type empty;
             }
           }
         }
@@ -37162,8 +37081,8 @@ module netsim-ned-cisco-nx {
             }
             list verify-availability {
               tailf:cli-suppress-mode;
-              tailf:cli-compact-syntax;
               tailf:cli-delete-when-empty;
+              tailf:cli-compact-syntax;
               ordered-by user;
               key "addr";
               leaf addr {
@@ -37398,8 +37317,8 @@ module netsim-ned-cisco-nx {
       tailf:cli-drop-node-name;
       list route-map {
         tailf:cli-suppress-mode;
-        tailf:cli-compact-syntax;
         tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
         key "name";
         leaf name {
           type string;
@@ -37611,8 +37530,8 @@ module netsim-ned-cisco-nx {
       list authentication-key {
         tailf:cli-suppress-mode;
         tailf:cli-delete-when-empty;
-        tailf:cli-sequence-commands;
         tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands;
         key "id";
         leaf id {
           type uint16;
@@ -37639,11 +37558,11 @@ module netsim-ned-cisco-nx {
       }
       list peer {
         tailf:cli-suppress-mode;
+        tailf:cli-delete-when-empty;
+        tailf:cli-compact-syntax;
         tailf:cli-sequence-commands {
           tailf:cli-reset-all-siblings;
         }
-        tailf:cli-compact-syntax;
-        tailf:cli-delete-when-empty;
         key "id";
         leaf id {
           type inet:ipv4-address;
@@ -37818,17 +37737,17 @@ module netsim-ned-cisco-nx {
             }
           }
           container accept-lifetime {
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
             uses lifetime-grouping;
           }
           container send-lifetime {
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
             uses lifetime-grouping;
           }
         }
@@ -38033,6 +37952,7 @@ module netsim-ned-cisco-nx {
           }
           list exporter {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             key "name";
             leaf name {
               type string;
@@ -38076,6 +37996,7 @@ module netsim-ned-cisco-nx {
         }
         list exporter {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
           key "name";
           leaf name {
             type string;
@@ -38434,6 +38355,7 @@ module netsim-ned-cisco-nx {
               presence "true";
               list route-target {
                 tailf:cli-suppress-mode;
+                tailf:cli-delete-when-empty;
                 key "method asn target-evpn";
                 leaf method {
                   type enumeration {
@@ -38822,11 +38744,10 @@ module netsim-ned-cisco-nx {
             type inet:ipv4-address;
           }
           leaf source {
-            tailf:cli-optional-in-sequence;
             type inet:ipv4-address;
           }
           leaf udp-port {
-            tailf:cli-optional-in-sequence;
+            tailf:cli-break-sequence-commands;
             type uint16;
           }
           leaf vrf {
@@ -39042,10 +38963,10 @@ module netsim-ned-cisco-nx {
           list module {
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-all-siblings;
             }
-            tailf:cli-compact-syntax;
             key "id";
             leaf id {
               type uint8;
@@ -39115,6 +39036,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-delete-when-empty;
                 key "module";
                 leaf module {
+                  tailf:cli-expose-key-name;
                   type uint8;
                 }
                 leaf mode {
@@ -39237,6 +39159,7 @@ module netsim-ned-cisco-nx {
               tailf:cli-delete-when-empty;
               key "module";
               leaf module {
+                tailf:cli-expose-key-name;
                 type uint8;
               }
               leaf value {
@@ -39273,6 +39196,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-delete-when-empty;
                 key "module";
                 leaf module {
+                  tailf:cli-expose-key-name;
                   type uint8;
                 }
                 leaf value {
@@ -39303,6 +39227,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-delete-when-empty;
                 key "module";
                 leaf module {
+                  tailf:cli-expose-key-name;
                   type uint8;
                 }
                 leaf value {
@@ -39339,6 +39264,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-delete-when-empty;
             key "module";
             leaf module {
+              tailf:cli-expose-key-name;
               type uint8;
             }
             leaf value {
@@ -39359,6 +39285,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-delete-when-empty;
             key "module";
             leaf module {
+              tailf:cli-expose-key-name;
               type uint8;
             }
             leaf value {
@@ -39431,6 +39358,7 @@ module netsim-ned-cisco-nx {
           type uint8;
         }
         leaf port-group {
+          tailf:cli-expose-key-name;
           type uint8;
         }
         container qos {
@@ -39654,6 +39582,7 @@ module netsim-ned-cisco-nx {
           tailf:cli-delete-when-empty;
           key "counter";
           leaf counter {
+            tailf:cli-expose-key-name;
             type uint8;
           }
           leaf delay {
@@ -39690,12 +39619,13 @@ module netsim-ned-cisco-nx {
         list service-policy {
           tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           key "type direction";
           leaf type {
+            tailf:cli-expose-key-name;
             type enumeration {
               enum "qos";
               enum "queuing";
@@ -39937,6 +39867,7 @@ module netsim-ned-cisco-nx {
           type string;
         }
         leaf id {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         uses vdc-grouping;
@@ -40031,7 +39962,66 @@ module netsim-ned-cisco-nx {
             tailf:cli-multi-value;
             type string;
           }
-          uses policy-map-class-network-qos-grouping;
+          container class {
+            container type {
+              list network-qos {
+                key "name";
+                leaf name {
+                  type class-name-type;
+                }
+                container dpp {
+                  leaf set-qos-group {
+                    type uint8;
+                  }
+                }
+                leaf mtu {
+                  type uint16;
+                }
+                leaf multicast-optimize {
+                  type empty;
+                }
+                container pause {
+                  container no-drop {
+                    presence "Enable no-drop for the CoS";
+                    tailf:cli-compact-syntax;
+                    tailf:cli-sequence-commands {
+                      tailf:cli-reset-all-siblings;
+                    }
+                    leaf buffer-size {
+                      tailf:cli-optional-in-sequence;
+                      type uint32;
+                    }
+                    leaf pause-threshold {
+                      type uint32;
+                    }
+                    leaf resume-threshold {
+                      type uint32;
+                    }
+                    leaf-list pfc-cos {
+                      tailf:cli-range-list-syntax;
+                      type uint8;
+                    }
+                  }
+                }
+                container queue-limit {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands;
+                  leaf count {
+                    tailf:cli-drop-node-name;
+                    type uint32;
+                  }
+                  leaf bytes {
+                    type empty;
+                  }
+                }
+                container set {
+                  leaf cos {
+                    type uint8;
+                  }
+                }
+              }
+            }
+          }
         }
         list queuing {
           key "name";
@@ -40042,7 +40032,198 @@ module netsim-ned-cisco-nx {
             tailf:cli-multi-value;
             type string;
           }
-          uses policy-map-class-queuing-grouping;
+          container class {
+            container type {
+              list queuing {
+                key "name";
+                leaf name {
+                  type class-name-type;
+                }
+                container afd {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands {
+                    tailf:cli-reset-siblings;
+                  }
+                  leaf queue-desired {
+                    type uint32;
+                  }
+                  leaf unit {
+                    tailf:cli-drop-node-name;
+                    type enumeration {
+                      enum "bytes";
+                      enum "kbytes";
+                      enum "mbytes";
+                    }
+                  }
+                  leaf ecn {
+                    type empty;
+                  }
+                }
+                container bandwidth {
+                  container remaining {
+                    leaf percent {
+                      type uint8;
+                    }
+                  }
+                  leaf percent {
+                    type uint8;
+                  }
+                }
+                container priority {
+                  leaf level {
+                    type uint8;
+                  }
+                }
+                container queue-limit {
+                  tailf:cli-compact-syntax;
+                  tailf:cli-sequence-commands {
+                    tailf:cli-reset-siblings;
+                  }
+                  uses queue-limit-grouping;
+                }
+                container queue-limit-per-cos {
+                  tailf:cli-drop-node-name;
+                  list queue-limit {
+                    tailf:cli-suppress-mode;
+                    tailf:cli-delete-when-empty;
+                    tailf:cli-compact-syntax;
+                    tailf:cli-sequence-commands {
+                      tailf:cli-reset-siblings;
+                    }
+                    key "cos";
+                    leaf cos {
+                      tailf:cli-expose-key-name;
+                      type uint8;
+                    }
+                    uses queue-limit-grouping;
+                  }
+                }
+                container shape {
+                  container average {
+                    choice shape-type {
+                      case bit-rate {
+                        leaf rate {
+                          tailf:cli-drop-node-name;
+                          must '../unit' {
+                            tailf:xpath-root 3;
+                          }
+                          type uint32;
+                        }
+                        leaf unit {
+                          type enumeration {
+                            enum "bps";
+                            enum "gbps";
+                            enum "kbps";
+                            enum "mbps";
+                          }
+                        }
+                      }
+                      case percent {
+                        leaf percent {
+                          type uint8;
+                        }
+                      }
+                    }
+                  }
+                  container min-max {
+                    tailf:cli-drop-node-name;
+                    tailf:cli-compact-syntax;
+                    tailf:cli-sequence-commands {
+                      tailf:cli-reset-siblings;
+                    }
+                    leaf min {
+                      type uint64;
+                    }
+                    leaf min-unit {
+                      tailf:cli-drop-node-name;
+                      tailf:cli-optional-in-sequence;
+                      type enumeration {
+                        enum "bps";
+                        enum "gbps";
+                        enum "kbps";
+                        enum "mbps";
+                        enum "pps";
+                      }
+                    }
+                    leaf max {
+                      type uint64;
+                    }
+                    leaf max-unit {
+                      tailf:cli-drop-node-name;
+                      type enumeration {
+                        enum "bps";
+                        enum "gbps";
+                        enum "kbps";
+                        enum "mbps";
+                        enum "pps";
+                      }
+                    }
+                  }
+                }
+                container random-detect {
+                  container cos-based {
+                    presence "true";
+                  }
+                }
+                container random-detect-wred {
+                  tailf:cli-drop-node-name;
+                  choice threshold-choice {
+                    list random-detect {
+                      tailf:cli-suppress-mode;
+                      tailf:cli-delete-when-empty;
+                      tailf:cli-compact-syntax;
+                      tailf:cli-sequence-commands {
+                        tailf:cli-reset-siblings;
+                      }
+                      key "cos";
+                      leaf cos {
+                        tailf:cli-expose-key-name;
+                        type uint8;
+                      }
+                      uses random-detect-grouping;
+                    }
+                    container random-detect-no-cos {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        tailf:cli-sequence-commands {
+                          tailf:cli-reset-siblings;
+                        }
+                        tailf:cli-compact-syntax;
+                        uses random-detect-grouping;
+                        leaf drop-probability {
+                          type uint8;
+                        }
+                        leaf weight {
+                          type uint8;
+                        }
+                      }
+                    }
+                    container random-detect-threshold {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        container threshold {
+                          tailf:cli-sequence-commands {
+                            tailf:cli-reset-siblings;
+                          }
+                          tailf:cli-compact-syntax;
+                          leaf type {
+                            tailf:cli-drop-node-name;
+                            type enumeration {
+                              enum "burst-optimized";
+                              enum "mesh-optimized";
+                            }
+                          }
+                          leaf ecn {
+                            type empty;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -40076,7 +40257,6 @@ module netsim-ned-cisco-nx {
             }
           }
           container untagged {
-            tailf:cli-compact-syntax;
             leaf vni {
               type uint32;
             }
@@ -40086,8 +40266,8 @@ module netsim-ned-cisco-nx {
       container vni {
         container dynamic {
           container dot1q {
-            tailf:cli-sequence-commands;
             tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
             leaf-list vlan-id {
               tailf:cli-drop-node-name;
               tailf:cli-range-list-syntax;
@@ -40351,9 +40531,11 @@ module netsim-ned-cisco-nx {
         }
         key "module port";
         leaf module {
+          tailf:cli-expose-key-name;
           type uint8;
         }
         leaf port {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         leaf map {
@@ -40361,6 +40543,11 @@ module netsim-ned-cisco-nx {
             enum "10g-4x";
             enum "25g-4x";
             enum "50g-2x";
+            enum "50g-4x";
+            enum "100g-2x";
+            enum "100g-2x-pam4";
+            enum "100g-4x";
+            enum "200g-2x";
           }
         }
       }
@@ -40505,10 +40692,11 @@ module netsim-ned-cisco-nx {
           }
           list mcast-group {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
             key "type";
             leaf mcast-addr {
               tailf:cli-drop-node-name;
@@ -40539,12 +40727,12 @@ module netsim-ned-cisco-nx {
               tailf:cli-hide-in-submode;
               type empty;
             }
-            leaf mcast-group {
-              type inet:ipv4-address;
-            }
             leaf vrf {
               tailf:cli-hide-in-submode;
               type string;
+            }
+            leaf mcast-group {
+              type inet:ipv4-address;
             }
             container host-reachability {
               leaf protocol {
@@ -40579,13 +40767,23 @@ module netsim-ned-cisco-nx {
               }
             }
             container multisite {
-              leaf ingress-replication {
-                type empty;
+              container ingress-replication {
+                tailf:cli-delete-when-empty;
+                presence "true";
+                leaf optimized {
+                  type empty;
+                }
+              }
+              leaf mcast-group {
+                type inet:ipv4-address;
               }
             }
           }
         }
         container multisite {
+          leaf virtual-rmac {
+            type string;
+          }
           container border-gateway {
             leaf interface {
               type string;
@@ -40645,6 +40843,12 @@ module netsim-ned-cisco-nx {
             type empty;
           }
         }
+        container qos-mode {
+          leaf pipe {
+            type empty;
+          }
+        }
+        uses if-service-policy-grouping;
       }
       list Vethernet {
         tailf:cli-allow-join-with-key;
@@ -40825,9 +41029,10 @@ module netsim-ned-cisco-nx {
               list map {
                 tailf:cli-drop-node-name;
                 tailf:cli-suppress-mode;
+                tailf:cli-delete-when-empty;
                 key "from to";
                 leaf from {
-                  type vlan-list-type;
+                  type vlan-list-type-all;
                 }
                 leaf to {
                   type vlan-list-type;
@@ -40842,7 +41047,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-range-list-syntax;
                 key "from";
                 leaf from {
-                  type vlan-list-type;
+                  type vlan-list-type-all;
                 }
                 leaf dot1q-tunnel {
                   type empty;
@@ -41299,10 +41504,10 @@ module netsim-ned-cisco-nx {
                   }
                   container ecreds {
                     tailf:cli-drop-node-name;
+                    tailf:cli-compact-syntax;
                     tailf:cli-sequence-commands {
                       tailf:cli-reset-siblings;
                     }
-                    tailf:cli-compact-syntax;
                     presence "true";
                     leaf credit {
                       tailf:cli-drop-node-name;
@@ -41316,10 +41521,10 @@ module netsim-ned-cisco-nx {
                   }
                   container fcreds {
                     tailf:cli-drop-node-name;
+                    tailf:cli-compact-syntax;
                     tailf:cli-sequence-commands {
                       tailf:cli-reset-siblings;
                     }
-                    tailf:cli-compact-syntax;
                     presence "true";
                     leaf credit {
                       tailf:cli-drop-node-name;
@@ -41783,10 +41988,11 @@ module netsim-ned-cisco-nx {
         tailf:cli-add-mode;
         list vsan {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           key "id";
           leaf id {
             type uint16;
@@ -41804,6 +42010,7 @@ module netsim-ned-cisco-nx {
               type uint16;
             }
             leaf name {
+              tailf:cli-expose-key-name;
               type string;
             }
           }
@@ -41815,6 +42022,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-sequence-commands;
             key "vfc";
             leaf vfc {
+              tailf:cli-expose-key-name;
               tailf:cli-allow-join-with-value;
               type uint16;
             }
@@ -41838,6 +42046,7 @@ module netsim-ned-cisco-nx {
             tailf:cli-sequence-commands;
             key "fc";
             leaf fc {
+              tailf:cli-expose-key-name;
               tailf:cli-allow-join-with-value;
               type string;
             }
@@ -41890,12 +42099,13 @@ module netsim-ned-cisco-nx {
           list vsan {
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
             tailf:cli-sequence-commands {
               tailf:cli-reset-siblings;
             }
-            tailf:cli-compact-syntax;
             key "wwn";
             leaf wwn {
+              tailf:cli-expose-key-name;
               type string;
             }
             leaf vsan-id {
@@ -41948,6 +42158,7 @@ module netsim-ned-cisco-nx {
           type string;
         }
         leaf vsan {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         container member {
@@ -42011,18 +42222,21 @@ module netsim-ned-cisco-nx {
       tailf:display-when "not(../ncs:module) or ../ncs:module[ncs:name='netsim-ned-cisco-nx']";
       key "name vsan";
       leaf name {
+        tailf:cli-expose-key-name;
         type string;
       }
       leaf vsan {
+        tailf:cli-expose-key-name;
         type uint16;
       }
       container member {
         list pwwn {
           tailf:cli-suppress-mode;
+          tailf:cli-delete-when-empty;
+          tailf:cli-compact-syntax;
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
           }
-          tailf:cli-compact-syntax;
           key "wwn";
           leaf wwn {
             type string;
@@ -42047,6 +42261,7 @@ module netsim-ned-cisco-nx {
           type string;
         }
         leaf vsan {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         list member {
@@ -42065,6 +42280,7 @@ module netsim-ned-cisco-nx {
             type string;
           }
           leaf vsan {
+            tailf:cli-expose-key-name;
             type uint16;
           }
         }
@@ -42321,6 +42537,7 @@ module netsim-ned-cisco-nx {
         tailf:cli-delete-when-empty;
         key "name";
         leaf name {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf line {
@@ -42342,6 +42559,20 @@ module netsim-ned-cisco-nx {
           }
           leaf width {
             type uint16;
+          }
+        }
+        leaf parity {
+          type enumeration {
+            enum "none";
+            enum "odd";
+            enum "even";
+          }
+        }
+        leaf stopbits {
+          type enumeration {
+            enum "1";
+            enum "1.5";
+            enum "2";
           }
         }
       }
@@ -42726,8 +42957,8 @@ module netsim-ned-cisco-nx {
       list server {
         tailf:cli-suppress-mode;
         tailf:cli-delete-when-empty;
-        tailf:cli-sequence-commands;
         tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands;
         key "host";
         leaf host {
           type string;
@@ -42916,6 +43147,7 @@ module netsim-ned-cisco-nx {
       list job {
         key "name";
         leaf name {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf commands {
@@ -42927,6 +43159,7 @@ module netsim-ned-cisco-nx {
       list schedule {
         key "name";
         leaf name {
+          tailf:cli-expose-key-name;
           type string;
         }
         container job {
@@ -42952,39 +43185,6 @@ module netsim-ned-cisco-nx {
     container role {
       tailf:ncs-device-type "cli-ned";
       tailf:display-when "not(../../ncs:module) or ../../ncs:module[ncs:name='netsim-ned-cisco-nx']";
-
-      grouping role-rule-type-choice {
-        choice rule-type {
-          leaf command {
-            tailf:cli-multi-value;
-            type string;
-          }
-          container read {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-          container read-write {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-        }
-      }
       list name {
         key "name";
         leaf name {
@@ -43153,7 +43353,6 @@ module netsim-ned-cisco-nx {
           }
           container tcp {
             container state-checks {
-              tailf:cli-delete-when-empty;
               leaf invalid-ack {
                 type boolean;
               }
@@ -43246,9 +43445,9 @@ module netsim-ned-cisco-nx {
         }
         list mst-instance {
           tailf:cli-drop-node-name;
+          tailf:cli-suppress-mode;
           tailf:cli-delete-when-empty;
           tailf:cli-range-list-syntax;
-          tailf:cli-suppress-mode;
           key "id";
           leaf id {
             type uint16;
@@ -43388,8 +43587,8 @@ module netsim-ned-cisco-nx {
                 }
                 list tag {
                   tailf:cli-suppress-mode;
-                  tailf:cli-compact-syntax;
                   tailf:cli-delete-when-empty;
+                  tailf:cli-compact-syntax;
                   key "name";
                   leaf name {
                     type string;
@@ -44004,10 +44203,10 @@ module netsim-ned-cisco-nx {
         container virtual {
           tailf:cli-compact-syntax;
           list ip {
-            tailf:cli-compact-syntax;
-            tailf:cli-sequence-commands;
             tailf:cli-suppress-mode;
             tailf:cli-delete-when-empty;
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
             key "address";
             leaf address {
               type inet:ipv4-address;
@@ -45607,6 +45806,21 @@ module netsim-ned-cisco-nx {
           type empty;
         }
       }
+      list bypass-user {
+        // NCS patched for predictable order
+        ordered-by user;
+        tailf:cli-suppress-mode;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf accounting {
+          type empty;
+        }
+        leaf authorization {
+          type empty;
+        }
+      }
     }
     container acllog {
       leaf match-log-level {
@@ -46220,6 +46434,9 @@ module netsim-ned-cisco-nx {
           leaf name {
             type string;
           }
+          leaf seq {
+            type string;
+          }
           leaf perm {
             tailf:cli-drop-node-name;
             type string;
@@ -46560,7 +46777,6 @@ module netsim-ned-cisco-nx {
                   type string;
                 }
                 leaf pool {
-                  // NCS drop mandatory statement
                   type string;
                 }
                 leaf vrf {
@@ -46951,6 +47167,9 @@ module netsim-ned-cisco-nx {
           leaf port {
             type string;
           }
+          leaf exclude-l3-proto {
+            type empty;
+          }
           leaf concatenation {
             type empty;
           }
@@ -47019,6 +47238,9 @@ module netsim-ned-cisco-nx {
         leaf download-on-convergence {
           type empty;
         }
+      }
+      leaf dscp-lop {
+        type ncs_template_dscp-value-type;
       }
     }
     container ipv6 {
@@ -47266,6 +47488,20 @@ module netsim-ned-cisco-nx {
         }
         leaf startup-timer {
           type string;
+        }
+        container multihop {
+          container interval {
+            leaf tx-interval {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf min_rx {
+              type string;
+            }
+            leaf multiplier {
+              type string;
+            }
+          }
         }
       }
     }
@@ -49010,7 +49246,25 @@ module netsim-ned-cisco-nx {
       }
     }
     container feature-set {
-      uses ncs_template_feature-set-grouping;
+      // NCS expand uses statement
+      leaf fabric {
+        type empty;
+      }
+      leaf fabricpath {
+        type empty;
+      }
+      leaf fcoe {
+        type empty;
+      }
+      leaf fex {
+        type empty;
+      }
+      leaf mpls {
+        type empty;
+      }
+      leaf virtualization {
+        type empty;
+      }
     }
     list fex {
       // NCS patched for predictable order
@@ -49330,8 +49584,8 @@ module netsim-ned-cisco-nx {
               list prefix-format {
                 // NCS patched for predictable order
                 ordered-by user;
-                tailf:cli-suppress-mode;
                 tailf:cli-drop-node-name;
+                tailf:cli-suppress-mode;
                 key "address";
                 leaf address {
                   type string;
@@ -49546,6 +49800,11 @@ module netsim-ned-cisco-nx {
           container delay-restore {
             leaf time {
               type string;
+            }
+          }
+          container split-horizon {
+            leaf per-site {
+              type empty;
             }
           }
         }
@@ -52280,7 +52539,63 @@ module netsim-ned-cisco-nx {
           leaf description {
             type string;
           }
-          uses ncs_template_policy-map-class-network-qos-grouping;
+          container class {
+            container type {
+              list network-qos {
+                // NCS patched for predictable order
+                ordered-by user;
+                key "name";
+                leaf name {
+                  type ncs_template_class-name-type;
+                }
+                container dpp {
+                  leaf set-qos-group {
+                    type string;
+                  }
+                }
+                leaf mtu {
+                  type string;
+                }
+                leaf multicast-optimize {
+                  type empty;
+                }
+                container pause {
+                  container no-drop {
+                    presence "Enable no-drop for the CoS";
+                    leaf buffer-size {
+                      type string;
+                    }
+                    leaf pause-threshold {
+                      type string;
+                    }
+                    leaf resume-threshold {
+                      type string;
+                    }
+                    leaf-list pfc-cos {
+                      // NCS patched for predictable order
+                      ordered-by user;
+                      tailf:cli-range-list-syntax;
+                      type string;
+                    }
+                  }
+                }
+                container queue-limit {
+                  leaf count {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf bytes {
+                    type empty;
+                  }
+                }
+                container set {
+                  leaf cos {
+                    type string;
+                  }
+                }
+              }
+            }
+          }
         }
         list queuing {
           // NCS patched for predictable order
@@ -52292,7 +52607,145 @@ module netsim-ned-cisco-nx {
           leaf description {
             type string;
           }
-          uses ncs_template_policy-map-class-queuing-grouping;
+          container class {
+            container type {
+              list queuing {
+                // NCS patched for predictable order
+                ordered-by user;
+                key "name";
+                leaf name {
+                  type ncs_template_class-name-type;
+                }
+                container afd {
+                  leaf queue-desired {
+                    type string;
+                  }
+                  leaf unit {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf ecn {
+                    type empty;
+                  }
+                }
+                container bandwidth {
+                  container remaining {
+                    leaf percent {
+                      type string;
+                    }
+                  }
+                  leaf percent {
+                    type string;
+                  }
+                }
+                container priority {
+                  leaf level {
+                    type string;
+                  }
+                }
+                container queue-limit {
+                  uses ncs_template_queue-limit-grouping;
+                }
+                container queue-limit-per-cos {
+                  tailf:cli-drop-node-name;
+                  list queue-limit {
+                    // NCS patched for predictable order
+                    ordered-by user;
+                    tailf:cli-suppress-mode;
+                    key "cos";
+                    leaf cos {
+                      type string;
+                    }
+                    uses ncs_template_queue-limit-grouping;
+                  }
+                }
+                container shape {
+                  container average {
+                    choice shape-type {
+                      case bit-rate {
+                        leaf rate {
+                          tailf:cli-drop-node-name;
+                          // NCS drop must statement
+                          type string;
+                        }
+                        leaf unit {
+                          type string;
+                        }
+                      }
+                      case percent {
+                        leaf percent {
+                          type string;
+                        }
+                      }
+                    }
+                  }
+                  container min-max {
+                    tailf:cli-drop-node-name;
+                    leaf min {
+                      type string;
+                    }
+                    leaf min-unit {
+                      tailf:cli-drop-node-name;
+                      type string;
+                    }
+                    leaf max {
+                      type string;
+                    }
+                    leaf max-unit {
+                      tailf:cli-drop-node-name;
+                      type string;
+                    }
+                  }
+                }
+                container random-detect {
+                  container cos-based {
+                    presence "true";
+                  }
+                }
+                container random-detect-wred {
+                  tailf:cli-drop-node-name;
+                  choice threshold-choice {
+                    list random-detect {
+                      // NCS patched for predictable order
+                      ordered-by user;
+                      tailf:cli-suppress-mode;
+                      key "cos";
+                      leaf cos {
+                        type string;
+                      }
+                      uses ncs_template_random-detect-grouping;
+                    }
+                    container random-detect-no-cos {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        uses ncs_template_random-detect-grouping;
+                        leaf drop-probability {
+                          type string;
+                        }
+                        leaf weight {
+                          type string;
+                        }
+                      }
+                    }
+                    container random-detect-threshold {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        container threshold {
+                          leaf type {
+                            tailf:cli-drop-node-name;
+                            type string;
+                          }
+                          leaf ecn {
+                            type empty;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -52688,10 +53141,10 @@ module netsim-ned-cisco-nx {
             leaf associate-vrf {
               type empty;
             }
-            leaf mcast-group {
+            leaf vrf {
               type string;
             }
-            leaf vrf {
+            leaf mcast-group {
               type string;
             }
             container host-reachability {
@@ -52725,13 +53178,22 @@ module netsim-ned-cisco-nx {
               }
             }
             container multisite {
-              leaf ingress-replication {
-                type empty;
+              container ingress-replication {
+                presence "true";
+                leaf optimized {
+                  type empty;
+                }
+              }
+              leaf mcast-group {
+                type string;
               }
             }
           }
         }
         container multisite {
+          leaf virtual-rmac {
+            type string;
+          }
           container border-gateway {
             leaf interface {
               type string;
@@ -52784,6 +53246,12 @@ module netsim-ned-cisco-nx {
             type empty;
           }
         }
+        container qos-mode {
+          leaf pipe {
+            type empty;
+          }
+        }
+        uses ncs_template_if-service-policy-grouping;
       }
       list Vethernet {
         // NCS patched for predictable order
@@ -52951,7 +53419,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-suppress-mode;
                 key "from to";
                 leaf from {
-                  type ncs_template_vlan-list-type;
+                  type ncs_template_vlan-list-type-all;
                 }
                 leaf to {
                   type ncs_template_vlan-list-type;
@@ -52965,7 +53433,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-range-list-syntax;
                 key "from";
                 leaf from {
-                  type ncs_template_vlan-list-type;
+                  type ncs_template_vlan-list-type-all;
                 }
                 leaf dot1q-tunnel {
                   type empty;
@@ -54285,6 +54753,12 @@ module netsim-ned-cisco-nx {
             type string;
           }
         }
+        leaf parity {
+          type string;
+        }
+        leaf stopbits {
+          type string;
+        }
       }
       container vty {
         presence "true";
@@ -54822,38 +55296,6 @@ module netsim-ned-cisco-nx {
       }
     }
     container role {
-
-      grouping role-rule-type-choice {
-        choice rule-type {
-          leaf command {
-            type string;
-          }
-          container read {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-          container read-write {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-        }
-      }
       list name {
         // NCS patched for predictable order
         ordered-by user;
@@ -54874,10 +55316,10 @@ module netsim-ned-cisco-nx {
           }
           choice permit-or-deny {
             container deny {
-              uses role-rule-type-choice;
+              uses ncs_template_role-rule-type-choice;
             }
             container permit {
-              uses role-rule-type-choice;
+              uses ncs_template_role-rule-type-choice;
             }
           }
         }
@@ -55100,8 +55542,8 @@ module netsim-ned-cisco-nx {
           // NCS patched for predictable order
           ordered-by user;
           tailf:cli-drop-node-name;
-          tailf:cli-range-list-syntax;
           tailf:cli-suppress-mode;
+          tailf:cli-range-list-syntax;
           key "id";
           leaf id {
             type string;
@@ -57244,6 +57686,21 @@ module netsim-ned-cisco-nx {
           type empty;
         }
       }
+      list bypass-user {
+        // NCS patched for predictable order
+        ordered-by user;
+        tailf:cli-suppress-mode;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf accounting {
+          type empty;
+        }
+        leaf authorization {
+          type empty;
+        }
+      }
     }
     container acllog {
       leaf match-log-level {
@@ -57857,6 +58314,9 @@ module netsim-ned-cisco-nx {
           leaf name {
             type string;
           }
+          leaf seq {
+            type string;
+          }
           leaf perm {
             tailf:cli-drop-node-name;
             type string;
@@ -58197,7 +58657,6 @@ module netsim-ned-cisco-nx {
                   type string;
                 }
                 leaf pool {
-                  // NCS drop mandatory statement
                   type string;
                 }
                 leaf vrf {
@@ -58588,6 +59047,9 @@ module netsim-ned-cisco-nx {
           leaf port {
             type string;
           }
+          leaf exclude-l3-proto {
+            type empty;
+          }
           leaf concatenation {
             type empty;
           }
@@ -58656,6 +59118,9 @@ module netsim-ned-cisco-nx {
         leaf download-on-convergence {
           type empty;
         }
+      }
+      leaf dscp-lop {
+        type ncs_compliance_template_dscp-value-type;
       }
     }
     container ipv6 {
@@ -58903,6 +59368,20 @@ module netsim-ned-cisco-nx {
         }
         leaf startup-timer {
           type string;
+        }
+        container multihop {
+          container interval {
+            leaf tx-interval {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf min_rx {
+              type string;
+            }
+            leaf multiplier {
+              type string;
+            }
+          }
         }
       }
     }
@@ -60647,7 +61126,25 @@ module netsim-ned-cisco-nx {
       }
     }
     container feature-set {
-      uses ncs_compliance_template_feature-set-grouping;
+      // NCS expand uses statement
+      leaf fabric {
+        type empty;
+      }
+      leaf fabricpath {
+        type empty;
+      }
+      leaf fcoe {
+        type empty;
+      }
+      leaf fex {
+        type empty;
+      }
+      leaf mpls {
+        type empty;
+      }
+      leaf virtualization {
+        type empty;
+      }
     }
     list fex {
       // NCS patched for predictable order
@@ -60967,8 +61464,8 @@ module netsim-ned-cisco-nx {
               list prefix-format {
                 // NCS patched for predictable order
                 ordered-by user;
-                tailf:cli-suppress-mode;
                 tailf:cli-drop-node-name;
+                tailf:cli-suppress-mode;
                 key "address";
                 leaf address {
                   type string;
@@ -61183,6 +61680,11 @@ module netsim-ned-cisco-nx {
           container delay-restore {
             leaf time {
               type string;
+            }
+          }
+          container split-horizon {
+            leaf per-site {
+              type empty;
             }
           }
         }
@@ -63917,7 +64419,63 @@ module netsim-ned-cisco-nx {
           leaf description {
             type string;
           }
-          uses ncs_compliance_template_policy-map-class-network-qos-grouping;
+          container class {
+            container type {
+              list network-qos {
+                // NCS patched for predictable order
+                ordered-by user;
+                key "name";
+                leaf name {
+                  type ncs_compliance_template_class-name-type;
+                }
+                container dpp {
+                  leaf set-qos-group {
+                    type string;
+                  }
+                }
+                leaf mtu {
+                  type string;
+                }
+                leaf multicast-optimize {
+                  type empty;
+                }
+                container pause {
+                  container no-drop {
+                    presence "Enable no-drop for the CoS";
+                    leaf buffer-size {
+                      type string;
+                    }
+                    leaf pause-threshold {
+                      type string;
+                    }
+                    leaf resume-threshold {
+                      type string;
+                    }
+                    leaf-list pfc-cos {
+                      // NCS patched for predictable order
+                      ordered-by user;
+                      tailf:cli-range-list-syntax;
+                      type string;
+                    }
+                  }
+                }
+                container queue-limit {
+                  leaf count {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf bytes {
+                    type empty;
+                  }
+                }
+                container set {
+                  leaf cos {
+                    type string;
+                  }
+                }
+              }
+            }
+          }
         }
         list queuing {
           // NCS patched for predictable order
@@ -63929,7 +64487,145 @@ module netsim-ned-cisco-nx {
           leaf description {
             type string;
           }
-          uses ncs_compliance_template_policy-map-class-queuing-grouping;
+          container class {
+            container type {
+              list queuing {
+                // NCS patched for predictable order
+                ordered-by user;
+                key "name";
+                leaf name {
+                  type ncs_compliance_template_class-name-type;
+                }
+                container afd {
+                  leaf queue-desired {
+                    type string;
+                  }
+                  leaf unit {
+                    tailf:cli-drop-node-name;
+                    type string;
+                  }
+                  leaf ecn {
+                    type empty;
+                  }
+                }
+                container bandwidth {
+                  container remaining {
+                    leaf percent {
+                      type string;
+                    }
+                  }
+                  leaf percent {
+                    type string;
+                  }
+                }
+                container priority {
+                  leaf level {
+                    type string;
+                  }
+                }
+                container queue-limit {
+                  uses ncs_compliance_template_queue-limit-grouping;
+                }
+                container queue-limit-per-cos {
+                  tailf:cli-drop-node-name;
+                  list queue-limit {
+                    // NCS patched for predictable order
+                    ordered-by user;
+                    tailf:cli-suppress-mode;
+                    key "cos";
+                    leaf cos {
+                      type string;
+                    }
+                    uses ncs_compliance_template_queue-limit-grouping;
+                  }
+                }
+                container shape {
+                  container average {
+                    choice shape-type {
+                      case bit-rate {
+                        leaf rate {
+                          tailf:cli-drop-node-name;
+                          // NCS drop must statement
+                          type string;
+                        }
+                        leaf unit {
+                          type string;
+                        }
+                      }
+                      case percent {
+                        leaf percent {
+                          type string;
+                        }
+                      }
+                    }
+                  }
+                  container min-max {
+                    tailf:cli-drop-node-name;
+                    leaf min {
+                      type string;
+                    }
+                    leaf min-unit {
+                      tailf:cli-drop-node-name;
+                      type string;
+                    }
+                    leaf max {
+                      type string;
+                    }
+                    leaf max-unit {
+                      tailf:cli-drop-node-name;
+                      type string;
+                    }
+                  }
+                }
+                container random-detect {
+                  container cos-based {
+                    presence "true";
+                  }
+                }
+                container random-detect-wred {
+                  tailf:cli-drop-node-name;
+                  choice threshold-choice {
+                    list random-detect {
+                      // NCS patched for predictable order
+                      ordered-by user;
+                      tailf:cli-suppress-mode;
+                      key "cos";
+                      leaf cos {
+                        type string;
+                      }
+                      uses ncs_compliance_template_random-detect-grouping;
+                    }
+                    container random-detect-no-cos {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        uses ncs_compliance_template_random-detect-grouping;
+                        leaf drop-probability {
+                          type string;
+                        }
+                        leaf weight {
+                          type string;
+                        }
+                      }
+                    }
+                    container random-detect-threshold {
+                      tailf:cli-drop-node-name;
+                      container random-detect {
+                        container threshold {
+                          leaf type {
+                            tailf:cli-drop-node-name;
+                            type string;
+                          }
+                          leaf ecn {
+                            type empty;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -64325,10 +65021,10 @@ module netsim-ned-cisco-nx {
             leaf associate-vrf {
               type empty;
             }
-            leaf mcast-group {
+            leaf vrf {
               type string;
             }
-            leaf vrf {
+            leaf mcast-group {
               type string;
             }
             container host-reachability {
@@ -64362,13 +65058,22 @@ module netsim-ned-cisco-nx {
               }
             }
             container multisite {
-              leaf ingress-replication {
-                type empty;
+              container ingress-replication {
+                presence "true";
+                leaf optimized {
+                  type empty;
+                }
+              }
+              leaf mcast-group {
+                type string;
               }
             }
           }
         }
         container multisite {
+          leaf virtual-rmac {
+            type string;
+          }
           container border-gateway {
             leaf interface {
               type string;
@@ -64421,6 +65126,12 @@ module netsim-ned-cisco-nx {
             type empty;
           }
         }
+        container qos-mode {
+          leaf pipe {
+            type empty;
+          }
+        }
+        uses ncs_compliance_template_if-service-policy-grouping;
       }
       list Vethernet {
         // NCS patched for predictable order
@@ -64588,7 +65299,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-suppress-mode;
                 key "from to";
                 leaf from {
-                  type ncs_compliance_template_vlan-list-type;
+                  type ncs_compliance_template_vlan-list-type-all;
                 }
                 leaf to {
                   type ncs_compliance_template_vlan-list-type;
@@ -64602,7 +65313,7 @@ module netsim-ned-cisco-nx {
                 tailf:cli-range-list-syntax;
                 key "from";
                 leaf from {
-                  type ncs_compliance_template_vlan-list-type;
+                  type ncs_compliance_template_vlan-list-type-all;
                 }
                 leaf dot1q-tunnel {
                   type empty;
@@ -65922,6 +66633,12 @@ module netsim-ned-cisco-nx {
             type string;
           }
         }
+        leaf parity {
+          type string;
+        }
+        leaf stopbits {
+          type string;
+        }
       }
       container vty {
         presence "true";
@@ -66459,38 +67176,6 @@ module netsim-ned-cisco-nx {
       }
     }
     container role {
-
-      grouping role-rule-type-choice {
-        choice rule-type {
-          leaf command {
-            type string;
-          }
-          container read {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-          container read-write {
-            presence "true";
-            leaf feature {
-              type string;
-            }
-            leaf feature-group {
-              type string;
-            }
-            leaf oid {
-              type string;
-            }
-          }
-        }
-      }
       list name {
         // NCS patched for predictable order
         ordered-by user;
@@ -66511,10 +67196,10 @@ module netsim-ned-cisco-nx {
           }
           choice permit-or-deny {
             container deny {
-              uses role-rule-type-choice;
+              uses ncs_compliance_template_role-rule-type-choice;
             }
             container permit {
-              uses role-rule-type-choice;
+              uses ncs_compliance_template_role-rule-type-choice;
             }
           }
         }
@@ -66737,8 +67422,8 @@ module netsim-ned-cisco-nx {
           // NCS patched for predictable order
           ordered-by user;
           tailf:cli-drop-node-name;
-          tailf:cli-range-list-syntax;
           tailf:cli-suppress-mode;
+          tailf:cli-range-list-syntax;
           key "id";
           leaf id {
             type string;

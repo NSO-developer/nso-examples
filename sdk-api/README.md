@@ -17,9 +17,10 @@ high-level MAAPI.
 ### maapi-java
 A collection of Java examples that use the MAAPI and NAVU API.
 
-### commit-parameters
-Showcase how to detect and apply different commit parameters directly from
-Python or Java packages or code, such as `dry-run` and `commit` with trace ID.
+### maapi-commit-parameters
+Showcase how to detect built-in commit parameters from Python and Java user
+code, and how to augment and access custom commit parameters from Python and
+Java.
 
 ### actions-py
 Illustrates how to define a YANG action, attach Python code behind the action,

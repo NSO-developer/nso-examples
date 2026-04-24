@@ -16,7 +16,7 @@ module netsim-ned-cisco-asa {
     prefix ncs;
   }
 
-  revision 2025-03-07;
+  revision 2025-06-26;
 
   typedef ncs_compliance_template_percentage-type {
     type string;
@@ -3698,6 +3698,15 @@ module netsim-ned-cisco-asa {
       leaf minimum-special {
         type string;
       }
+      leaf lifetime {
+        type string;
+      }
+      leaf username-check {
+        type empty;
+      }
+      leaf reuse-interval {
+        type string;
+      }
     }
     container quota {
       leaf management-session {
@@ -4995,6 +5004,9 @@ module netsim-ned-cisco-asa {
             }
             leaf mapped-obj {
               tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf pat-pool {
               type string;
             }
           }
@@ -11987,6 +11999,15 @@ module netsim-ned-cisco-asa {
       leaf minimum-special {
         type string;
       }
+      leaf lifetime {
+        type string;
+      }
+      leaf username-check {
+        type empty;
+      }
+      leaf reuse-interval {
+        type string;
+      }
     }
     container quota {
       leaf management-session {
@@ -13284,6 +13305,9 @@ module netsim-ned-cisco-asa {
             }
             leaf mapped-obj {
               tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf pat-pool {
               type string;
             }
           }
@@ -17336,6 +17360,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         uses ncs_rpc_notif_distribute-list-content-grouping;
@@ -18535,6 +18560,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         // NCS expand uses statement
@@ -18898,6 +18924,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         // NCS expand uses statement
@@ -19514,6 +19541,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         // NCS expand uses statement
@@ -19690,6 +19718,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         // NCS expand uses statement
@@ -20644,6 +20673,7 @@ module netsim-ned-cisco-asa {
           tailf:cli-sequence-commands;
           key "interface";
           leaf interface {
+            tailf:cli-expose-key-name;
             type ncs_rpc_notif_nameif-type;
           }
           leaf seconds {
@@ -20679,6 +20709,15 @@ module netsim-ned-cisco-asa {
         type uint8;
       }
       leaf minimum-special {
+        type uint8;
+      }
+      leaf lifetime {
+        type uint16;
+      }
+      leaf username-check {
+        type empty;
+      }
+      leaf reuse-interval {
         type uint8;
       }
     }
@@ -22197,6 +22236,10 @@ module netsim-ned-cisco-asa {
               tailf:cli-optional-in-sequence;
               type string;
             }
+            leaf pat-pool {
+              tailf:cli-optional-in-sequence;
+              type string;
+            }
           }
           leaf interface {
             tailf:cli-optional-in-sequence;
@@ -22612,6 +22655,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         leaf access-list {
@@ -22633,6 +22677,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type ncs_rpc_notif_nameif-type;
         }
         leaf access-list {
@@ -23801,6 +23846,7 @@ module netsim-ned-cisco-asa {
         }
         key "level";
         leaf level {
+          tailf:cli-expose-key-name;
           type union {
             type uint8;
             type ncs_rpc_notif_logging-level-type;
@@ -24039,6 +24085,7 @@ module netsim-ned-cisco-asa {
           type string;
         }
         leaf host {
+          tailf:cli-expose-key-name;
           type inet:host;
         }
         leaf retry-interval {
@@ -24515,6 +24562,7 @@ module netsim-ned-cisco-asa {
                 type string;
               }
               leaf override {
+                tailf:cli-expose-key-name;
                 type enumeration {
                   enum "cdp";
                   enum "ocsp";
@@ -27171,6 +27219,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         uses distribute-list-content-grouping;
@@ -28370,6 +28419,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         // NCS expand uses statement
@@ -28733,6 +28783,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         // NCS expand uses statement
@@ -29349,6 +29400,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         // NCS expand uses statement
@@ -29525,6 +29577,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         // NCS expand uses statement
@@ -30479,6 +30532,7 @@ module netsim-ned-cisco-asa {
           tailf:cli-sequence-commands;
           key "interface";
           leaf interface {
+            tailf:cli-expose-key-name;
             type nameif-type;
           }
           leaf seconds {
@@ -30514,6 +30568,15 @@ module netsim-ned-cisco-asa {
         type uint8;
       }
       leaf minimum-special {
+        type uint8;
+      }
+      leaf lifetime {
+        type uint16;
+      }
+      leaf username-check {
+        type empty;
+      }
+      leaf reuse-interval {
         type uint8;
       }
     }
@@ -32032,6 +32095,10 @@ module netsim-ned-cisco-asa {
               tailf:cli-optional-in-sequence;
               type string;
             }
+            leaf pat-pool {
+              tailf:cli-optional-in-sequence;
+              type string;
+            }
           }
           leaf interface {
             tailf:cli-optional-in-sequence;
@@ -32447,6 +32514,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         leaf access-list {
@@ -32468,6 +32536,7 @@ module netsim-ned-cisco-asa {
           }
         }
         leaf interface {
+          tailf:cli-expose-key-name;
           type nameif-type;
         }
         leaf access-list {
@@ -33636,6 +33705,7 @@ module netsim-ned-cisco-asa {
         }
         key "level";
         leaf level {
+          tailf:cli-expose-key-name;
           type union {
             type uint8;
             type logging-level-type;
@@ -33874,6 +33944,7 @@ module netsim-ned-cisco-asa {
           type string;
         }
         leaf host {
+          tailf:cli-expose-key-name;
           type inet:host;
         }
         leaf retry-interval {
@@ -34350,6 +34421,7 @@ module netsim-ned-cisco-asa {
                 type string;
               }
               leaf override {
+                tailf:cli-expose-key-name;
                 type enumeration {
                   enum "cdp";
                   enum "ocsp";
@@ -37612,6 +37684,7 @@ module netsim-ned-cisco-asa {
               tailf:cli-delete-when-empty;
               key "id";
               leaf id {
+                tailf:cli-expose-key-name;
                 type string;
               }
             }

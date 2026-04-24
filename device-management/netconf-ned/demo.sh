@@ -17,6 +17,23 @@ NC='\033[0m' # No Color
 DEVICE_NETCONF_PORT=12022
 DEVICE_IPC_PORT=4565
 
+NONINTERACTIVE=${NONINTERACTIVE-}
+
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+if [ $# -ne 0 ] ; then
+    NONINTERACTIVE=yes
+fi
+
 printf "\n${PURPLE}###### Reset the demo\n${NC}"
 rm -rf dev-yang nso-rundir
 set +e
@@ -112,10 +129,7 @@ EOF
 printf "\n\n${GREEN}###### NETCONF NED installed for the hw0 device. Continue demo how NSO can receive notifications, read operational state data, and configure the device through the NED\n${NC}"
 
 printf "${GREEN}##### Showcase managing the device's simulated hardware system from NSO\n${NC}"
-if [ $# -eq 0 ] ; then # Ask for input only if an argument was passed to this script
-    printf "${PURPLE}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "\n${PURPLE}###### "Insert a new card into the chassis subrack slot"\n${NC}"
 make -C devsim -f Makefile start-card

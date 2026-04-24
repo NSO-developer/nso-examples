@@ -3,7 +3,16 @@ import ncs
 
 
 def assign_vni(customer, service_kind: str, requested: int,
-               proplist: list[tuple], root) -> int:
+               proplist: list[tuple], service, root) -> int:
+    try:
+        # If Resource Manager is available, use it to allocate a VNI
+        from resource_manager.service import Allocator
+        request = Allocator(service).id(requested).pool('customer-vni')
+        return request.allocate(f'{service_kind}-{service.name}')
+    except ModuleNotFoundError:
+        # Otherwise fall back to simple implementation below
+        pass
+
     if requested:
         vni = requested
     else:

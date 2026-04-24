@@ -7,7 +7,7 @@ clean:
 	for f in packages/*/src; do \
 		$(MAKE) -C $$f clean || exit 1; \
 	done
-	rm -rf logs/* state/* ncs-cdb/*.cdb
+	rm -rf logs/* state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S}
 
 demo:
 	./demo.sh

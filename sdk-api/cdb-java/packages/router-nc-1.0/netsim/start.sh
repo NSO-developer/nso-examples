@@ -30,7 +30,8 @@ ret=$?
 # Test, and only do this the first time
 
 if [ $ret = 0 -a ! $first_time = 0 ]; then
-    ${CONFD_DIR}/bin/confd_load -l -m -O ${PACKAGE_NETSIM_DIR}/oper/${NAME}.xml
+    oper_xml="${PACKAGE_NETSIM_DIR}/oper/${NAME}.xml"
+    [ ! -e "${oper_xml}" ] || ${CONFD_DIR}/bin/confd_load -l -m -O "${oper_xml}"
 fi
 exit $ret
 

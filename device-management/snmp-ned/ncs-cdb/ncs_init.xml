@@ -19,7 +19,7 @@
       <port>11022</port>
       <device-type>
         <snmp>
-          <version>v1</version>
+          <version>v3</version>
           <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned">id:snmp</ned-id>
           <snmp-authgroup>default</snmp-authgroup>
           <mib-group>basic</mib-group>
@@ -36,7 +36,7 @@
       <port>11023</port>
       <device-type>
         <snmp>
-          <version>v2c</version>
+          <version>v3</version>
           <ned-id xmlns:id="http://tail-f.com/ns/ncs-ned">id:snmp</ned-id>
           <snmp-authgroup>default</snmp-authgroup>
           <!-- no mib-group; means this device implements all known mibs -->
@@ -73,9 +73,6 @@
     <authgroups>
       <snmp-group>
         <name>default</name>
-        <default-map>
-          <community-name>public</community-name>
-        </default-map>
         <umap>
           <local-user>admin</local-user>
           <usm>
@@ -83,12 +80,12 @@
             <security-level>auth-priv</security-level>
             <auth>
               <sha>
-                <remote-password>$0$admin</remote-password>
+                <remote-password>$0$adminpass</remote-password>
               </sha>
             </auth>
             <priv>
               <aes>
-                <remote-password>$0$admin</remote-password>
+                <remote-password>$0$adminpass</remote-password>
               </aes>
             </priv>
           </usm>

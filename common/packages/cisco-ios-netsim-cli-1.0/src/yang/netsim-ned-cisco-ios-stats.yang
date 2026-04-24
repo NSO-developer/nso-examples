@@ -156,8 +156,8 @@ module netsim-ned-cisco-ios-stats {
     }
     leaf link {
       type enumeration {
-        enum internal;
-        enum external;
+        enum "internal";
+        enum "external";
       }
     }
     leaf peer-group {
@@ -307,10 +307,10 @@ module netsim-ned-cisco-ios-stats {
     }
     leaf admin-status {
       type enumeration {
-        enum up {
+        enum "up" {
           value 1;
         }
-        enum down {
+        enum "down" {
           value 2;
         }
       }

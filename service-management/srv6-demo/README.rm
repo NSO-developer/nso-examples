@@ -1,0 +1,75 @@
+Resource Manager
+================
+
+The provided service packages use a simple algorithm to assign required
+resources (VNI numbers), which must be unique across the three service types
+(eline, l2vpn, l3vpn). For simplicity, the algorithm does not reuse previously
+assigned but now released VNIs.
+
+As a more robust alternative, the service code can delegate the assignment
+of VNIs and IP subnets to the Cisco NSO Resource Manager package if it is
+present. To use it, add the `resource-manager` package (version 5.0 or later,
+downloaded separately) to the `nso/packages` directory before starting the
+walkthrough.
+
+If you already have a running instance, you can rebuild and reload the packages
+instead. After you have added the `resource-manager` package, from the `nso`
+folder run:
+
+    $ make clean-packages ; make packages
+    $ ncs_cmd -u admin -c 'maction /packages/reload'
+
+The services will now use Resource Manager for resource allocation.
+
+
+VNI Allocation
+--------------
+
+For successful assignment of VNIs to services, you must configure a pool of
+available VNI values, named `customer-vni`, from which the VNIs are allocated:
+
+    admin@ncs(config)# load merge terminal
+    resource-pools id-pool customer-vni
+     range start 1000
+     range end 2000
+    !
+    ^D
+    admin@ncs(config)# commit
+
+If you now (re-)deploy a service, such as eline or l3vpn, it will get a VNI
+value in the 1000-2000 range and the allocation will show in the pool.
+For example:
+
+    $ admin@ncs# show running-config resource-pools id-pool customer-vni
+    resource-pools id-pool customer-vni
+     range start 1000
+     range end 2000
+     allocation eline-sample-eline
+      resource           1000
+      allocating-service [ /eline:eline[eline:name='sample-eline'] ]
+     !
+     allocation l3vpn-sample-l3vpn
+      resource           1001
+      allocating-service [ /l3vpn:l3vpn[l3vpn:name='sample-l3vpn'] ]
+     !
+    !
+
+
+Subnet Allocation
+-----------------
+
+The l3vpn service connects IP subnet at each customer site (link) through
+the SRv6 network. The SP and customer can agree on this subnet and specify
+its value in the `link/subnet` leaf. Alternatively, with fully SP-managed
+connectivity, the SP can assign some value from a predetermined range in an
+automated fashion.
+
+In the latter case, without Resource Manager, the link uses a deterministic
+`10.1.<link-id>.0/24` subnet. However, this approach can produce overlapping
+subnets if the same customer has multiple separate l3vpn instances.
+
+With Resource Manager, a customer-specific subnet pool is created on demand
+(during service instantiation) and every l3vpn link for this customer is
+assigned a unique /24 subnet. That means the same subnet will not be assigned
+twice to the same customer but different customers can still use the same
+subnets.

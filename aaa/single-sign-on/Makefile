@@ -1,72 +1,63 @@
 PKG_DIR = $(NCS_DIR)/packages/auth/cisco-nso-saml2-auth
 
-.PHONY: all
-all: packages/cisco-nso-saml2-auth \
-		cisco-nso-saml2-auth.xml \
-		cisco-nso-saml2-auth-deps \
-		flask-saml2
-	$(MAKE) -C packages/cisco-nso-saml2-auth/src all
+all: ncs-run/.ready cisco-nso-saml2-auth.xml
 
-packages/cisco-nso-saml2-auth:
-	cp -a $(PKG_DIR) $@
+.PHONY: all start stop configure reset test clean cli-c cli-j
 
-pyvenv:
-	python3 -m venv $@
-	$@/bin/pip $(PIP_OPTS) install pip --upgrade
+ncs-run/.ready: aaa.conf pyvenv/.ready
+	ncs-setup --dest ncs-run --no-config-section aaa --use-copy \
+		--package $(PKG_DIR)
+	@mkdir -p ncs-run/ncs.conf.d
+	cp aaa.conf ncs-run/ncs.conf.d/
+	for f in ncs-run/packages/*/src; do \
+		$(MAKE) -C $$f || exit 1; \
+	done
+	@touch $@
 
-pyvenv.idp:
-	python3 -m venv $@
-	$@/bin/pip $(PIP_OPTS) install pip --upgrade
+pyvenv/.ready:
+	python3 -m venv pyvenv
+	pyvenv/bin/pip $(PIP_OPTS) install pip --upgrade
+	pyvenv/bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
+	@touch $@
 
-flask-saml2: pyvenv.idp
-	git clone https://github.com/mx-moth/flask-saml2.git
-	# Patch flask-saml2 to use SHA-256 by default instead of SHA-1
-	(cd flask-saml2/flask_saml2; sed -i.bak 's/Sha1/Sha256/g' idp/idp.py sp/sp.py)
-	(cd flask-saml2; ../$</bin/pip $(PIP_OPTS) install -e .)
-	$</bin/pip $(PIP_OPTS) install -r flask-saml2/tests/requirements.txt
-	# pyOpenSSL 22.0.0 is needed on platforms with OpenSSL 3.0.
-	# Note that flask-saml2 requires pyOpenSSL < 18, but works with newer.
-	# pyOpenSSL <24.3 is needed because crypto.sign is removed in later ver.
-	$</bin/pip $(PIP_OPTS) install "pyopenssl<24.3" --upgrade
+cisco-nso-saml2-auth.xml:
+	$(MAKE) -C idp keys
+	./cisco-nso-saml2-auth.xml.gen
 
-cisco-nso-saml2-auth-deps: pyvenv
-	$</bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt
-	touch $@
-
-keys:
-	./$@.gen
-
-cisco-nso-saml2-auth.xml: keys
-	./$@.gen
+start:
+	. pyvenv/bin/activate ; cd ncs-run && ncs
 
 .PHONY: start-idp
-start-idp: flask-saml2
-	(. pyvenv.idp/bin/activate ; ./idp.py )
+start-idp:
+	$(MAKE) -C idp start
 
-.PHONY: clean
-clean:
-	$(MAKE) -C packages/cisco-nso-saml2-auth/src clean || true
-	rm -rf ./netsim logs/* state/* ncs-cdb/*
-	rm -rf pyvenv* keys flask-saml2 __pycache__
-	rm -f README.n* ncs.conf
-	rm -f cisco-nso-saml2-auth-deps cisco-nso-saml2-auth.xml
-
-.PHONY: clean
-clean-logs:
-	rm -f logs/*
-
-.PHONY: start
-start:
-	ncs
-
-.PHONY: stop
 stop:
-	-ncs --stop
+	ncs --stop || true
+	$(MAKE) -C idp stop
 
-.PHONY: cli-c
+configure:
+	ncs_load -l -m -u admin cisco-nso-saml2-auth.xml
+
+reset: all
+	ncs-setup --reset --dest ncs-run
+
+test:
+	$(MAKE) stop
+	$(MAKE) reset
+	$(MAKE) start start-idp
+	$(MAKE) configure
+	sleep 1
+	curl -isfS http://localhost:8080/sso/saml/metadata/
+	curl -isfS http://localhost:8080/sso/saml/login/
+	$(MAKE) stop
+
+clean:
+	rm -rf ncs-run pyvenv
+	rm -f cisco-nso-saml2-auth.xml
+	$(MAKE) -C idp clean
+
 cli-c:
 	ncs_cli -C -uadmin
 
-.PHONY: cli-j
 cli-j:
 	ncs_cli -J -uadmin

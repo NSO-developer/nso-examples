@@ -4867,6 +4867,9 @@ module netsim-ned-juniper-junos {
         type interface-name;
         ordered-by user;
       }
+      leaf packet-size {
+        type string;
+      }
       container filter-interfaces {
         presence "enable filter-interfaces";
         uses apply-group;
@@ -5977,7 +5980,7 @@ module netsim-ned-juniper-junos {
               type time;
             }
             leaf interval {
-              type uint32;
+              type string;
             }
             leaf download-timeout {
               type uint32;
@@ -7612,6 +7615,12 @@ module netsim-ned-juniper-junos {
         container family {
           uses apply-group;
           uses apply-macro;
+          container inet {
+            uses apply-advanced;
+            leaf mode {
+              type string;
+            }
+          }
           container inet6 {
             uses apply-group;
             uses apply-macro;
@@ -8248,6 +8257,51 @@ module netsim-ned-juniper-junos {
     container services {
       uses apply-group;
       uses apply-macro;
+      container rtlog {
+        presence "enable rtlog";
+        uses apply-advanced;
+        container traceoptions {
+          uses apply-advanced;
+          container file {
+            leaf filename {
+              type string;
+            }
+            leaf size {
+              type string;
+            }
+            leaf files {
+              type string;
+            }
+            choice world-readable-choice {
+              leaf world-readable {
+                type empty;
+              }
+              leaf no-world-readable {
+                type empty;
+              }
+            }
+            leaf match {
+              type regular-expression;
+            }
+          }
+          list flag {
+            key "name";
+            ordered-by user;
+            leaf name {
+              type string;
+            }
+          }
+        }
+      }
+      container policies {
+        presence "enable policies";
+        uses policy-object-type;
+      }
+      list address-book {
+        key "name";
+        ordered-by user;
+        uses named-address-book-type;
+      }
       container analytics {
         presence "enable analytics";
         uses apply-group;
@@ -9453,6 +9507,9 @@ module netsim-ned-juniper-junos {
               leaf routing-instance {
                 type string;
               }
+              leaf source-address {
+                type ipv4addr;
+              }
               leaf target-address {
                 type ipv4addr;
               }
@@ -9481,6 +9538,9 @@ module netsim-ned-juniper-junos {
                 }
                 uses apply-group;
                 uses apply-macro;
+                leaf source-address {
+                  type ipaddr;
+                }
                 leaf target-address {
                   type ipv4addr;
                 }
@@ -11070,6 +11130,9 @@ module netsim-ned-juniper-junos {
             uses apply-macro;
           }
         }
+        container source {
+          uses ssg-source-nat-object;
+        }
       }
       container l2tp {
         presence "enable l2tp";
@@ -11450,6 +11513,11 @@ module netsim-ned-juniper-junos {
           presence "enable service-set-options";
           uses apply-group;
           uses apply-macro;
+          container undocumented {
+            leaf disable-session-open-syslog {
+              type empty;
+            }
+          }
           leaf tcp-non-syn {
             type string;
           }
@@ -13576,6 +13644,29 @@ module netsim-ned-juniper-junos {
               leaf-list traps {
                 ordered-by user;
                 type string;
+              }
+            }
+          }
+        }
+        container twamp {
+          container server {
+            presence "enable server";
+            container light {
+              presence "enable light";
+              uses apply-advanced;
+              leaf-list port {
+                ordered-by user;
+                type string;
+              }
+              leaf offload-type {
+                type string;
+              }
+              container stateful-sequence {
+                presence "enable stateful-sequence";
+                uses apply-advanced;
+                leaf cache-size {
+                  type string;
+                }
               }
             }
           }
@@ -17622,6 +17713,39 @@ module netsim-ned-juniper-junos {
     container aggregated-devices {
       uses chassis-agg-dev-type;
     }
+    list disk-partition {
+      key "name";
+      ordered-by user;
+      leaf name {
+        type string;
+      }
+      uses apply-advanced;
+      list level {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+        container free-space {
+          leaf thres-free {
+            type string;
+          }
+          choice thres-metric {
+            case case_1 {
+              leaf percent {
+                type empty;
+              }
+            }
+            case case_2 {
+              leaf mb {
+                type empty;
+              }
+            }
+          }
+        }
+      }
+    }
     container container-devices {
       uses chassisd-agg-container-type;
     }
@@ -18799,6 +18923,461 @@ module netsim-ned-juniper-junos {
       }
       container aggregated-devices {
         uses chassis-agg-dev-type;
+      }
+    }
+    container high-availability {
+      presence "enable high-availability";
+      uses apply-advanced;
+      leaf software-upgrade {
+        type empty;
+      }
+      leaf hardware-upgrade {
+        type empty;
+      }
+      container local-id {
+        uses apply-advanced;
+        leaf id {
+          type string;
+        }
+        leaf local-ip {
+          type ipaddr;
+        }
+        container local-forwarding-ip {
+          uses apply-advanced;
+          leaf loopback-address {
+            type ipaddr;
+          }
+        }
+      }
+      list peer-id {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+        leaf desc {
+          type string;
+        }
+        leaf peer-ip {
+          type ipaddr;
+        }
+        leaf interface {
+          type string;
+        }
+        leaf routing-instance {
+          type string;
+        }
+        leaf vpn-profile {
+          type string;
+        }
+        container peer-forwarding-ip {
+          uses apply-advanced;
+          leaf loopback-address {
+            type ipaddr;
+          }
+          leaf interface {
+            type string;
+          }
+          container liveness-detection {
+            presence "enable liveness-detection";
+            uses apply-advanced;
+            leaf version {
+              type string;
+            }
+            leaf minimum-interval {
+              units "milliseconds";
+              type string;
+            }
+            leaf minimum-transmit-interval {
+              status deprecated;
+              units "milliseconds";
+              type string;
+            }
+            leaf minimum-receive-interval {
+              units "milliseconds";
+              type string;
+            }
+            leaf multiplier {
+              type string;
+            }
+            choice adaptation-choice {
+              case case_1 {
+                leaf no-adaptation {
+                  type empty;
+                }
+              }
+            }
+            container transmit-interval {
+              uses apply-advanced;
+              leaf minimum-interval {
+                units "milliseconds";
+                type string;
+              }
+              leaf threshold {
+                units "milliseconds";
+                type string;
+              }
+            }
+            container detection-time {
+              uses apply-advanced;
+              leaf threshold {
+                units "milliseconds";
+                type string;
+              }
+            }
+          }
+        }
+        container liveness-detection {
+          presence "enable liveness-detection";
+          uses apply-advanced;
+          leaf version {
+            type string;
+          }
+          leaf minimum-interval {
+            units "milliseconds";
+            type string;
+          }
+          leaf minimum-transmit-interval {
+            status deprecated;
+            units "milliseconds";
+            type string;
+          }
+          leaf minimum-receive-interval {
+            units "milliseconds";
+            type string;
+          }
+          leaf multiplier {
+            type string;
+          }
+          choice adaptation-choice {
+            case case_1 {
+              leaf no-adaptation {
+                type empty;
+              }
+            }
+          }
+          container transmit-interval {
+            uses apply-advanced;
+            leaf minimum-interval {
+              units "milliseconds";
+              type string;
+            }
+            leaf threshold {
+              units "milliseconds";
+              type string;
+            }
+          }
+          container detection-time {
+            uses apply-advanced;
+            leaf threshold {
+              units "milliseconds";
+              type string;
+            }
+          }
+        }
+      }
+      container traceoptions {
+        uses apply-advanced;
+        leaf no-remote-trace {
+          type empty;
+        }
+        container file {
+          leaf filename {
+            type string;
+          }
+          leaf size {
+            type string;
+          }
+          leaf files {
+            type string;
+          }
+          choice world-readable-choice {
+            leaf world-readable {
+              type empty;
+            }
+            leaf no-world-readable {
+              type empty;
+            }
+          }
+          leaf match {
+            type regular-expression;
+          }
+        }
+        list flag {
+          key "name";
+          ordered-by user;
+          leaf name {
+            type string;
+          }
+        }
+        leaf level {
+          type string;
+        }
+      }
+      list services-redundancy-group {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+        list shutdown-on-failure {
+          key "name";
+          ordered-by user;
+          leaf name {
+            type string;
+          }
+          uses apply-advanced;
+        }
+        leaf deployment-type {
+          type string;
+        }
+        container peer-id {
+          presence "enable peer-id";
+          uses apply-advanced;
+          leaf id {
+            type string;
+          }
+        }
+        container activeness-probe {
+          uses apply-advanced;
+          container dest-ip {
+            uses apply-advanced;
+            leaf ip-address {
+              type ipaddr;
+            }
+            leaf src-ip {
+              type ipaddr;
+            }
+            leaf routing-instance {
+              type string;
+            }
+          }
+          leaf minimum-interval {
+            type string;
+          }
+          leaf multiplier {
+            type string;
+          }
+          container bfd-liveliness {
+            uses apply-advanced;
+            leaf source-ip {
+              type ipaddr;
+            }
+            leaf destination-ip {
+              type ipaddr;
+            }
+            leaf interface {
+              type string;
+            }
+            leaf routing-instance {
+              type string;
+            }
+            leaf minimum-interval {
+              units "milliseconds";
+              type string;
+            }
+            leaf multiplier {
+              type string;
+            }
+          }
+        }
+        list virtual-ip {
+          key "name";
+          ordered-by user;
+          leaf name {
+            type string;
+          }
+          uses apply-advanced;
+          leaf ip {
+            type ipprefix-mandatory;
+          }
+          leaf interface {
+            type string;
+          }
+          leaf use-virtual-mac {
+            type empty;
+          }
+        }
+        container monitor {
+          uses apply-advanced;
+          list ip {
+            key "name";
+            ordered-by user;
+            leaf name {
+              type ipaddr;
+            }
+            uses apply-advanced;
+            leaf routing-instance {
+              type string;
+            }
+          }
+          list bfd-liveliness {
+            key "name";
+            ordered-by user;
+            leaf name {
+              type ipaddr;
+            }
+            uses apply-advanced;
+            leaf src-ip {
+              type ipaddr;
+            }
+            leaf routing-instance {
+              type string;
+            }
+            leaf session-type {
+              type string;
+            }
+            leaf interface {
+              type string;
+            }
+          }
+          list interface {
+            key "name";
+            ordered-by user;
+            leaf name {
+              type string;
+            }
+            uses apply-advanced;
+          }
+          list monitor-object {
+            key "name";
+            ordered-by user;
+            leaf name {
+              type string;
+            }
+            uses apply-advanced;
+            leaf object-threshold {
+              type string;
+            }
+            container ip {
+              presence "enable ip";
+              uses apply-advanced;
+              leaf threshold {
+                type string;
+              }
+              list destination-ip {
+                key "name";
+                ordered-by user;
+                leaf name {
+                  type ipaddr;
+                }
+                uses apply-advanced;
+                leaf routing-instance {
+                  type string;
+                }
+                leaf weight {
+                  type string;
+                }
+              }
+            }
+            container bfd-liveliness {
+              presence "enable bfd-liveliness";
+              uses apply-advanced;
+              leaf threshold {
+                type string;
+              }
+              list destination-ip {
+                key "name";
+                ordered-by user;
+                leaf name {
+                  type ipaddr;
+                }
+                uses apply-advanced;
+                leaf src-ip {
+                  type ipaddr;
+                }
+                leaf routing-instance {
+                  type string;
+                }
+                leaf session-type {
+                  type string;
+                }
+                leaf interface {
+                  type string;
+                }
+                leaf weight {
+                  type string;
+                }
+              }
+            }
+            container interface {
+              presence "enable interface";
+              uses apply-advanced;
+              leaf threshold {
+                type string;
+              }
+              list interface-name {
+                key "name";
+                ordered-by user;
+                leaf name {
+                  type string;
+                }
+                uses apply-advanced;
+                leaf weight {
+                  type string;
+                }
+              }
+            }
+          }
+          leaf srg-threshold {
+            type string;
+          }
+        }
+        container active-signal-route {
+          uses apply-advanced;
+          leaf ip-address {
+            type ipv4addr;
+          }
+          leaf routing-instance {
+            type string;
+          }
+        }
+        container backup-signal-route {
+          uses apply-advanced;
+          leaf ip-address {
+            type ipv4addr;
+          }
+          leaf routing-instance {
+            type string;
+          }
+        }
+        container install-on-failure-route {
+          uses apply-advanced;
+          leaf ip-address {
+            type ipv4addr;
+          }
+          leaf routing-instance {
+            type string;
+          }
+        }
+        list prefix-list {
+          key "name";
+          ordered-by user;
+          leaf name {
+            type string;
+          }
+          uses apply-advanced;
+          leaf routing-instance {
+            type string;
+          }
+        }
+        list managed-services {
+          key "name";
+          leaf name {
+            type string;
+          }
+        }
+        leaf preemption {
+          type empty;
+        }
+        leaf process-packet-on-backup {
+          type empty;
+        }
+        leaf activeness-priority {
+          type string;
+        }
       }
     }
   }
@@ -31980,6 +32559,9 @@ module netsim-ned-juniper-junos {
     leaf encapsulation {
       type string;
     }
+    leaf network-isolation-profile {
+      type string;
+    }
     container esi {
       presence "";
       uses apply-group;
@@ -32557,6 +33139,9 @@ module netsim-ned-juniper-junos {
     container services-options {
       uses apply-group;
       uses apply-macro;
+      leaf utc-timestamp {
+        type empty;
+      }
       container syslog {
         uses service-set-syslog-object;
       }
@@ -34847,6 +35432,45 @@ module netsim-ned-juniper-junos {
             leaf vni {
               mandatory true;
               type uint32;
+            }
+          }
+          container gre {
+            presence "enable gre";
+            uses apply-advanced;
+            container tunnel-termination {
+              presence "enable tunnel-termination";
+            }
+            leaf key {
+              type string;
+            }
+            container source {
+              uses apply-advanced;
+              leaf address {
+                type ipprefix-optional;
+              }
+            }
+            container destination {
+              presence "enable destination";
+              uses apply-advanced;
+              leaf address {
+                type ipaddr;
+              }
+            }
+            container tunnel-routing-instance {
+              presence "enable tunnel-routing-instance";
+              uses apply-advanced;
+              leaf routing-instance {
+                type string;
+              }
+            }
+            leaf bypass-loopback {
+              type empty;
+            }
+            leaf allow-fragmentation {
+              type empty;
+            }
+            leaf ttl {
+              type string;
             }
           }
         }
@@ -38746,6 +39370,11 @@ module netsim-ned-juniper-junos {
         type string;
       }
       uses apply-advanced;
+      container undocumented {
+        leaf report-ex-rule-name {
+          type empty;
+        }
+      }
       leaf accept-sdr {
         type empty;
       }
@@ -39080,8 +39709,7 @@ module netsim-ned-juniper-junos {
         type empty;
       }
       leaf vni {
-        mandatory true;
-        type uint32;
+        type string;
       }
       leaf multicast-group {
         type ipv4addr;
@@ -39094,10 +39722,22 @@ module netsim-ned-juniper-junos {
       }
       leaf unreachable-vtep-aging-timer {
         units "seconds";
-        type uint16;
+        type string;
+      }
+      leaf destination-udp-port {
+        type string;
       }
       leaf ingress-node-replication {
         type empty;
+      }
+    }
+    container proxy-mac {
+      uses apply-advanced;
+      leaf irb {
+        type empty;
+      }
+      leaf proxy-mac-address {
+        type mac-unicast;
       }
     }
   }
@@ -41906,7 +42546,7 @@ module netsim-ned-juniper-junos {
         uses apply-group;
         uses apply-macro;
         leaf percent {
-          type uint32;
+          type string;
         }
         list buffer-partition {
           key "name";
@@ -41917,10 +42557,10 @@ module netsim-ned-juniper-junos {
           uses apply-group;
           uses apply-macro;
           leaf percent {
-            type uint32;
+            type string;
           }
           leaf dynamic-threshold {
-            type uint32;
+            type string;
           }
         }
       }
@@ -41928,7 +42568,7 @@ module netsim-ned-juniper-junos {
         uses apply-group;
         uses apply-macro;
         leaf percent {
-          type uint32;
+          type string;
         }
         list buffer-partition {
           key "name";
@@ -41939,10 +42579,10 @@ module netsim-ned-juniper-junos {
           uses apply-group;
           uses apply-macro;
           leaf percent {
-            type uint32;
+            type string;
           }
           leaf dynamic-threshold {
-            type uint32;
+            type string;
           }
         }
       }
@@ -42901,7 +43541,7 @@ module netsim-ned-juniper-junos {
             type string;
           }
           leaf percent {
-            type uint32;
+            type string;
           }
           container remainder {
             presence "enable remainder";
@@ -50709,13 +51349,34 @@ module netsim-ned-juniper-junos {
         container labeled-bgp {
           uses apply-group;
           uses apply-macro;
-          leaf inet6 {
-            type empty;
+          choice inet-choice {
+            leaf inet {
+              type empty;
+            }
+            leaf no-inet {
+              type empty;
+            }
+          }
+          choice inet6-choice {
+            leaf inet6 {
+              type empty;
+            }
+            leaf no-inet6 {
+              type empty;
+            }
           }
         }
         container l3vpn {
           presence "enable l3vpn";
           leaf extended-space {
+            type empty;
+          }
+        }
+        choice ldp-choice {
+          leaf ldp {
+            type empty;
+          }
+          leaf no-ldp {
             type empty;
           }
         }
@@ -55440,7 +56101,7 @@ module netsim-ned-juniper-junos {
             }
             leaf interval {
               units "hours";
-              type uint32;
+              type string;
             }
             leaf download-timeout {
               units "minutes";
@@ -55883,6 +56544,11 @@ module netsim-ned-juniper-junos {
       key "name";
       ordered-by user;
       uses dhcp-local-server-group;
+    }
+    container persistent-storage {
+      leaf automatic {
+        type empty;
+      }
     }
   }
 
@@ -64416,6 +65082,18 @@ module netsim-ned-juniper-junos {
             }
           }
         }
+        container bound-metric {
+          uses apply-advanced;
+          leaf te {
+            type string;
+          }
+          leaf igp {
+            type string;
+          }
+          leaf delay {
+            type string;
+          }
+        }
       }
       leaf srv6 {
         type empty;
@@ -66296,6 +66974,68 @@ module netsim-ned-juniper-junos {
     container l2-learning {
       uses juniper-protocols-bridge;
     }
+    container network-isolation {
+      uses apply-advanced;
+      list group {
+        key "name";
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+        container detection {
+          presence "enable detection";
+          uses apply-advanced;
+          container hold-time {
+            leaf up {
+              units "milliseconds";
+              type string;
+            }
+            leaf down {
+              units "milliseconds";
+              type string;
+            }
+          }
+          container link-tracking {
+            presence "enable link-tracking";
+            uses apply-advanced;
+            leaf minimum-links {
+              type string;
+            }
+            leaf failure-type {
+              type string;
+            }
+            list interface {
+              key "name";
+              leaf name {
+                type string;
+              }
+              uses apply-advanced;
+            }
+          }
+          container service-tracking {
+            presence "enable service-tracking";
+            uses apply-advanced;
+            leaf core-isolation {
+              type empty;
+            }
+          }
+        }
+        container service-tracking-action {
+          choice actions {
+            case case_1 {
+              leaf link-down {
+                type empty;
+              }
+            }
+            case case_2 {
+              leaf lacp-out-of-sync {
+                type empty;
+              }
+            }
+          }
+        }
+      }
+    }
     container lldp {
       uses apply-group;
       uses apply-macro;
@@ -66769,6 +67509,11 @@ module netsim-ned-juniper-junos {
         }
         leaf pce-traffic-steering {
           type empty;
+        }
+        container undocumented {
+          leaf pcupdate-empty-ero-action {
+            type string;
+          }
         }
       }
       container traceoptions {
@@ -68093,6 +68838,9 @@ module netsim-ned-juniper-junos {
           }
         }
       }
+      leaf disable-notification-extensions {
+        type empty;
+      }
       leaf forwarding-state-bit {
         type string;
       }
@@ -68160,9 +68908,23 @@ module netsim-ned-juniper-junos {
       leaf pause-computation-during-churn {
         type empty;
       }
+      leaf list-nexthop {
+        type empty;
+      }
+      container allow-external-internal {
+        presence "enable allow-external-internal";
+        uses apply-advanced;
+        leaf-list prefix-policy {
+          ordered-by user;
+          type policy-algebra;
+        }
+      }
     }
     leaf tcp-mss {
       type uint32;
+    }
+    leaf bgp-identifier {
+      type ipv4addr;
     }
     leaf tcp-aggressive-transmission {
       type empty;
@@ -69930,6 +70692,9 @@ module netsim-ned-juniper-junos {
         }
       }
     }
+    leaf rfc8950-compliant {
+      type empty;
+    }
     container defaults {
       uses apply-advanced;
       container ebgp {
@@ -70967,6 +71732,13 @@ module netsim-ned-juniper-junos {
         }
       }
     }
+    container drop-excess {
+      presence "enable drop-excess";
+      uses apply-advanced;
+      leaf limit-threshold {
+        type string;
+      }
+    }
   }
 
   grouping bgpaf-traffic-statistics {
@@ -70984,6 +71756,54 @@ module netsim-ned-juniper-junos {
   grouping juniper-protocols-bridge {
     uses apply-group;
     uses apply-macro;
+    container traceoptions {
+      uses apply-advanced;
+      leaf no-remote-trace {
+        type empty;
+      }
+      container file {
+        leaf filename {
+          type string;
+        }
+        leaf size {
+          type string;
+        }
+        leaf files {
+          type string;
+        }
+        choice world-readable-choice {
+          leaf world-readable {
+            type empty;
+          }
+          leaf no-world-readable {
+            type empty;
+          }
+        }
+        leaf match {
+          type regular-expression;
+        }
+      }
+      leaf level {
+        type string;
+      }
+      list flag {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+      }
+      container kernel {
+        presence "enable kernel";
+        uses apply-advanced;
+        container irb {
+          presence "enable irb";
+        }
+      }
+      container in-memory-debug {
+        presence "enable in-memory-debug";
+      }
+    }
     container vpls-mac-move {
       presence "enable vpls-mac-move";
       uses apply-group;
@@ -74270,6 +75090,9 @@ module netsim-ned-juniper-junos {
         type ipv4addr;
       }
     }
+    leaf no-propagate-ttl {
+      type empty;
+    }
   }
 
   grouping juniper-protocols-lmp {
@@ -75594,6 +76417,9 @@ module netsim-ned-juniper-junos {
       }
       leaf egress-protection {
         type empty;
+      }
+      leaf transport-class {
+        type string;
       }
     }
     container deselect-on-bandwidth-failure {
@@ -78760,6 +79586,9 @@ module netsim-ned-juniper-junos {
     }
     container undocumented {
       leaf vpn-group-address {
+        type ipv4addr;
+      }
+      leaf secondary-vtep-address {
         type ipv4addr;
       }
       container mdt {
@@ -82438,6 +83267,9 @@ module netsim-ned-juniper-junos {
     leaf no-normalization {
       type empty;
     }
+    leaf normalization {
+      type empty;
+    }
     leaf mac-statistics {
       type empty;
     }
@@ -83190,6 +84022,12 @@ module netsim-ned-juniper-junos {
     leaf flow-label-receive-static {
       type empty;
     }
+    leaf flow-label {
+      type empty;
+    }
+    leaf flow-label-static {
+      type empty;
+    }
     list import-labeled-routes {
       key "name";
       ordered-by user;
@@ -83215,6 +84053,13 @@ module netsim-ned-juniper-junos {
       }
       uses apply-group;
       uses apply-macro;
+      list interface {
+        key "name";
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+      }
       container associate-profile {
         presence "";
         uses apply-group;
@@ -83601,6 +84446,9 @@ module netsim-ned-juniper-junos {
       leaf proxy-mac-address {
         type mac-unicast;
       }
+    }
+    leaf service-type {
+      type string;
     }
     leaf designated-forwarder-election-hold-time {
       units "seconds";
@@ -85327,6 +86175,9 @@ module netsim-ned-juniper-junos {
               }
             }
           }
+          leaf description {
+            type string;
+          }
           list qualified-next-hop {
             key "name";
             ordered-by user;
@@ -86491,6 +87342,9 @@ module netsim-ned-juniper-junos {
     leaf router-id {
       type ipv4addr;
     }
+    leaf route-distinguisher-id-use-router-id {
+      type empty;
+    }
     container autonomous-system {
       presence "";
       uses apply-advanced;
@@ -87091,6 +87945,9 @@ module netsim-ned-juniper-junos {
               type string;
             }
           }
+        }
+        leaf description {
+          type string;
         }
         list qualified-next-hop {
           key "name";
@@ -89592,6 +90449,15 @@ module netsim-ned-juniper-junos {
         type empty;
       }
     }
+    container phone-home {
+      leaf-list server {
+        type string;
+        ordered-by user;
+      }
+      leaf rfc-compliant {
+        type empty;
+      }
+    }
     container autoinstallation {
       presence "enable autoinstallation";
       uses apply-group;
@@ -90562,6 +91428,9 @@ module netsim-ned-juniper-junos {
         leaf yang-compliant {
           type empty;
         }
+        container version-1.1 {
+          presence "enable version-1.1";
+        }
         container yang-modules {
           uses apply-group;
           uses apply-macro;
@@ -90569,6 +91438,9 @@ module netsim-ned-juniper-junos {
             type empty;
           }
           leaf emit-extensions {
+            type empty;
+          }
+          leaf emit-anyxml-in-rpc-output {
             type empty;
           }
         }
@@ -90607,6 +91479,19 @@ module netsim-ned-juniper-junos {
           }
           leaf on-demand {
             type empty;
+          }
+        }
+        container hello-message {
+          container yang-module-capabilities {
+            leaf advertise-native-yang-modules {
+              type empty;
+            }
+            leaf advertise-custom-yang-modules {
+              type empty;
+            }
+            leaf advertise-standard-yang-modules {
+              type empty;
+            }
           }
         }
       }
@@ -92244,6 +93129,46 @@ module netsim-ned-juniper-junos {
                   leaf full-scale {
                     type empty;
                   }
+                }
+              }
+            }
+          }
+        }
+        container ingress {
+          presence "enable ingress";
+          uses apply-advanced;
+          container lo0-inet6 {
+            presence "enable lo0-inet6";
+            uses apply-advanced;
+            choice lo0-profile-list {
+              case case_1 {
+                leaf profile-one {
+                  type empty;
+                }
+              }
+              case case_2 {
+                leaf profile-two {
+                  type empty;
+                }
+              }
+            }
+          }
+        }
+        container egress {
+          presence "enable egress";
+          uses apply-advanced;
+          container inet6 {
+            presence "enable inet6";
+            uses apply-advanced;
+            choice inet6-profile-list {
+              case case_1 {
+                leaf profile-one {
+                  type empty;
+                }
+              }
+              case case_2 {
+                leaf profile-two {
+                  type empty;
                 }
               }
             }
@@ -123912,6 +124837,19 @@ module netsim-ned-juniper-junos {
         type uint32;
         ordered-by user;
       }
+      list restrict {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+        leaf mask {
+          type string;
+        }
+        leaf noquery {
+          type empty;
+        }
+      }
       list source-address {
         key "name";
         ordered-by user;
@@ -132639,7 +133577,6 @@ module netsim-ned-juniper-junos {
       uses apply-group;
       uses apply-macro;
       leaf match-direction {
-        mandatory true;
         type string;
       }
       list policy {
@@ -140752,6 +141689,76 @@ module netsim-ned-juniper-junos {
       units "messages per second";
       type uint32;
     }
+    leaf mode {
+      type string;
+    }
+    choice source {
+      case case_1 {
+        leaf source-address {
+          type ipaddr;
+        }
+      }
+      case case_2 {
+        leaf source-interface {
+          type string;
+        }
+      }
+    }
+    container transport {
+      presence "enable transport";
+      uses apply-advanced;
+      leaf tcp-connections {
+        type string;
+      }
+      leaf protocol {
+        type string;
+      }
+      leaf tls-profile {
+        type string;
+      }
+    }
+    leaf local-log-tag {
+      type string;
+    }
+    leaf utc-timestamp {
+      type empty;
+    }
+    leaf format {
+      type string;
+    }
+    list local-category {
+      key "name";
+      ordered-by user;
+      leaf name {
+        type string;
+      }
+      uses apply-advanced;
+    }
+    list stream {
+      key "name";
+      ordered-by user;
+      leaf name {
+        type string;
+      }
+      uses apply-advanced;
+      leaf severity {
+        type string;
+      }
+      leaf format {
+        type string;
+      }
+      list category {
+        key "name";
+        ordered-by user;
+        leaf name {
+          type string;
+        }
+        uses apply-advanced;
+      }
+      container host {
+        uses host-object;
+      }
+    }
   }
 
   grouping services-ike {
@@ -142862,14 +143869,14 @@ module netsim-ned-juniper-junos {
           container range {
             presence "";
             leaf low {
-              type uint16;
+              type string;
             }
             container to {
               presence "";
               uses apply-group;
               uses apply-macro;
               leaf high {
-                type uint16;
+                type string;
               }
             }
           }
@@ -143041,6 +144048,9 @@ module netsim-ned-juniper-junos {
         ordered-by user;
         uses src-nat-rule-object;
       }
+      leaf match-direction {
+        type string;
+      }
     }
   }
 
@@ -143197,6 +144207,17 @@ module netsim-ned-juniper-junos {
             }
           }
         }
+        container mapping-type {
+          leaf endpoint-independent {
+            type empty;
+          }
+          leaf address-pooling-paired {
+            type empty;
+          }
+        }
+      }
+      leaf syslog {
+        type empty;
       }
     }
   }

@@ -50,8 +50,8 @@ module netsim-ned-cisco-asa-stats {
       }
       leaf status {
         type enumeration {
-          enum active;
-          enum inactive;
+          enum "active";
+          enum "inactive";
         }
       }
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <hostname xmlns="urn:ios">man-br1</hostname>
+  <interface xmlns="urn:ios">
+    <Loopback>
+      <name>0</name>
+    </Loopback>
+    <GigabitEthernet>
+      <name>0/1</name>
+    </GigabitEthernet>
+  </interface>
+  <ip xmlns="urn:ios">
+    <routing>true</routing>
+  </ip>
+</config>

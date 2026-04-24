@@ -19,6 +19,12 @@ printf "\n${PURPLE}###### Reset and setup the example\n${NC}"
 make stop &> /dev/null
 make clean all start
 
+ncs_cli -n -u admin -C << 'EOF'
+config
+session dry-run-drift-detection disabled
+commit
+EOF
+
 printf "\n${PURPLE}##### Generate keys, distribute the public key and configure NSO for public key authentication with $1 network elements\n${NC}"
 
 NES=""

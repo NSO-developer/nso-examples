@@ -1,0 +1,33 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <ospf>
+              <area>
+                <name>{$AREA_DOTTED}</name>
+                <interface>
+                  <name>{$OSPF_INTERFACE}</name>
+                  <?if {$PASSIVE='true'}?>
+                  <passive/>
+                  <?end?>
+                  <?if {$OSPF_COST!=''}?>
+                  <metric>{$OSPF_COST}</metric>
+                  <?end?>
+                  <?if {$BFD_ENABLED='true'}?>
+                  <bfd-liveness-detection>
+                    <minimum-interval>{$BFD_MIN_INTERVAL}</minimum-interval>
+                    <multiplier>{$BFD_MULTIPLIER}</multiplier>
+                  </bfd-liveness-detection>
+                  <?end?>
+                </interface>
+              </area>
+            </ospf>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

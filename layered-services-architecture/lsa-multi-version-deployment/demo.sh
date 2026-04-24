@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-if [ -n "${NCS_IPC_PATH}" ]; then
+if [ -n "${NCS_IPC_PORT:-}" ]; then
+ENV="NCS_IPC_PORT="
+elif [ -n "${NCS_IPC_PATH:-}" ]; then
 ENV="NCS_IPC_PATH=${NCS_IPC_PATH}."
 else
-ENV="NCS_IPC_PORT="
+ENV="NCS_IPC_PATH=/tmp/nso/nso-ipc."
 fi
 
 set -eu # Abort the script if a command returns with a non-zero exit code or if
@@ -13,6 +15,18 @@ GREEN='\033[0;32m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
+
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
 
 printf "\n${GREEN}##### Layered Services Architecture Multi NSO Version Deployment Demo\n${NC}"
 printf "\n${GREEN}##### Get the NSO major version\n${NC}"
@@ -91,10 +105,7 @@ packages reload
 EOF
 
 printf "\n\n${GREEN}##### Verify the CFS-VLAN service\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n\n${PURPLE}##### Enable the NSO progress traces${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 unhide debug
@@ -130,8 +141,7 @@ EOF
 
 printf "\n\n${PURPLE}##### Show a graph representation of the upper-nso progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py upper-nso/logs/progress-trace.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n\n${NC}"
 else
@@ -140,8 +150,7 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-1 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-1/logs/progress-trace.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
@@ -149,18 +158,14 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-2 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-2/logs/progress-trace.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
 fi
 
 printf "\n\n${GREEN}##### Makefile setup\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
 make stop
@@ -173,10 +178,7 @@ printf "\n${PURPLE}##### Start the simulated network and NSO\n${NC}"
 make start-all
 
 printf "\n${GREEN}##### Verify the CFS-VLAN service\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n\n${PURPLE}##### Enable the NSO progress traces${NC}"
 env ${ENV}4569 ncs_cli -n -u admin -C << EOF
 unhide debug
@@ -228,8 +230,7 @@ EOF
 
 printf "\n\n${PURPLE}##### Show a graph representation of the upper-nso progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py upper-nso/logs/progress-trace.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n\n${NC}"
 else
@@ -238,8 +239,7 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-1 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-1/logs/progress-trace.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
@@ -247,8 +247,7 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-2 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-2/logs/progress-trace.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
@@ -256,8 +255,7 @@ fi
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
     make stop clean
 fi

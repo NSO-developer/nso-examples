@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### SSH keys demo\n${NC}"
 printf "${GREEN}##### Start clean${NC}"
 set +e
@@ -78,10 +90,7 @@ devices device * ssh host-key * show-fingerprint
 EOF
 
 printf "\n\n${GREEN}##### Modifying the Host Key Verification Level\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Disable host key verification globally - ${RED}Development only. Not good for security\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -105,10 +114,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Publickey Authentication for Devices\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "\n${PURPLE}##### Connect to the CLI of the h0 device and configure its ssh_keydir\n${NC}"
 ncs-netsim cli-c h0 << EOF
@@ -165,8 +171,7 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop NSO, netsim, and clean all created files\n${NC}"
     ncs-netsim stop
     ncs --stop

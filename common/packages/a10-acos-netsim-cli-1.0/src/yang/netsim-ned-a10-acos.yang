@@ -9,7 +9,7 @@ module netsim-ned-a10-acos {
     prefix inet;
   }
 
-  revision 2025-03-27;
+  revision 2026-01-29;
 
   typedef ipv4-mask {
     type inet:ipv4-address;
@@ -36,36 +36,36 @@ module netsim-ned-a10-acos {
   typedef cipher {
     type union {
       type enumeration {
-        enum SSL3_RSA_DES_192_CBC3_SHA;
-        enum SSL3_RSA_DES_40_CBC_SHA;
-        enum SSL3_RSA_DES_64_CBC_SHA;
-        enum SSL3_RSA_RC4_128_MD5;
-        enum SSL3_RSA_RC4_128_SHA;
-        enum SSL3_RSA_RC4_40_MD5;
-        enum TLS1_DHE_RSA_AES_128_GCM_SHA256;
-        enum TLS1_DHE_RSA_AES_128_SHA;
-        enum TLS1_DHE_RSA_AES_128_SHA256;
-        enum TLS1_DHE_RSA_AES_256_GCM_SHA384;
-        enum TLS1_DHE_RSA_AES_256_SHA;
-        enum TLS1_DHE_RSA_AES_256_SHA256;
-        enum TLS1_ECDHE_ECDSA_AES_128_GCM_SHA256;
-        enum TLS1_ECDHE_ECDSA_AES_128_SHA;
-        enum TLS1_ECDHE_ECDSA_AES_128_SHA256;
-        enum TLS1_ECDHE_ECDSA_AES_256_GCM_SHA384;
-        enum TLS1_ECDHE_ECDSA_AES_256_SHA;
-        enum TLS1_ECDHE_RSA_AES_128_GCM_SHA256;
-        enum TLS1_ECDHE_RSA_AES_128_SHA;
-        enum TLS1_ECDHE_RSA_AES_128_SHA256;
-        enum TLS1_ECDHE_RSA_AES_256_GCM_SHA384;
-        enum TLS1_ECDHE_RSA_AES_256_SHA;
-        enum TLS1_RSA_AES_128_GCM_SHA256;
-        enum TLS1_RSA_AES_128_SHA;
-        enum TLS1_RSA_AES_128_SHA256;
-        enum TLS1_RSA_AES_256_GCM_SHA384;
-        enum TLS1_RSA_AES_256_SHA;
-        enum TLS1_RSA_AES_256_SHA256;
-        enum TLS1_RSA_EXPORT1024_RC4_56_MD5;
-        enum TLS1_RSA_EXPORT1024_RC4_56_SHA;
+        enum "SSL3_RSA_DES_192_CBC3_SHA";
+        enum "SSL3_RSA_DES_40_CBC_SHA";
+        enum "SSL3_RSA_DES_64_CBC_SHA";
+        enum "SSL3_RSA_RC4_128_MD5";
+        enum "SSL3_RSA_RC4_128_SHA";
+        enum "SSL3_RSA_RC4_40_MD5";
+        enum "TLS1_DHE_RSA_AES_128_GCM_SHA256";
+        enum "TLS1_DHE_RSA_AES_128_SHA";
+        enum "TLS1_DHE_RSA_AES_128_SHA256";
+        enum "TLS1_DHE_RSA_AES_256_GCM_SHA384";
+        enum "TLS1_DHE_RSA_AES_256_SHA";
+        enum "TLS1_DHE_RSA_AES_256_SHA256";
+        enum "TLS1_ECDHE_ECDSA_AES_128_GCM_SHA256";
+        enum "TLS1_ECDHE_ECDSA_AES_128_SHA";
+        enum "TLS1_ECDHE_ECDSA_AES_128_SHA256";
+        enum "TLS1_ECDHE_ECDSA_AES_256_GCM_SHA384";
+        enum "TLS1_ECDHE_ECDSA_AES_256_SHA";
+        enum "TLS1_ECDHE_RSA_AES_128_GCM_SHA256";
+        enum "TLS1_ECDHE_RSA_AES_128_SHA";
+        enum "TLS1_ECDHE_RSA_AES_128_SHA256";
+        enum "TLS1_ECDHE_RSA_AES_256_GCM_SHA384";
+        enum "TLS1_ECDHE_RSA_AES_256_SHA";
+        enum "TLS1_RSA_AES_128_GCM_SHA256";
+        enum "TLS1_RSA_AES_128_SHA";
+        enum "TLS1_RSA_AES_128_SHA256";
+        enum "TLS1_RSA_AES_256_GCM_SHA384";
+        enum "TLS1_RSA_AES_256_SHA";
+        enum "TLS1_RSA_AES_256_SHA256";
+        enum "TLS1_RSA_EXPORT1024_RC4_56_MD5";
+        enum "TLS1_RSA_EXPORT1024_RC4_56_SHA";
       }
       type string;
     }
@@ -95,8 +95,112 @@ module netsim-ned-a10-acos {
     }
   }
 
+  grouping ip-list-grouping {
+    list ip-list {
+      key "name";
+      leaf name {
+        type string;
+      }
+    }
+  }
+
+  uses ip-list-grouping;
+
   grouping cgnv6-grouping {
     container cgnv6 {
+      container logging {
+        container nat-quota-exceeded {
+          leaf level {
+            type enumeration {
+              enum "warning";
+              enum "critical";
+              enum "notice";
+            }
+          }
+        }
+        container sampling-enable {
+          leaf all {
+            type empty;
+          }
+        }
+      }
+      list server {
+        key "name";
+        unique "address";
+        leaf name {
+          type string;
+        }
+        leaf address {
+          tailf:cli-drop-node-name;
+          tailf:cli-hide-in-submode;
+          mandatory true;
+          type union {
+            type inet:ipv4-address;
+            type inet:ipv6-address;
+            type string;
+          }
+        }
+        leaf health-check-disable {
+          type empty;
+        }
+        list port {
+          key "number tcpudp";
+          leaf number {
+            type uint16;
+          }
+          leaf tcpudp {
+            type enumeration {
+              enum "tcp";
+              enum "udp";
+            }
+          }
+          leaf health-check-disable {
+            type empty;
+          }
+        }
+      }
+      list service-group {
+        key "name tcpudp";
+        unique "name";
+        leaf name {
+          type string;
+        }
+        leaf tcpudp {
+          type enumeration {
+            enum "tcp";
+            enum "udp";
+          }
+        }
+        container sampling-enable {
+          leaf all {
+            type empty;
+          }
+        }
+        list member {
+          key "host port";
+          leaf host {
+            type string;
+          }
+          leaf port {
+            type uint16;
+          }
+          container sampling-enable {
+            leaf all {
+              type empty;
+            }
+          }
+        }
+        container shared {
+          choice group-partition {
+            leaf group {
+              type string;
+            }
+            leaf partition {
+              type string;
+            }
+          }
+        }
+      }
       container translation {
         leaf udp-timeout {
           type uint32;
@@ -105,7 +209,12 @@ module netsim-ned-a10-acos {
           type uint32;
         }
         leaf icmp-timeout {
-          type uint32;
+          type union {
+            type uint32;
+            type enumeration {
+              enum "fast";
+            }
+          }
         }
         container service-timeout {
           list tcp {
@@ -143,27 +252,61 @@ module netsim-ned-a10-acos {
           key "alg-id";
           leaf alg-id {
             type enumeration {
-              enum esp;
-              enum ftp;
-              enum h323;
-              enum mgcp;
-              enum pptp;
-              enum rtp-stun-timeout;
-              enum rtsp;
-              enum sip;
-              enum tftp;
+              enum "esp";
+              enum "ftp";
+              enum "h323";
+              enum "mgcp";
+              enum "pptp";
+              enum "rtp-stun-timeout";
+              enum "rtsp";
+              enum "sip";
+              enum "tftp";
             }
           }
           leaf enable {
             type empty;
           }
         }
+        leaf hairpinning {
+          type enumeration {
+            enum "filter-none";
+            enum "filter-self-ip";
+            enum "filter-self-ip-port";
+          }
+        }
+        leaf half-close-timeout {
+          type uint16;
+        }
+        container logging {
+          leaf default-template {
+            type string;
+          }
+        }
         list endpoint-independent-mapping {
           key "proto";
           leaf proto {
             type enumeration {
-              enum udp;
-              enum tcp;
+              enum "udp";
+              enum "tcp";
+            }
+          }
+          container port {
+            tailf:cli-compact-syntax;
+            leaf from {
+              tailf:cli-drop-node-name;
+              type uint32;
+            }
+            leaf to {
+              type uint32;
+            }
+          }
+        }
+        list endpoint-independent-filtering {
+          key "proto";
+          leaf proto {
+            type enumeration {
+              enum "tcp";
+              enum "udp";
             }
           }
           container port {
@@ -179,15 +322,15 @@ module netsim-ned-a10-acos {
         }
         leaf ip-selection {
           type enumeration {
-            enum random;
-            enum round-robin;
-            enum least-used-strict;
-            enum least-udp-used-strict;
-            enum least-tcp-used-strict;
-            enum least-reserved-strict;
-            enum least-udp-reserved-strict;
-            enum least-tcp-reserved-strict;
-            enum least-users-strict;
+            enum "random";
+            enum "round-robin";
+            enum "least-used-strict";
+            enum "least-udp-used-strict";
+            enum "least-tcp-used-strict";
+            enum "least-reserved-strict";
+            enum "least-udp-reserved-strict";
+            enum "least-tcp-reserved-strict";
+            enum "least-users-strict";
           }
         }
         container inside {
@@ -196,6 +339,66 @@ module netsim-ned-a10-acos {
               type string;
             }
           }
+        }
+      }
+      list lsn-rule-list {
+        key "name";
+        leaf name {
+          type string;
+        }
+        container default {
+          tailf:cli-add-mode;
+          container tcp {
+            tailf:cli-compact-syntax;
+            uses port-grouping;
+          }
+          container udp {
+            tailf:cli-compact-syntax;
+            uses port-grouping;
+          }
+          container icmp {
+            tailf:cli-compact-syntax;
+            uses action-grouping {
+              refine "action/pool";
+            }
+          }
+          container others {
+            tailf:cli-compact-syntax;
+            uses action-grouping {
+              refine "action/pool";
+            }
+          }
+        }
+        list ip {
+          key "address";
+          leaf address {
+            type tailf:ipv4-address-and-prefix-length;
+          }
+          container tcp {
+            tailf:cli-compact-syntax;
+            uses port-grouping;
+          }
+          container udp {
+            tailf:cli-compact-syntax;
+            uses port-grouping;
+          }
+          container icmp {
+            tailf:cli-compact-syntax;
+            uses action-grouping {
+              refine "action/pool";
+            }
+          }
+          container others {
+            tailf:cli-compact-syntax;
+            uses action-grouping {
+              refine "action/pool";
+            }
+          }
+        }
+      }
+      container fixed-nat {
+        leaf create-port-mapping-file {
+          type empty;
         }
       }
       container nat {
@@ -218,6 +421,69 @@ module netsim-ned-a10-acos {
           }
           leaf netmask {
             type union {
+              type inet:ipv4-address;
+              type string;
+            }
+          }
+          leaf vrid {
+            tailf:cli-optional-in-sequence;
+            type union {
+              type uint8;
+              type enumeration {
+                enum "default";
+              }
+            }
+          }
+          leaf port-batch-v2-size {
+            type enumeration {
+              enum "64";
+              enum "128";
+              enum "256";
+              enum "512";
+              enum "1024";
+              enum "2048";
+              enum "4096";
+            }
+          }
+          leaf simultaneous-batch-allocation {
+            type empty;
+          }
+          leaf tcp-time-wait-interval {
+            tailf:cli-optional-in-sequence;
+            type uint8;
+          }
+          container usable-nat-ports {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands;
+            tailf:cli-flatten-container;
+            leaf start {
+              tailf:cli-drop-node-name;
+              type uint16;
+            }
+            leaf end {
+              tailf:cli-drop-node-name;
+              type uint16;
+            }
+          }
+        }
+        list pool-group {
+          key "name";
+          leaf name {
+            type string;
+          }
+          leaf vrid {
+            tailf:cli-hide-in-submode;
+            type union {
+              type uint8;
+              type enumeration {
+                enum "default";
+              }
+            }
+          }
+          list member {
+            tailf:cli-suppress-mode;
+            key "name";
+            leaf name {
               type string;
             }
           }
@@ -236,6 +502,33 @@ module netsim-ned-a10-acos {
         leaf name {
           type string;
         }
+        container lsn-rule-list {
+          leaf destination {
+            type string;
+          }
+        }
+        list user-quota {
+          tailf:cli-compact-syntax;
+          tailf:cli-suppress-mode;
+          key "protocol";
+          leaf protocol {
+            type enumeration {
+              enum "icmp";
+              enum "udp";
+              enum "tcp";
+              enum "session";
+              enum "session-tcp";
+              enum "session-udp";
+            }
+          }
+          leaf quota {
+            tailf:cli-drop-node-name;
+            type uint32;
+          }
+          leaf reserve {
+            type uint32;
+          }
+        }
         leaf source-nat-pool {
           type string;
         }
@@ -247,11 +540,25 @@ module netsim-ned-a10-acos {
             type string;
           }
           container log {
+            container fixed-nat {
+              leaf port-mappings {
+                type enumeration {
+                  enum "both";
+                  enum "creation";
+                }
+              }
+              container sessions {
+                presence "true";
+                leaf merged-style {
+                  type empty;
+                }
+              }
+            }
             leaf port-mappings {
               type enumeration {
-                enum creation;
-                enum disable;
-                enum both;
+                enum "creation";
+                enum "disable";
+                enum "both";
               }
             }
             container sessions {
@@ -261,17 +568,83 @@ module netsim-ned-a10-acos {
               }
             }
           }
+          leaf facility {
+            type union {
+              type enumeration {
+                enum "kernel";
+                enum "user";
+                enum "mail";
+                enum "daemon";
+                enum "security-authorization";
+                enum "syslog";
+                enum "line-printer";
+                enum "news";
+                enum "uucp";
+                enum "cron";
+                enum "security-authorization-private";
+                enum "ftp";
+                enum "ntp";
+                enum "audit";
+                enum "alert";
+                enum "clock";
+                enum "local0";
+                enum "local1";
+                enum "local2";
+                enum "local3";
+                enum "local4";
+                enum "local5";
+                enum "local6";
+                enum "local7";
+              }
+              type string;
+            }
+          }
+          leaf severity {
+            type union {
+              type enumeration {
+                enum "emergency";
+                enum "alert";
+                enum "critical";
+                enum "error";
+                enum "warning";
+                enum "notice";
+                enum "informational";
+                enum "debug";
+              }
+              type uint8;
+            }
+          }
+          container service-group {
+            tailf:cli-compact-syntax;
+            tailf:cli-sequence-commands {
+              tailf:cli-reset-siblings;
+            }
+            leaf name {
+              tailf:cli-drop-node-name;
+              type string;
+            }
+            leaf shared {
+              type empty;
+            }
+          }
+          container disable-log-by-destination {
+            tailf:cli-add-mode;
+            presence "true";
+            leaf icmp {
+              type empty;
+            }
+          }
           leaf include-destination {
             type empty;
           }
           leaf format {
             type enumeration {
-              enum binary;
-              enum compact;
-              enum custom;
-              enum default;
-              enum rfc5424;
-              enum cef;
+              enum "binary";
+              enum "compact";
+              enum "custom";
+              enum "default";
+              enum "rfc5424";
+              enum "cef";
             }
           }
           leaf batched-logging-disable {
@@ -286,18 +659,65 @@ module netsim-ned-a10-acos {
 
   grouping sflow-grouping {
     container sflow {
+      container agent {
+        leaf address {
+          type union {
+            type inet:ipv4-address;
+            type inet:ipv6-address;
+          }
+        }
+      }
       container setting {
         leaf local-collection {
           type empty;
         }
+        leaf source-ip-use-mgmt {
+          type empty;
+        }
       }
       list collector {
+        tailf:cli-suppress-mode;
+        key "ip port";
+        leaf ip {
+          tailf:cli-expose-key-name;
+          type inet:ipv4-address;
+        }
+        leaf port {
+          type uint32;
+        }
+      }
+      list collector-alt {
+        tailf:cli-suppress-mode;
+        tailf:alt-name "collector";
         key "ip port";
         leaf ip {
           type inet:ipv4-address;
         }
         leaf port {
           type uint32;
+        }
+      }
+      container polling {
+        leaf cpu-usage {
+          type empty;
+        }
+        leaf-list ve {
+          tailf:cli-range-list-syntax;
+          type uint16;
+        }
+      }
+      container sampling {
+        leaf-list ve {
+          tailf:cli-range-list-syntax;
+          type uint16;
+        }
+      }
+      container source-address {
+        leaf ip {
+          type inet:ipv4-address;
+        }
+        leaf ipv6 {
+          type inet:ipv6-address;
         }
       }
     }
@@ -313,7 +733,7 @@ module netsim-ned-a10-acos {
         type union {
           type inet:ipv4-address;
           type enumeration {
-            enum dhcp;
+            enum "dhcp";
           }
         }
       }
@@ -338,8 +758,8 @@ module netsim-ned-a10-acos {
   grouping pptp_alg {
     leaf pptp {
       type enumeration {
-        enum disable;
-        enum enable;
+        enum "disable";
+        enum "enable";
       }
     }
   }
@@ -347,8 +767,8 @@ module netsim-ned-a10-acos {
   grouping tftp_alg {
     leaf tftp {
       type enumeration {
-        enum disable;
-        enum enable;
+        enum "disable";
+        enum "enable";
       }
     }
   }
@@ -356,8 +776,8 @@ module netsim-ned-a10-acos {
   grouping rtsp_alg {
     leaf rtsp {
       type enumeration {
-        enum disable;
-        enum enable;
+        enum "disable";
+        enum "enable";
       }
     }
   }
@@ -365,8 +785,8 @@ module netsim-ned-a10-acos {
   grouping esp_alg {
     leaf esp {
       type enumeration {
-        enum disable;
-        enum enable;
+        enum "disable";
+        enum "enable";
       }
     }
   }
@@ -421,6 +841,31 @@ module netsim-ned-a10-acos {
 
   grouping interface-grouping {
     container interface {
+
+      grouping lldp-interface-grouping {
+        container lldp {
+          container enable {
+            tailf:cli-compact-syntax;
+            leaf rx {
+              type empty;
+            }
+            leaf tx {
+              type empty;
+            }
+          }
+          leaf notification {
+            type enumeration {
+              enum "enable";
+            }
+          }
+          leaf tx-dot1-tlvs {
+            type enumeration {
+              enum "link-aggregation";
+              enum "vlan";
+            }
+          }
+        }
+      }
       container management {
         tailf:cli-add-mode;
         container bcast-rate-limit {
@@ -458,6 +903,7 @@ module netsim-ned-a10-acos {
             type inet:ipv6-address;
           }
         }
+        uses lldp-interface-grouping;
         leaf flow-control {
           type empty;
         }
@@ -471,22 +917,22 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf in {
-            must '../id';
+            must "../id";
             type empty;
           }
         }
         leaf enabled-disabled {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum enable;
-            enum disable;
+            enum "enable";
+            enum "disable";
           }
         }
         leaf duplexity {
           type enumeration {
-            enum full;
-            enum half;
-            enum auto;
+            enum "full";
+            enum "half";
+            enum "auto";
           }
         }
         leaf mtu {
@@ -494,10 +940,10 @@ module netsim-ned-a10-acos {
         }
         leaf speed {
           type enumeration {
-            enum 10;
-            enum 100;
-            enum 1000;
-            enum auto;
+            enum "10";
+            enum "100";
+            enum "1000";
+            enum "auto";
           }
         }
       }
@@ -555,7 +1001,7 @@ module netsim-ned-a10-acos {
               type string;
             }
             leaf in {
-              must '../id';
+              must "../id";
               type empty;
             }
           }
@@ -614,25 +1060,29 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf in {
-            must '../id';
+            must "../id";
             type empty;
           }
         }
-        container enable-disable {
+        leaf state {
           tailf:cli-drop-node-name;
-          leaf enabled-disabled {
-            tailf:cli-drop-node-name;
-            type enumeration {
-              enum enable;
-              enum disable;
-            }
+          type enumeration {
+            enum "enable";
+            enum "disable";
+          }
+        }
+        leaf state-alt {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
         leaf duplexity {
           type enumeration {
-            enum full;
-            enum half;
-            enum auto;
+            enum "full";
+            enum "half";
+            enum "auto";
           }
         }
         leaf cpu-process {
@@ -651,11 +1101,11 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf lockup {
-            must '../rate';
+            must "../rate";
             type uint16;
           }
           leaf lockup-period {
-            must '../lockup';
+            must "../lockup";
             tailf:cli-drop-node-name;
             type uint16;
           }
@@ -671,8 +1121,8 @@ module netsim-ned-a10-acos {
           }
           leaf timeout {
             type enumeration {
-              enum long;
-              enum short;
+              enum "long";
+              enum "short";
             }
           }
           container trunk {
@@ -686,18 +1136,18 @@ module netsim-ned-a10-acos {
             }
             leaf admin-key {
               tailf:cli-break-sequence-commands;
-              must '../number';
+              must "../number";
               type uint16;
             }
             leaf mode {
-              must '../number';
+              must "../number";
               type enumeration {
-                enum active;
-                enum passive;
+                enum "active";
+                enum "passive";
               }
             }
             leaf unidirectional-detection {
-              must '../number';
+              must "../number";
               type empty;
             }
           }
@@ -709,8 +1159,8 @@ module netsim-ned-a10-acos {
             leaf timeout-type {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum fast;
-                enum slow;
+                enum "fast";
+                enum "slow";
               }
             }
             leaf milli {
@@ -723,26 +1173,16 @@ module netsim-ned-a10-acos {
             }
           }
         }
-        container lldp {
-          container enable {
-            tailf:cli-compact-syntax;
-            leaf rx {
-              type empty;
-            }
-            leaf tx {
-              type empty;
-            }
-          }
-        }
+        uses lldp-interface-grouping;
         leaf mtu {
           type uint16;
         }
         leaf speed {
           type enumeration {
-            enum 10;
-            enum 100;
-            enum 1000;
-            enum auto;
+            enum "10";
+            enum "100";
+            enum "1000";
+            enum "auto";
           }
         }
         list trunk-group-list {
@@ -754,7 +1194,7 @@ module netsim-ned-a10-acos {
           }
           leaf trunk-group-key {
             type enumeration {
-              enum trunk-group;
+              enum "trunk-group";
             }
           }
           leaf trunk-group-id {
@@ -767,9 +1207,9 @@ module netsim-ned-a10-acos {
             tailf:cli-drop-node-name;
             tailf:cli-hide-in-submode;
             type enumeration {
-              enum static;
-              enum lacp;
-              enum lacp-udld;
+              enum "static";
+              enum "lacp";
+              enum "lacp-udld";
             }
           }
         }
@@ -782,12 +1222,11 @@ module netsim-ned-a10-acos {
         leaf name {
           type string;
         }
-        choice enable-disable {
-          leaf disable {
-            type empty;
-          }
-          leaf enable {
-            type boolean;
+        leaf state {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
         container icmp-rate-limit {
@@ -800,11 +1239,11 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf lockup {
-            must '../rate';
+            must "../rate";
             type uint16;
           }
           leaf lockup-period {
-            must '../lockup';
+            must "../lockup";
             tailf:cli-drop-node-name;
             type uint16;
           }
@@ -817,7 +1256,7 @@ module netsim-ned-a10-acos {
           }
           leaf in-type {
             type enumeration {
-              enum in;
+              enum "in";
             }
           }
         }
@@ -879,13 +1318,20 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf lockup {
-            must '../rate';
+            must "../rate";
             type uint16;
           }
           leaf lockup-period {
             tailf:cli-drop-node-name;
-            must '../lockup';
+            must "../lockup";
             type uint16;
+          }
+        }
+        leaf state {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
       }
@@ -897,6 +1343,11 @@ module netsim-ned-a10-acos {
         leaf name {
           type string;
         }
+        container bfd {
+          container echo {
+            presence "true";
+          }
+        }
         container icmp-rate-limit {
           tailf:cli-sequence-commands {
             tailf:cli-reset-siblings;
@@ -907,12 +1358,12 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf lockup {
-            must '../rate';
+            must "../rate";
             type uint16;
           }
           leaf lockup-period {
             tailf:cli-drop-node-name;
-            must '../lockup';
+            must "../lockup";
             type uint16;
           }
         }
@@ -926,7 +1377,7 @@ module netsim-ned-a10-acos {
             type uint16;
           }
           leaf in {
-            must '../id';
+            must "../id";
             type empty;
           }
         }
@@ -979,7 +1430,7 @@ module netsim-ned-a10-acos {
               type string;
             }
             leaf in {
-              must '../id';
+              must "../id";
               type empty;
             }
           }
@@ -1025,16 +1476,89 @@ module netsim-ned-a10-acos {
             }
           }
         }
-        choice enable-disable {
-          leaf disable {
-            type empty;
-          }
-          leaf enable {
-            type boolean;
+        leaf mtu {
+          type uint16;
+        }
+        leaf state {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
         container isis;
         container ospf;
+      }
+    }
+  }
+
+  grouping ip-route-grouping {
+    list route {
+      tailf:cli-compact-syntax;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      tailf:cli-suppress-mode;
+      key "ip mask forwarding-router";
+      leaf ip {
+        type inet:ipv4-address;
+      }
+      leaf mask {
+        type string;
+      }
+      leaf forwarding-router {
+        type inet:ipv4-address;
+      }
+      leaf distance {
+        tailf:cli-drop-node-name;
+        tailf:cli-optional-in-sequence;
+        type uint8;
+      }
+      leaf cpu-process {
+        tailf:cli-drop-node-name;
+        tailf:cli-optional-in-sequence;
+        type enumeration {
+          enum "cpu-process";
+        }
+      }
+    }
+  }
+
+  grouping ip-prefix-list-grouping {
+    list prefix-list {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "name seq";
+      leaf name {
+        type string;
+      }
+      leaf seq {
+        tailf:cli-expose-key-name;
+        type uint32;
+      }
+      choice permit-deny {
+        leaf permit {
+          type union {
+            type enumeration {
+              enum "any";
+            }
+            type tailf:ipv4-address-and-prefix-length;
+          }
+        }
+        leaf deny {
+          type union {
+            type enumeration {
+              enum "any";
+            }
+            type tailf:ipv4-address-and-prefix-length;
+          }
+        }
+      }
+      leaf ge {
+        type uint8;
+      }
+      leaf le {
+        type uint8;
       }
     }
   }
@@ -1122,8 +1646,8 @@ module netsim-ned-a10-acos {
           key "layer";
           leaf layer {
             type enumeration {
-              enum layer-3;
-              enum layer-4;
+              enum "layer-3";
+              enum "layer-4";
             }
           }
         }
@@ -1137,8 +1661,8 @@ module netsim-ned-a10-acos {
           }
           leaf action {
             type enumeration {
-              enum permit;
-              enum deny;
+              enum "permit";
+              enum "deny";
             }
           }
           leaf path {
@@ -1161,8 +1685,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1184,8 +1708,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1207,8 +1731,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1229,8 +1753,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1251,8 +1775,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1290,8 +1814,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1313,8 +1837,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1335,8 +1859,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1357,8 +1881,8 @@ module netsim-ned-a10-acos {
             key "action expr";
             leaf action {
               type enumeration {
-                enum deny;
-                enum permit;
+                enum "deny";
+                enum "permit";
               }
             }
             leaf expr {
@@ -1453,6 +1977,20 @@ module netsim-ned-a10-acos {
             leaf class-list {
               type string;
             }
+            list static {
+              tailf:cli-suppress-mode;
+              tailf:cli-compact-syntax;
+              key "source nat";
+              leaf source {
+                type inet:ipv4-address;
+              }
+              leaf nat {
+                type inet:ipv4-address;
+              }
+              leaf vrid {
+                type uint8;
+              }
+            }
           }
         }
         list pool {
@@ -1543,7 +2081,7 @@ module netsim-ned-a10-acos {
             type union {
               type uint16;
               type enumeration {
-                enum fast;
+                enum "fast";
               }
             }
           }
@@ -1563,8 +2101,8 @@ module netsim-ned-a10-acos {
             key "protocol from";
             leaf protocol {
               type enumeration {
-                enum tcp;
-                enum udp;
+                enum "tcp";
+                enum "udp";
               }
             }
             leaf from {
@@ -1579,7 +2117,7 @@ module netsim-ned-a10-acos {
               type union {
                 type uint16;
                 type enumeration {
-                  enum fast;
+                  enum "fast";
                 }
               }
             }
@@ -1613,13 +2151,13 @@ module netsim-ned-a10-acos {
               container enable {
                 leaf ephemeral {
                   type empty;
-                  must '../../../../endpoint-independent-mapping/tcp/enable/ephemeral' {
+                  must "../../../../endpoint-independent-mapping/tcp/enable/ephemeral" {
                     error-message "Endpoint-independent-filtering cannot be enabled when endpoint-independent-mapping is disabled";
                   }
                 }
                 leaf well-known {
                   type empty;
-                  must '../../../../endpoint-independent-mapping/tcp/enable/well-known' {
+                  must "../../../../endpoint-independent-mapping/tcp/enable/well-known" {
                     error-message "Endpoint-independent-filtering cannot be enabled when endpoint-independent-mapping is disabled";
                   }
                 }
@@ -1629,13 +2167,13 @@ module netsim-ned-a10-acos {
               container enable {
                 leaf ephemeral {
                   type empty;
-                  must '../../../../endpoint-independent-mapping/udp/enable/ephemeral' {
+                  must "../../../../endpoint-independent-mapping/udp/enable/ephemeral" {
                     error-message "Endpoint-independent-filtering cannot be enabled when endpoint-independent-mapping is disabled";
                   }
                 }
                 leaf well-known {
                   type empty;
-                  must '../../../../endpoint-independent-mapping/udp/enable/well-known' {
+                  must "../../../../endpoint-independent-mapping/udp/enable/well-known" {
                     error-message "Endpoint-independent-filtering cannot be enabled when endpoint-independent-mapping is disabled";
                   }
                 }
@@ -1644,180 +2182,34 @@ module netsim-ned-a10-acos {
           }
           leaf ip-selection {
             type enumeration {
-              enum random;
-              enum round-robin;
-              enum least-used-strict;
-              enum least-udp-used-strict;
-              enum least-tcp-used-strict;
-              enum least-reserved-strict;
-              enum least-udp-reserved-strict;
-              enum least-tcp-reserved-strict;
-              enum least-users-strict;
+              enum "random";
+              enum "round-robin";
+              enum "least-used-strict";
+              enum "least-udp-used-strict";
+              enum "least-tcp-used-strict";
+              enum "least-reserved-strict";
+              enum "least-udp-reserved-strict";
+              enum "least-tcp-reserved-strict";
+              enum "least-users-strict";
             }
           }
           leaf attempt-port-preservation {
             type enumeration {
-              enum disable;
-              enum enable;
+              enum "disable";
+              enum "enable";
             }
           }
           uses algs;
         }
       }
-      list prefix-list {
-        tailf:cli-suppress-mode;
-        tailf:cli-compact-syntax;
-        key "name seq";
-        leaf name {
-          type string;
-        }
-        leaf seq {
-          type uint32;
-        }
-        choice permit-deny {
-          leaf permit {
-            type union {
-              type enumeration {
-                enum any;
-              }
-              type tailf:ipv4-address-and-prefix-length;
-            }
-          }
-          leaf deny {
-            type union {
-              type enumeration {
-                enum any;
-              }
-              type tailf:ipv4-address-and-prefix-length;
-            }
-          }
-        }
-      }
-      list route {
-        tailf:cli-compact-syntax;
-        tailf:cli-sequence-commands {
-          tailf:cli-reset-siblings;
-        }
-        tailf:cli-suppress-mode;
-        key "ip mask forwarding-router";
-        leaf ip {
-          type inet:ipv4-address;
-        }
-        leaf mask {
-          type string;
-        }
-        leaf forwarding-router {
-          type inet:ipv4-address;
-        }
-        leaf distance {
-          tailf:cli-drop-node-name;
-          tailf:cli-optional-in-sequence;
-          type uint8;
-        }
-        leaf cpu-process {
-          tailf:cli-drop-node-name;
-          tailf:cli-optional-in-sequence;
-          type enumeration {
-            enum cpu-process;
-          }
-        }
-      }
+      uses ip-prefix-list-grouping;
+      uses ip-route-grouping;
       container tcp {
         container syn-cookie {
           leaf threshold {
             type uint8;
           }
         }
-      }
-    }
-  }
-
-  grouping vrrp-a-tracking-options {
-    container tracking-options {
-      tailf:cli-add-mode;
-      tailf:cli-delete-when-empty;
-      list gateway {
-        tailf:cli-suppress-mode;
-        key "address";
-        leaf address {
-          type union {
-            type inet:ipv4-address;
-            type inet:ipv6-address;
-          }
-        }
-        uses priority-cost;
-      }
-      container interface {
-        list ethernet {
-          tailf:cli-suppress-mode;
-          key "id";
-          leaf id {
-            type ethernet-index;
-          }
-          leaf priority-cost {
-            mandatory true;
-            type uint8;
-          }
-        }
-      }
-      list route {
-        tailf:cli-suppress-mode;
-        tailf:cli-compact-syntax;
-        key "ip mask";
-        leaf ip {
-          type union {
-            type inet:ipv4-address;
-            type inet:ipv6-address;
-          }
-        }
-        leaf mask {
-          type ipv4-mask;
-        }
-        uses priority-cost;
-        leaf distance {
-          type uint8;
-        }
-        leaf gateway {
-          type union {
-            type inet:ipv4-address;
-            type inet:ipv6-address;
-          }
-        }
-        leaf protocol {
-          type enumeration {
-            enum any;
-            enum static;
-            enum dynamic;
-          }
-        }
-      }
-      list trunk {
-        tailf:cli-suppress-mode;
-        tailf:cli-sequence-commands {
-          tailf:cli-reset-siblings;
-        }
-        tailf:cli-compact-syntax;
-        key "id";
-        leaf id {
-          type uint8;
-        }
-        uses priority-cost;
-        leaf per-port-pri {
-          type uint8;
-        }
-      }
-      list vlan {
-        tailf:cli-suppress-mode;
-        tailf:cli-sequence-commands;
-        tailf:cli-compact-syntax;
-        key "id";
-        leaf id {
-          type vlan-index;
-        }
-        leaf timeout {
-          type uint16;
-        }
-        uses priority-cost;
       }
     }
   }
@@ -1902,16 +2294,43 @@ module netsim-ned-a10-acos {
         leaf name {
           type string;
         }
-        leaf interval {
+        container interval {
+          tailf:cli-compact-syntax;
+          tailf:cli-sequence-commands {
+            tailf:cli-reset-all-siblings;
+          }
+          leaf interval {
+            tailf:cli-drop-node-name;
+            type uint8;
+          }
+          leaf timeout {
+            type uint8;
+          }
+        }
+        leaf interval-alt {
+          tailf:cli-hide-in-submode;
+          tailf:alt-name "interval";
+          type uint8;
+        }
+        leaf timeout-alt {
+          tailf:cli-hide-in-submode;
+          tailf:alt-name "timeout";
           type uint8;
         }
         leaf retry {
           type uint8;
         }
-        leaf timeout {
+        leaf retry-alt {
+          tailf:cli-hide-in-submode;
+          tailf:alt-name "retry";
           type uint8;
         }
         leaf up-retry {
+          type uint8;
+        }
+        leaf up-retry-alt {
+          tailf:cli-hide-in-submode;
+          tailf:alt-name "up-retry";
           type uint8;
         }
         leaf strictly-retry-on-server-error-response {
@@ -1956,9 +2375,9 @@ module netsim-ned-a10-acos {
               leaf method {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum GET;
-                  enum POST;
-                  enum HEAD;
+                  enum "GET";
+                  enum "POST";
+                  enum "HEAD";
                 }
               }
               leaf path {
@@ -2006,9 +2425,9 @@ module netsim-ned-a10-acos {
               leaf method {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum GET;
-                  enum POST;
-                  enum HEAD;
+                  enum "GET";
+                  enum "POST";
+                  enum "HEAD";
                 }
               }
               leaf path {
@@ -2054,8 +2473,8 @@ module netsim-ned-a10-acos {
               leaf method {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum send;
-                  enum halfopen;
+                  enum "send";
+                  enum "halfopen";
                 }
               }
               leaf sendcontent {
@@ -2091,17 +2510,17 @@ module netsim-ned-a10-acos {
               leaf oid {
                 type union {
                   type enumeration {
-                    enum sysDescr;
-                    enum sysUpTime;
-                    enum sysName;
+                    enum "sysDescr";
+                    enum "sysUpTime";
+                    enum "sysName";
                   }
                   type string;
                 }
               }
               leaf operation {
                 type enumeration {
-                  enum get;
-                  enum getnext;
+                  enum "get";
+                  enum "getnext";
                 }
               }
               leaf port {
@@ -2142,8 +2561,8 @@ module netsim-ned-a10-acos {
               leaf recurse {
                 tailf:cli-optional-in-sequence;
                 type enumeration {
-                  enum enabled;
-                  enum disabled;
+                  enum "enabled";
+                  enum "disabled";
                 }
               }
               leaf tcp {
@@ -2152,13 +2571,13 @@ module netsim-ned-a10-acos {
               }
               leaf type {
                 type enumeration {
-                  enum A;
-                  enum CNAME;
-                  enum SOA;
-                  enum PTR;
-                  enum MX;
-                  enum TXT;
-                  enum AAAA;
+                  enum "A";
+                  enum "CNAME";
+                  enum "SOA";
+                  enum "PTR";
+                  enum "MX";
+                  enum "TXT";
+                  enum "AAAA";
                 }
               }
             }
@@ -2178,9 +2597,9 @@ module netsim-ned-a10-acos {
               leaf-list auth {
                 tailf:cli-flat-list-syntax;
                 type enumeration {
-                  enum plain;
-                  enum cram-md5;
-                  enum login;
+                  enum "plain";
+                  enum "cram-md5";
+                  enum "login";
                 }
               }
             }
@@ -2253,10 +2672,10 @@ module netsim-ned-a10-acos {
               leaf dbtype {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum mssql;
-                  enum mysql;
-                  enum oracle;
-                  enum postgresql;
+                  enum "mssql";
+                  enum "mysql";
+                  enum "oracle";
+                  enum "postgresql";
                 }
               }
               leaf db-name {
@@ -2312,6 +2731,9 @@ module netsim-ned-a10-acos {
         leaf tacplus {
           type empty;
         }
+      }
+      leaf debug {
+        type uint8;
       }
       container exec {
         tailf:cli-compact-syntax;
@@ -2375,8 +2797,8 @@ module netsim-ned-a10-acos {
         leaf-list method {
           tailf:cli-flat-list-syntax;
           type enumeration {
-            enum tacplus;
-            enum none;
+            enum "tacplus";
+            enum "none";
           }
         }
       }
@@ -2418,12 +2840,12 @@ module netsim-ned-a10-acos {
           type uint16;
         }
         leaf when {
-          must '../timeout';
+          must "../timeout";
           tailf:cli-drop-node-name;
           type enumeration {
-            enum after-disable;
-            enum server;
-            enum virtual-server;
+            enum "after-disable";
+            enum "server";
+            enum "virtual-server";
           }
         }
       }
@@ -2467,7 +2889,7 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf resume {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type uint32;
             }
@@ -2485,11 +2907,11 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf per {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type enumeration {
-                enum 100ms;
-                enum second;
+                enum "100ms";
+                enum "second";
               }
             }
             leaf no-logging {
@@ -2562,7 +2984,7 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf resume {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type uint32;
             }
@@ -2580,11 +3002,11 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf per {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type enumeration {
-                enum 100ms;
-                enum second;
+                enum "100ms";
+                enum "second";
               }
             }
             leaf no-logging {
@@ -2610,7 +3032,7 @@ module netsim-ned-a10-acos {
               type uint8;
             }
             leaf decrement {
-              must '../priority';
+              must "../priority";
               type uint8;
             }
           }
@@ -2901,10 +3323,10 @@ module netsim-ned-a10-acos {
             key "match-type identifier";
             leaf match-type {
               type enumeration {
-                enum contains;
-                enum ends-with;
-                enum equals;
-                enum starts-with;
+                enum "contains";
+                enum "ends-with";
+                enum "equals";
+                enum "starts-with";
               }
             }
             leaf identifier {
@@ -2920,10 +3342,10 @@ module netsim-ned-a10-acos {
             key "match-type identifier";
             leaf match-type {
               type enumeration {
-                enum contains;
-                enum ends-with;
-                enum equals;
-                enum starts-with;
+                enum "contains";
+                enum "ends-with";
+                enum "equals";
+                enum "starts-with";
               }
             }
             leaf identifier {
@@ -2951,8 +3373,8 @@ module netsim-ned-a10-acos {
             leaf insert-mode {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum insert-if-not-exist;
-                enum insert-always;
+                enum "insert-if-not-exist";
+                enum "insert-always";
               }
             }
           }
@@ -2965,8 +3387,8 @@ module netsim-ned-a10-acos {
             leaf insert-mode {
               tailf:cli-drop-node-name;
               type enumeration {
-                enum insert-if-not-exist;
-                enum insert-always;
+                enum "insert-if-not-exist";
+                enum "insert-always";
               }
             }
           }
@@ -3072,7 +3494,6 @@ module netsim-ned-a10-acos {
           }
         }
         list policy {
-          tailf:cli-compact-syntax;
           key "name";
           leaf name {
             type string;
@@ -3080,10 +3501,8 @@ module netsim-ned-a10-acos {
           leaf proxy-keep-alive {
             type empty;
           }
-          container class-list {
-            leaf name {
-              type string;
-            }
+
+          grouping stp-class-list-grouping {
             list lid {
               tailf:cli-compact-syntax;
               tailf:cli-delete-when-empty;
@@ -3127,7 +3546,7 @@ module netsim-ned-a10-acos {
                   type uint32;
                 }
                 leaf per {
-                  must '../limit';
+                  must "../limit";
                   type uint16;
                 }
               }
@@ -3144,7 +3563,7 @@ module netsim-ned-a10-acos {
                   type uint32;
                 }
                 leaf per {
-                  must '../limit';
+                  must "../limit";
                   type uint16;
                 }
               }
@@ -3156,12 +3575,12 @@ module netsim-ned-a10-acos {
                 leaf over-limit-action-choice {
                   tailf:cli-drop-node-name;
                   type enumeration {
-                    enum dns-cache-disable;
-                    enum dns-cache-enable;
-                    enum forward;
-                    enum reset;
-                    enum lockout;
-                    enum log;
+                    enum "dns-cache-disable";
+                    enum "dns-cache-enable";
+                    enum "forward";
+                    enum "reset";
+                    enum "lockout";
+                    enum "log";
                   }
                 }
                 leaf lockout {
@@ -3199,6 +3618,22 @@ module netsim-ned-a10-acos {
                 type string;
               }
             }
+          }
+          container class-list {
+            leaf name {
+              type string;
+            }
+            uses stp-class-list-grouping;
+          }
+          container class-list-alt {
+            tailf:alt-name "class-list";
+            tailf:cli-add-mode;
+            leaf name {
+              tailf:cli-drop-node-name;
+              tailf:cli-hide-in-submode;
+              type string;
+            }
+            uses stp-class-list-grouping;
           }
           leaf class-list-group {
             type string;
@@ -3321,7 +3756,7 @@ module netsim-ned-a10-acos {
               type uint8;
             }
             leaf alive-if-active {
-              must '../timeout';
+              must "../timeout";
               type empty;
             }
           }
@@ -3440,9 +3875,9 @@ module netsim-ned-a10-acos {
             }
             leaf action {
               type enumeration {
-                enum continue;
-                enum drop;
-                enum reset;
+                enum "continue";
+                enum "drop";
+                enum "reset";
               }
             }
           }
@@ -3470,7 +3905,7 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf reset {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type empty;
             }
@@ -3488,15 +3923,15 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf per {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type enumeration {
-                enum 100ms;
-                enum second;
+                enum "100ms";
+                enum "second";
               }
             }
             leaf reset {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type empty;
             }
@@ -3514,12 +3949,12 @@ module netsim-ned-a10-acos {
               type uint16;
             }
             leaf lockup {
-              must '../rate';
+              must "../rate";
               type uint16;
             }
             leaf lockup-period {
               tailf:cli-drop-node-name;
-              must '../lockup';
+              must "../lockup";
               type uint16;
             }
           }
@@ -3532,12 +3967,12 @@ module netsim-ned-a10-acos {
           leaf name {
             type string;
           }
+
           grouping cipher-prio-grouping {
             leaf priority {
               type uint8;
             }
           }
-
           container SSL3_RSA_DES_192_CBC3_SHA {
             presence "present";
             uses cipher-prio-grouping;
@@ -3711,7 +4146,7 @@ module netsim-ned-a10-acos {
             type uint32;
           }
           leaf resume {
-            must '../limit';
+            must "../limit";
             tailf:cli-optional-in-sequence;
             type uint32;
           }
@@ -3740,7 +4175,7 @@ module netsim-ned-a10-acos {
           leaf ha-group {
             type union {
               type enumeration {
-                enum all;
+                enum "all";
               }
               type uint8;
             }
@@ -3768,8 +4203,8 @@ module netsim-ned-a10-acos {
           }
           leaf tcpudp {
             type enumeration {
-              enum tcp;
-              enum udp;
+              enum "tcp";
+              enum "udp";
             }
           }
           container conn-limit {
@@ -3782,7 +4217,7 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf resume {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type uint32;
             }
@@ -3806,10 +4241,10 @@ module netsim-ned-a10-acos {
               type uint8;
             }
             leaf ha-group {
-              must '../cost';
+              must "../cost";
               type union {
                 type enumeration {
-                  enum all;
+                  enum "all";
                 }
                 type uint8;
               }
@@ -3850,8 +4285,8 @@ module netsim-ned-a10-acos {
                     leaf tcpudp {
                       tailf:cli-drop-node-name;
                       type enumeration {
-                        enum tcp;
-                        enum udp;
+                        enum "tcp";
+                        enum "udp";
                       }
                     }
                   }
@@ -3865,18 +4300,24 @@ module netsim-ned-a10-acos {
           leaf stats-data-disable {
             type empty;
           }
-          choice enable-disable {
-            leaf disable {
-              type empty;
-            }
-            leaf enable {
-              type boolean;
+          leaf state {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum "enable";
+              enum "disable";
             }
           }
         }
         container template {
           leaf server {
             type string;
+          }
+        }
+        leaf state {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
       }
@@ -3888,8 +4329,8 @@ module netsim-ned-a10-acos {
         }
         leaf tcpudp {
           type enumeration {
-            enum tcp;
-            enum udp;
+            enum "tcp";
+            enum "udp";
           }
         }
         leaf backup-server-event-log {
@@ -3933,8 +4374,8 @@ module netsim-ned-a10-acos {
           leaf state {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum enable;
-              enum disable;
+              enum "enable";
+              enum "disable";
             }
           }
           leaf priority {
@@ -3956,8 +4397,8 @@ module netsim-ned-a10-acos {
           leaf state {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum enable;
-              enum disable;
+              enum "enable";
+              enum "disable";
             }
           }
           leaf priority {
@@ -4035,11 +4476,11 @@ module netsim-ned-a10-acos {
             type uint8;
           }
           leaf method {
-            must '../min';
+            must "../min";
             tailf:cli-drop-node-name;
             type enumeration {
-              enum dynamic-priority;
-              enum skip-pri-set;
+              enum "dynamic-priority";
+              enum "skip-pri-set";
             }
           }
         }
@@ -4053,11 +4494,11 @@ module netsim-ned-a10-acos {
           leaf action {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum drop;
-              enum drop-if-exceed-limit;
-              enum proceed;
-              enum reset;
-              enum reset-if-exceed-limit;
+              enum "drop";
+              enum "drop-if-exceed-limit";
+              enum "proceed";
+              enum "reset";
+              enum "reset-if-exceed-limit";
             }
           }
         }
@@ -4137,25 +4578,25 @@ module netsim-ned-a10-acos {
           leaf type {
             must "(../id = 0 and ../type = 'others') or ../type != 'others' ";
             type enumeration {
-              enum diameter;
-              enum dns-udp;
-              enum fast-http;
-              enum ftp;
-              enum http;
-              enum https;
-              enum mms;
-              enum others;
-              enum radius;
-              enum rtsp;
-              enum sip;
-              enum sip-tcp;
-              enum sips;
-              enum smtp;
-              enum ssl-proxy;
-              enum tcp;
-              enum tcp-proxy;
-              enum tftp;
-              enum udp;
+              enum "diameter";
+              enum "dns-udp";
+              enum "fast-http";
+              enum "ftp";
+              enum "http";
+              enum "https";
+              enum "mms";
+              enum "others";
+              enum "radius";
+              enum "rtsp";
+              enum "sip";
+              enum "sip-tcp";
+              enum "sips";
+              enum "smtp";
+              enum "ssl-proxy";
+              enum "tcp";
+              enum "tcp-proxy";
+              enum "tftp";
+              enum "udp";
             }
           }
           container access-list {
@@ -4207,7 +4648,7 @@ module netsim-ned-a10-acos {
               type uint32;
             }
             leaf reset {
-              must '../limit';
+              must "../limit";
               tailf:cli-optional-in-sequence;
               type empty;
             }
@@ -4271,6 +4712,9 @@ module netsim-ned-a10-acos {
               }
               list pool {
                 tailf:cli-suppress-mode;
+                tailf:cli-diff-create-before "../../service-group" {
+                  tailf:cli-when-target-create;
+                }
                 key "name";
                 leaf name {
                   type string;
@@ -4301,19 +4745,19 @@ module netsim-ned-a10-acos {
             key "template-type";
             leaf template-type {
               type enumeration {
-                enum client-ssl;
-                enum diameter;
-                enum dynamic-service;
-                enum external-service;
-                enum http;
-                enum persist;
-                enum policy;
-                enum sip;
-                enum server-ssl;
-                enum tcp;
-                enum tcp-proxy;
-                enum udp;
-                enum virtual-port;
+                enum "client-ssl";
+                enum "diameter";
+                enum "dynamic-service";
+                enum "external-service";
+                enum "http";
+                enum "persist";
+                enum "policy";
+                enum "sip";
+                enum "server-ssl";
+                enum "tcp";
+                enum "tcp-proxy";
+                enum "udp";
+                enum "virtual-port";
               }
             }
             leaf udp {
@@ -4453,21 +4897,22 @@ module netsim-ned-a10-acos {
       leaf health-check-disable {
         type empty;
       }
+
       grouping service-port-grouping {
         leaf number {
           type uint16;
         }
         leaf udp-tcp {
           tailf:cli-drop-node-name;
-          tailf:cli-hide-in-submode;
+          tailf:cli-prefix-key {
+            tailf:cli-before-key "2";
+          }
           type enumeration {
-            enum tcp;
-            enum udp;
+            enum "tcp";
+            enum "udp";
           }
         }
         leaf service-name {
-          tailf:cli-drop-node-name;
-          tailf:cli-hide-in-submode;
           type string;
         }
         leaf health-check {
@@ -4476,22 +4921,20 @@ module netsim-ned-a10-acos {
         leaf health-check-protocol-disable {
           type empty;
         }
-        choice enable-disable {
-          leaf disable {
-            type empty;
-          }
-          leaf enable {
-            type boolean;
+        leaf state {
+          tailf:cli-drop-node-name;
+          type enumeration {
+            enum "enable";
+            enum "disable";
           }
         }
       }
-
       list port {
-        key "number";
+        key "number service-name";
         uses service-port-grouping;
       }
       list service {
-        key "number";
+        key "number service-name";
         uses service-port-grouping;
       }
       container port-name {
@@ -4507,8 +4950,8 @@ module netsim-ned-a10-acos {
             }
             tailf:cli-drop-node-name;
             type enumeration {
-              enum tcp;
-              enum udp;
+              enum "tcp";
+              enum "udp";
             }
           }
           leaf name {
@@ -4520,12 +4963,11 @@ module netsim-ned-a10-acos {
           leaf health-check-protocol-disable {
             type empty;
           }
-          choice enable-disable {
-            leaf disable {
-              type empty;
-            }
-            leaf enable {
-              type boolean;
+          leaf state {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum "enable";
+              enum "disable";
             }
           }
         }
@@ -4588,19 +5030,19 @@ module netsim-ned-a10-acos {
           tailf:cli-flat-list-syntax;
           ordered-by user;
           type enumeration {
-            enum active-rdt;
-            enum active-servers;
-            enum admin-ip;
-            enum admin-preference;
-            enum bw-cost;
-            enum capacity;
-            enum connection-load;
-            enum geographic;
-            enum health-check;
-            enum least-response;
-            enum num-session;
-            enum weighted-ip;
-            enum weighted-site;
+            enum "active-rdt";
+            enum "active-servers";
+            enum "admin-ip";
+            enum "admin-preference";
+            enum "bw-cost";
+            enum "capacity";
+            enum "connection-load";
+            enum "geographic";
+            enum "health-check";
+            enum "least-response";
+            enum "num-session";
+            enum "weighted-ip";
+            enum "weighted-site";
           }
         }
       }
@@ -4633,22 +5075,22 @@ module netsim-ned-a10-acos {
               tailf:cli-drop-node-name;
               tailf:cli-flat-list-syntax;
               type enumeration {
-                enum addition-mx;
-                enum any-with-metric;
-                enum authoritative;
-                enum auto-ns;
-                enum auto-ptr;
-                enum cname;
-                enum full-list;
-                enum mx;
-                enum naptr;
-                enum ns;
-                enum ns-list;
-                enum ptr;
-                enum sec;
-                enum server-mode-only;
-                enum srv;
-                enum txt;
+                enum "addition-mx";
+                enum "any-with-metric";
+                enum "authoritative";
+                enum "auto-ns";
+                enum "auto-ptr";
+                enum "cname";
+                enum "full-list";
+                enum "mx";
+                enum "naptr";
+                enum "ns";
+                enum "ns-list";
+                enum "ptr";
+                enum "sec";
+                enum "server-mode-only";
+                enum "srv";
+                enum "txt";
               }
             }
           }
@@ -4778,6 +5220,45 @@ module netsim-ned-a10-acos {
 
   uses aflex-grouping;
 
+  grouping action-grouping {
+    list action {
+      tailf:cli-suppress-mode;
+      key "type";
+      leaf type {
+        type enumeration {
+          enum "dnat";
+          enum "drop";
+          enum "one-to-one-snat";
+          enum "pass-through";
+          enum "snat";
+        }
+      }
+      leaf pool {
+        type string;
+      }
+      leaf domain {
+        type string;
+      }
+    }
+    leaf no-action {
+      type empty;
+    }
+  }
+
+  grouping port-grouping {
+    list port {
+      tailf:cli-suppress-mode;
+      tailf:cli-compact-syntax;
+      key "id";
+      leaf id {
+        type uint16;
+      }
+      uses action-grouping {
+        refine "action/pool";
+      }
+    }
+  }
+
   rpc backup {
     input {
       leaf-list args {
@@ -4792,7 +5273,6 @@ module netsim-ned-a10-acos {
       }
     }
   }
-
   rpc slb-ssl-load {
     input {
       leaf-list args {
@@ -4807,7 +5287,6 @@ module netsim-ned-a10-acos {
       }
     }
   }
-
   rpc slb-ssl-delete {
     input {
       leaf-list args {
@@ -4822,7 +5301,6 @@ module netsim-ned-a10-acos {
       }
     }
   }
-
   container EXEC {
     tailf:cli-drop-node-name;
   }
@@ -4849,85 +5327,95 @@ module netsim-ned-a10-acos {
   uses hd-monitor-grouping;
 
   grouping timezone-grouping {
-    leaf timezone {
-      type enumeration {
-        enum UTC;
-        enum Pacific/Midway;
-        enum Pacific/Honolulu;
-        enum America/Anchorage;
-        enum America/Tijuana;
-        enum America/Los_Angeles;
-        enum America/Vancouver;
-        enum America/Phoenix;
-        enum America/Shiprock;
-        enum America/Chicago;
-        enum America/Mexico_City;
-        enum America/Regina;
-        enum America/Swift_Current;
-        enum America/Kentucky/Monticello;
-        enum America/Indiana/Marengo;
-        enum America/Montreal;
-        enum America/New_York;
-        enum America/Toronto;
-        enum America/Caracas;
-        enum America/Halifax;
-        enum America/Santiago;
-        enum America/St_Johns;
-        enum America/Buenos_Aires;
-        enum America/Godthab;
-        enum Atlantic/South_Georgia;
-        enum Atlantic/Azores;
-        enum Atlantic/Cape_Verde;
-        enum Europe/Dublin;
-        enum Africa/Algiers;
-        enum Europe/Amsterdam;
-        enum Europe/Belgrade;
-        enum Europe/Brussels;
-        enum Europe/Sarajevo;
-        enum Europe/Bucharest;
-        enum Africa/Cairo;
-        enum Europe/Athens;
-        enum Africa/Harare;
-        enum Asia/Jerusalem;
-        enum Europe/Helsinki;
-        enum Africa/Nairobi;
-        enum Asia/Baghdad;
-        enum Asia/Kuwait;
-        enum Europe/Moscow;
-        enum Asia/Tehran;
-        enum Asia/Baku;
-        enum Asia/Muscat;
-        enum Asia/Kabul;
-        enum Asia/Karachi;
-        enum Asia/Yekaterinburg;
-        enum Asia/Calcutta;
-        enum Asia/Katmandu;
-        enum Asia/Almaty;
-        enum Asia/Dhaka;
-        enum Indian/Chagos;
-        enum Asia/Rangoon;
-        enum Asia/Bangkok;
-        enum Asia/Krasnoyarsk;
-        enum Asia/Irkutsk;
-        enum Asia/Kuala_Lumpur;
-        enum Asia/Shanghai;
-        enum Asia/Taipei;
-        enum Australia/Perth;
-        enum Asia/Seoul;
-        enum Asia/Tokyo;
-        enum Asia/Yakutsk;
-        enum Australia/Adelaide;
-        enum Australia/Darwin;
-        enum Australia/Hobart;
-        enum Australia/Brisbane;
-        enum Asia/Vladivostok;
-        enum Australia/Sydney;
-        enum Pacific/Guam;
-        enum Asia/Magadan;
-        enum Pacific/Auckland;
-        enum Pacific/Fiji;
-        enum Pacific/Kwajalein;
-        enum Pacific/Enderbury;
+    container timezone {
+      tailf:cli-compact-syntax;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-all-siblings;
+      }
+      leaf timezone {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum "UTC";
+          enum "Pacific/Midway";
+          enum "Pacific/Honolulu";
+          enum "America/Anchorage";
+          enum "America/Tijuana";
+          enum "America/Los_Angeles";
+          enum "America/Vancouver";
+          enum "America/Phoenix";
+          enum "America/Shiprock";
+          enum "America/Chicago";
+          enum "America/Mexico_City";
+          enum "America/Regina";
+          enum "America/Swift_Current";
+          enum "America/Kentucky/Monticello";
+          enum "America/Indiana/Marengo";
+          enum "America/Montreal";
+          enum "America/New_York";
+          enum "America/Toronto";
+          enum "America/Caracas";
+          enum "America/Halifax";
+          enum "America/Santiago";
+          enum "America/St_Johns";
+          enum "America/Buenos_Aires";
+          enum "America/Godthab";
+          enum "Atlantic/South_Georgia";
+          enum "Atlantic/Azores";
+          enum "Atlantic/Cape_Verde";
+          enum "Europe/Dublin";
+          enum "Africa/Algiers";
+          enum "Europe/Amsterdam";
+          enum "Europe/Belgrade";
+          enum "Europe/Brussels";
+          enum "Europe/Sarajevo";
+          enum "Europe/Bucharest";
+          enum "Africa/Cairo";
+          enum "Europe/Athens";
+          enum "Africa/Harare";
+          enum "Asia/Jerusalem";
+          enum "Europe/Helsinki";
+          enum "Africa/Nairobi";
+          enum "Asia/Baghdad";
+          enum "Asia/Kuwait";
+          enum "Europe/Moscow";
+          enum "Asia/Tehran";
+          enum "Asia/Baku";
+          enum "Asia/Muscat";
+          enum "Asia/Kabul";
+          enum "Asia/Karachi";
+          enum "Asia/Yekaterinburg";
+          enum "Asia/Calcutta";
+          enum "Asia/Katmandu";
+          enum "Asia/Almaty";
+          enum "Asia/Dhaka";
+          enum "Indian/Chagos";
+          enum "Asia/Rangoon";
+          enum "Asia/Bangkok";
+          enum "Asia/Krasnoyarsk";
+          enum "Asia/Irkutsk";
+          enum "Asia/Kuala_Lumpur";
+          enum "Asia/Shanghai";
+          enum "Asia/Taipei";
+          enum "Australia/Perth";
+          enum "Asia/Seoul";
+          enum "Asia/Tokyo";
+          enum "Asia/Yakutsk";
+          enum "Australia/Adelaide";
+          enum "Australia/Darwin";
+          enum "Australia/Hobart";
+          enum "Australia/Brisbane";
+          enum "Asia/Vladivostok";
+          enum "Australia/Sydney";
+          enum "Pacific/Guam";
+          enum "Asia/Magadan";
+          enum "Pacific/Auckland";
+          enum "Pacific/Fiji";
+          enum "Pacific/Kwajalein";
+          enum "Pacific/Enderbury";
+        }
+      }
+      leaf nodst {
+        type empty;
       }
     }
   }
@@ -4942,28 +5430,162 @@ module netsim-ned-a10-acos {
     }
   }
 
-  uses timezone-grouping;
+  grouping timezone-nodst-grouping {
+    container timezone-nodst {
+      tailf:cli-drop-node-name;
+      tailf:cli-compact-syntax;
+      tailf:cli-sequence-commands {
+        tailf:cli-reset-siblings;
+      }
+      uses timezone-grouping;
+      leaf nodst {
+        type empty;
+      }
+    }
+  }
+
+  uses timezone-nodst-grouping;
   uses clock-grouping;
 
   grouping ntp-grouping {
     container ntp {
       list server {
-        tailf:cli-suppress-mode;
-        tailf:cli-sequence-commands;
-        tailf:cli-compact-syntax;
         key "name";
         leaf name {
           type string;
         }
         leaf interval {
+          tailf:cli-hide-in-submode;
           tailf:cli-drop-node-name;
           type uint32;
+        }
+        leaf prefer {
+          type empty;
         }
       }
     }
   }
 
   uses ntp-grouping;
+
+  grouping netflow-grouping {
+    container netflow {
+      container common {
+        leaf max-packet-queue-time {
+          type uint8;
+        }
+      }
+      list monitor {
+        key "name";
+        leaf name {
+          type string;
+        }
+        container destination {
+          leaf ip {
+            tailf:cli-drop-node-name;
+            type union {
+              type inet:ipv4-address;
+              type inet:ipv6-address;
+            }
+          }
+          leaf port {
+            tailf:cli-drop-node-name;
+            type uint16;
+          }
+        }
+        leaf flow-timeout {
+          type uint16;
+        }
+        leaf protocol {
+          type enumeration {
+            enum "v9";
+            enum "v10";
+          }
+        }
+        list record {
+          tailf:cli-suppress-mode;
+          key "name";
+          leaf name {
+            type enumeration {
+              enum "dslite";
+              enum "nat44";
+              enum "nat64";
+              enum "netflow-v5";
+              enum "netflow-v5-ext";
+              enum "port-batch-dslite";
+              enum "port-batch-nat44";
+              enum "port-batch-nat64";
+              enum "port-batch-v2-dslite";
+              enum "port-batch-v2-nat44";
+              enum "port-batch-v2-nat64";
+              enum "port-mapping-dslite";
+              enum "port-mapping-nat44";
+              enum "port-mapping-nat64";
+              enum "sesn-event-dslite";
+              enum "sesn-event-fw4";
+              enum "sesn-event-fw6";
+              enum "sesn-event-nat44";
+              enum "sesn-event-nat64";
+            }
+          }
+          leaf events {
+            tailf:cli-drop-node-name;
+            type enumeration {
+              enum "both";
+              enum "creation";
+              enum "deletion";
+            }
+          }
+        }
+        container resend-template {
+          leaf records {
+            type uint32;
+          }
+          leaf timeout {
+            type uint16;
+          }
+        }
+
+        grouping sample-grouping {
+          container sample {
+            list ve {
+              tailf:cli-suppress-mode;
+              key "id";
+              leaf id {
+                type uint16;
+              }
+            }
+          }
+        }
+        uses sample-grouping;
+
+        grouping source-address-grouping {
+          container source-address {
+            leaf ip {
+              type inet:ipv4-address;
+            }
+            leaf ipv6 {
+              type inet:ipv6-address;
+            }
+          }
+        }
+        uses source-address-grouping;
+        leaf source-ip-use-mgmt {
+          type empty;
+        }
+        list device-context {
+          key "id";
+          leaf id {
+            type uint8;
+          }
+          uses sample-grouping;
+          uses source-address-grouping;
+        }
+      }
+    }
+  }
+
+  uses netflow-grouping;
 
   grouping trunk-grouping {
     list trunk {
@@ -5005,9 +5627,9 @@ module netsim-ned-a10-acos {
         tailf:cli-hide-in-submode;
         tailf:cli-drop-node-name;
         type enumeration {
-          enum ipv4;
-          enum ipv6;
-          enum string;
+          enum "ipv4";
+          enum "ipv6";
+          enum "string";
         }
       }
       choice v4v6str-choice {
@@ -5071,8 +5693,8 @@ module netsim-ned-a10-acos {
         leaf host-url {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum HOST;
-            enum URL;
+            enum "HOST";
+            enum "URL";
           }
         }
         choice string-choice {
@@ -5204,23 +5826,24 @@ module netsim-ned-a10-acos {
       leaf-list type {
         tailf:cli-flat-list-syntax;
         type enumeration {
-          enum tacplus;
-          enum radius;
-          enum local;
+          enum "tacplus";
+          enum "radius";
+          enum "local";
         }
       }
       leaf mode {
         type enumeration {
-          enum multiple;
-          enum single;
+          enum "multiple";
+          enum "single";
         }
       }
       container console {
         leaf-list type {
+          tailf:cli-flat-list-syntax;
           type enumeration {
-            enum tacplus;
-            enum radius;
-            enum local;
+            enum "tacplus";
+            enum "radius";
+            enum "local";
           }
         }
       }
@@ -5236,7 +5859,14 @@ module netsim-ned-a10-acos {
   }
 
   uses authentication-grouping;
-  uses interface-grouping;
+  uses interface-grouping {
+    refine "interface/management/access-list/id";
+    refine "interface/ethernet/access-list/id";
+    refine "interface/trunk/access-list/id";
+    refine "interface/ve/access-list/id";
+    refine "interface/trunk/nr";
+    refine "interface/ve/id";
+  }
 
   grouping vlan-grouping {
     list vlan {
@@ -5276,56 +5906,62 @@ module netsim-ned-a10-acos {
   }
 
   uses vlan-grouping;
-  uses ip-grouping;
+  uses ip-grouping {
+    refine "ip/nat/inside/source/static";
+  }
+
+  grouping ipv6-route-grouping {
+    container route {
+      list route-no-if {
+        tailf:cli-drop-node-name;
+        tailf:cli-compact-syntax;
+        tailf:cli-suppress-mode;
+        key "ip forwarding-router";
+        leaf ip {
+          type inet:ipv6-prefix;
+        }
+        leaf forwarding-router {
+          tailf:cli-drop-node-name;
+          type inet:ipv6-address;
+        }
+        leaf distance {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+      }
+      list route-if {
+        tailf:cli-drop-node-name;
+        tailf:cli-compact-syntax;
+        tailf:cli-suppress-mode;
+        key "ip forwarding-router interface-type interface-nr";
+        leaf ip {
+          type inet:ipv6-prefix;
+        }
+        leaf forwarding-router {
+          tailf:cli-drop-node-name;
+          type inet:ipv6-address;
+        }
+        leaf interface-type {
+          type enumeration {
+            enum "ethernet";
+            enum "trunk";
+            enum "ve";
+          }
+        }
+        leaf interface-nr {
+          type uint16;
+        }
+        leaf distance {
+          tailf:cli-drop-node-name;
+          type uint8;
+        }
+      }
+    }
+  }
 
   grouping ipv6-grouping {
     container ipv6 {
-      container route {
-        list route-no-if {
-          tailf:cli-drop-node-name;
-          tailf:cli-compact-syntax;
-          tailf:cli-suppress-mode;
-          key "ip forwarding-router";
-          leaf ip {
-            type inet:ipv6-prefix;
-          }
-          leaf forwarding-router {
-            tailf:cli-drop-node-name;
-            type inet:ipv6-address;
-          }
-          leaf distance {
-            tailf:cli-drop-node-name;
-            type uint8;
-          }
-        }
-        list route-if {
-          tailf:cli-drop-node-name;
-          tailf:cli-compact-syntax;
-          tailf:cli-suppress-mode;
-          key "ip forwarding-router interface-type interface-nr";
-          leaf ip {
-            type inet:ipv6-prefix;
-          }
-          leaf forwarding-router {
-            tailf:cli-drop-node-name;
-            type inet:ipv6-address;
-          }
-          leaf interface-type {
-            type enumeration {
-              enum ethernet;
-              enum trunk;
-              enum ve;
-            }
-          }
-          leaf interface-nr {
-            type uint16;
-          }
-          leaf distance {
-            tailf:cli-drop-node-name;
-            type uint8;
-          }
-        }
-      }
+      uses ipv6-route-grouping;
       container nat {
         list pool {
           tailf:cli-suppress-mode;
@@ -5364,8 +6000,8 @@ module netsim-ned-a10-acos {
           key "acc-type txt";
           leaf acc-type {
             type enumeration {
-              enum permit;
-              enum deny;
+              enum "permit";
+              enum "deny";
             }
           }
           leaf txt {
@@ -5389,13 +6025,14 @@ module netsim-ned-a10-acos {
           type string;
         }
         leaf seq {
+          tailf:cli-expose-key-name;
           type uint32;
         }
         choice permit-deny {
           leaf permit {
             type union {
               type enumeration {
-                enum any;
+                enum "any";
               }
               type tailf:ipv6-address-and-prefix-length;
             }
@@ -5403,7 +6040,7 @@ module netsim-ned-a10-acos {
           leaf deny {
             type union {
               type enumeration {
-                enum any;
+                enum "any";
               }
               type tailf:ipv6-address-and-prefix-length;
             }
@@ -5414,43 +6051,6 @@ module netsim-ned-a10-acos {
   }
 
   uses ipv6-grouping;
-
-  grouping route-map-grouping {
-    list route-map {
-      key "name";
-      leaf name {
-        type string;
-      }
-      choice permit-deny {
-        leaf permit {
-          tailf:cli-hide-in-submode;
-          type uint32;
-        }
-        leaf deny {
-          tailf:cli-hide-in-submode;
-          type uint32;
-        }
-      }
-      container match {
-        container ip {
-          container address {
-            leaf prefix-list {
-              type string;
-            }
-          }
-        }
-        container ipv6 {
-          container address {
-            leaf prefix-list {
-              type string;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  uses route-map-grouping;
 
   grouping nat64-grouping {
     container nat64 {
@@ -5526,22 +6126,26 @@ module netsim-ned-a10-acos {
             type ipv4-mask;
           }
           leaf gateway {
+            tailf:cli-expose-key-name;
             type union {
               type inet:ipv4-address;
               type inet:ipv6-address;
             }
           }
           leaf distance {
+            tailf:cli-expose-key-name;
             type uint8;
           }
           leaf protocol {
+            tailf:cli-expose-key-name;
             type enumeration {
-              enum any;
-              enum static;
-              enum dynamic;
+              enum "any";
+              enum "static";
+              enum "dynamic";
             }
           }
           leaf priority-cost {
+            tailf:cli-expose-key-name;
             type uint8;
           }
         }
@@ -5553,7 +6157,7 @@ module netsim-ned-a10-acos {
             type vlan-index;
           }
           leaf timeout {
-            must '../vlan-id';
+            must "../vlan-id";
             type uint16;
           }
         }
@@ -5572,7 +6176,7 @@ module netsim-ned-a10-acos {
           }
           leaf persistent {
             type enumeration {
-              enum persistent;
+              enum "persistent";
             }
           }
         }
@@ -5603,7 +6207,7 @@ module netsim-ned-a10-acos {
           type uint16;
         }
         leaf priority {
-          must '../id';
+          must "../id";
           type uint16;
         }
       }
@@ -5628,9 +6232,9 @@ module netsim-ned-a10-acos {
             tailf:cli-optional-in-sequence;
             tailf:cli-drop-node-name;
             type enumeration {
-              enum both;
-              enum router-interface;
-              enum server-interface;
+              enum "both";
+              enum "router-interface";
+              enum "server-interface";
             }
           }
           choice xx {
@@ -5666,6 +6270,7 @@ module netsim-ned-a10-acos {
           type inet:ipv4-address;
         }
         leaf ha-group {
+          tailf:cli-expose-key-name;
           type uint16;
         }
       }
@@ -5677,6 +6282,7 @@ module netsim-ned-a10-acos {
           type inet:ipv6-address;
         }
         leaf ha-group {
+          tailf:cli-expose-key-name;
           type uint16;
         }
         leaf anycast {
@@ -5687,14 +6293,14 @@ module netsim-ned-a10-acos {
         }
         choice ipv6-interface {
           leaf ethernet {
-            must '../../../interface/ethernet/ipv6/address/ip';
+            must "../../../interface/ethernet/ipv6/address/ip";
             type ethernet-index;
           }
           leaf trunk {
             type uint16;
           }
           leaf ve {
-            must '../../../interface/ve/ipv6/address/ip';
+            must "../../../interface/ve/ipv6/address/ip";
             type vlan-index;
           }
         }
@@ -5714,8 +6320,8 @@ module netsim-ned-a10-acos {
         leaf cache-leaf {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum cache-enable;
-            enum cache-disable;
+            enum "cache-enable";
+            enum "cache-disable";
           }
         }
         container ttl {
@@ -5737,12 +6343,12 @@ module netsim-ned-a10-acos {
         leaf over-limit-action-choice {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum dns-cache-disable;
-            enum dns-cache-enable;
-            enum forward;
-            enum reset;
-            enum lockout;
-            enum log;
+            enum "dns-cache-disable";
+            enum "dns-cache-enable";
+            enum "forward";
+            enum "reset";
+            enum "lockout";
+            enum "log";
           }
         }
         leaf lockout {
@@ -5777,7 +6383,7 @@ module netsim-ned-a10-acos {
           type uint32;
         }
         leaf per {
-          must '../limit';
+          must "../limit";
           type uint16;
         }
       }
@@ -5794,7 +6400,7 @@ module netsim-ned-a10-acos {
           type uint32;
         }
         leaf per {
-          must '../limit';
+          must "../limit";
           type uint16;
         }
       }
@@ -5871,28 +6477,28 @@ module netsim-ned-a10-acos {
         leaf severity {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum emergency;
-            enum alert;
-            enum critical;
-            enum error;
-            enum warning;
-            enum notification;
-            enum information;
-            enum debugging;
+            enum "emergency";
+            enum "alert";
+            enum "critical";
+            enum "error";
+            enum "warning";
+            enum "notification";
+            enum "information";
+            enum "debugging";
           }
         }
       }
       leaf console {
         type enumeration {
-          enum emergency;
-          enum alert;
-          enum critical;
-          enum error;
-          enum warning;
-          enum notification;
-          enum information;
-          enum debugging;
-          enum disable;
+          enum "emergency";
+          enum "alert";
+          enum "critical";
+          enum "error";
+          enum "warning";
+          enum "notification";
+          enum "information";
+          enum "debugging";
+          enum "disable";
         }
       }
       container email {
@@ -5909,10 +6515,10 @@ module netsim-ned-a10-acos {
         leaf severity {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum emergency;
-            enum alert;
-            enum critical;
-            enum notification;
+            enum "emergency";
+            enum "alert";
+            enum "critical";
+            enum "notification";
           }
         }
       }
@@ -5925,33 +6531,33 @@ module netsim-ned-a10-acos {
       }
       leaf facility {
         type enumeration {
-          enum local0;
-          enum local1;
-          enum local2;
-          enum local3;
-          enum local4;
-          enum local5;
-          enum local6;
-          enum local7;
+          enum "local0";
+          enum "local1";
+          enum "local2";
+          enum "local3";
+          enum "local4";
+          enum "local5";
+          enum "local6";
+          enum "local7";
         }
       }
       leaf syslog {
         type enumeration {
-          enum emergency;
-          enum alert;
-          enum critical;
-          enum error;
-          enum warning;
-          enum notification;
-          enum information;
-          enum debugging;
+          enum "emergency";
+          enum "alert";
+          enum "critical";
+          enum "error";
+          enum "warning";
+          enum "notification";
+          enum "information";
+          enum "debugging";
         }
       }
       leaf trap {
         type enumeration {
-          enum emergency;
-          enum alert;
-          enum critical;
+          enum "emergency";
+          enum "alert";
+          enum "critical";
         }
       }
       choice host-choice {
@@ -6015,7 +6621,7 @@ module netsim-ned-a10-acos {
           container host {
             leaf partition {
               type enumeration {
-                enum shared;
+                enum "shared";
               }
             }
           }
@@ -6023,14 +6629,14 @@ module netsim-ned-a10-acos {
       }
       leaf monitor {
         type enumeration {
-          enum emergency;
-          enum alert;
-          enum critical;
-          enum error;
-          enum warning;
-          enum notification;
-          enum information;
-          enum debugging;
+          enum "emergency";
+          enum "alert";
+          enum "critical";
+          enum "error";
+          enum "warning";
+          enum "notification";
+          enum "information";
+          enum "debugging";
         }
       }
     }
@@ -6062,22 +6668,22 @@ module netsim-ned-a10-acos {
                 leaf-list ospf-traps {
                   tailf:cli-drop-node-name;
                   type enumeration {
-                    enum ospfIfAuthFailure;
-                    enum ospfIfConfigError;
-                    enum ospfIfRxBadPacket;
-                    enum ospfIfStateChange;
-                    enum ospfLsdbApproachingOverflow;
-                    enum ospfLsdbOverflow;
-                    enum ospfMaxAgeLsa;
-                    enum ospfNbrStateChange;
-                    enum ospfOriginateLsa;
-                    enum ospfTxRetransmit;
-                    enum ospfVirtIfAuthFailure;
-                    enum ospfVirtIfConfigError;
-                    enum ospfVirtIfRxBadPacket;
-                    enum ospfVirtIfStateChange;
-                    enum ospfVirtIfTxRetransmit;
-                    enum ospfVirtNbrStateChange;
+                    enum "ospfIfAuthFailure";
+                    enum "ospfIfConfigError";
+                    enum "ospfIfRxBadPacket";
+                    enum "ospfIfStateChange";
+                    enum "ospfLsdbApproachingOverflow";
+                    enum "ospfLsdbOverflow";
+                    enum "ospfMaxAgeLsa";
+                    enum "ospfNbrStateChange";
+                    enum "ospfOriginateLsa";
+                    enum "ospfTxRetransmit";
+                    enum "ospfVirtIfAuthFailure";
+                    enum "ospfVirtIfConfigError";
+                    enum "ospfVirtIfRxBadPacket";
+                    enum "ospfVirtIfStateChange";
+                    enum "ospfVirtIfTxRetransmit";
+                    enum "ospfVirtNbrStateChange";
                   }
                 }
                 leaf all {
@@ -6266,13 +6872,14 @@ module netsim-ned-a10-acos {
           type string;
         }
         leaf group {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf type {
           type enumeration {
-            enum v1;
-            enum v2c;
-            enum v3;
+            enum "v1";
+            enum "v2c";
+            enum "v3";
           }
         }
         container auth {
@@ -6283,8 +6890,8 @@ module netsim-ned-a10-acos {
           leaf mac {
             tailf:cli-drop-node-name;
             type enumeration {
-              enum MD5;
-              enum SHA;
+              enum "MD5";
+              enum "SHA";
             }
           }
           leaf cleartext {
@@ -6307,8 +6914,8 @@ module netsim-ned-a10-acos {
         leaf included-excluded {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum included;
-            enum excluded;
+            enum "included";
+            enum "excluded";
           }
         }
       }
@@ -6370,8 +6977,8 @@ module netsim-ned-a10-acos {
               leaf hmac {
                 tailf:cli-drop-node-name;
                 type enumeration {
-                  enum md5;
-                  enum sha;
+                  enum "md5";
+                  enum "sha";
                 }
               }
               leaf password {
@@ -6387,8 +6994,8 @@ module netsim-ned-a10-acos {
                 leaf algo {
                   tailf:cli-drop-node-name;
                   type enumeration {
-                    enum des;
-                    enum aes;
+                    enum "des";
+                    enum "aes";
                   }
                 }
                 leaf passphrase {
@@ -6408,6 +7015,7 @@ module netsim-ned-a10-acos {
         list community {
           key "read";
           leaf read {
+            tailf:cli-expose-key-name;
             type string;
           }
           uses snmp-remote-grouping;
@@ -6418,9 +7026,11 @@ module netsim-ned-a10-acos {
         tailf:cli-suppress-mode;
         tailf:cli-compact-syntax;
         leaf read {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf remote {
+          tailf:cli-expose-key-name;
           type string;
         }
         leaf oid {
@@ -6451,9 +7061,10 @@ module netsim-ned-a10-acos {
           type string;
         }
         leaf version {
+          tailf:cli-expose-key-name;
           type enumeration {
-            enum v1;
-            enum v2c;
+            enum "v1";
+            enum "v2c";
           }
         }
         leaf community-string {
@@ -6489,8 +7100,8 @@ module netsim-ned-a10-acos {
     container harmony-controller {
       leaf config-replace {
         type enumeration {
-          enum disable;
-          enum enable;
+          enum "disable";
+          enum "enable";
         }
       }
       container profile {
@@ -6541,8 +7152,17 @@ module netsim-ned-a10-acos {
         leaf reg-dereg {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum register;
-            enum deregister;
+            enum "register";
+            enum "deregister";
+          }
+        }
+        list device-context {
+          key "id";
+          leaf id {
+            type uint8;
+          }
+          leaf thunder-mgmt-ip {
+            type inet:ipv4-address;
           }
         }
       }
@@ -6610,6 +7230,17 @@ module netsim-ned-a10-acos {
           type uint8;
         }
       }
+      leaf gui-session-limit {
+        type uint8;
+      }
+      container gui-timeout-policy {
+        leaf idle {
+          type uint8;
+        }
+      }
+      leaf login-message {
+        type string;
+      }
       leaf pre-login-message {
         type string;
       }
@@ -6627,22 +7258,6 @@ module netsim-ned-a10-acos {
   }
 
   uses multi-config-grouping;
-
-  grouping lldp-grouping {
-    container lldp {
-      container enable {
-        tailf:cli-compact-syntax;
-        leaf rx {
-          type empty;
-        }
-        leaf tx {
-          type empty;
-        }
-      }
-    }
-  }
-
-  uses lldp-grouping;
 
   grouping banner-grouping {
     container banner {
@@ -6675,15 +7290,54 @@ module netsim-ned-a10-acos {
 
   uses banner-grouping;
 
-  grouping vrrp-a-grouping {
-    container vrrp-a {
-      container common {
-        presence "common-presence";
-        tailf:cli-add-mode;
-        leaf device-id {
+  grouping preferred-session-sync-port-grouping {
+    container preferred-session-sync-port {
+      list trunk {
+        tailf:cli-suppress-mode;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-siblings;
+        }
+        tailf:cli-compact-syntax;
+        key "id";
+        leaf id {
           type uint8;
         }
+        leaf vlan {
+          type uint16;
+        }
+      }
+      list ethernet {
+        tailf:cli-suppress-mode;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-siblings;
+        }
+        tailf:cli-compact-syntax;
+        key "id";
+        leaf id {
+          type ethernet-index;
+        }
+        leaf vlan {
+          type uint16;
+        }
+      }
+    }
+  }
+
+  grouping vrrp-a-grouping {
+    container vrrp-a {
+
+      grouping vrrp-a-common-grouping {
+        leaf device-id {
+          tailf:cli-diff-create-before "/a10-acos:interface";
+          tailf:cli-diff-create-before "/a10-acos:vcs";
+          type uint8;
+        }
+        leaf disable-default-vrid {
+          type empty;
+        }
         leaf set-id {
+          tailf:cli-diff-create-before "/a10-acos:interface";
+          tailf:cli-diff-create-before "/a10-acos:vcs";
           type uint8;
         }
         leaf hello-interval {
@@ -6702,29 +7356,23 @@ module netsim-ned-a10-acos {
           type union {
             type uint8;
             type enumeration {
-              enum default;
+              enum "default";
             }
           }
         }
-        leaf enable-disable {
+        leaf enable {
           tailf:cli-drop-node-name;
           type enumeration {
-            enum disable;
-            enum enable;
+            enum "enable";
+            enum "disable";
           }
         }
       }
-      leaf device-id {
-        type uint8;
-      }
-      leaf disable-default-vrid {
-        type empty;
-      }
-      leaf enable {
-        type empty;
-      }
-      leaf set-id {
-        type uint8;
+      uses vrrp-a-common-grouping;
+      container common {
+        presence "common-presence";
+        tailf:cli-add-mode;
+        uses vrrp-a-common-grouping;
       }
       list vrid {
         key "id";
@@ -6732,126 +7380,142 @@ module netsim-ned-a10-acos {
           type union {
             type uint8;
             type enumeration {
-              enum default;
+              enum "default";
             }
           }
         }
-        list floating-ip {
-          tailf:cli-suppress-mode;
-          key "floating-ip-address";
-          leaf floating-ip-address {
-            tailf:cli-drop-node-name;
-            type union {
-              type inet:ipv4-address;
-              type inet:ipv6-address;
+
+        grouping vrrp-a-vrid-grouping {
+          list floating-ip {
+            tailf:cli-suppress-mode;
+            key "floating-ip-address";
+            leaf floating-ip-address {
+              tailf:cli-drop-node-name;
+              type union {
+                type inet:ipv4-address;
+                type inet:ipv6-address;
+              }
             }
           }
-        }
-        leaf priority {
-          type uint8;
-        }
-        container preempt-mode {
-          choice preempt-choice {
-            leaf disable {
-              type empty;
-            }
-            leaf threshold {
-              type uint8;
-            }
-          }
-        }
-        uses vrrp-a-tracking-options;
-        container blade-parameters {
-          tailf:cli-add-mode;
           leaf priority {
             type uint8;
           }
-          container tracking-options {
+          container preempt-mode {
+            choice preempt-choice {
+              leaf disable {
+                type empty;
+              }
+              leaf threshold {
+                type uint8;
+              }
+            }
+          }
+          container blade-parameters {
             tailf:cli-add-mode;
-            tailf:cli-delete-when-empty;
-            list gateway {
-              tailf:cli-suppress-mode;
-              key "address";
-              leaf address {
-                type union {
-                  type inet:ipv4-address;
-                  type inet:ipv6-address;
+            leaf priority {
+              type uint8;
+            }
+            container tracking-options {
+              tailf:cli-add-mode;
+              tailf:cli-delete-when-empty;
+              list gateway {
+                tailf:cli-suppress-mode;
+                key "address";
+                leaf address {
+                  type union {
+                    type inet:ipv4-address;
+                    type inet:ipv6-address;
+                  }
+                }
+                uses priority-cost;
+              }
+              container interface {
+                list ethernet {
+                  tailf:cli-suppress-mode;
+                  key "id";
+                  leaf id {
+                    type ethernet-index;
+                  }
+                  leaf priority-cost {
+                    mandatory true;
+                    type uint8;
+                  }
                 }
               }
-              uses priority-cost;
-            }
-            container interface {
-              list ethernet {
+              list route {
                 tailf:cli-suppress-mode;
+                tailf:cli-compact-syntax;
+                key "ip mask";
+                leaf ip {
+                  type union {
+                    type inet:ipv4-address;
+                    type inet:ipv6-address;
+                  }
+                }
+                leaf mask {
+                  type ipv4-mask;
+                }
+                uses priority-cost;
+                leaf distance {
+                  type uint8;
+                }
+                leaf gateway {
+                  type union {
+                    type inet:ipv4-address;
+                    type inet:ipv6-address;
+                  }
+                }
+                leaf protocol {
+                  type enumeration {
+                    enum "any";
+                    enum "static";
+                    enum "dynamic";
+                  }
+                }
+              }
+              list trunk {
+                tailf:cli-suppress-mode;
+                tailf:cli-sequence-commands {
+                  tailf:cli-reset-siblings;
+                }
+                tailf:cli-compact-syntax;
                 key "id";
                 leaf id {
-                  type ethernet-index;
+                  type uint8;
                 }
-                leaf priority-cost {
-                  mandatory true;
+                uses priority-cost;
+                leaf per-port-pri {
                   type uint8;
                 }
               }
-            }
-            list route {
-              tailf:cli-suppress-mode;
-              tailf:cli-compact-syntax;
-              key "ip mask";
-              leaf ip {
-                type union {
-                  type inet:ipv4-address;
-                  type inet:ipv6-address;
+              list vlan {
+                tailf:cli-suppress-mode;
+                tailf:cli-sequence-commands;
+                tailf:cli-compact-syntax;
+                key "id";
+                leaf id {
+                  type vlan-index;
                 }
-              }
-              leaf mask {
-                type ipv4-mask;
-              }
-              uses priority-cost;
-              leaf distance {
-                type uint8;
-              }
-              leaf gateway {
-                type union {
-                  type inet:ipv4-address;
-                  type inet:ipv6-address;
+                leaf timeout {
+                  type uint16;
                 }
-              }
-              leaf protocol {
-                type enumeration {
-                  enum any;
-                  enum static;
-                  enum dynamic;
-                }
+                uses priority-cost;
               }
             }
-            list trunk {
-              tailf:cli-suppress-mode;
-              tailf:cli-sequence-commands {
-                tailf:cli-reset-siblings;
-              }
-              tailf:cli-compact-syntax;
-              key "id";
-              leaf id {
-                type uint8;
-              }
-              uses priority-cost;
-              leaf per-port-pri {
-                type uint8;
-              }
-            }
-            list vlan {
-              tailf:cli-suppress-mode;
-              tailf:cli-sequence-commands;
-              tailf:cli-compact-syntax;
-              key "id";
-              leaf id {
-                type vlan-index;
-              }
-              leaf timeout {
-                type uint16;
-              }
-              uses priority-cost;
-            }
+          }
+        }
+        uses vrrp-a-vrid-grouping {
+          refine "blade-parameters/tracking-options/interface/ethernet/id";
+          refine "blade-parameters/tracking-options/vlan/id";
+        }
+        list device-context {
+          key "id";
+          leaf id {
+            type uint8;
+          }
+          uses vrrp-a-vrid-grouping {
+            refine "blade-parameters/tracking-options/interface/ethernet/id";
+            refine "blade-parameters/tracking-options/vlan/id";
           }
         }
       }
@@ -6901,7 +7565,7 @@ module netsim-ned-a10-acos {
           tailf:cli-compact-syntax;
           key "id";
           leaf id {
-            type uint8;
+            type ethernet-index;
           }
           choice vrrp-a-trunk-choice {
             leaf both {
@@ -6937,38 +7601,8 @@ module netsim-ned-a10-acos {
           }
         }
       }
-      container preferred-session-sync-port {
-        list trunk {
-          tailf:cli-suppress-mode;
-          tailf:cli-sequence-commands {
-            tailf:cli-reset-siblings;
-          }
-          tailf:cli-compact-syntax;
-          key "id";
-          leaf id {
-            type uint8;
-          }
-          leaf vlan {
-            type uint16;
-          }
-        }
-        list ethernet {
-          tailf:cli-suppress-mode;
-          tailf:cli-sequence-commands {
-            tailf:cli-reset-siblings;
-          }
-          tailf:cli-compact-syntax;
-          key "id";
-          leaf id {
-            type ethernet-index;
-          }
-          leaf vlan {
-            type uint16;
-          }
-        }
-      }
-      leaf track-event-delay {
-        type uint32;
+      uses preferred-session-sync-port-grouping {
+        refine "preferred-session-sync-port/trunk";
       }
     }
   }
@@ -6982,6 +7616,9 @@ module netsim-ned-a10-acos {
         leaf as {
           type uint32;
         }
+        leaf maximum-paths {
+          type uint8;
+        }
         list network {
           tailf:cli-suppress-mode;
           key "address";
@@ -6992,9 +7629,11 @@ module netsim-ned-a10-acos {
             }
           }
         }
+
         grouping neighbor-grouping {
           list neighbor {
             tailf:cli-suppress-mode;
+            tailf:cli-delete-when-empty;
             key "ip";
             leaf ip {
               type union {
@@ -7002,6 +7641,49 @@ module netsim-ned-a10-acos {
                 type inet:ipv4-address;
                 type inet:ipv6-address;
               }
+            }
+            leaf activate {
+              type boolean;
+            }
+            leaf description {
+              tailf:cli-multi-value;
+              type string;
+            }
+            list distribute-list {
+              key "direction";
+              tailf:cli-suppress-mode;
+              leaf name {
+                tailf:cli-prefix-key;
+                tailf:cli-drop-node-name;
+                type string;
+              }
+              leaf direction {
+                type enumeration {
+                  enum "in";
+                  enum "out";
+                }
+              }
+            }
+            container fall-over {
+              tailf:cli-compact-syntax;
+              tailf:cli-sequence-commands {
+                tailf:cli-reset-all-siblings;
+              }
+              leaf bfd {
+                type empty;
+              }
+              leaf multihop {
+                type empty;
+              }
+            }
+            leaf maximum-prefix {
+              type uint32;
+            }
+            leaf next-hop-self {
+              type empty;
+            }
+            leaf password {
+              type string;
             }
             container peer-group {
               presence "true";
@@ -7014,48 +7696,83 @@ module netsim-ned-a10-acos {
                 }
               }
             }
-            leaf activate {
-              type empty;
+            list prefix-list {
+              tailf:cli-suppress-mode;
+              key "direction";
+              leaf direction {
+                type enumeration {
+                  enum "in";
+                  enum "out";
+                }
+              }
+              leaf name {
+                tailf:cli-drop-node-name;
+                tailf:cli-prefix-key;
+                type string;
+              }
             }
             leaf remote-as {
               type uint32;
             }
-            leaf description {
-              type string;
+            leaf remove-private-as {
+              type empty;
             }
             list route-map {
               tailf:cli-compact-syntax;
               tailf:cli-suppress-mode;
-              key "name";
+              key "in-out";
+              leaf in-out {
+                type enumeration {
+                  enum "in";
+                  enum "out";
+                }
+              }
               leaf name {
                 tailf:cli-drop-node-name;
+                tailf:cli-prefix-key;
                 type string;
-              }
-              leaf in-out {
-                tailf:cli-drop-node-name;
-                type enumeration {
-                  enum in;
-                  enum out;
-                }
               }
             }
             container update-source {
+              leaf address {
+                tailf:cli-drop-node-name;
+                type union {
+                  type inet:ipv4-address;
+                  type inet:ipv6-address;
+                }
+              }
               leaf ve {
                 type uint32;
               }
             }
             leaf soft-reconfiguration {
               type enumeration {
-                enum inbound;
+                enum "inbound";
               }
+            }
+            leaf shutdown {
+              type boolean;
             }
           }
         }
-
         uses neighbor-grouping;
+
         grouping redistribute-grouping {
           container redistribute {
             container connected {
+              presence "true";
+              leaf route-map {
+                type string;
+              }
+            }
+            container static {
+              presence "true";
+              leaf route-map {
+                type string;
+              }
+            }
+            container ip-nat {
+              presence "true";
               leaf route-map {
                 type string;
               }
@@ -7067,17 +7784,16 @@ module netsim-ned-a10-acos {
             }
           }
         }
-
         uses redistribute-grouping;
-        list address-family {
-          key "af";
-          leaf af {
-            type enumeration {
-              enum ipv6;
+        container address-family {
+          container ipv6 {
+            tailf:cli-add-mode;
+            leaf maximum-paths {
+              type uint8;
             }
+            uses neighbor-grouping;
+            uses redistribute-grouping;
           }
-          uses neighbor-grouping;
-          uses redistribute-grouping;
         }
         container bgp {
           leaf log-neighbor-changes {
@@ -7086,7 +7802,7 @@ module netsim-ned-a10-acos {
           container bestpath {
             leaf as-path {
               type enumeration {
-                enum ignore;
+                enum "ignore";
               }
             }
           }
@@ -7097,34 +7813,186 @@ module netsim-ned-a10-acos {
 
   uses router-grouping;
 
+  grouping bfd-grouping {
+    container bfd {
+      leaf echo {
+        type empty;
+      }
+      leaf enable {
+        type empty;
+      }
+      container interval {
+        tailf:cli-compact-syntax;
+        tailf:cli-sequence-commands {
+          tailf:cli-reset-all-siblings;
+        }
+        leaf start {
+          tailf:cli-drop-node-name;
+          type uint32;
+        }
+        leaf min-rx {
+          type uint32;
+        }
+        leaf multiplier {
+          type uint8;
+        }
+      }
+    }
+  }
+
+  uses bfd-grouping;
+
+  grouping lldp-grouping {
+    container lldp {
+      leaf system-name {
+        type string;
+      }
+      leaf system-description {
+        type string;
+      }
+      leaf-list enable {
+        tailf:cli-flat-list-syntax;
+        type enumeration {
+          enum "rx";
+          enum "tx";
+        }
+      }
+      container management-address {
+        list ipv4 {
+          tailf:cli-suppress-mode;
+          key "address";
+          leaf address {
+            type inet:ipv4-address;
+          }
+        }
+        list ipv6 {
+          tailf:cli-suppress-mode;
+          key "address";
+          leaf address {
+            type inet:ipv6-address;
+          }
+        }
+      }
+      container notification {
+        leaf interval {
+          type uint32;
+        }
+      }
+    }
+  }
+
+  uses lldp-grouping;
+
+  grouping route-map-grouping {
+    list route-map {
+      tailf:cli-suppress-mode;
+      key "name";
+      leaf name {
+        type string;
+      }
+
+      grouping permit-deny-grouping {
+        leaf id {
+          type uint16;
+        }
+
+        grouping match-set-grouping {
+          container ip {
+            container address {
+              leaf address {
+                tailf:cli-drop-node-name;
+                type string;
+              }
+              leaf prefix-list {
+                type string;
+              }
+            }
+            leaf next-hop {
+              type inet:ipv4-address;
+            }
+          }
+          container ipv6 {
+            container address {
+              leaf address {
+                tailf:cli-drop-node-name;
+                type string;
+              }
+              leaf prefix-list {
+                type string;
+              }
+            }
+            leaf next-hop {
+              type inet:ipv4-address;
+            }
+          }
+          leaf-list community {
+            tailf:cli-flat-list-syntax;
+            type string;
+          }
+        }
+        container match {
+          uses match-set-grouping;
+        }
+        container set {
+          uses match-set-grouping;
+        }
+      }
+      list permit {
+        key "id";
+        uses permit-deny-grouping;
+      }
+      list deny {
+        key "id";
+        uses permit-deny-grouping;
+      }
+    }
+  }
+
+  uses route-map-grouping;
+
   grouping device-context-grouping {
     list device-context {
       key "id";
       leaf id {
         type uint8;
       }
-      container vcs {
-        choice enable-choice {
-          leaf enable {
-            type empty;
-          }
-          leaf disable {
-            type empty;
-          }
-        }
-      }
-      uses class-list-grouping;
-      uses ha-grouping;
-      uses vlan-grouping;
-      uses trunk-grouping;
+      uses aflex-grouping;
       uses hostname-grouping;
-      uses interface-grouping;
-      uses access-list-grouping;
-      uses ip-grouping;
-      uses ipv6-grouping;
+      uses interface-grouping {
+        refine "interface/management/access-list/id";
+        refine "interface/ethernet/access-list/id";
+        refine "interface/trunk/access-list/id";
+        refine "interface/ve/access-list/id";
+        refine "interface/trunk/nr";
+        refine "interface/ve/id";
+      }
+      container ip {
+        uses ip-prefix-list-grouping;
+        uses ip-route-grouping;
+      }
+      container ipv6 {
+        uses ipv6-route-grouping;
+      }
+      uses bfd-grouping;
+      uses clock-grouping;
+      uses lldp-grouping;
+      uses vcs-grouping {
+        refine "vcs";
+      }
+      uses tftp-grouping;
+      uses enable-management-grouping;
+      uses disable-management-grouping;
+      uses lacp-grouping;
+      uses route-map-grouping;
+      uses ve-stats-grouping;
+      uses bgp-grouping;
+      uses router-grouping;
       uses timezone-grouping;
-      container gslb {
-        uses gslb-group-grouping;
+      uses sflow-grouping;
+      container vrrp-a {
+        uses preferred-session-sync-port-grouping {
+          refine "preferred-session-sync-port/trunk";
+        }
       }
     }
   }
@@ -7133,6 +8001,13 @@ module netsim-ned-a10-acos {
 
   grouping vcs-grouping {
     container vcs {
+      leaf state {
+        tailf:cli-drop-node-name;
+        type enumeration {
+          enum "enable";
+          enum "disable";
+        }
+      }
       list device {
         key "id";
         leaf id {
@@ -7188,10 +8063,20 @@ module netsim-ned-a10-acos {
       leaf ssl-enable {
         type empty;
       }
+      leaf failure-retry-count {
+        type union {
+          type enumeration {
+            enum "forever";
+          }
+          type uint8;
+        }
+      }
     }
   }
 
-  uses vcs-grouping;
+  uses vcs-grouping {
+    refine "vcs";
+  }
 
   grouping system-grouping {
     container system {
@@ -7208,9 +8093,9 @@ module netsim-ned-a10-acos {
       }
       leaf module-ctrl-cpu {
         type enumeration {
-          enum high;
-          enum low;
-          enum medium;
+          enum "high";
+          enum "low";
+          enum "medium";
         }
       }
       leaf glid {
@@ -7318,16 +8203,30 @@ module netsim-ned-a10-acos {
           type string;
         }
       }
+      container trunk {
+        container load-balance {
+          tailf:cli-add-mode;
+          leaf layer-2 {
+            type enumeration {
+              enum "use-l3";
+              enum "use-l4";
+            }
+          }
+        }
+      }
       leaf ve-mac-scheme {
         type enumeration {
-          enum hash-based;
-          enum round-robin;
-          enum system-mac;
+          enum "hash-based";
+          enum "round-robin";
+          enum "system-mac";
         }
       }
       container apps-global {
         leaf log-session-on-established {
           type empty;
+        }
+        leaf msl-time {
+          type uint8;
         }
       }
     }
@@ -7338,7 +8237,7 @@ module netsim-ned-a10-acos {
   grouping ve-stats-grouping {
     leaf ve-stats {
       type enumeration {
-        enum enable;
+        enum "enable";
       }
     }
   }
@@ -7359,6 +8258,13 @@ module netsim-ned-a10-acos {
         tailf:cli-hide-in-submode;
         type uint8;
       }
+      leaf application-type {
+        tailf:cli-hide-in-submode;
+        type enumeration {
+          enum "adc";
+          enum "cgnv6";
+        }
+      }
       leaf template {
         type string;
       }
@@ -7366,6 +8272,24 @@ module netsim-ned-a10-acos {
   }
 
   uses partition-grouping;
+
+  grouping partition-group-grouping {
+    list partition-group {
+      key "name";
+      leaf name {
+        type string;
+      }
+      list member {
+        tailf:cli-suppress-mode;
+        key "partition-name";
+        leaf partition-name {
+          type string;
+        }
+      }
+    }
+  }
+
+  uses partition-group-grouping;
 
   grouping access-list-grouping {
     list access-list {
@@ -7429,11 +8353,18 @@ module netsim-ned-a10-acos {
   grouping enable-management-grouping {
     container enable-management {
       container service {
-        container ssh {
-          tailf:cli-add-mode;
+        tailf:cli-compact-syntax;
+
+        grouping enable-management-content-grouping {
           leaf-list ethernet {
             tailf:cli-range-list-syntax;
             type uint8;
+          }
+          list acl {
+            key "id";
+            leaf id {
+              type uint16;
+            }
           }
           list acl-v4 {
             key "id";
@@ -7446,27 +8377,65 @@ module netsim-ned-a10-acos {
             type uint32;
           }
         }
+        container ssh {
+          tailf:cli-add-mode;
+          uses enable-management-content-grouping;
+        }
+        container ssh-alt {
+          tailf:alt-name "ssh";
+          tailf:cli-compact-syntax;
+          leaf management {
+            type empty;
+          }
+          uses enable-management-content-grouping;
+        }
+        container telnet {
+          tailf:cli-add-mode;
+          uses enable-management-content-grouping;
+        }
+        container telnet-alt {
+          tailf:alt-name "telnet";
+          tailf:cli-compact-syntax;
+          leaf management {
+            type empty;
+          }
+          uses enable-management-content-grouping;
+        }
+        container http {
+          tailf:cli-add-mode;
+          uses enable-management-content-grouping;
+        }
+        container http-alt {
+          tailf:alt-name "http";
+          tailf:cli-compact-syntax;
+          leaf management {
+            type empty;
+          }
+          uses enable-management-content-grouping;
+        }
         container https {
           tailf:cli-add-mode;
-          leaf-list ethernet {
-            tailf:cli-range-list-syntax;
-            type uint8;
+          uses enable-management-content-grouping;
+        }
+        container https-alt {
+          tailf:alt-name "https";
+          tailf:cli-compact-syntax;
+          leaf management {
+            type empty;
           }
-          leaf-list ve {
-            tailf:cli-range-list-syntax;
-            type uint32;
-          }
+          uses enable-management-content-grouping;
         }
         container snmp {
           tailf:cli-add-mode;
-          leaf-list ethernet {
-            tailf:cli-range-list-syntax;
-            type uint8;
+          uses enable-management-content-grouping;
+        }
+        container snmp-alt {
+          tailf:alt-name "snmp";
+          tailf:cli-compact-syntax;
+          leaf management {
+            type empty;
           }
-          leaf-list ve {
-            tailf:cli-range-list-syntax;
-            type uint32;
-          }
+          uses enable-management-content-grouping;
         }
       }
     }
@@ -7573,20 +8542,20 @@ module netsim-ned-a10-acos {
         key "id";
         leaf id {
           type enumeration {
-            enum any-type;
-            enum echo-reply;
-            enum echo-request;
-            enum info-reply;
-            enum info-request;
-            enum mask-reply;
-            enum mask-request;
-            enum parameter-problem;
-            enum redirect;
-            enum source-quench;
-            enum time-exceeded;
-            enum timestamp;
-            enum timestamp-reply;
-            enum dest-unreachable;
+            enum "any-type";
+            enum "echo-reply";
+            enum "echo-request";
+            enum "info-reply";
+            enum "info-request";
+            enum "mask-reply";
+            enum "mask-request";
+            enum "parameter-problem";
+            enum "redirect";
+            enum "source-quench";
+            enum "time-exceeded";
+            enum "timestamp";
+            enum "timestamp-reply";
+            enum "dest-unreachable";
           }
         }
       }
@@ -7608,11 +8577,11 @@ module netsim-ned-a10-acos {
           key "op port";
           leaf op {
             type enumeration {
-              enum eq;
-              enum gt;
-              enum lt;
-              enum range;
-              enum source;
+              enum "eq";
+              enum "gt";
+              enum "lt";
+              enum "range";
+              enum "source";
             }
           }
           leaf port {
@@ -7629,8 +8598,8 @@ module netsim-ned-a10-acos {
         leaf fw {
           tailf:cli-hide-in-submode;
           type enumeration {
-            enum v4;
-            enum v6;
+            enum "v4";
+            enum "v6";
           }
         }
         leaf description {
@@ -7665,11 +8634,12 @@ module netsim-ned-a10-acos {
         }
         leaf action {
           type enumeration {
-            enum permit;
-            enum deny;
-            enum reset;
+            enum "permit";
+            enum "deny";
+            enum "reset";
           }
         }
+
         grouping source-dest-grouping {
           list object {
             key "name";
@@ -7687,7 +8657,6 @@ module netsim-ned-a10-acos {
             type string;
           }
         }
-
         container source {
           uses source-dest-grouping;
         }
@@ -7720,13 +8689,10 @@ module netsim-ned-a10-acos {
   uses fw-grouping;
 
   grouping enable-core-grouping {
-    container enable-core {
-      presence "true";
-      leaf system {
-        type empty;
-      }
-      leaf a10 {
-        type empty;
+    leaf enable-core {
+      type enumeration {
+        enum "system";
+        enum "a10";
       }
     }
   }
@@ -7740,8 +8706,18 @@ module netsim-ned-a10-acos {
     }
     uses aflex-grouping;
     uses hostname-grouping;
-    uses interface-grouping;
-    uses ip-grouping;
+    uses interface-grouping {
+      refine "interface/management/access-list/id";
+      refine "interface/ethernet/access-list/id";
+      refine "interface/trunk/access-list/id";
+      refine "interface/ve/access-list/id";
+      refine "interface/trunk/nr";
+      refine "interface/ve/id";
+    }
+    uses ip-grouping {
+      refine "ip/nat/inside/source/static";
+    }
+    uses bfd-grouping;
     uses health-grouping;
     uses glid-grouping;
     uses class-list-grouping;
@@ -7752,12 +8728,14 @@ module netsim-ned-a10-acos {
     uses vlan-grouping;
     uses logging-grouping;
     uses bw-list-grouping;
+    uses ip-list-grouping;
     uses cgnv6-grouping;
     uses router-grouping;
     uses system-jumbo-global-grouping;
     uses hd-monitor-grouping;
     uses clock-grouping;
     uses ntp-grouping;
+    uses netflow-grouping;
     uses tacacs-server-grouping;
     uses radius-server-grouping;
     uses authentication-grouping;
@@ -7774,9 +8752,9 @@ module netsim-ned-a10-acos {
     uses lldp-grouping;
     uses banner-grouping;
     uses device-context-grouping;
-    uses vcs-grouping;
     uses system-grouping;
     uses partition-grouping;
+    uses partition-group-grouping;
     uses access-list-grouping;
     uses tftp-grouping;
     uses stats-data-disable-grouping;
@@ -7801,5 +8779,8 @@ module netsim-ned-a10-acos {
     uses acos-events-grouping;
     uses bgp-grouping;
     uses harmony-controller-grouping;
+    uses vcs-grouping {
+      refine "vcs";
+    }
   }
 }

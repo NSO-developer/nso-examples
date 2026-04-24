@@ -11,7 +11,7 @@ clean:
 	for f in packages/*/src/Makefile; do \
 	  (cd `dirname $$f` && $(MAKE) $@ ) || exit 1; \
 	done; \
-	rm -rf  netsim logs/* state/* ncs-cdb/*.cdb
+	rm -rf  netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S}
 
 demo:
 	./demo.sh

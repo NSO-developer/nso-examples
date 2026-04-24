@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Using the NSO RESTCONF API demo\n${NC}"
 if hash curl 2> /dev/null; then
     printf "${RED}##### curl command available, continuing with demo\n${NC}"
@@ -114,8 +126,7 @@ curl -u admin:admin http://localhost:8080/restconf/data/tailf-ncs:devices/device
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
     rm -vf *.xml *.bak
     set +e

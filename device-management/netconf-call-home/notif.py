@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 import socket
 import select
 import sys
@@ -62,12 +63,10 @@ class EventSwitch(object):
 def run(argv):
     """
     """
-    if _ncs.PATH is None:
-        event_sock = socket.socket()
-        path = ""
-    else:
+    if _ncs.PORT is None:
         event_sock = socket.socket(family=socket.AF_UNIX)
-        path = _ncs.PATH
+    else:
+        event_sock = socket.socket()
 
     mask = None
     try:
@@ -85,14 +84,23 @@ def run(argv):
                                     start_time=noexists,
                                     stop_time=noexists)
 
-    events.notifications_connect2(sock=event_sock,
-                                  mask=mask,
-                                  ip=_ncs.ADDR,
-                                  port=_ncs.PORT,
-                                  path=path,
-                                  data=data)
+    if _ncs.PORT is None:
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      path=_ncs.PATH,
+                                      data=data)
+    else:
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      ip=_ncs.ADDR,
+                                      port=_ncs.PORT,
+                                      data=data)
 
     print("Connected")
+    ready_file = os.environ.get('NOTIF_READY_FILE')
+    if ready_file is not None:
+        with open(ready_file, 'w', encoding='utf-8') as ready_fh:
+            ready_fh.write('Connected\n')
 
     event_switch = EventSwitch(sock=event_sock, mask=mask)
 

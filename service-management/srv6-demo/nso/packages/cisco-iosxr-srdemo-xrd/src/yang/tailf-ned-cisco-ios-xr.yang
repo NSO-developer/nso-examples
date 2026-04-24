@@ -605,22 +605,18 @@ module tailf-ned-cisco-ios-xr {
           container neighbor-evpn-service {
             tailf:cli-drop-node-name;
             container neighbor {
-              container evpn {
-                tailf:cli-add-mode;
-                tailf:cli-sequence-commands {
-                  tailf:cli-reset-siblings;
-                }
+              list evpn {
+                key "evi service";
                 leaf evi {
-                  tailf:cli-hide-in-submode;
-                  type uint16;
+                  tailf:cli-expose-key-name;
+                  type uint32;
                 }
                 leaf service {
-                  tailf:cli-break-sequence-commands;
-                  tailf:cli-hide-in-submode;
+                  tailf:cli-expose-key-name;
                   type union {
                     type uint32;
                     type enumeration {
-                      enum vlan-aware;
+                      enum "vlan-aware";
                     }
                   }
                 }
@@ -632,7 +628,6 @@ module tailf-ned-cisco-ios-xr {
                   }
                 }
                 leaf pw-class {
-                  tailf:cli-optional-in-sequence;
                   type string;
                 }
                 leaf locator {

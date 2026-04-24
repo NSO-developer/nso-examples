@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### NSO SNMP agent demo\n${NC}"
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
@@ -44,28 +56,28 @@ EOF
 
 printf "\n\n${PURPLE}##### Verify viewing the alarm list\n${NC}"
 if hash snmpwalk 2> /dev/null; then
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
 else
     printf "${RED}##### No 'snmpwalk' command, skip\n${NC}"
 fi
 
 printf "\n${PURPLE}##### Start a trap receiver to listen for NSO alarms\n${NC}"
 if hash snmptrapd 2> /dev/null; then
-    snmptrapd --disableAuthorization=yes -Lf traplog.txt -p trapd.txt localhost:27777
+    snmptrapd --version 2>&1 | sed -n '1p'
+    snmptrapd -C -c ./snmptrapd.conf -Lf traplog.txt -p trapd.txt localhost:27777
 else
     printf "${RED}##### No 'snmptrapd' command, skip\n${NC}"
 fi
 ncs_cli -n -u admin -C << EOF
 config
 snmp target monitor udp-port 27777
+snmp target monitor usm user-name initial
+snmp target monitor usm sec-level auth-priv
 commit
 EOF
 
 printf "\n${GREEN}##### Generate some alarms\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Stop some devices and then ask NSO to connect to them\n${NC}"
 ncs-netsim --dir ../../service-management/website-service/netsim stop lb0
@@ -81,16 +93,14 @@ EOF
 
 printf "\n\n${PURPLE}##### Get the alarm list in NSO over SNMP\n${NC}"
 if hash snmpwalk 2> /dev/null; then
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
 else
     printf "${RED}##### No 'snmpwalk' command, skip\n${NC}"
 fi
 
-printf "\n${PURPLE}##### Using SNMPv3\n${NC}"
+printf "\n${PURPLE}##### Using SNMPv3 authPriv with SHA/AES\n${NC}"
 if hash snmpwalk 2> /dev/null; then
-    snmpwalk -v3 -u initial -l noAuthNoPriv localhost:4000 enterprises tfAlarmTable
-    snmpwalk -v3 -u initial -l authNoPriv -a sha -A GoTellMom localhost:4000 enterprises tfAlarmTable
-    snmpwalk -v3 -u initial -l authPriv -a sha -A GoTellMom -x aes -X GoTellMom localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
 else
     printf "${RED}##### No 'snmpwalk' command, skip\n${NC}"
 fi
@@ -103,16 +113,13 @@ devices connect
 EOF
 echo ""
 if hash snmpwalk 2> /dev/null; then
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
 else
     printf "${RED}##### No 'snmpwalk' command, skip\n${NC}"
 fi
 
 printf "\n${GREEN}##### Notifications (traps)\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Show SNMP notification settings\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -124,10 +131,7 @@ printf "\n\n${PURPLE}##### View the contents of the trap recevier log\n${NC}"
 cat traplog.txt
 
 printf "\n${GREEN}##### Changing probable cause mapping\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Change the mapping of connection-failure alarm type\n${NC}"
 ncs_cli -n -u admin -C << EOF
@@ -138,15 +142,14 @@ EOF
 
 printf "\n\n${PURPLE}##### Walk the alarm list to verify probable case is now 22\n${NC}"
 if hash snmpwalk 2> /dev/null; then
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
 else
     printf "${RED}##### No 'snmpwalk' command, skip\n${NC}"
 fi
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     set +e
     make -C ../../service-management/website-service stop
     set -e

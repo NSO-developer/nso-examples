@@ -4,44 +4,58 @@ module commit-params-py {
   prefix commit-params-py;
   yang-version 1.1;
 
-  import ietf-inet-types {
-    prefix inet;
+  import ietf-yang-structure-ext {
+    prefix sx;
   }
   import tailf-common {
     prefix tailf;
+  }
+  import tailf-ncs-commit-params {
+    prefix ncp;
   }
   import tailf-ncs {
     prefix ncs;
   }
 
-  list commit-params-py {
-
-    key name;
-    leaf name {
-      tailf:info "Unique service id";
-      tailf:cli-allow-range;
-      type string;
-    }
-
-    uses ncs:service-data;
-    ncs:servicepoint commit-params-py-servicepoint;
-
-    leaf device {
-      type leafref {
-        path "/ncs:devices/ncs:device/ncs:name";
+  sx:augment-structure "/ncp:commit-params" {
+    container audit-context {
+      presence "Attach extra audit information to the commit";
+      leaf ticket-id {
+        type string;
       }
     }
+  }
 
-    leaf if {
-      type string;
-    }
+  container commit-params-py {
+    list commit-params-py-instances {
 
-    leaf if-speed {
-      type string;
-    }
+      key name;
+      leaf name {
+        tailf:info "Unique service id";
+        tailf:cli-allow-range;
+        type string;
+      }
 
-    tailf:action showcase-py {
-      tailf:actionpoint showcase-py;
+      uses ncs:service-data;
+      ncs:servicepoint commit-params-py-servicepoint;
+
+      leaf device {
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf if {
+        type string;
+      }
+
+      leaf if-speed {
+        type string;
+      }
+
+      tailf:action showcase-py {
+        tailf:actionpoint showcase-py;
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ ncs-cdb/A.cdb
 ncs-cdb/C.cdb
 ncs-cdb/O.cdb
 ncs-cdb/cand.db
+ncs-cdb/*/*.ssts/
 ncs-cdb/netsim_devices_init.xml
 /netsim/
 packages/website-service/src/java/build/

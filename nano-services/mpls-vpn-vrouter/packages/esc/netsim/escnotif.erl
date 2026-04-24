@@ -222,7 +222,7 @@ send_notif(Nctx, [{created, _IKP, G, DepName, SrvName, Version, Ten} | Tail]) ->
     Lines = string:tokens(NetSimList, [$\n]),
     Pat=lists:flatten(io_lib:format("name=~s", [binary_to_list(DevName)])),
     print("Pat = ~p~n", [Pat]),
-    [Match]=lists:zf(
+    [Match]=lists:filtermap(
               fun(Line) ->
                       Tks = string:tokens(Line, [$\s]),
                       print("Tks = ~p~n", [Tks]),
@@ -538,7 +538,7 @@ details([Gr, _SrvName, DepName, Tenant] ) ->
     Lines = string:tokens(NetSimList, [$\n]),
     Pat=lists:flatten(io_lib:format("name=~s", [binary_to_list(DevName)])),
     print("Pat = ~p~n", [Pat]),
-    [Match]=lists:zf(
+    [Match]=lists:filtermap(
               fun(Line) ->
                       Tks = string:tokens(Line, [$\s]),
                       print("Tks = ~p~n", [Tks]),

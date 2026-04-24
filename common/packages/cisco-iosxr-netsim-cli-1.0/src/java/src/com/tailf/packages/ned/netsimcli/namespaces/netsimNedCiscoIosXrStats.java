@@ -60,10 +60,10 @@ public class netsimNedCiscoIosXrStats extends ConfNamespace {
     public static final String _platform_ = "platform";
     public static final int    _name = 1998270519;
     public static final String _name_ = "name";
-    public static final int    _port_id = 411479338;
-    public static final String _port_id_ = "port-id";
     public static final int    _oui_number = 1929286621;
     public static final String _oui_number_ = "oui-number";
+    public static final int    _port_id = 411479338;
+    public static final String _port_id_ = "port-id";
     public static final int    _hold_time = 204730640;
     public static final String _hold_time_ = "hold-time";
     public static final int    _chassis_id = 1476535866;
@@ -72,10 +72,10 @@ public class netsimNedCiscoIosXrStats extends ConfNamespace {
     public static final String _date_code_ = "date-code";
     public static final int    _id = 1279252765;
     public static final String _id_ = "id";
-    public static final int    _serial_number = 544353266;
-    public static final String _serial_number_ = "serial-number";
     public static final int    _parent_interface = 169482247;
     public static final String _parent_interface_ = "parent-interface";
+    public static final int    _serial_number = 544353266;
+    public static final String _serial_number_ = "serial-number";
     public static final int    _lldp = 830250803;
     public static final String _lldp_ = "lldp";
     public static final int    _vid = 1545846517;

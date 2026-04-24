@@ -1154,6 +1154,7 @@ module netsim-ned-cisco-nx-stats {
   }
   container interface {
     config false;
+
     grouping eth-children {
       leaf name {
         type string;
@@ -1381,7 +1382,6 @@ module netsim-ned-cisco-nx-stats {
         type string;
       }
     }
-
     list ethernet {
       key "name";
       uses eth-children;

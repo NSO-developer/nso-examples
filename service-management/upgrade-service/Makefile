@@ -19,7 +19,7 @@ clean:
 		$(MAKE) -C $$f clean || exit 1; \
 	done
 	rm -rf ./packages/*;
-	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb-bak
+	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S} ncs-cdb-bak
 
 demo:
 	./demo.sh

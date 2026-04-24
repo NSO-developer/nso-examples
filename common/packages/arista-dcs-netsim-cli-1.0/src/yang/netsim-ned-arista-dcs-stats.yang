@@ -1,0 +1,174 @@
+module netsim-ned-arista-dcs-stats {
+  namespace "http://tail-f.com/ned/arista-dcs-stats";
+  prefix dcs-stats;
+
+  import tailf-common {
+    prefix tailf;
+  }
+
+  typedef ipv4-prefix {
+    type string;
+  }
+
+  typedef ipv6-prefix {
+    type string;
+  }
+
+  list interfaces {
+    config false;
+    key "name";
+    leaf name {
+      type string;
+    }
+    leaf type {
+      type string;
+    }
+    leaf ip-address {
+      type union {
+        type ipv4-prefix;
+        type ipv6-prefix;
+      }
+    }
+    leaf mac-address {
+      type string;
+    }
+    container transceiver {
+      leaf temp {
+        type string;
+        units "Celsius";
+      }
+      leaf voltage {
+        type string;
+        units "Volts";
+      }
+      leaf bias-current {
+        type string;
+        units "mA";
+      }
+      leaf optical-tx-power {
+        type string;
+        units "dBm";
+      }
+      leaf optical-rx-power {
+        type string;
+        units "dBm";
+      }
+      leaf last-update {
+        type string;
+      }
+    }
+    tailf:alt-name "interfaces-stats";
+  }
+  container mac {
+    container address-table {
+      container interface {
+        list Ethernet {
+          config false;
+          key "id mac-address type ports vlan";
+          leaf id {
+            type string;
+          }
+          leaf mac-address {
+            type string;
+          }
+          leaf type {
+            type string;
+          }
+          leaf ports {
+            type string;
+          }
+          leaf vlan {
+            type string;
+          }
+          leaf moves {
+            type string;
+          }
+          leaf last-move {
+            type string;
+          }
+        }
+      }
+    }
+    tailf:alt-name "mac-stats";
+  }
+  list mac-address-table {
+    config false;
+    key "vlan mac-address type ports";
+    leaf vlan {
+      type uint32;
+    }
+    leaf mac-address {
+      type string;
+    }
+    leaf type {
+      type string;
+    }
+    leaf ports {
+      type string;
+    }
+    leaf moves {
+      type string;
+    }
+    leaf last-move {
+      type string;
+    }
+    tailf:alt-name "mac-address-table-stats";
+  }
+  container port-channel {
+    list brief {
+      config false;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf active-ports {
+        type string;
+      }
+    }
+    list detailed {
+      config false;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf fallback-state {
+        type string;
+      }
+      container active-ports {
+        list port {
+          key "name";
+          leaf name {
+            type string;
+          }
+          leaf time-became-active {
+            type string;
+          }
+          leaf protocol {
+            type string;
+          }
+          leaf mode {
+            type string;
+          }
+        }
+      }
+      container inactive-ports {
+        list port {
+          key "name";
+          leaf name {
+            type string;
+          }
+          leaf time-became-inactive {
+            type string;
+          }
+          leaf reason-unconfigured {
+            type string;
+          }
+        }
+      }
+    }
+    tailf:alt-name "port-channel-stats";
+  }
+  container exec {
+    tailf:alt-name "exec-stats";
+  }
+}

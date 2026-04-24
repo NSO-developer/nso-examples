@@ -26,7 +26,7 @@ echo_purple() { echo_color purple "$@"; }
 echo_red() { echo_color red "$@"; }
 
 exec_cli() {
-    echo NCS_IPC_PORT=$NCS_IPC_PORT ncs_cli -nsCu admin -g admin
+    echo NCS_IPC_PATH=$NCS_IPC_PATH ncs_cli -nsCu admin -g admin
     echo "$@"
     echo "$@" | ncs_cli -nsCu admin -g admin
     echo ""

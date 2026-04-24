@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+    <MgmtEth>
+      <id>0/RP0/CPU0/0</id>
+      <ipv4>
+        <address>
+          <ip>10.10.20.103/24</ip>
+        </address>
+      </ipv4>
+    </MgmtEth>
+  </interface>
+  <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+    <static>
+      <address-family>
+        <ipv4>
+          <unicast>
+            <routes-ip>
+              <net>0.0.0.0/0</net>
+              <address>10.10.20.254</address>
+            </routes-ip>
+          </unicast>
+        </ipv4>
+      </address-family>
+    </static>
+  </router>
+  <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+    <monitor>debugging</monitor>
+    <console>debugging</console>
+  </logging>
+  <hostname xmlns="http://tail-f.com/ned/cisco-ios-xr">core-3</hostname>
+  <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+    <name>admin</name>
+    <group>
+      <name>cisco-support</name>
+    </group>
+    <group>
+      <name>root-lr</name>
+    </group>
+    <password>
+      <encryption>0</encryption>
+      <password>admin</password>
+    </password>
+  </username>
+  <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+    <server>
+      <vrf>
+        <name>default</name>
+      </vrf>
+    </server>
+  </ssh>
+</config>

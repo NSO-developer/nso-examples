@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+    <version>netsim</version>
+    <system>
+      <host-name>nyc-tr1</host-name>
+      <domain-name>example.com</domain-name>
+      <time-zone>UTC</time-zone>
+      <login>
+        <message>Brownfield node nyc-tr1</message>
+      </login>
+      <services>
+        <ssh>
+          <root-login>deny</root-login>
+          <protocol-version>v2</protocol-version>
+        </ssh>
+        <netconf>
+          <ssh/>
+        </netconf>
+      </services>
+    </system>
+    <interfaces>
+      <interface>
+        <name>lo0</name>
+        <unit>
+          <name>0</name>
+        </unit>
+      </interface>
+      <interface>
+        <name>xe-0/0/0</name>
+      </interface>
+      <interface>
+        <name>xe-0/0/1</name>
+      </interface>
+      <interface>
+        <name>xe-0/0/2</name>
+      </interface>
+    </interfaces>
+  </configuration>
+</config>

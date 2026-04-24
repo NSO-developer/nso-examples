@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Manage SNMP Devices with NSO demo\n${NC}"
 
 printf "${PURPLE}##### Reset\n${NC}"
@@ -28,10 +40,9 @@ ncs_cli -n -u admin -C << EOF
 show running-config devices device r0..2 | nomore
 EOF
 
-printf "\n\n${PURPLE}##### Show the authentication groups v1/v2c and v3c authentication parameters\n${NC}"
+printf "\n\n${PURPLE}##### Show the shared SNMPv3 authPriv authentication parameters\n${NC}"
 ncs_cli -n -u admin -C << EOF
-show running-config devices authgroups snmp-group default-map | nomore
-show running-config devices authgroups snmp-group umap | nomore
+show running-config devices authgroups snmp-group default | nomore
 EOF
 
 printf "\n\n${PURPLE}##### Get the config from the devices\n${NC}"
@@ -55,7 +66,7 @@ EOF
 
 printf "\n\n${PURPLE}##### If available, use the Net-SNMP 'snmpget' command towards the device to verify the new value\n${NC}"
 if hash snmpget 2> /dev/null; then
-    snmpget -v2c -c public 127.0.0.1:11023 sysContact.0
+    snmpget -v3 -u admin -l authPriv -a SHA -A adminpass -x AES -X adminpass 127.0.0.1:11023 sysContact.0
 else
     printf "${RED}##### No 'snmpget' command, skip\n${NC}"
 fi
@@ -81,7 +92,7 @@ EOF
 
 printf "\n${PURPLE}##### set the 'sysContact' over SNMP using a Net-SNMP command\n${NC}"
 if hash snmpset 2> /dev/null; then
-    snmpset -v2c -c public 127.0.0.1:11023 sysContact.0 s john
+    snmpset -v3 -u admin -l authPriv -a SHA -A adminpass -x AES -X adminpass 127.0.0.1:11023 sysContact.0 s john
 else
     printf "${RED}##### No 'snmpset' command, skip\n${NC}"
 fi
@@ -130,8 +141,7 @@ netconf-console --get -x "/devices/device/live-status/SNMPv2-MIB/snmp"
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "\n\n${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     make stop clean
 fi
 

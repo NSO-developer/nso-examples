@@ -5,10 +5,10 @@ ifeq ($(PORT),)
 $(error "Could not find ncs ipc port. Is xmllint installed?")
 endif
 
-ifeq ($(NCS_IPC_PATH),)
+ifneq ($(NCS_IPC_PORT),)
 ENV = NCS_IPC_PORT=$(PORT)
 else
-ENV = NCS_IPC_PATH=$(NCS_IPC_PATH).$(PORT)
+ENV = NCS_IPC_PATH=$(or $(NCS_IPC_PATH),/tmp/nso/nso-ipc).$(PORT)
 endif
 
 all:

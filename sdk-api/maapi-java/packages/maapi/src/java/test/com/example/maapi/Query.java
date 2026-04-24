@@ -14,12 +14,11 @@ import com.tailf.conf.ConfPath;
 import com.tailf.maapi.QueryResult;
 
 
-import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnixDomainSocketAddress;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
-import java.net.UnknownHostException;
-import java.net.InetAddress;
 import com.tailf.conf.Conf;
 import com.tailf.maapi.MaapiException;
 
@@ -74,17 +73,16 @@ public class Query<T extends ResultType> {
     int opt_number_of_times = 1;
     int opt_reset_after_first = 0;
     String opt_initial_ctxt;
-    int port = Conf.NCS_PORT;
     int th = -1;
-    InetAddress addr;
+    SocketAddress address;
     Maapi maapi;
     QueryResult<? extends ResultType> rs;
 
 
-    public Query(InetAddress addr,int chunksize, int offset, int numtimes,
-                 String ctxt)
+    public Query(SocketAddress address, int chunksize, int offset,
+                 int numtimes, String ctxt)
         {
-            this.addr = addr;
+            this.address = address;
             this.opt_chunk_size = chunksize;
             this.opt_initial_offset = offset;
             this.opt_number_of_times = numtimes;
@@ -93,9 +91,7 @@ public class Query<T extends ResultType> {
 
     public void maapiSock() {
         try {
-            Socket s =
-                new Socket(addr, port);
-            maapi = new Maapi(s);
+            maapi = new Maapi(address);
 
         } catch(IOException e) {
             LOGGER.error("",e);
@@ -170,8 +166,6 @@ public class Query<T extends ResultType> {
             LOGGER.error("Could not create a session",e);
         }catch(ConfException e){
             LOGGER.error("Could not create a session",e);
-        }catch(UnknownHostException e){
-            LOGGER.error("",e);
         }catch(IOException e){
             LOGGER.error("",e);
         }
@@ -216,7 +210,7 @@ public class Query<T extends ResultType> {
         System.exit(1);
     }
 
-    public static void main(String[] argv) throws UnknownHostException {
+    public static void main(String[] argv) {
         //System.out.println("ARGV:" + Arrays.toString(argv));
         //System.out.println("argv.length:" + argv.length);
         if(argv.length != 13)
@@ -233,7 +227,7 @@ public class Query<T extends ResultType> {
         String[] argv2 = new String[argv.length-2];
         System.arraycopy(argv,2,argv2,0,argv2.length);
 
-        InetAddress addr = InetAddress.getByName("127.0.0.1");
+        SocketAddress address = UnixDomainSocketAddress.of(Conf.NCS_PATH);
         Class<? extends ResultType> opt_res = ResultTypeString.class;
         int opt_chunk_size = 100;
         int opt_initial_offset = 1;
@@ -251,7 +245,8 @@ public class Query<T extends ResultType> {
                 debuglevel++;
                 break;
             case 'p':
-                addr = InetAddress.getByName(g.getOptarg());
+                address =
+                    UnixDomainSocketAddress.of(g.getOptarg());
                 break;
             case 'r':
                 String arg = g.getOptarg();
@@ -294,7 +289,7 @@ public class Query<T extends ResultType> {
             break;
 
         }
-        Query<? extends ResultType> rq = new Query<ResultType>(addr,
+        Query<? extends ResultType> rq = new Query<ResultType>(address,
                                                    opt_chunk_size,
                                                    opt_initial_offset,
                                                    opt_number_of_times,

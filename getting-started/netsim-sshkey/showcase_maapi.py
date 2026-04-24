@@ -29,10 +29,6 @@ NNES = int(sys.argv[1])
 
 def handle_state_changes(dt_string, istate, ioperation, istatus):
     """Handle service state change stream events"""
-    if _ncs.PATH is None:
-        event_sock = socket.socket()
-    else:
-        event_sock = socket.socket(family=socket.AF_UNIX)
     mask = events.NOTIF_STREAM_EVENT
     noexists = _ncs.Value(1, _ncs.C_NOEXISTS)
     dt_value = _ncs.Value(dt_string, _ncs.C_DATETIME)
@@ -41,12 +37,20 @@ def handle_state_changes(dt_string, istate, ioperation, istatus):
                                           stream_name="service-state-changes",
                                           start_time=dt_value,
                                           stop_time=noexists)
-    events.notifications_connect2(sock=event_sock,
-                                  mask=mask,
-                                  ip='127.0.0.1',
-                                  port=_ncs.NCS_PORT,
-                                  path=_ncs.PATH,
-                                  data=notif_data)
+    port_env = os.environ.get('NCS_IPC_PORT')
+    if port_env:
+        event_sock = socket.socket()
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      ip=_ncs.ADDR,
+                                      port=int(port_env),
+                                      data=notif_data)
+    else:
+        event_sock = socket.socket(family=socket.AF_UNIX)
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      data=notif_data,
+                                      path=_ncs.PATH)
     ns_hash = _ncs.str2hash("http://tail-f.com/ns/ncs")
     nready = 0
     while True:

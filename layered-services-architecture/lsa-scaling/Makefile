@@ -2,10 +2,10 @@ NODES =  upper-nso lower-nso-1 lower-nso-2 lower-nso-3
 
 MNAME = cisco-nso-nc-$(shell ncs --version | sed 's/\([0-9]*\.[0-9]*\).*/\1/')
 
-ifeq ($(NCS_IPC_PATH),)
+ifneq ($(NCS_IPC_PORT),)
 ENV = NCS_IPC_PORT=
 else
-ENV = NCS_IPC_PATH=$(NCS_IPC_PATH).
+ENV = NCS_IPC_PATH=$(or $(NCS_IPC_PATH),/tmp/nso/nso-ipc).
 endif
 
 all: upper-nso/ncs-cdb/devs.xml
@@ -85,12 +85,12 @@ cli-lower-nso-3:
 
 cdb-clean:
 	for node in $(NODES); do \
-	  rm -rf $$node/state/* $$node/logs/* $$node/ncs-cdb/*.cdb; \
+	  rm -rf $$node/state/* $$node/logs/* $$node/ncs-cdb/*.cdb $$node/ncs-cdb/{A,O,S}; \
 	done
 
 clean:
 	for node in $(NODES); do \
-	  rm -rf $$node/state $$node/logs $$node/ncs-cdb/*.cdb; \
+	  rm -rf $$node/state $$node/logs $$node/ncs-cdb/*.cdb $$node/ncs-cdb/{A,O,S}; \
 	done
 	rm -rf upper-nso/packages/rfs-ned
 	rm -rf upper-nso/packages/device-action-ned

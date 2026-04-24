@@ -1,0 +1,29 @@
+#!/bin/sh
+# Copyright 2026 Cisco Systems, Inc.
+# SPDX-License-Identifier: MIT
+
+BASE=$(cd "$(dirname "$0")" && pwd)
+. "$BASE"/util/ca.sh
+
+
+usage()
+{
+    cat <<EOF
+usage: list-certs
+
+    List existing certificate files.
+
+    In case multiple CAs are available, selects the most-recently-created
+    CA unless NCSCERT_CAPATH is used to select a specific CA.
+EOF
+    exit "${1:-0}"
+}
+
+show_usage_maybe "$@"
+find_ca || exit 1
+for c in nodes/* ; do
+    [ -e "${c}/node.crt" ] || continue
+    cert=$(basename "$c")
+    verify_cert "$cert" 2>/dev/null && status="" || status=" [not-valid]"
+    echo "${NCSCERT_CAPATH}/${cert}${status}"
+done

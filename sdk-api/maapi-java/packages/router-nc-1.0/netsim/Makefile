@@ -15,7 +15,7 @@ FXS = $(YANG_MODULES:../src/yang/%.yang=%.fxs)
 FILES = confd.conf.netsim
 FLAGS = --yangpath ../src/yang 
 
-%.fxs:  ../src/yang/%.yang
+%.fxs:  ../src/yang/%.yang $(CONFDC)
 	$(CONFDC)  $(FLAGS) \
           `ls ../src/yang/$*-ann.yang  > /dev/null 2>&1 && \
               echo "-a ../src/yang/$*-ann.yang"` \

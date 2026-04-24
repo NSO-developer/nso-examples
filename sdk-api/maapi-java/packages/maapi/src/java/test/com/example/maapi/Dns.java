@@ -59,11 +59,14 @@ public class Dns {
         System.out.println("deviceop: "+op);
 
         SocketAddress address;
-        String path = System.getenv("NCS_IPC_PATH");
-        if (path == null) {
-            address = new InetSocketAddress("localhost", Conf.NCS_PORT);
+        String port = System.getenv("NCS_IPC_PORT");
+        if (port != null) {
+            String host = System.getenv("NCS_IPC_ADDR");
+            if (host == null) host = "localhost";
+            address = new InetSocketAddress(host,
+                                            Integer.parseInt(port));
         } else {
-            address = UnixDomainSocketAddress.of(path);
+            address = UnixDomainSocketAddress.of(Conf.NCS_PATH);
         }
 
         if (op.equals("ls")) {

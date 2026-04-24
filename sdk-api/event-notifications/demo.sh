@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "${GREEN}##### Event notification demo\n${NC}"
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
@@ -75,10 +87,7 @@ ncs --cd nso-rundir -c $(pwd)/nso-rundir/ncs.conf
 ncs-netsim start --dir nso-rundir/netsim
 
 printf "\n${PURPLE}##### Start listening to all event notifications including the NETCONF stream \n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 python3 -u event_notifications.py --all --audit-sync --audit-network-sync --ha-info-sync --stream NETCONF --non-interactive 2>/dev/null | tee nso-rundir/logs/event.log &
 echo $! > nso-rundir/notif-app.pid
 
@@ -86,10 +95,7 @@ echo $! > nso-rundir/notif-app.pid
 dt_string=$(python3 -c "from datetime import datetime, timezone; dt = datetime.now().isoformat(); print(f'{dt}')")
 
 printf "${PURPLE}##### Enable the commit queue notification stream and generate notifications by adding some dummy configuration on d0 through the service and commit queue asynchronously\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 devices device d0 sync-from
 config
@@ -97,7 +103,7 @@ services commit-queue-notifications subscription dummy-notif service-type /dummy
 commit
 dummy-service d0 dummy "hello world"
 commit dry-run
-commit commit-queue async tag "hello-world-cq-tag"
+commit commit-queue async label "hello-world-label"
 EOF
 
 while : ; do
@@ -111,38 +117,27 @@ while : ; do
 done
 
 printf "\n${PURPLE}##### Get the dummy service config using NETCONF and RESTCONF\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 netconf-console --get-config -x /dummy-service
 python3 -c 'import requests; session = requests.Session(); session.auth = ("admin", "admin"); r = session.get("http://localhost:8080/restconf/data/dummy-service:dummy-service?content=config", headers={"Content-Type": "application/yang-data+json"}); print(r.text)'
 
 printf "\n${PURPLE}##### Enable netconf-call-home and high-availablity in ncs.conf and reload the config\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_conf_tool -e "true" ncs-config netconf-call-home enabled < nso-rundir/ncs.conf > nso-rundir/ncs.conf.tmp && mv -f nso-rundir/ncs.conf.tmp nso-rundir/ncs.conf
 ncs_conf_tool -a '  <ha>
     <enabled>true</enabled>
+    <ssl><enabled>false</enabled></ssl>
   </ha>' ncs-config < nso-rundir/ncs.conf > nso-rundir/ncs.conf.tmp && mv -f nso-rundir/ncs.conf.tmp nso-rundir/ncs.conf
 ncs --reload
 
 grep -q 'reopen_logs: completed' <(tail -n 1000 -f nso-rundir/logs/event.log)
 
 printf "\n${PURPLE}##### Stop listening to all event notifications\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 kill $(cat nso-rundir/notif-app.pid)
 
 printf "\n${PURPLE}##### Enable call home for the d1 device\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 config
 devices device d1 state admin-state call-home
@@ -153,10 +148,7 @@ commit
 EOF
 
 printf "\n${PURPLE}##### Start listening to call-home, commit-simple, ha-info, stream ncs-events (replay from $dt_string), and heartbeat event notifications only and redirect to a log file\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 python3 -u event_notifications.py --call-home --commit-simple --ha-info --heartbeat --stream ncs-events --start-time $dt_string --non-interactive 2>/dev/null | tee nso-rundir/logs/call-home-event.log &
 echo $! > nso-rundir/notif-app.pid
 
@@ -167,36 +159,27 @@ done
 grep -q 'tick heartbeat' <(tail -F nso-rundir/logs/call-home-event.log)
 
 printf "${PURPLE}##### Have the d1 device call home\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 CONFD_IPC_PORT=5011 confd_cmd -dd -c "netconf_ssh_call_home 127.0.0.1 4334"
 
 printf "\n${PURPLE}##### Wait for the call-home device connected event notification\n${NC}"
 grep -q 'call_home: type=device connected' <(tail -f nso-rundir/logs/call-home-event.log)
 
 printf "${PURPLE}##### Add some configuration to the d1 device\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 devices device d1 sync-from
 config
 dummy-service d1 dummy "calling home"
 commit dry-run
-commit commit-queue async tag "calling-home-cq-tag"
+commit commit-queue async label "calling-home-label"
 EOF
 
 printf "\n\n${PURPLE}##### Wait for the commit-simple event notification\n${NC}"
 grep -q 'commit_simple' <(tail -f nso-rundir/logs/call-home-event.log)
 
 printf "${PURPLE}##### Enable HA and change role to generate ha-info notifications\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 ncs_cli -n -u admin -C << EOF
 config
 high-availability token super-secret
@@ -209,19 +192,15 @@ high-availability be-primary
 EOF
 
 printf "\n\n${PURPLE}##### Get the received events in nso-rundir/logs/call-home-event.log\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 grep -q 'ha_info: this node is now primary' <(tail -f nso-rundir/logs/call-home-event.log)
 cat nso-rundir/logs/call-home-event.log
 
 if [ -z "$NONINTERACTIVE" ]; then
     printf "${GREEN}##### Cleanup\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
     tail -n 1 -f nso-rundir/logs/call-home-event.log &
     echo $! > nso-rundir/tailf.pid
-    read -n 1 -s -r
+    pause
     make stop
     make clean
 fi

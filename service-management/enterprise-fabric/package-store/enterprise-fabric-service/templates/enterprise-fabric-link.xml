@@ -1,0 +1,46 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <interface xmlns="urn:ios">
+          <GigabitEthernet tags="replace">
+            <name>{$INTERFACE_NAME}</name>
+            <description>{$DESCRIPTION}</description>
+            <bandwidth>
+              <kilobits>{$LINK_BANDWIDTH_KBPS}</kilobits>
+            </bandwidth>
+            <ip>
+              <address>
+                <primary>
+                  <address>{$LINK_IP}</address>
+                  <mask>{$LINK_MASK}</mask>
+                </primary>
+              </address>
+            </ip>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <interfaces>
+            <interface>
+              <name>{$INTERFACE_NAME}</name>
+              <description>{$DESCRIPTION}</description>
+              <unit tags="replace">
+                <name>0</name>
+                <description>{$DESCRIPTION}</description>
+                <family>
+                  <inet>
+                    <address>
+                      <name>{$LINK_PREFIX}</name>
+                    </address>
+                  </inet>
+                </family>
+              </unit>
+            </interface>
+          </interfaces>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

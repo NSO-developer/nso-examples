@@ -1,0 +1,16 @@
+<establish-subscription
+  xmlns="urn:ietf:params:xml:ns:yang:ietf-subscribed-notifications"
+  xmlns:yp="urn:ietf:params:xml:ns:yang:ietf-yang-push">
+  <yp:datastore
+    xmlns:ds="urn:ietf:params:xml:ns:yang:ietf-datastores">
+    ds:operational
+  </yp:datastore>
+  <yp:datastore-xpath-filter
+    xmlns:r="http://example.com/router">
+    /r:sys/r:interfaces/r:interface[name='eth0']/r:status
+  </yp:datastore-xpath-filter>
+  <yp:on-change>
+    <yp:dampening-period>0</yp:dampening-period>
+    <yp:sync-on-start>true</yp:sync-on-start>
+  </yp:on-change>
+</establish-subscription>

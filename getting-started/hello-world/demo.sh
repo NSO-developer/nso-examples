@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "${GREEN}##### Hello world demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -60,16 +72,14 @@ cat nso-rundir/logs/ncs.log
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop the NSO daemon by using the 'ncs --stop' option:\n${NC}"
     ncs --stop
     printf "\n${PURPLE}##### Use the '--reset' option with the 'ncs-setup' script\n${NC}"
     ncs-setup --reset --dest nso-rundir
 
     printf "\n${PURPLE}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     rm -rf nso-rundir
 fi
 

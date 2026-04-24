@@ -173,7 +173,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
             def myiter(kp, op, oldv, newv):
                 print(f'    ITER kp={kp},op={op},oldv={oldv},newv={newv}')
 
-            m = ncs.maapi.Maapi(port=port)
+            m = ncs.maapi.Maapi()
             t = m.attach(tctx)
             t.diff_iterate(myiter, 0)
 
@@ -628,7 +628,8 @@ def run(args):
                 events.NOTIF_REOPEN_LOGS |
                 events.NCS_NOTIF_CALL_HOME_INFO |
                 events.NCS_NOTIF_AUDIT_NETWORK |
-                events.NOTIF_COMPACTION)
+                events.NOTIF_COMPACTION |
+                events.NOTIF_SYSTEM_GOING_DOWN)
     if args.heartbeat:
         mask |= events.NOTIF_HEARTBEAT
     if args.health_check:
@@ -643,6 +644,8 @@ def run(args):
         mask |= events.NCS_NOTIF_AUDIT_NETWORK_SYNC
     if args.ha_info_sync:
         mask |= events.NOTIF_HA_INFO_SYNC
+    if args.system_going_down:
+        mask |= events.NOTIF_SYSTEM_GOING_DOWN
 
     if args.progress_verbosity == "verbose":
         progress_verbosity = _ncs.VERBOSITY_VERBOSE
@@ -680,19 +683,22 @@ def run(args):
                                         xpath_filter=args.xpath_filter,
                                         verbosity=progress_verbosity)
 
-    path = os.environ.get('NCS_IPC_PATH')
-    if path:
-        sock_type = socket.AF_UNIX
+    port_env = os.environ.get('NCS_IPC_PORT')
+    if port_env:
+        event_sock = socket.socket(socket.AF_INET)
+        port = args.port if args.port is not None else int(port_env)
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      ip=args.address,
+                                      port=port,
+                                      data=data)
     else:
-        sock_type = socket.AF_INET
-
-    event_sock = socket.socket(sock_type)
-    events.notifications_connect2(sock=event_sock,
-                                  mask=mask,
-                                  ip=args.address,
-                                  port=args.port,
-                                  data=data,
-                                  path=path)
+        event_sock = socket.socket(socket.AF_UNIX)
+        path = os.environ.get('NCS_IPC_PATH') or _ncs.PATH
+        events.notifications_connect2(sock=event_sock,
+                                      mask=mask,
+                                      data=data,
+                                      path=path)
 
     if args.non_interactive:
         loop(args.port, event_sock, mask, args.non_interactive)
@@ -765,6 +771,8 @@ if __name__ == "__main__":
                         help='Health check events')
     parser.add_argument('-c', '--commit-simple', action='store_true',
                         help='Configuration change events')
+    parser.add_argument('-Q', '--system-going-down', action='store_true',
+                        help='System going down events')
     parser.add_argument('-s', '--stream', default='whatever',
                         help='Notification NAME stream events')
     parser.add_argument('-y', '--audit-sync', action='store_true',
@@ -789,11 +797,11 @@ if __name__ == "__main__":
     parser.add_argument('-z', '--user-id', type=int, help='User ID')
     parser.add_argument('-I', '--address', default=_ncs.ADDR,
                         help='Connect to NSO at ADDRESS. Default: _ncs.ADDR')
-    parser.add_argument('-p', '--port', type=int, default=_ncs.PORT,
-                        help='Connect to NSO at PORT. Default: _ncs.PORT')
+    parser.add_argument('-p', '--port', type=int, default=None,
+                        help='Connect to NSO at PORT')
     parser.add_argument('-n', '--non-interactive', action='store_true',
                         help='No actions or input required from user')
     args = parser.parse_args()
-    with Maapi(port=args.port):  # Load schemas
+    with Maapi():  # Load schemas
         pass
     run(args)

@@ -57,17 +57,9 @@ if [ -z "$IP3" ]; then
     IP3="127.0.3.1"
 fi
 
-if [ -n "$NCS_IPC_PATH" ]; then
-NODE1="NCS_IPC_PATH=${NCS_IPC_PATH}.4561"
-NODE2="NCS_IPC_PATH=${NCS_IPC_PATH}.4562"
-NODE3="NCS_IPC_PATH=${NCS_IPC_PATH}.4563"
-else
-# All nodes use the same IP for IPC but different ports
-export NCS_IPC_ADDR=127.0.0.1
-NODE1=NCS_IPC_PORT=4561
-NODE2=NCS_IPC_PORT=4562
-NODE3=NCS_IPC_PORT=4563
-fi
+NODE1="NCS_IPC_PATH=/tmp/nso/nso-ipc1"
+NODE2="NCS_IPC_PATH=/tmp/nso/nso-ipc2"
+NODE3="NCS_IPC_PATH=/tmp/nso/nso-ipc3"
 set -u
 
 ID=1
@@ -130,11 +122,16 @@ show alarms alarm-list | notab | nomore
 EOF
 
 printf "\n\n${PURPLE}##### Start node 1 that will now assume secondary role\n${NC}"
-env $NODE1 ncs --cd nso-node1 -c $(pwd)/nso-node1/ncs.conf
+(cd node1 && ncs)
 
 printf "\n\n"
 while [[ $(env $NODE1 ncs_cmd -o -c 'mrtrans; maapi_get "/high-availability/status/mode"') != "secondary" ]]; do
     printf "${RED}#### Waiting for node 1 to become secondary to node 2...\n${NC}"
+    sleep 1
+done
+printf "\n\n"
+while [[ $(env $NODE3 ncs_cmd -o -c 'mrtrans; maapi_get "/high-availability/status/mode"') != "secondary" ]]; do
+    printf "${RED}#### Waiting for node 3 to become secondary to node 2...\n${NC}"
     sleep 1
 done
 

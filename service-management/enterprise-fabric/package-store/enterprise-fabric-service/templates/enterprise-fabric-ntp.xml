@@ -1,0 +1,25 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <ntp xmlns="urn:ios">
+          <server>
+            <peer-list>
+              <name>{$NTP_ADDRESS}</name>
+            </peer-list>
+          </server>
+        </ntp>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <system>
+            <ntp>
+              <server>
+                <name>{$NTP_ADDRESS}</name>
+              </server>
+            </ntp>
+          </system>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

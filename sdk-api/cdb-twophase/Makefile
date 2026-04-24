@@ -12,7 +12,7 @@ clean:
 	for f in packages/*/src; do \
 		$(MAKE) -C $$f clean || exit 1; \
 	done
-	rm -rf ./netsim state/* ncs-cdb/*.cdb logs/*
+	rm -rf ./netsim state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S} logs/*
 	rm -rf ncs-cdb/netsim_devices_init.xml
 
 stop:

@@ -1,5 +1,5 @@
-all: fxs templates
-.PHONY: all templates
+all: fxs ../package-meta-data.xml
+.PHONY: all
 
 # Include standard NCS examples build definitions and rules
 include $(NCS_DIR)/src/ncs/build/include.ncs.mk
@@ -24,6 +24,13 @@ $(DIRS):
 		$(NCSCPATH) \
 		-c -o $@ $<
 
+../package-meta-data.xml: package-meta-data.xml.in
+	@if [ -n "$$USE_RM" ]; then \
+		sed -e 's/^<!--//' -e 's/-->$$//' $< >$@ ;\
+	else \
+		cat $< >$@ ;\
+	fi
+
 clean:
-	rm -rf $(DIRS) $(TEMPLATES_XML)
+	rm -rf $(DIRS) ../package-meta-data.xml
 .PHONY: clean

@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Router network demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -17,10 +29,7 @@ set -e
 make clean
 
 printf "${GREEN}##### Starting the Simulated Network\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### To start the simulated devices, build them using 'make all'\n${NC}"
 make all
 
@@ -34,10 +43,7 @@ printf "\n${PURPLE}##### Show additional commands by issuing 'ncs-netsim help'\n
 ncs-netsim help
 
 printf "${GREEN}##### Starting NSO\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Start the NSO server with the default configuration\n${NC}"
 ncs
 
@@ -81,20 +87,14 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Managing Devices Using NSO\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### List the devices NSO is configured to manage\n${NC}"
 ncs_cli -n -u admin -C << EOF
 show devices device | display-level 1 | nomore
 EOF
 
 printf "\n\n${GREEN}##### The NSO Device Manager\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Connect to the devices and read their configurations into the NSO database\n${NC}"
 ncs_cli -n -u admin -C << EOF
 devices connect
@@ -128,10 +128,7 @@ printf "\n\n${PURPLE}##### Print the 'logs/netconf-ex0.trace' NSO device communi
 cat logs/netconf-ex0.trace
 
 printf "${GREEN}##### What if a Device is Down?\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Shut down the ex1 simulated device${NC}"
 ncs-netsim stop ex1
 
@@ -178,10 +175,7 @@ show devices commit-queue | nomore
 EOF
 
 printf "\n\n${GREEN}##### Syncing\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Verify that all devices are in sync with NSO${NC}"
 ncs_cli -n -u admin -C << EOF
 devices check-sync
@@ -211,8 +205,7 @@ EOF
 
 printf "\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     printf "\n${PURPLE}##### Stop NSO and clean all created files\n${NC}"
     ncs-netsim stop
     ncs --stop

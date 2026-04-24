@@ -24,9 +24,8 @@ quick-remake:
 	fi
 
 reset:
-	rm -f rollback* *.log ncserr* 2>/dev/null || true
-	rm -f ncs-cdb/*.cdb 2>/dev/null || true
-
+	rm -f rollback* *.log ncserr* ncs-cdb/*.cdb 2>/dev/null || true
+	rm -rf ncs-cdb/{A,O,S} 2>/dev/null || true
 
 all:	env-check
 	$(MAKE) ncs_all

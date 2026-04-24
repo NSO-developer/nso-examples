@@ -1,0 +1,8 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>enterprise-dns</name>
+  <package-version>1.0</package-version>
+  <description>
+    Template-based enterprise DNS service for the commit-parameters example
+  </description>
+  <ncs-min-version>5.0</ncs-min-version>
+</ncs-package>

@@ -1,5 +1,6 @@
 __pycache__/
 load-dir/
+package-meta-data.xml
 private-jar/
 shared-jar/
 ncsc-out/

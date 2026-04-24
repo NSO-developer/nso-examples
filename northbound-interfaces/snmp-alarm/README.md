@@ -55,14 +55,14 @@ Start the NSO CLI:
     ip               0.0.0.0;
     udp-port         4000;
     version {
-            v1;
-            v2c;
             v3;
     }
     ...
 
 The NSO northbound agent is set up by default to support read operations. The
-agent listens to UDP port 4000, configurable from the `ncs.conf` file.
+agent listens to UDP port 4000, configurable from the `ncs.conf` file. This
+example uses the built-in SNMPv3 user `initial` with SHA authentication and
+AES privacy.
 
 Check the USM and VACM settings with the following:
 
@@ -71,18 +71,26 @@ Check the USM and VACM settings with the following:
 
 At the shell prompt, verify that you can view the alarm list:
 
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+      -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
     TAILF-ALARM-MIB::tfAlarmNumber.0 = Gauge32: 0
 
 As seen above (`tfAlarmNumber.0 = 0`), there are no alarms in NSO.
 
 Start a trap receiver to listen for NSO alarms:
 
-    sudo snmptrapd --disableAuthorization=yes -Lf traplog.txt -p trapd.txt
+    snmptrapd -C -c ./snmptrapd.conf -Lf traplog.txt -p trapd.txt \
+      localhost:27777
 
-This is the simplest setup of the Net-SNMP trap receiver. It will accept all
-traps to UDP port 162, log them to `traplog.txt`, and print the trapd PID to
-the `trapd.txt` file. This is useful for killing the trap receiver later.
+The example ships with a `snmptrapd.conf` file that configures the same NSO
+engine ID and SNMPv3 `authPriv` user (`initial`) as the northbound agent. The
+trap receiver will listen on UDP port `27777`, log notifications to
+`traplog.txt`, and print the trapd PID to the `trapd.txt` file.
+
+The trap receiver part of this demo requires a recent Net-SNMP `snmptrapd`
+that supports the `authUser` directive in `snmptrapd.conf`. If `snmptrapd`
+prints `Unknown token: authUser`, you are likely running an older binary that
+does not support the configuration used by this example.
 
 Generate Some Alarms
 --------------------
@@ -120,7 +128,8 @@ You may prefer the layout of:
 
 View that alarm list in NSO over SNMP:
 
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+      -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
     TAILF-ALARM-MIB::tfAlarmNumber.0 = Gauge32: 2
     TAILF-ALARM-MIB::tfAlarmLastChanged.0 = STRING: 2012-9-10,9:55:9.2,+0:0
     TAILF-ALARM-MIB::tfAlarmType.1 = STRING: connection-failure
@@ -138,16 +147,10 @@ View that alarm list in NSO over SNMP:
 Here, we see two active (`tfAlarmCleared` = false) alarms of type
 `connection-failure` for `www0` and `lb0`.
 
-You can also try SNMPv3:
+This example uses SNMPv3 `authPriv` throughout:
 
-    snmpwalk -v3 -u initial -l noAuthNoPriv \
-      localhost:4000 enterprises tfAlarmTable
-
-    snmpwalk -v3 -u initial -l authNoPriv -a sha -A GoTellMom \
-      localhost:4000 enterprises tfAlarmTable
-
-    snmpwalk -v3 -u initial -l authPriv -a sha -A GoTellMom \
-      -x aes -X GoTellMom \
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+      -x AES -X GoTellMom \
       localhost:4000 enterprises tfAlarmTable
 
 Start the devices and connect to them to clear the alarms:
@@ -163,7 +166,8 @@ Start the devices and connect to them to clear the alarms:
     }
     ...
 
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+      -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
     TAILF-ALARM-MIB::tfAlarmNumber.0 = Gauge32: 4
     TAILF-ALARM-MIB::tfAlarmLastChanged.0 = STRING: 2012-9-10,9:57:51.9,+0:0
     TAILF-ALARM-MIB::tfAlarmType.1 = STRING: connection-failure
@@ -205,34 +209,40 @@ As a preparation, you started the Net-SNMP trap receiver in the preparations
 sections.
 
 To have NSO send alarm notifications northbound over SNMP, you configure
-notification targets according to the SNMPv3 framework MIBs. The default
-settings are shown below. You can add additional targets. Remember to tie
-`notify` and `target` using the same `tag`:
+notification targets according to the SNMPv3 framework MIBs. In this example
+we update the default monitor target to use the same SNMPv3 `authPriv`
+credentials as the SNMP walk commands and the supplied `snmptrapd.conf`. Remember
+to tie `notify` and `target` using the same `tag`:
 
     ncs_cli --user=admin
     > configure
+    % set snmp target monitor udp-port 27777
+    % set snmp target monitor usm user-name initial
+    % set snmp target monitor usm sec-level auth-priv
+    % commit
     % show snmp notify
     notify foo {
       tag  monitor;
       type trap;
     }
-    % show snmp target
+    % show snmp target monitor
     target monitor {
       ip       127.0.0.1;
-      udp-port 162;
+      udp-port 27777;
       tag      [ monitor ];
       timeout  1500;
       retries  3;
-      v2c {
-        sec-name public;
+      usm {
+        user-name initial;
+        sec-level auth-priv;
       }
     }
     % exit
     > exit
 
 With the above settings, NSO will send notifications to localhost, 127.0.0.1,
-on UDP port 162. This is in line with how we started the Net-SNMP trap
-receiver.
+on UDP port 27777 using SNMPv3 `authPriv`. This is in line with how we started
+the Net-SNMP trap receiver.
 
 View the contents of the trap receiver log:
 
@@ -268,7 +278,8 @@ would like to change the mapping of `connection-failure` alarm type to
 
 Now, if you walk the alarm list, the `probable-case` is 22:
 
-    snmpwalk -c public -v2c localhost:4000 enterprises tfAlarmTable
+    snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+      -x AES -X GoTellMom localhost:4000 enterprises tfAlarmTable
     TAILF-ALARM-MIB::tfAlarmNumber.0 = Gauge32: 4
     TAILF-ALARM-MIB::tfAlarmLastChanged.0 = STRING: 2012-9-10,10:5:18.9,+0:0
     TAILF-ALARM-MIB::tfAlarmType.1 = STRING: connection-failure
@@ -320,4 +331,3 @@ Further Reading
 
 + NSO Development Guide: Alarm MIB
 + The `demo.sh` script
-

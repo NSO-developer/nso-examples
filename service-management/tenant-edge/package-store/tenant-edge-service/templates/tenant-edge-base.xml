@@ -1,0 +1,143 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>{$VRF_NAME}</name>
+            <description>{$DESCRIPTION}</description>
+          </vrf-list>
+        </vrf>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet tags="replace">
+            <id>{$INTERFACE_ID}</id>
+            <description>{$DESCRIPTION}</description>
+            <vrf>{$VRF_NAME}</vrf>
+            <ipv4>
+              <address>
+                <ip>{$LOCAL_IP}</ip>
+                <mask>{$LOCAL_MASK}</mask>
+              </address>
+            </ipv4>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$XR_IN_POLICY_NAME}</name>
+          <value>{$XR_IN_POLICY_VALUE}</value>
+        </route-policy>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$XR_OUT_POLICY_NAME}</name>
+          <value>{$XR_OUT_POLICY_VALUE}</value>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$LOCAL_AS}</id>
+              <vrf>
+                <name>{$VRF_NAME}</name>
+                <rd>{$RD}</rd>
+                <neighbor>
+                  <id>{$PEER_ADDRESS}</id>
+                  <remote-as>{$PEER_AS}</remote-as>
+                  <address-family>
+                    <ipv4>
+                      <unicast>
+                        <route-policy>
+                          <direction>in</direction>
+                          <name>{$XR_IN_POLICY_NAME}</name>
+                        </route-policy>
+                        <route-policy>
+                          <direction>out</direction>
+                          <name>{$XR_OUT_POLICY_NAME}</name>
+                        </route-policy>
+                        <maximum-prefix>
+                          <max-prefix-limit>{$MAX_PREFIX}</max-prefix-limit>
+                        </maximum-prefix>
+                      </unicast>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </vrf>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+        <vrf xmlns="http://tail-f.com/ned/arista-dcs">
+          <instance>
+            <name>{$VRF_NAME}</name>
+            <description>{$DESCRIPTION}</description>
+            <rd>{$RD}</rd>
+          </instance>
+        </vrf>
+        <ip xmlns="http://tail-f.com/ned/arista-dcs">
+          <routing>
+            <vrf>
+              <vrf-id>{$VRF_NAME}</vrf-id>
+              <prefix>enable</prefix>
+            </vrf>
+          </routing>
+        </ip>
+        <interface xmlns="http://tail-f.com/ned/arista-dcs">
+          <Ethernet tags="replace">
+            <name>{$INTERFACE_ID}</name>
+            <description>{$DESCRIPTION}</description>
+            <no-switchport>
+              <switchport>false</switchport>
+            </no-switchport>
+            <vrf>
+              <forwarding>{$VRF_NAME}</forwarding>
+            </vrf>
+            <ip>
+              <address>
+                <address-primary>{$LOCAL_PREFIX}</address-primary>
+              </address>
+            </ip>
+          </Ethernet>
+        </interface>
+        <route-map xmlns="http://tail-f.com/ned/arista-dcs">
+          <name>{$EOS_ROUTE_MAP_NAME}</name>
+          <sequence>10</sequence>
+          <operation>permit</operation>
+          <description>{$DESCRIPTION}</description>
+          <match>
+            <ip>
+              <address>
+                <prefix-list>{$EOS_PREFIX_LIST_NAME}</prefix-list>
+              </address>
+            </ip>
+          </match>
+        </route-map>
+        <router xmlns="http://tail-f.com/ned/arista-dcs">
+          <bgp>
+            <id>{$LOCAL_AS}</id>
+            <vrf>
+              <name>{$VRF_NAME}</name>
+              <rd>{$RD}</rd>
+              <neighbor>
+                <id>{$PEER_ADDRESS}</id>
+                <remote-as>{$PEER_AS}</remote-as>
+                <description>{$DESCRIPTION}</description>
+                <maximum-routes>
+                  <number>{$MAX_PREFIX}</number>
+                </maximum-routes>
+              </neighbor>
+              <address-family>
+                <ipv4>
+                  <neighbor>
+                    <id>{$PEER_ADDRESS}</id>
+                    <activate/>
+                    <route-map>
+                      <inout>out</inout>
+                      <route-map-name>{$EOS_ROUTE_MAP_NAME}</route-map-name>
+                    </route-map>
+                  </neighbor>
+                </ipv4>
+              </address-family>
+            </vrf>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

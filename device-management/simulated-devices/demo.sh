@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Simulate devices demo\n${NC}"
 
 printf "${PURPLE}##### Reset\n${NC}"
@@ -18,10 +30,7 @@ set -e
 rm -rf nso-rundir
 
 printf "\n${GREEN}##### Setting up and running netsim\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Create the simulated network, initially with two IOS routers\n${NC}"
 ncs-netsim --dir nso-rundir/netsim create-network ${NCS_DIR}/examples.ncs/common/packages/cisco-ios-netsim-cli-1.0 2 c
 
@@ -52,10 +61,7 @@ printf "\n${PURPLE}##### Run 'ncs-netsim -h' to list all available commands\n${N
 ncs-netsim -h
 
 printf "${GREEN}##### Setting up and starting NSO\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Set up and configure NSO with the devices\n${NC}"
 ncs-setup --netsim-dir ./nso-rundir/netsim --dest ./nso-rundir
 
@@ -67,10 +73,7 @@ ncs-netsim --dir ./nso-rundir/netsim list
 ncs-netsim --dir ./nso-rundir/netsim is-alive
 
 printf "\n${GREEN}##### Configuring devices from NSO\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "\n${PURPLE}##### Start the NSO J-style CLI and show the packages and NED and connection configuration for the devices\n${NC}"
 ncs_cli -n --cwd ./nso-rundir -u admin << EOF
@@ -140,8 +143,7 @@ cat ./nso-rundir/logs/ned-cisco-ios-netsim-cli-1.0-c0.trace
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
 
     printf "\n${PURPLE}##### Stop NSO and the netsim devices\n${NC}"
     ncs --stop
@@ -152,8 +154,7 @@ if [ -z "$NONINTERACTIVE" ]; then
     ncs-setup --dest ./nso-rundir --reset
 
     printf "\n${GREEN}##### Reset the example to its original files\n${NC}"
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     rm -rf ./nso-rundir
 fi
 

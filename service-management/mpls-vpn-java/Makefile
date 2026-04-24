@@ -60,8 +60,8 @@ clean:
 	for i in $(PACKAGES); do \
 	    $(MAKE) -C packages/$${i}/src clean || exit 1; \
 	done
-	rm -f README.ncs README.netsim ncs.conf*
-	rm -rf netsim logs state ncs-cdb *.trace
+	rm -f README.ncs README.netsim
+	rm -rf netsim logs state ncs-cdb *.trace ncs.conf*
 	rm -f packages/alu-sr-netsim-cli-1.0
 	rm -f packages/cisco-ios-netsim-cli-1.0
 	rm -f packages/cisco-iosxr-netsim-cli-1.0

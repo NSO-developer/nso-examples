@@ -2,9 +2,9 @@ Manage SNMP Devices with NSO
 ============================
 
 This example shows how to set up and manage three SNMP devices with NSO. The
-three devices are simulated using netsim. Each device uses one of the three
-major SNMP versions, SNMPv1, SNMPv2c, and SNMPv3, with authentication and
-encryption.
+three devices are simulated using netsim. All devices use SNMPv3 with
+`auth-priv`, SHA authentication, and AES encryption. The devices differ in the
+MIB coverage they expose to NSO.
 
 A local installation of NSO is required to run the example. The `NCS_DIR`
 variable must be set up to point to the installation, preferably by sourcing
@@ -136,7 +136,7 @@ NSO is configured to communicate with the three devices:
       port    11022;
       device-type {
           snmp {
-              version        v1;
+              version        v3;
               snmp-authgroup default;
               mib-group      [ basic ];
           }
@@ -150,7 +150,7 @@ NSO is configured to communicate with the three devices:
       port    11023;
       device-type {
           snmp {
-              version        v2c;
+              version        v3;
               snmp-authgroup default;
           }
       }
@@ -173,31 +173,25 @@ NSO is configured to communicate with the three devices:
       }
     }
 
-There are different versions for all three devices and a shared authentication
-group. The authentication groups define v1/v2c and v3c authentication
-parameters. For v1/v2c, it is just the community string, and for v3, it maps
-the NSO user to corresponding v3 parameters:
+All three devices use the same SNMPv3 authentication group. The authgroup maps
+the local NSO user to the corresponding remote USM user and `auth-priv`
+credentials. The example uses the passphrase `adminpass` for both SHA
+authentication and AES privacy, since Net-SNMP requires USM passphrases to be
+at least 8 characters long:
 
-    > show configuration devices authgroups snmp-group default-map
-    snmp-group default {
-      default-map {
-          community-name public;
-      }
-    }
-
-    > show configuration devices authgroups snmp-group umap
+    > show configuration devices authgroups snmp-group default
     snmp-group default {
       umap admin {
           usm {
               remote-name    admin;
               security-level auth-priv;
               auth {
-                  md5 {
+                  sha {
                       remote-password $4$wIo7Yd068FRwhYYI0d4IDw==;
                   }
               }
               priv {
-                  des {
+                  aes {
                       remote-password $4$wIo7Yd068FRwhYYI0d4IDw==;
                   }
               }
@@ -233,7 +227,7 @@ with all read-write objects.
         port    11022;
         device-type {
             snmp {
-                version        v1;
+                version        v3;
                 snmp-authgroup default;
                 mib-group      [ basic ];
             }
@@ -272,8 +266,7 @@ with all read-write objects.
     }
 
 At this point, it is time to configure the devices using SNMP. Note that you
-can automatically use the CLI across the different SNMP versions, including
-v3 authentication.
+can automatically use the CLI across multiple SNMPv3-managed devices.
 
 Let's set the `sysContact` field on all devices that support it. To find out
 which devices implement a data model, we can run:
@@ -317,7 +310,8 @@ When the NSO transaction is committed, NSO sends SET requests to the
 devices. So after this commit, use, for example, the net-snmp `snmpget` command
 towards the device to verify the new value:
 
-    snmpget -v2c -c public 127.0.0.1:11023 sysContact.0
+    snmpget -v3 -u admin -l authPriv -a SHA -A adminpass -x AES -X adminpass \
+    127.0.0.1:11023 sysContact.0
 
     SNMPv2-MIB::sysContact.0 = STRING: wallan
 
@@ -357,7 +351,8 @@ compare the NSO configuration with the agent. If you set the `sysContact` over
 SNMP using net-snmp commands or a MIB browser, you can ask NSO to display the
 diff:
 
-    snmpset -v2c -c public 127.0.0.1:11023 sysContact.0 s john
+    snmpset -v3 -u admin -l authPriv -a SHA -A adminpass -x AES -X adminpass \
+    127.0.0.1:11023 sysContact.0 s john
     ncs_cli -u admin
     % request devices device r1 compare-config
     diff

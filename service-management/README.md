@@ -39,6 +39,25 @@ XRd, to demonstrate working data plane connectivity. It features different
 service types, as well as a simple inventory system to prevent misconfiguration
 from provisioning incompatible services on the same interface.
 
+### srv6-multivendor-netsim
+This example demonstrates NSO orchestration of SRv6 services in a multivendor
+service-provider network built entirely with `ncs-netsim`. It is a netsim-only
+multivendor variant of the `srv6-demo` example. The focus is multivendor
+service modeling, package structure, and realistic device configuration
+rendering for Cisco IOS-XR, Juniper Junos, and Nokia SR OS.
+
+### tenant-edge
+This example builds and operates a multivendor Tenant Edge Service with NSO
+across Cisco IOS-XR and Arista EOS. The service provisions a tenant VRF, BGP
+routing, and export policy on both platforms. After deployment, the example
+walks through two Day-2 workflows showing both closed-loop remediation and the
+more nuanced out-of-band interoperation workflow.
+
+### enterprise-fabric
+An example that turns multiple network automation tasks into a single NSO
+service-management example for enterprise network engineers, automation
+engineers, NetOps, and SRE teams.
+
 ### mpls-vpn-java
 An example that illustrates how services are created and used in NSO by
 managing Layer3 VPNs in a service provider MPLS network. Used by the NSO

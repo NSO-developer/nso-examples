@@ -5,6 +5,25 @@ from ncs.application import Service
 from ncs.dp import Action
 
 
+CUSTOM_NS = _ncs.str2hash("http://example.com/commit-params-py")
+AUDIT_CONTEXT = _ncs.str2hash("audit-context")
+TICKET_ID = _ncs.str2hash("ticket-id")
+ACTION_LABEL = "py-action-demo"
+ACTION_TICKET_ID = "PY-ACTION-001"
+
+
+def set_custom_ticket_id(params, ticket_id):
+    audit_context = params.root.node(AUDIT_CONTEXT, ns=CUSTOM_NS)
+    audit_context.node(TICKET_ID).set(ticket_id, _ncs.C_BUF)
+
+
+def get_custom_ticket_id(params):
+    ticket = params.root.descendant(AUDIT_CONTEXT, TICKET_ID, ns=CUSTOM_NS)
+    if ticket is None or ticket.get() is None:
+        return None
+    return ticket.get().as_pyval()
+
+
 # ------------------------
 # SERVICE CALLBACK EXAMPLE
 # ------------------------
@@ -31,6 +50,9 @@ class ServiceCallbacks(Service):
         # Detect specific transaction commit parameters
         if params.is_dry_run():
             self.log.info("Dry run detected!")
+        ticket_id = get_custom_ticket_id(params)
+        if ticket_id is not None:
+            self.log.info(f"Custom commit param ticket-id={ticket_id}")
 
         tvars = ncs.template.Variables()
         template = ncs.template.Template(service)
@@ -54,15 +76,21 @@ class ShowcaseCommitParams(Action):
             # Init and set commit parameters
             params = t.get_params()
             self.log.info(
-                "Apply commit parameter label and dry-run with an action")
-            params.label("foobar")
+                "Apply commit parameter label, dry-run, and "
+                "audit-context/ticket-id with an action")
+            params.label(ACTION_LABEL)
             params.dry_run_native()
+            set_custom_ticket_id(params, ACTION_TICKET_ID)
 
             # Display commit params
             self.log.info(f"All transaction params: {params}")
             if params.get_label() is not None:
                 self.log.info(
                     f"Commit label detected: {params.get_label()}")
+            ticket_id = get_custom_ticket_id(params)
+            if ticket_id is not None:
+                self.log.info(
+                    f"Custom commit param ticket-id={ticket_id}")
 
             # Apply the transaction and print out the dry-run results
             result = t.apply_params(True, params)

@@ -1,0 +1,47 @@
+module enterprise-dns {
+  yang-version 1.1;
+  namespace "http://example.com/enterprise-dns";
+  prefix enterprise-dns;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "A small enterprise DNS service used by the commit-parameters
+     northbound-interface example.";
+
+  container enterprise-dns {
+    description "Top-level container for enterprise DNS service instances.";
+    list enterprise-dns-instances {
+      key name;
+
+      uses ncs:service-data;
+      ncs:servicepoint enterprise-dns-servicepoint;
+
+      leaf name {
+        type string;
+      }
+
+      leaf device {
+        mandatory true;
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf dns-server {
+        mandatory true;
+        type inet:ipv4-address;
+      }
+
+      leaf search-domain {
+        mandatory true;
+        type inet:host;
+      }
+    }
+  }
+}

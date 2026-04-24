@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-if [ -n "${NCS_IPC_PATH}" ]; then
-ENV="NCS_IPC_PATH=${NCS_IPC_PATH}."
-else
+if [ -n "${NCS_IPC_PORT:-}" ]; then
 ENV="NCS_IPC_PORT="
+else
+ENV="NCS_IPC_PATH=${NCS_IPC_PATH:-/tmp/nso/nso-ipc}."
 fi
 
 set -eu # Abort the script if a command returns with a non-zero exit code or if
@@ -34,6 +34,18 @@ NDTRANS=1 # Number of devices the RFS service will configure per service transac
 USECQ="True" # Use commit queues on the lower devices
 DEV_DELAY=1 # Simulated work on devices in seconds
 NONINTERACTIVE=${NONINTERACTIVE-}
+
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
 
 while getopts ':d:t:w:r:q:y:' opt
 do
@@ -134,8 +146,7 @@ printf "\n${PURPLE}##### Total wall-clock time: $TIME s\n${NC}"
 
 printf "${PURPLE}##### Show a graph representation of the upper-nso progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py upper-nso/logs/t3-$RUNID.csv
     printf "${PURPLE}##### Note: The last transaction disables the progress trace\n\n${NC}"
 else
@@ -144,8 +155,7 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-1 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-1/logs/t3-$RUNID.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"
@@ -153,8 +163,7 @@ fi
 
 printf "${PURPLE}##### Show a graph representation of the lower-nso-2 progress trace\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
     python3 -u ../../common/simple_progress_trace_viewer.py lower-nso-2/logs/t3-$RUNID.csv
 else
     printf "${RED}##### Skip - non-interactive\n${NC}"

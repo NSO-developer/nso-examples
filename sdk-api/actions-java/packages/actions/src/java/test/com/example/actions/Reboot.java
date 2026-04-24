@@ -58,11 +58,12 @@ public class Reboot {
     }
 
     private static SocketAddress getAddress() {
-        String path = System.getenv("NCS_IPC_PATH");
-        if (path == null) {
-            return new InetSocketAddress("127.0.0.1", Conf.NCS_PORT);
-        } else {
-            return UnixDomainSocketAddress.of(path);
+        String port = System.getenv("NCS_IPC_PORT");
+        if (port != null) {
+            String addr = System.getenv("NCS_IPC_ADDR");
+            if (addr == null) addr = "127.0.0.1";
+            return new InetSocketAddress(addr, Integer.parseInt(port));
         }
+        return UnixDomainSocketAddress.of(Conf.NCS_PATH);
     }
 }

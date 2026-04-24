@@ -1,0 +1,19 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>enterprise-fabric-service</name>
+  <package-version>1.0</package-version>
+  <description>Enterprise multivendor intent for IOS and Junos</description>
+
+  <ncs-min-version>6.4</ncs-min-version>
+
+  <supported-ned-id-match>cisco-ios-netsim-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>juniper-junos-netsim-nc.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>
+        enterprise_fabric_service.main.Main
+      </python-class-name>
+    </application>
+  </component>
+</ncs-package>

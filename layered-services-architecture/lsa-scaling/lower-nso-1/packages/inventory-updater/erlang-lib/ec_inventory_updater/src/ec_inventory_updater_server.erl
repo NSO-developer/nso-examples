@@ -62,11 +62,24 @@ stop() ->
 %%          {stop, Reason}
 %%----------------------------------------------------------------------
 init([]) ->
-    case econfd_maapi:connect({127,0,0,1}, ?NCS_PORT) of
+    Addr = confd_ia:get_connect_address(),
+    MaapiResult = case Addr of
+        {local, Path} -> econfd_maapi:connect(Path);
+        {ip, {Ip, Port, _, _}} -> econfd_maapi:connect(Ip, Port)
+    end,
+    case MaapiResult of
         {ok, M} ->
-            {ok, D} = econfd:init_daemon('inventory-updater',
-                                         ?CONFD_DEBUG, user, M,
-                                         {127,0,0,1}, ?NCS_PORT),
+            {ok, D} = case Addr of
+                {local, DPath} ->
+                    econfd:init_daemon(
+                      'inventory-updater',
+                      ?CONFD_DEBUG, user, M, DPath);
+                {ip, {DIp, DPort, _, _}} ->
+                    econfd:init_daemon(
+                      'inventory-updater',
+                      ?CONFD_DEBUG, user, M,
+                      DIp, DPort)
+            end,
             econfd:controlling_process(M,D),
             econfd:register_done(D),
             proc_lib:spawn(fun() ->

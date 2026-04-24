@@ -80,8 +80,6 @@ To view and manipulate the SNMP configuration:
         ip               0.0.0.0;
         udp-port         4000;
         version {
-            v1;
-            v2c;
             v3;
         }
         engine-id {
@@ -116,12 +114,14 @@ Accessing Data From an SNMP Client/Manager
 ------------------------------------------
 
 Use any SNMP manager and connect it to the NSO SNMP agent. The example below
-uses NetSNMP as a manager.
+uses NetSNMP as a manager and the built-in SNMPv3 user `initial` with SHA
+authentication and AES privacy.
 
 SNMP walk:
 
     > export MIBS=$(pwd)/packages/snmp-mib/src/TAIL-F-TEST-MIB.mib
-    > snmpwalk -c public -v2c localhost:4000 enterprises
+    > snmpwalk -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 enterprises
     TAIL-F-TEST-MIB::numberOfServers.0 = INTEGER: 2
     TAIL-F-TEST-MIB::numberOfHosts.0 = INTEGER: 2
     TAIL-F-TEST-MIB::maxNumberOfServers.0 = INTEGER: 10
@@ -134,27 +134,28 @@ SNMP walk:
 
 SNMP get:
 
-    > snmpget -c public -v2c localhost:4000 \
+    > snmpget -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 \
     TAIL-F-TEST-MIB::maxNumberOfServers.0
     TAIL-F-TEST-MIB::maxNumberOfServers.0 = INTEGER: 10
 
 SNMP set:
 
 The default VACM (view-based access control model) configuration for NSO does
-not allow for updates, as it does not specify any "write view" for the v1/v2c
-SNMP communities or `usm` users.
+not allow for updates, as it does not specify any "write view" for the
+pre-configured SNMPv3 `usm` users.
 
-We need to add a write view to allow for updates via the `public` community we
-need to add a write view for it. This can be done via, for example, the CLI or
-the `ncs_cmd` tool:
+We need to add a write view to allow for updates via the `initial` SNMPv3 user.
+This can be done via, for example, the CLI or the `ncs_cmd` tool:
 
     > ncs_cmd -c 'mset \
-    "/snmp/vacm/group{public}/access{any no-auth-no-priv}/write-view" internet'
+    "/snmp/vacm/group{initial}/access{usm auth-priv}/write-view" internet'
 
 The access control mechanism will now allow for `set` requests of objects in
-the internet view tree if sent to the `public` community.
+the internet view tree when sent over SNMPv3 `authPriv`.
 
-    snmpset -c public -v2c localhost:4000 \
+    snmpset -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 \
     TAIL-F-TEST-MIB::maxNumberOfServers.0 i 43
 
     TAIL-F-TEST-MIB::maxNumberOfServers.0 = INTEGER: 43
@@ -166,7 +167,8 @@ table's index is a string in SNMP, a length indicator is included in the
 `rowindex`. The table is, therefore, sorted with short strings before longer
 strings.
 
-    snmptable -Ci -c public -v2c localhost:4000 TAIL-F-TEST-MIB::hostTable
+    snmptable -Ci -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 TAIL-F-TEST-MIB::hostTable
 
     SNMP table: TAIL-F-TEST-MIB::hostTable
                   index hostEnabled hostNumberOfServers hostRowStatus
@@ -175,12 +177,14 @@ strings.
 
 SNMP getnext:
 
-    snmpgetnext -c public -v2c localhost:4000 \
+    snmpgetnext -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 \
     TAIL-F-TEST-MIB::hostEnabled.\"kalle\"
 
     TAIL-F-TEST-MIB::hostEnabled."vega@tail-f.com" = INTEGER: false(2)
 
-    snmpgetnext -c public -v2c localhost:4000 \
+    snmpgetnext -v3 -u initial -l authPriv -a SHA -A GoTellMom \
+    -x AES -X GoTellMom localhost:4000 \
     TAIL-F-TEST-MIB::hostEnabled.\"vega@tail-f.com\"
 
     TAIL-F-TEST-MIB::hostEnabled."saturn@tail-f.com" = INTEGER: true(1)
@@ -198,5 +202,3 @@ Further Reading
 
 + NSO Development Guide: NSO SNMP Agent
 + The `demo.sh` script
-
-

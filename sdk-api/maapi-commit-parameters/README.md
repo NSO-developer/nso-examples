@@ -1,26 +1,28 @@
 NSO Commit Parameters Showcase
 ==============================
 
-This example features examples of detecting and applying different commit
-parameters, such as dry run and commit with a label, directly from either
-Python or Java packages or code.
+This example shows how to work with NSO commit parameters from Python and Java
+user code.
 
-You need NSO, Python, and Java installed, and the `ncsrc` file sourced
-to run this example.
+The example consists of Python and Java packages plus helper scripts that:
 
-The example is a shell script that runs both examples using the `make` command.
-The Java and Python examples feature a service that tries to modify interface
-configuration on the `ex0` device, then adds the `dry-run` and `label`
-commit parameters and applies the transaction.
+* Augment the shared `tailf-ncs-commit-params` model with a custom
+  `audit-context/ticket-id` commit parameter
+* Detect built-in commit parameters in Python and Java service code
+* Detect the augmented `audit-context/ticket-id` parameter in Python and Java
+  user code
+* Apply commit parameters from user code through MAAPI
+* Build and run the example from a local `nso-run` directory
 
-The examples show how to detect arbitrary and specific commit parameters in
-service code and apply commit parameters from code either as an action or from
-a script. It also contains a list of all currently existing commit parameters
-available to you.
+The `demo.sh` walkthrough first drives the service callbacks from the CLI so
+that the Python and Java service code can inspect commit parameters received
+from the transaction. It then invokes the Python and Java actions, which set
+`label`, `dry-run`, and the augmented `audit-context/ticket-id` parameter from
+user code before applying the transaction through MAAPI.
 
-Be aware, though, that some combinations of commit parameters will not work
-simultaneously in the same commit, such as `no-lsa` and `use-lsa` or
-`dry_run_cli` and `dry_run_native`.
+The service instances live under the root containers
+`commit-params-py/commit-params-py-instances` and
+`commit-params-java/commit-params-java-instances`.
 
 Running the Example
 -------------------
@@ -28,7 +30,9 @@ Running the Example
     make demo
 
 This example uses Java and Python packages to apply commit parameters to a
-transaction and detect them from service code.
+transaction and detect them from service code. `make all` creates a local
+`nso-run` directory with the built packages and starts the simulated router
+from there.
 
 Cleanup
 -------
@@ -40,7 +44,9 @@ Stop all daemons and clean all created files:
 Further Reading
 ---------------
 
++ The Python and Java packages in the `./package-repository` directory
 + NSO Development Guide: API Overview
++ NSO Development Guide: Commit Parameters
 + Python API reference documentation: `ncs.maapi` and `ncs.maagic`.
 + Java API reference documentation: `com.tailf.maapi.Maapi`.
-+ The Python and Java packages in the `./package-directory` directory
++ `examples.ncs/northbound-interfaces/commit-parameters`

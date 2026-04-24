@@ -1,0 +1,21 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <compliance xmlns="http://tail-f.com/ns/ncs">
+    <reports>
+      <report>
+        <name>enterprise-fabric-audit</name>
+        <device-check>
+          <device>lon-core1</device>
+          <device>lon-br1</device>
+          <device>lon-tr1</device>
+          <current-out-of-sync>true</current-out-of-sync>
+          <historic-changes>false</historic-changes>
+        </device-check>
+        <service-check>
+          <service-type>/enterprise-fabric:enterprise-fabric</service-type>
+          <current-out-of-sync>true</current-out-of-sync>
+          <historic-changes>false</historic-changes>
+        </service-check>
+      </report>
+    </reports>
+  </compliance>
+</config>

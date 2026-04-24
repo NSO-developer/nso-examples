@@ -8,6 +8,18 @@ PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 NONINTERACTIVE=${NONINTERACTIVE-}
 
+pause() {
+    prompt="${1-}"
+    if [ -z "$prompt" ]; then
+        prompt="${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
+    fi
+    if [ -z "$NONINTERACTIVE" ]; then
+        printf "%b" "$prompt"
+        read -n 1 -s -r
+    fi
+}
+
+
 printf "\n${GREEN}##### Datacenter Q-in-Q Tunneling demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
@@ -41,10 +53,7 @@ show running-config devices device config | nomore
 EOF
 
 printf "\n\n${GREEN}##### Configuring the Service\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Configure the S-VLAN that the first customer network will use, the edge devices and interfaces to be used, and core switches\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -77,10 +86,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### NSO power tools\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Change the S-VLAN for customer2 to 200 and use commit dry-run to review the resulting device configuration changes showing how the NSO service will automatically reconfigure all affected devices\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -90,10 +96,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Out-of-band configuration\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Connect directly to the device c0 and reconfigure an edge interface that was previously configured using NSO\n${NC}"
 ncs-netsim cli-c c0 << EOF
 config
@@ -144,10 +147,7 @@ show devices device services | nomore
 EOF
 
 printf "\n\n${GREEN}##### Must validation\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Configure a service instance that triggers a must validation error\n${NC}"
 ncs_cli -n -u admin -C << EOF
 config
@@ -169,10 +169,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Alarms\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "\n${PURPLE}##### Generate an alarm\n${NC}"
 make -C ./alarms alarm-1
 ncs_cli -n -u admin -C << EOF
@@ -209,10 +206,7 @@ alarms compress-alarms
 EOF
 
 printf "\n\n${GREEN}##### Template based service demo\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
 make stop
@@ -271,10 +265,7 @@ commit
 EOF
 
 printf "\n\n${GREEN}##### Java code and template combination service demo\n${NC}"
-if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
-fi
+pause
 
 printf "${PURPLE}##### Start clean\n${NC}"
 set +e
@@ -317,8 +308,7 @@ EOF
 
 printf "\n\n${GREEN}##### Cleanup\n${NC}"
 if [ -z "$NONINTERACTIVE" ]; then
-    printf "${RED}##### Press any key to continue or ctrl-c to exit\n${NC}"
-    read -n 1 -s -r
+    pause
 
     printf "${PURPLE}##### Stop all daemons and clean all created files\n${NC}"
     make stop clean

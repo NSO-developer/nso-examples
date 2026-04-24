@@ -14,13 +14,13 @@ find_leader() {
 node_cli() {
     node=$1
     shift
-    NCS_IPC_PORT=456$node exec_cli "$@"
+    NCS_IPC_PATH=/tmp/nso/nso-ipc$node exec_cli "$@"
 }
 
 node_cmd() {
     node=$1
     shift
-    NCS_IPC_PORT=456$node ncs_cmd "$@"
+    NCS_IPC_PATH=/tmp/nso/nso-ipc$node ncs_cmd "$@"
 }
 
 node_leader() {

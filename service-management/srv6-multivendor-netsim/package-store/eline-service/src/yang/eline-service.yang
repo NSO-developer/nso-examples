@@ -1,0 +1,70 @@
+module eline-service {
+  namespace "http://tail-f.com/srlab/eline-service";
+  prefix eline;
+  yang-version 1.1;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import inventory {
+    prefix inv;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  identity eline {
+    base inv:service-kind;
+  }
+
+  list eline {
+    description "Ethernet p2p service (E-LINE).";
+
+    uses ncs:service-data;
+    ncs:servicepoint eline-service;
+
+    key name;
+    leaf name {
+      description "Service instance name";
+      type string {
+        pattern "[A-Za-z0-9-]{3,24}";
+      }
+      tailf:cli-allow-range;
+    }
+
+    leaf customer {
+      mandatory true;
+      type leafref {
+        path "/inv:inventory/inv:customer/inv:name";
+      }
+    }
+
+    leaf-list ports {
+      type leafref {
+        path "/inv:inventory/inv:port/inv:pid";
+      }
+      max-elements 2;
+    }
+
+    leaf vni {
+      description "Manually assigned VNI (EVI); optional.";
+      type leafref {
+        path "/inv:inventory/inv:vni/inv:vnid";
+      }
+    }
+
+    leaf force {
+      description
+       "Provision port to this service even if it is already in use.";
+      type boolean;
+      default false;
+    }
+  }
+}

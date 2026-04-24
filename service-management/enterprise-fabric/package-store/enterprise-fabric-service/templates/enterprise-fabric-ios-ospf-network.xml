@@ -1,0 +1,19 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <router xmlns="urn:ios">
+          <ospf>
+            <id>{$OSPF_PROCESS}</id>
+            <network>
+              <ip>{$NETWORK}</ip>
+              <mask>{$WILDCARD}</mask>
+              <area>{$AREA}</area>
+            </network>
+          </ospf>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

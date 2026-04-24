@@ -3893,6 +3893,7 @@ module netsim-ned-dell-ftos {
             type inet:ipv4-address;
           }
           leaf udp-port {
+            tailf:cli-expose-key-name;
             type uint32;
           }
           leaf octet {
@@ -4120,6 +4121,7 @@ module netsim-ned-dell-ftos {
           type string;
         }
         leaf udp-port {
+          tailf:cli-expose-key-name;
           type uint32;
         }
       }

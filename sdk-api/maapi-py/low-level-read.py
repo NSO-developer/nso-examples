@@ -21,14 +21,12 @@ def read_and_print_device_info(s, th, deviceName):
 
 def low_level_read():
 
-    if _ncs.PATH is None:
+    if _ncs.PORT is not None:
         s = socket.socket()
-        path = ""
+        _ncs.maapi.connect(s, ip=_ncs.ADDR, port=_ncs.PORT)
     else:
         s = socket.socket(family=socket.AF_UNIX)
-        path = _ncs.PATH
-
-    _ncs.maapi.connect(s, '127.0.0.1', _ncs.NCS_PORT, path)
+        _ncs.maapi.connect(s, path=_ncs.PATH)
 
     _ncs.maapi.start_user_session(s, 'admin',
                                   'low-level-read', [], '127.0.0.1',

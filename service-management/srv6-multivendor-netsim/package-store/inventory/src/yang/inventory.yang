@@ -1,0 +1,152 @@
+module inventory {
+  namespace "http://tail-f.com/srlab/inventory";
+  prefix inv;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+
+  revision 2025-02-01 {
+    description
+      "Initial revision.";
+  }
+
+
+
+  identity service-kind {
+    description
+     "Base identity for referencing services offered.";
+  }
+
+  identity custom {
+    base service-kind;
+  }
+
+  container inventory {
+    tailf:cli-add-mode;
+    description
+     "Inventory and configuration of customer resources.";
+
+    list customer {
+      key name;
+      unique cid;
+
+      leaf name {
+        mandatory true;
+        type string;
+      }
+      leaf cid {
+        mandatory true;
+        type uint16;
+      }
+      leaf configuration-key {
+        description
+         "A short string used in configurations to identify this customer.
+
+         If unset, 'CUSTOMER_<cid>' is used.";
+        type string {
+          pattern "[A-Z][A-Z0-9]{2,16}";
+        }
+      }
+    }
+
+    list port {
+      description
+       "Customer port on a PE or aggregation device used for service
+        provisioning.";
+      key pid;
+      unique "device interface";
+
+      leaf pid {
+        type string;
+      }
+      leaf device {
+        mandatory true;
+        type string;
+      }
+      leaf interface {
+        mandatory true;
+        type string;
+      }
+      leaf customer {
+        type leafref {
+          path "/inventory/customer/name";
+        }
+      }
+      leaf ce {
+        description
+         "CE device connected to this port (if any).";
+        type leafref {
+          path "/inventory/ce/name";
+        }
+      }
+      leaf ce-port {
+        when "../ce";
+        mandatory true;
+        type string;
+      }
+      leaf in-use {
+        type boolean;
+        default false;
+      }
+
+      must "(in-use = 'false') or customer" {
+        error-message "In-use ports must be assigned to a customer.";
+      }
+      must "not(ce) or (../ce[name=current()/ce]/customer = " +
+           "current()/customer)" {
+        error-message "CE and port must belong to the same customer.";
+      }
+    }
+
+    list ce {
+      key name;
+
+      leaf name {
+        description
+         "CE device name.";
+        type string;
+      }
+      leaf customer {
+        type leafref {
+          path "/inventory/customer/name";
+        }
+      }
+      leaf management-ip {
+        mandatory true;
+        type inet:ip-address;
+      }
+      leaf managed {
+        mandatory true;
+        type boolean;
+      }
+    }
+
+    list vni {
+      description
+       "Inventory of Virtual Network Identifiers (VNIs) used to distinguish
+        VRFs, EVIs and similar.";
+      key vnid;
+
+      leaf vnid {
+        type uint16;
+      }
+      leaf customer {
+        mandatory true;
+        type leafref {
+          path "/inventory/customer/name";
+        }
+      }
+      leaf service {
+        type identityref {
+          base service-kind;
+        }
+        default custom;
+      }
+    }
+  }
+}

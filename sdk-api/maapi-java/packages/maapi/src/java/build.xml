@@ -10,9 +10,26 @@
     <pathelement location="${sharedjar.dir}/java-getopt-1.0.13.jar" />
   </augment>
 
-  <condition property="ipc.path" value="${env.NCS_IPC_PATH}" else="">
+  <!-- IPC connection arguments: first match wins
+       (Ant properties are immutable).
+       Priority: NCS_IPC_PATH (Unix socket)
+                 > NCS_IPC_ADDR+NCS_IPC_PORT (TCP)
+                 > NCS_IPC_PORT alone (TCP to localhost)
+                 > empty (Java default) -->
+  <condition property="ipc.args" value="${env.NCS_IPC_PATH}">
     <isset property="env.NCS_IPC_PATH" />
   </condition>
+  <condition property="ipc.args"
+             value="${env.NCS_IPC_ADDR} ${env.NCS_IPC_PORT}">
+    <and>
+      <isset property="env.NCS_IPC_PORT" />
+      <isset property="env.NCS_IPC_ADDR" />
+    </and>
+  </condition>
+  <condition property="ipc.args" value="localhost ${env.NCS_IPC_PORT}">
+    <isset property="env.NCS_IPC_PORT" />
+  </condition>
+  <property name="ipc.args" value="" />
 
 
   <target name="compile" depends="ncs-package.compile,compile-test">
@@ -38,7 +55,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
   <!--
@@ -53,7 +70,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
 
@@ -70,7 +87,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
   <!--
@@ -84,7 +101,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
   <!--
@@ -99,7 +116,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
   <!--
@@ -114,7 +131,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
   <!--
@@ -129,7 +146,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-    <arg line="${ipc.path}" />
+    <arg line="${ipc.args}" />
     </java>
   </target>
 
@@ -181,7 +198,7 @@
           fork="true">
       <classpath refid="core-libs" />
       <classpath location="build/classes"/>
-      <arg line="${ipc.path}" />
+      <arg line="${ipc.args}" />
     </java>
   </target>
 </project>

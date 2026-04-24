@@ -58,6 +58,9 @@ Python, Java, and Erlang APIs and other ways to extend NSO.
 ### aaa
 Use NSO's AAA mechanism.
 
+### compliance
+Learn how to use NSO's compliance reporting feature.
+
 ### misc
 Examples that do not belong to any of the above categories.
 

@@ -49,8 +49,8 @@ module netsim-ned-dell-ftos-stats {
       }
       leaf state {
         type enumeration {
-          enum up;
-          enum down;
+          enum "up";
+          enum "down";
         }
       }
       leaf line-protocol {
@@ -79,14 +79,14 @@ module netsim-ned-dell-ftos-stats {
       }
       leaf flowcontrol-rx {
         type enumeration {
-          enum on;
-          enum off;
+          enum "on";
+          enum "off";
         }
       }
       leaf flowcontrol-tx {
         type enumeration {
-          enum on;
-          enum off;
+          enum "on";
+          enum "off";
         }
       }
       leaf arp-type {
