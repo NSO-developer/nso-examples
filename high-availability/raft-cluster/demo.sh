@@ -94,6 +94,7 @@ node_cli 1 show ha-raft status role
 node_cli $leader show ha-raft status connected-node
 
 next_step " Observe the new data is replicated as well"
+wait_while "1" node_cmd 1 -c 'num_instances /dummies/dummy'
 node_show 1 running-config dummies
 
 show_done

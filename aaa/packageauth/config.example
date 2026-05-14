@@ -1,0 +1,2 @@
+jwt-auth algorithm HS256
+jwt-auth secret secret-random-long-pre-shared-key
