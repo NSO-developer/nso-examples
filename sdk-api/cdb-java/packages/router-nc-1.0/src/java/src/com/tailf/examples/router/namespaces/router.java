@@ -130,10 +130,10 @@ public class router extends ConfNamespace {
     public static final String _description_ = "description";
     public static final int    _search = 472086744;
     public static final String _search_ = "search";
-    public static final int    _inet = 1716066537;
-    public static final String _inet_ = "inet";
     public static final int    _reach = 50917064;
     public static final String _reach_ = "reach";
+    public static final int    _inet = 1716066537;
+    public static final String _inet_ = "inet";
     public static final int    _sys = 1280841638;
     public static final String _sys_ = "sys";
     public static final int    _local_clock = 988804996;
@@ -182,10 +182,10 @@ public class router extends ConfNamespace {
     public static final String _ndots_ = "ndots";
     public static final int    _peer = 1450174230;
     public static final String _peer_ = "peer";
-    public static final int    _next_hop = 1889650088;
-    public static final String _next_hop_ = "next-hop";
     public static final int    _status = 1950810920;
     public static final String _status_ = "status";
+    public static final int    _next_hop = 1889650088;
+    public static final String _next_hop_ = "next-hop";
     public static final int    _enabled = 197426095;
     public static final String _enabled_ = "enabled";
     public static final int    _delay = 200515694;

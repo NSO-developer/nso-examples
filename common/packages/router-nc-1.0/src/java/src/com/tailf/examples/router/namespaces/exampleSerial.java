@@ -66,10 +66,10 @@ public class exampleSerial extends ConfNamespace {
     public static final String _fragment_ = "fragment";
     public static final int    _ipcp = 480124781;
     public static final String _ipcp_ = "ipcp";
-    public static final int    _method = 781988118;
-    public static final String _method_ = "method";
     public static final int    _links = 159989304;
     public static final String _links_ = "links";
+    public static final int    _method = 781988118;
+    public static final String _method_ = "method";
     public static final int    _additional_delay_value = 162813971;
     public static final String _additional_delay_value_ = "additional-delay-value";
     public static final int    _optional = 321395874;
