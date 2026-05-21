@@ -58,10 +58,10 @@ public class netsimNedCiscoAsaStats extends ConfNamespace {
     public static final String _duration_ = "duration";
     public static final int    _serial_number = 544353266;
     public static final String _serial_number_ = "serial-number";
-    public static final int    _rx_bytes = 2068252239;
-    public static final String _rx_bytes_ = "rx-bytes";
     public static final int    _version = 1714291735;
     public static final String _version_ = "version";
+    public static final int    _rx_bytes = 2068252239;
+    public static final String _rx_bytes_ = "rx-bytes";
     public static final int    _post_encrypt_octets = 1050338138;
     public static final String _post_encrypt_octets_ = "post-encrypt-octets";
     public static final int    _username = 870658415;

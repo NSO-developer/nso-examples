@@ -48,10 +48,10 @@ public class router extends ConfNamespace {
         return ConfNamespace.hashToString(hash);
     }
 
-    public static final int    _transmit = 1705430781;
-    public static final String _transmit_ = "transmit";
     public static final int    _selector = 372182622;
     public static final String _selector_ = "selector";
+    public static final int    _transmit = 1705430781;
+    public static final String _transmit_ = "transmit";
     public static final int    _flag = 2035937176;
     public static final String _flag_ = "flag";
     public static final int    _negate = 724559905;
@@ -112,10 +112,10 @@ public class router extends ConfNamespace {
     public static final String _type_ = "type";
     public static final int    _c1 = 926807367;
     public static final String _c1_ = "c1";
-    public static final int    _ntp = 2125290123;
-    public static final String _ntp_ = "ntp";
     public static final int    _domain = 2003714718;
     public static final String _domain_ = "domain";
+    public static final int    _ntp = 2125290123;
+    public static final String _ntp_ = "ntp";
     public static final int    _iburst = 1462625859;
     public static final String _iburst_ = "iburst";
     public static final int    _broadcast = 1767430821;
@@ -128,10 +128,10 @@ public class router extends ConfNamespace {
     public static final String _route_ = "route";
     public static final int    _offset = 1966490361;
     public static final String _offset_ = "offset";
-    public static final int    _archive_path = 1927359332;
-    public static final String _archive_path_ = "archive-path";
     public static final int    _arp = 2115159070;
     public static final String _arp_ = "arp";
+    public static final int    _archive_path = 1927359332;
+    public static final String _archive_path_ = "archive-path";
     public static final int    _facility = 419851720;
     public static final String _facility_ = "facility";
     public static final int    _unit = 1638458042;
@@ -156,16 +156,16 @@ public class router extends ConfNamespace {
     public static final String _stratum_ = "stratum";
     public static final int    _search = 472086744;
     public static final String _search_ = "search";
-    public static final int    _inet = 1716066537;
-    public static final String _inet_ = "inet";
     public static final int    _reach = 50917064;
     public static final String _reach_ = "reach";
+    public static final int    _inet = 1716066537;
+    public static final String _inet_ = "inet";
     public static final int    _sys = 1280841638;
     public static final String _sys_ = "sys";
-    public static final int    _local_clock = 988804996;
-    public static final String _local_clock_ = "local-clock";
     public static final int    _compress = 1232234516;
     public static final String _compress_ = "compress";
+    public static final int    _local_clock = 988804996;
+    public static final String _local_clock_ = "local-clock";
     public static final int    _result = 401396173;
     public static final String _result_ = "result";
     public static final int    _options = 268171404;
@@ -182,10 +182,10 @@ public class router extends ConfNamespace {
     public static final String _value_ = "value";
     public static final int    _routes = 278551890;
     public static final String _routes_ = "routes";
-    public static final int    _timeout = 614210192;
-    public static final String _timeout_ = "timeout";
     public static final int    _attempts = 494356450;
     public static final String _attempts_ = "attempts";
+    public static final int    _timeout = 614210192;
+    public static final String _timeout_ = "timeout";
     public static final int    _dropped = 1815365056;
     public static final String _dropped_ = "dropped";
     public static final int    _link_status = 2137463011;
