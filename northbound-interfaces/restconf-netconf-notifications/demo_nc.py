@@ -8,6 +8,7 @@ See the README file for more information
 
 import subprocess
 import os
+import select
 from datetime import datetime, timezone
 import ncs
 import _ncs
@@ -18,6 +19,55 @@ OKBLUE = '\033[94m'
 OKGREEN = '\033[92m'
 ENDC = '\033[0m'
 BOLD = '\033[1m'
+
+
+def _cleanup_process(p):
+    """Clean up a subprocess by killing, waiting, and closing streams."""
+    if p.poll() is None:
+        p.kill()
+    p.wait()
+    if p.stdout is not None:
+        p.stdout.close()
+
+
+def _wait_for_hw_state_change(dt_string, attempts=60, timeout=1):
+    """Wait for hardware-state-change notification on device-notifications.
+
+    Retry loop to handle race condition where notification may arrive before
+    the stream subscription is established.
+    """
+    for attempt in range(attempts):
+        nc_proc = subprocess.Popen(
+            'exec netconf-console --create-subscription='
+            f'device-notifications --start-time={dt_string}',
+            shell=True,
+            stdout=subprocess.PIPE,
+            text=True)
+        do_print = False
+        do_break = False
+        try:
+            while True:
+                # Use select with timeout to avoid blocking forever
+                ready, _, _ = select.select([nc_proc.stdout], [], [], timeout)
+                if not ready:
+                    # Timeout - no data, retry
+                    break
+                line = nc_proc.stdout.readline()
+                if not line:
+                    break
+                if '<notification' in line:
+                    do_print = True
+                if do_print:
+                    print(f'{line}', end="")
+                if do_print and '</hardware-state-change>' in line:
+                    do_break = True
+                if do_break and '</notification>' in line:
+                    break
+            if do_break:
+                break
+        finally:
+            _cleanup_process(nc_proc)
+
 
 print(f'\n{OKGREEN}##### Reset and setup the example\n{ENDC}')
 subprocess.run(['make', 'stop', 'clean', 'all', 'start'], check=True,
@@ -109,10 +159,9 @@ cmd = '''<establish-subscription
 </establish-subscription>
 
 '''
-try:
-    yp_proc.communicate(input=cmd, timeout=0.1)
-except subprocess.TimeoutExpired:
-    pass
+yp_proc.stdin.write(cmd)
+yp_proc.stdin.flush()
+yp_proc.stdin.close()
 
 print(f'\n{OKGREEN}##### Sync with the device and receive the NETCONF base'
       f' notification the config changes generates over the built-in'
@@ -160,6 +209,8 @@ print(f'\n{HEADER}##### Waiting for the YANG push notification for the config'
       f' change{ENDC}')
 while True:
     line = yp_proc.stdout.readline()
+    if not line:
+        break
     print(f'{line}', end="")
     if '</push-update>' in line:
         print(f'{yp_proc.stdout.readline()}')
@@ -223,24 +274,7 @@ proc = subprocess.Popen(['python3',
 print(f'\n{HEADER}##### Waiting for NSO to forward the device hardware_state'
       f' stream notification to the NSO device-notifications stream'
       f'{ENDC}')
-proc = subprocess.Popen('exec netconf-console --create-subscription='
-                        f'device-notifications --start-time={dt_string}',
-                        shell=True,
-                        stdout=subprocess.PIPE,
-                        text=True)
-do_print = False
-do_break = False
-while True:
-    line = proc.stdout.readline()
-    if '<notification' in line:
-        do_print = True
-    if do_print:
-        print(f'{line}', end="")
-    if do_print and '</hardware-state-change>' in line:
-        do_break = True
-    if do_break and '</notification>' in line:
-        break
-proc.kill()
+_wait_for_hw_state_change(dt_string)
 
 print(f'\n{OKGREEN}##### Start a yang-push on-change subscription for device'
       f' configuration changes\n{ENDC}')
@@ -268,10 +302,16 @@ cmd = '''<establish-subscription
 </establish-subscription>
 
 '''
-try:
-    yp_proc.communicate(input=cmd, timeout=0.1)
-except subprocess.TimeoutExpired:
-    pass
+yp_proc.stdin.write(cmd)
+yp_proc.stdin.flush()
+yp_proc.stdin.close()
+
+# Wait for the subscription acknowledgment before configuring the card, to
+# ensure the on-change subscription is active before the change is committed.
+for line in yp_proc.stdout:
+    print(f'{line}', end="")
+    if '</rpc-reply>' in line:
+        break
 
 print(f'{OKGREEN}##### Configure the new card and receive the resulting'
       f' notifications on the NETCONF and device-notifications streams'
@@ -333,29 +373,14 @@ proc.kill()
 print(f'{HEADER}##### Waiting for NSO to forward the device hardware_state'
       f' stream notification to the NSO device-notifications stream'
       f'{ENDC}')
-proc = subprocess.Popen('exec netconf-console --create-subscription='
-                        f'device-notifications --start-time={dt_string}',
-                        shell=True,
-                        stdout=subprocess.PIPE,
-                        text=True)
-do_print = False
-do_break = False
-while True:
-    line = proc.stdout.readline()
-    if '<notification' in line:
-        do_print = True
-    if do_print:
-        print(f'{line}', end="")
-    if do_print and '</hardware-state-change>' in line:
-        do_break = True
-    if do_break and '</notification>' in line:
-        break
-proc.kill()
+_wait_for_hw_state_change(dt_string)
 
 print(f'\n{HEADER}##### Waiting for the YANG push notification for the config'
       f' change{ENDC}')
 while True:
     line = yp_proc.stdout.readline()
+    if not line:
+        break
     print(f'{line}', end="")
     if '</push-change-update>' in line:
         print(f'{yp_proc.stdout.readline()}')

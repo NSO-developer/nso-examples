@@ -52,6 +52,16 @@ module router {
       "Initial revision.";
   }
 
+  typedef ncs_compliance_template_admin-state {
+    type string;
+    // NCS drop default statement
+  }
+
+  typedef ncs_template_admin-state {
+    type string;
+    // NCS drop default statement
+  }
+
   typedef ncs_rpc_notif_admin-state {
     type enumeration {
       enum "locked";
@@ -138,6 +148,46 @@ module router {
           type live_ncs_admin-state;
         }
       }
+    }
+  }
+  augment "/ncs:devices/ncs:template/ncs:ned-id/ncs:config" {
+    container sys {
+      container interfaces {
+        uses ncs_template_interfaces;
+      }
+      container routes {
+        uses ncs_template_routes;
+      }
+      container syslog {
+        uses ncs_template_syslog;
+      }
+      container ntp {
+        uses ncs_template_ntp;
+      }
+      container dns {
+        uses ncs_template_dns;
+      }
+      // NCS drop config false container state
+    }
+  }
+  augment "/ncs:compliance/ncs:template/ncs:ned-id/ncs:config" {
+    container sys {
+      container interfaces {
+        uses ncs_compliance_template_interfaces;
+      }
+      container routes {
+        uses ncs_compliance_template_routes;
+      }
+      container syslog {
+        uses ncs_compliance_template_syslog;
+      }
+      container ntp {
+        uses ncs_compliance_template_ntp;
+      }
+      container dns {
+        uses ncs_compliance_template_dns;
+      }
+      // NCS drop config false container state
     }
   }
 }

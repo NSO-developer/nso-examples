@@ -30000,7 +30000,6 @@ module netsim-ned-a10-acos {
               type string;
             }
             leaf pass-phrase {
-              tailf:ned-ignore-compare-config;
               tailf:cli-break-sequence-commands;
               type tailf:aes-cfb-128-encrypted-string;
             }

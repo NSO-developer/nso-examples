@@ -43,6 +43,22 @@ submodule router-syslog {
       "Initial revision.";
   }
 
+  typedef ncs_compliance_template_syslogLevel {
+    type string;
+  }
+
+  typedef ncs_compliance_template_syslogFacility {
+    type string;
+  }
+
+  typedef ncs_template_syslogLevel {
+    type string;
+  }
+
+  typedef ncs_template_syslogFacility {
+    type string;
+  }
+
   typedef ncs_rpc_notif_syslogLevel {
     type enumeration {
       enum "emerg";
@@ -177,6 +193,90 @@ submodule router-syslog {
       enum "local7";
       enum "all" {
         tailf:code-name "sf_all";
+      }
+    }
+  }
+
+  grouping ncs_compliance_template_syslog {
+    list server {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf enabled {
+        type string;
+      }
+      list selector {
+        // NCS patched for predictable order
+        ordered-by user;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf negate {
+          type string;
+        }
+        leaf comparison {
+          type string;
+        }
+        leaf level {
+          type ncs_compliance_template_syslogLevel;
+        }
+        leaf-list facility {
+          // NCS patched for predictable order
+          ordered-by user;
+          type ncs_compliance_template_syslogFacility;
+          // NCS drop min-elements statement
+          // NCS drop max-elements statement
+        }
+      }
+      leaf administrator {
+        type string;
+        tailf:hidden "maint";
+      }
+    }
+  }
+
+  grouping ncs_template_syslog {
+    list server {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      leaf name {
+        type string;
+      }
+      leaf enabled {
+        type string;
+      }
+      list selector {
+        // NCS patched for predictable order
+        ordered-by user;
+        key "name";
+        leaf name {
+          type string;
+        }
+        leaf negate {
+          type string;
+        }
+        leaf comparison {
+          type string;
+        }
+        leaf level {
+          type ncs_template_syslogLevel;
+        }
+        leaf-list facility {
+          // NCS patched for predictable order
+          ordered-by user;
+          type ncs_template_syslogFacility;
+          // NCS drop min-elements statement
+          // NCS drop max-elements statement
+        }
+      }
+      leaf administrator {
+        type string;
+        tailf:hidden "maint";
       }
     }
   }
