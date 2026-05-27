@@ -50,6 +50,64 @@ submodule router-ntp {
       "Initial revision.";
   }
 
+  typedef ncs_compliance_template_ntpState {
+    type string;
+  }
+
+  typedef ncs_compliance_template_ntpStratum {
+    type string;
+  }
+
+  typedef ncs_compliance_template_ntpDecimal {
+    type string;
+    units "milliseconds";
+  }
+
+  typedef ncs_compliance_template_ntpRestrictName {
+    type string;
+  }
+
+  typedef ncs_compliance_template_ntpRestrictMask {
+    type string;
+  }
+
+  typedef ncs_compliance_template_ntpRestrictFlag {
+    type string;
+  }
+
+  typedef ncs_compliance_template_ntpKeyValue {
+    type string;
+  }
+
+  typedef ncs_template_ntpState {
+    type string;
+  }
+
+  typedef ncs_template_ntpStratum {
+    type string;
+  }
+
+  typedef ncs_template_ntpDecimal {
+    type string;
+    units "milliseconds";
+  }
+
+  typedef ncs_template_ntpRestrictName {
+    type string;
+  }
+
+  typedef ncs_template_ntpRestrictMask {
+    type string;
+  }
+
+  typedef ncs_template_ntpRestrictFlag {
+    type string;
+  }
+
+  typedef ncs_template_ntpKeyValue {
+    type string;
+  }
+
   typedef ncs_rpc_notif_ntpState {
     type enumeration {
       enum "reject" {
@@ -257,6 +315,214 @@ submodule router-ntp {
   typedef ntpKeyValue {
     type string {
       pattern '[!-~]{1,32}';
+    }
+  }
+
+  grouping ncs_compliance_template_ntpStatus {
+    leaf state {
+      type ncs_compliance_template_ntpState;
+    }
+    leaf stratum {
+      type ncs_compliance_template_ntpStratum;
+    }
+    leaf reach {
+      type string;
+    }
+    leaf delay {
+      type ncs_compliance_template_ntpDecimal;
+    }
+    leaf offset {
+      type ncs_compliance_template_ntpDecimal;
+    }
+    leaf jitter {
+      type ncs_compliance_template_ntpDecimal;
+    }
+  }
+
+  grouping ncs_compliance_template_ntp {
+    list server {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      // NCS drop max-elements statement
+      leaf name {
+        type string;
+      }
+      leaf enabled {
+        type string;
+        // NCS drop default statement
+      }
+      leaf peer {
+        type string;
+        // NCS drop default statement
+      }
+      leaf iburst {
+        type empty;
+      }
+      leaf version {
+        type string;
+        // NCS drop default statement
+      }
+      leaf key {
+        type string;
+      }
+      // NCS drop config false container status
+    }
+    container local-clock {
+      leaf enabled {
+        type string;
+        // NCS drop default statement
+      }
+      leaf stratum {
+        type ncs_compliance_template_ntpStratum;
+        // NCS drop default statement
+      }
+      container status {
+        uses ncs_compliance_template_ntpStatus;
+      }
+    }
+    list restrict {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name mask";
+      // NCS drop max-elements statement
+      leaf name {
+        type ncs_compliance_template_ntpRestrictName;
+      }
+      leaf mask {
+        type ncs_compliance_template_ntpRestrictMask;
+      }
+      leaf-list flag {
+        // NCS patched for predictable order
+        ordered-by user;
+        type ncs_compliance_template_ntpRestrictFlag;
+      }
+    }
+    list key {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      // NCS drop max-elements statement
+      leaf name {
+        type string;
+      }
+      leaf value {
+        type ncs_compliance_template_ntpKeyValue;
+      }
+      leaf trusted {
+        type string;
+        // NCS drop default statement
+      }
+    }
+    leaf requestkey {
+      type string;
+    }
+    leaf controlkey {
+      type string;
+    }
+  }
+
+  grouping ncs_template_ntpStatus {
+    leaf state {
+      type ncs_template_ntpState;
+    }
+    leaf stratum {
+      type ncs_template_ntpStratum;
+    }
+    leaf reach {
+      type string;
+    }
+    leaf delay {
+      type ncs_template_ntpDecimal;
+    }
+    leaf offset {
+      type ncs_template_ntpDecimal;
+    }
+    leaf jitter {
+      type ncs_template_ntpDecimal;
+    }
+  }
+
+  grouping ncs_template_ntp {
+    list server {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      // NCS drop max-elements statement
+      leaf name {
+        type string;
+      }
+      leaf enabled {
+        type string;
+        // NCS drop default statement
+      }
+      leaf peer {
+        type string;
+        // NCS drop default statement
+      }
+      leaf iburst {
+        type empty;
+      }
+      leaf version {
+        type string;
+        // NCS drop default statement
+      }
+      leaf key {
+        type string;
+      }
+      // NCS drop config false container status
+    }
+    container local-clock {
+      leaf enabled {
+        type string;
+        // NCS drop default statement
+      }
+      leaf stratum {
+        type ncs_template_ntpStratum;
+        // NCS drop default statement
+      }
+      container status {
+        uses ncs_template_ntpStatus;
+      }
+    }
+    list restrict {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name mask";
+      // NCS drop max-elements statement
+      leaf name {
+        type ncs_template_ntpRestrictName;
+      }
+      leaf mask {
+        type ncs_template_ntpRestrictMask;
+      }
+      leaf-list flag {
+        // NCS patched for predictable order
+        ordered-by user;
+        type ncs_template_ntpRestrictFlag;
+      }
+    }
+    list key {
+      // NCS patched for predictable order
+      ordered-by user;
+      key "name";
+      // NCS drop max-elements statement
+      leaf name {
+        type string;
+      }
+      leaf value {
+        type ncs_template_ntpKeyValue;
+      }
+      leaf trusted {
+        type string;
+        // NCS drop default statement
+      }
+    }
+    leaf requestkey {
+      type string;
+    }
+    leaf controlkey {
+      type string;
     }
   }
 

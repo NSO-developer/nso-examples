@@ -54,6 +54,7 @@ make bootstrap
 printf "\n\n${GREEN}##### Step 1: Inspect CLI commit parameter completions\n${NC}"
 pause
 ncs_cli -n -u admin -C << EOF
+paginate false
 config
 enterprise-dns enterprise-dns-instances ${SERVICE_NAME} search-domain cli-preview.example
 commit ?
@@ -62,6 +63,7 @@ EOF
 printf "\n\n${GREEN}##### Step 2: Use CLI commit parameters for dry-run and commit\n${NC}"
 pause
 ncs_cli -n -u admin -C << EOF
+paginate false
 config
 enterprise-dns enterprise-dns-instances ${SERVICE_NAME} search-domain cli-demo.example
 commit dry-run outformat cli-c
@@ -70,9 +72,10 @@ EOF
 
 printf "\n\n${PURPLE}##### Verify the CLI-applied value and inspect commit history\n${NC}"
 ncs_cli -n -u admin -C << 'EOF'
-show running-config enterprise-dns enterprise-dns-instances branch-office | nomore
-show running-config devices device ex0 config sys dns | nomore
-show configuration commit list | nomore
+paginate false
+show running-config enterprise-dns enterprise-dns-instances branch-office
+show running-config devices device ex0 config sys dns
+show configuration commit list
 EOF
 
 if [ -z "$NONINTERACTIVE" ]; then

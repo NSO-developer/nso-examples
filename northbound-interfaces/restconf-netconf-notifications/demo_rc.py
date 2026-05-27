@@ -29,6 +29,33 @@ headers = {'Content-Type': 'application/yang-data+json'}
 headers_patch = {'Content-Type': 'application/yang-patch+json'}
 headers_stream = {'Content-Type': 'text/event-stream'}
 
+
+def _wait_for_hw_state_change(dt_string, attempts=60, timeout=1):
+    """Wait for hardware-state-change notification on device-notifications.
+
+    Retry loop to handle race condition where notification may arrive before
+    the stream subscription is established.
+    """
+    path = '/streams/device-notifications/json?start-time=' + dt_string
+    print(f'{BOLD}GET {BASE_URL} {path}{ENDC}')
+    for attempt in range(attempts):
+        try:
+            with session.get(BASE_URL + path, headers=headers_stream,
+                             stream=True, timeout=timeout) as r:
+                for notifs_str in r.iter_content(chunk_size=None,
+                                                 decode_unicode=True):
+                    notifs_str = notifs_str.replace('data: ', '')
+                    print(f"{HEADER}" + notifs_str + f"{ENDC}")
+                    notifs = notifs_str.split("\n\n")
+                    break
+                else:
+                    continue
+                break
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError):
+            continue
+
+
 print(f'\n{OKGREEN}##### Reset and setup the example\n{ENDC}')
 subprocess.run(['make', 'stop', 'clean', 'all', 'start'], check=True,
                encoding='utf-8')
@@ -150,17 +177,10 @@ proc = subprocess.Popen(['python3',
                          '-o', '2'],
                         cwd=wd)
 
-PATH = '/streams/device-notifications/json?start-time=' + dt_string
 print(f'\n{HEADER}##### Waiting for NSO to forward the device hardware_state'
       f' stream notification to the NSO device-notifications stream'
       f'{ENDC}')
-print(f'{BOLD}GET {BASE_URL} {PATH}{ENDC}')
-with session.get(BASE_URL + PATH, headers=headers_stream, stream=True) as r:
-    for notifs_str in r.iter_content(chunk_size=None, decode_unicode=True):
-        notifs_str = notifs_str.replace('data: ', '')
-        print(f"{HEADER}" + notifs_str + f"{ENDC}")
-        notifs = notifs_str.split("\n\n")
-        break
+_wait_for_hw_state_change(dt_string)
 
 print(f'\n{OKGREEN}##### Configure the new card and receive the resulting'
       f' notifications on the NETCONF and device-notifications streams'
@@ -197,14 +217,7 @@ with session.get(BASE_URL + PATH, headers=headers_stream, stream=True) as r:
 print(f'\n{HEADER}##### Waiting for NSO to forward the device hardware_state'
       f' stream notification to the NSO device-notifications stream'
       f'{ENDC}')
-PATH = '/streams/device-notifications/json?start-time=' + dt_string
-print(f'{BOLD}GET {BASE_URL} {PATH}{ENDC}')
-with session.get(BASE_URL + PATH, headers=headers_stream, stream=True) as r:
-    for notifs_str in r.iter_content(chunk_size=None, decode_unicode=True):
-        notifs_str = notifs_str.replace('data: ', '')
-        print(f"{HEADER}" + notifs_str + f"{ENDC}")
-        notifs = notifs_str.split("\n\n")
-        break
+_wait_for_hw_state_change(dt_string)
 
 print(f'{OKGREEN}##### See logs/trace_*/trace.* for RESTCONF details'
       f'{ENDC}')

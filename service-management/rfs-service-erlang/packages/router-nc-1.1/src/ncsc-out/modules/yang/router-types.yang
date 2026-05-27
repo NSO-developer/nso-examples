@@ -34,6 +34,38 @@ submodule router-types {
       "Initial revision.";
   }
 
+  typedef ncs_compliance_template_prefixLengthIPv4 {
+    type string;
+  }
+
+  typedef ncs_compliance_template_prefixLengthIPv6 {
+    type string;
+  }
+
+  typedef ncs_compliance_template_interfaceName {
+    type string;
+  }
+
+  typedef ncs_compliance_template_interfaceLogicalUnit {
+    type string;
+  }
+
+  typedef ncs_template_prefixLengthIPv4 {
+    type string;
+  }
+
+  typedef ncs_template_prefixLengthIPv6 {
+    type string;
+  }
+
+  typedef ncs_template_interfaceName {
+    type string;
+  }
+
+  typedef ncs_template_interfaceLogicalUnit {
+    type string;
+  }
+
   typedef ncs_rpc_notif_prefixLengthIPv4 {
     type int32 {
       range "0..32";
