@@ -13,5 +13,5 @@ lxml==6.0.2
 MarkupSafe==3.0.3
 pycparser==3.0
 pytz==2026.1.post1
-signxml==4.4.0
+signxml==4.5.1
 Werkzeug==3.1.7

@@ -1,0 +1,167 @@
+module internet-access-service {
+  namespace "http://tail-f.com/srlab/internet-access-service";
+  prefix dia;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import inventory {
+    prefix inv;
+  }
+  import core-network {
+    prefix cor;
+  }
+  import service-assurance {
+    prefix sa;
+  }
+
+  organization "Tail-f";
+  description
+    "Dedicated Internet Access service for the srv6-transport-migration
+     example.  This lab keeps the service small and concrete, rendering IOS XR
+     PE access, PE/CE BGP or static routing, PM attachment, and assurance
+     monitor composition.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  identity internet-access {
+    base inv:service-kind;
+    description "Inventory service kind for DIA.";
+  }
+
+  augment /cor:core-network/cor:services {
+    list internet-access {
+      tailf:info "Dedicated Internet Access service";
+      description "Dedicated Internet Access service.";
+      uses ncs:service-data;
+      ncs:servicepoint internet-access-service;
+
+      key name;
+
+      leaf name {
+        tailf:info "Service name";
+        description "Service name.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf customer {
+        tailf:info "Customer";
+        description "Customer.";
+        mandatory true;
+        type leafref {
+          path "/inv:inventory/inv:customer/inv:name";
+        }
+      }
+
+      leaf port {
+        tailf:info "Inventory PE access port";
+        description "Inventory PE access port.";
+        mandatory true;
+        type leafref {
+          path "/inv:inventory/inv:port/inv:pid";
+        }
+      }
+
+      leaf access-subnet {
+        tailf:info "PE-CE access subnet";
+        description "PE-CE access subnet.";
+        mandatory true;
+        type inet:ipv4-prefix;
+      }
+
+      leaf pe-ip-index {
+        tailf:info "PE host index in access subnet";
+        description "PE host index in access subnet.";
+        type uint16;
+        default 1;
+      }
+
+      leaf ce-ip-index {
+        tailf:info "CE host index in access subnet";
+        description "CE host index in access subnet.";
+        type uint16;
+        default 2;
+      }
+
+      leaf provider-as {
+        tailf:info "Provider AS number";
+        description "Provider AS number.";
+        type inet:as-number;
+        default 65000;
+      }
+
+      leaf customer-prefix {
+        tailf:info "Customer prefix advertised or statically routed";
+        description "Customer prefix advertised or statically routed.";
+        type inet:ipv4-prefix;
+      }
+
+      choice routing {
+        mandatory true;
+
+        container bgp {
+          tailf:info "BGP PE-CE routing";
+          description "BGP PE-CE routing.";
+          presence "Enables BGP PE-CE routing.";
+
+          leaf peer-as {
+            tailf:info "Customer AS";
+            description "Customer AS.";
+            mandatory true;
+            type inet:as-number;
+          }
+        }
+
+        container static {
+          tailf:info "Static PE-CE routing";
+          description "Static PE-CE routing.";
+          presence "Enables static PE-CE routing.";
+        }
+      }
+
+      leaf pm-profile {
+        tailf:info "PM delay profile name to attach to the access interface";
+        description "PM delay profile name to attach to the access interface.";
+        type string;
+      }
+
+      leaf assurance-profile {
+        tailf:info "Service assurance profile";
+        description "Service assurance profile.";
+        type leafref {
+          path "/cor:core-network/cor:services/sa:assurance-profile/sa:name";
+        }
+      }
+
+      leaf force {
+        tailf:info "Allow reuse of an inventory port already marked in-use";
+        description "Allow reuse of an inventory port already marked in-use.";
+        type boolean;
+        default false;
+      }
+
+      uses sa:service-assurance-config;
+
+      must "pe-ip-index != ce-ip-index" {
+        error-message "PE and CE host indexes must be different.";
+      }
+
+      must "not(static) or customer-prefix" {
+        error-message "customer-prefix is required for static DIA routing.";
+      }
+    }
+  }
+}

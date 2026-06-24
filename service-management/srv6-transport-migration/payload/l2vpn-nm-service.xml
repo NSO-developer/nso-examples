@@ -1,0 +1,7 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <l2vpn-nm-services xmlns="http://tail-f.com/ns/example/srv6-transport-migration/l2vpn-nm-service">
+    <vpn-service>
+      <vpn-id>l2nm-evpn</vpn-id>
+    </vpn-service>
+  </l2vpn-nm-services>
+</config>

@@ -1,0 +1,31 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="closed-loop-srv6-servicepoint"
+                 componenttype="cls:telemetry"
+                 state="ncs:init">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{/device}</name>
+      <telemetry>
+        <subscription>
+          <name>closed-loop-srv6-{/name}</name>
+          <datastore>running</datastore>
+          <xpath>/cisco-ios-xr:segment-routing/srv6/locators/locator[name='{/locator-name}']</xpath>
+          <on-change>
+            <sync-on-start>true</sync-on-start>
+          </on-change>
+          <local-user>admin</local-user>
+        </subscription>
+      </telemetry>
+    </device>
+  </devices>
+
+  <kickers xmlns="http://tail-f.com/ns/kicker">
+    <telemetry-kicker xmlns="http://tail-f.com/ns/ncs-kicker">
+      <id>closed-loop-srv6-{/name}</id>
+      <selector-expr>$SUBSCRIPTION_NAME='closed-loop-srv6-{/name}'</selector-expr>
+      <kick-node>/core-network:core-network/core-network:services/cls:closed-loop-srv6-monitor[cls:name='{/name}']</kick-node>
+      <action-name>record-health</action-name>
+      <priority>10</priority>
+    </telemetry-kicker>
+  </kickers>
+</config-template>

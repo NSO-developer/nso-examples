@@ -1,0 +1,14 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <transport-resource-pools
+        xmlns="http://tail-f.com/srlab/transport-advisor">
+        <sr-color-pool>
+          <name>transport-sr-colors</name>
+          <start-color>3400</start-color>
+          <end-color>3499</end-color>
+        </sr-color-pool>
+      </transport-resource-pools>
+    </services>
+  </core-network>
+</config>

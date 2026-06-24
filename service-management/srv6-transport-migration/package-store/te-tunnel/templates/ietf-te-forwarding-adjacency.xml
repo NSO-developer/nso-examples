@@ -1,0 +1,22 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tunnel-te>
+            <id>{$TUNNEL_ID}</id>
+            <forwarding-adjacency>
+              <?if {holdtime}?>
+                <holdtime>{holdtime}</holdtime>
+              <?end?>
+              <?if {include-ipv6}?>
+                <include-ipv6/>
+              <?end?>
+            </forwarding-adjacency>
+          </tunnel-te>
+        </interface>
+      </config>
+    </device>
+  </devices>
+</config-template>

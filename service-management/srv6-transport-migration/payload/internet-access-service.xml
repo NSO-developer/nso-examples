@@ -1,0 +1,27 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <internet-access xmlns="http://tail-f.com/srlab/internet-access-service">
+        <name>tailf-dia</name>
+        <customer>Tail-f</customer>
+        <port>pe-02-4</port>
+        <access-subnet>198.51.100.0/30</access-subnet>
+        <pe-ip-index>1</pe-ip-index>
+        <ce-ip-index>2</ce-ip-index>
+        <provider-as>65000</provider-as>
+        <customer-prefix>203.0.113.0/24</customer-prefix>
+        <bgp>
+          <peer-as>65010</peer-as>
+        </bgp>
+        <pm-profile>gold-delay</pm-profile>
+        <assurance-profile>transport-aa</assurance-profile>
+        <service-assurance>
+          <monitoring-state>active</monitoring-state>
+          <profile-name>dia-gold</profile-name>
+          <rule-name>dia-pe-ce-reachability</rule-name>
+          <preservation>historical</preservation>
+        </service-assurance>
+      </internet-access>
+    </services>
+  </core-network>
+</config>

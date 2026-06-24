@@ -1,0 +1,14 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <pm-profile
+        xmlns="http://tail-f.com/srv6-transport-migration/transport-pm">
+        <name>{$PM_NAME}</name>
+        <rsvp-te-attachment>
+          <device>{$DEVICE}</device>
+          <tunnel-id>{$TUNNEL_ID}</tunnel-id>
+        </rsvp-te-attachment>
+      </pm-profile>
+    </services>
+  </core-network>
+</config-template>

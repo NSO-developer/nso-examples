@@ -24,6 +24,16 @@ To run the steps below in this README from a demo shell script:
 
     make demo
 
+To run a variant that uses Java MAAPI instead of `ncs_cli` for the NSO
+operations:
+
+    make demo-maapi
+
+The alternative `demo_maapi.java` program uses Java MAAPI for the device sync,
+running configuration changes, and operational data changes. It uses the
+existing Makefile lifecycle steps for building, stopping, and cleaning the
+example.
+
 The below steps are similar to the demo script using the J-style CLI instead of
 the C-style CLI.
 
@@ -80,6 +90,6 @@ Further Reading
 + NSO Development Guide: Using CDB
 + Java API reference documentation
 + The `demo.sh` script
++ The alternative `demo_maapi.java` program
 + `packages/cdb/src/java/src/com/example/cdb/*.java`
 + The `setoper.sh` and `deloper.sh` scripts
-

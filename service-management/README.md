@@ -46,6 +46,15 @@ multivendor variant of the `srv6-demo` example. The focus is multivendor
 service modeling, package structure, and realistic device configuration
 rendering for Cisco IOS-XR, Juniper Junos, and Nokia SR OS.
 
+### srv6-transport-migration
+This example demonstrates brownfield transport migration in a multivendor
+service-provider network built entirely with `ncs-netsim`. It starts from an
+MPLS/RSVP-TE or SR-MPLS transport estate, enables SRv6 later, and shows NSO
+owning the service lifecycle through planning actions, native dry-runs,
+guarded migration, device drift detection and repair, rollback, assurance
+gates, and closed-loop service verification across Cisco IOS-XR, Juniper
+Junos, and Nokia SR OS.
+
 ### tenant-edge
 This example builds and operates a multivendor Tenant Edge Service with NSO
 across Cisco IOS-XR and Arista EOS. The service provisions a tenant VRF, BGP

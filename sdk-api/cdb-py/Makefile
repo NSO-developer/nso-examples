@@ -29,3 +29,6 @@ update_py:
 
 demo:
 	./demo.sh
+
+demo-maapi:
+	python3 demo_maapi.py

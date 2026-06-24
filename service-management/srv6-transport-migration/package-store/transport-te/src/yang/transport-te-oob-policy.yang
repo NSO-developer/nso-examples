@@ -1,0 +1,26 @@
+module transport-te-oob-policy {
+  yang-version 1.1;
+  namespace "http://tail-f.com/srlab/transport-te-oob-policy";
+  prefix tte-oob;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  revision 2026-05-12 {
+    description
+      "Initial revision.";
+  }
+
+  ncs:out-of-band transport-te-odn-service {
+    ncs:policy {
+      ncs:rule "abort-service-owned-srv6-odn-sid-depth-drift" {
+        ncs:path
+          "/ncs:devices/device/config/cisco-ios-xr:segment-routing/"
+        + "traffic-eng/on-demand/color/maximum-sid-depth";
+        ncs:at-delete abort;
+        ncs:at-value-set abort;
+      }
+    }
+  }
+}

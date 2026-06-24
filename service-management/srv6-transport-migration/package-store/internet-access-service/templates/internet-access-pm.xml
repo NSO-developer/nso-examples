@@ -1,0 +1,23 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <interface>
+            <name>GigabitEthernet{$INTERFACE_NO}</name>
+            <next-hop>
+              <ipv4>{$CE_IP}</ipv4>
+            </next-hop>
+            <delay-measurement>
+              <delay-profile>
+                <name>{$PM_PROFILE}</name>
+              </delay-profile>
+              <advertise-delay>100</advertise-delay>
+            </delay-measurement>
+          </interface>
+        </performance-measurement>
+      </config>
+    </device>
+  </devices>
+</config-template>

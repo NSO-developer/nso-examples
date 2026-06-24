@@ -1,0 +1,65 @@
+module te-topology-bridge {
+  namespace "http://tail-f.com/srlab/te-topology-bridge";
+  prefix te-topo-bridge;
+  yang-version 1.1;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  augment /cor:core-network {
+    action export-te-topology {
+      tailf:actionpoint te-topology-export;
+      description
+        "Export the local core-network devices and links into an RFC 8795
+         TE topology view.  This keeps core-network as the service-internal
+         model while exposing a standards-based topology graph.";
+
+      input {
+        leaf network-id {
+          type string;
+          default "srv6-transport-migration-te";
+          description
+            "RFC 8345 network-id to create or refresh.";
+        }
+        leaf overwrite {
+          type boolean;
+          default true;
+          description
+            "Delete an existing network with the same network-id before
+             exporting the current core-network view.";
+        }
+      }
+
+      output {
+        leaf network-id {
+          type string;
+        }
+        leaf nodes {
+          type uint32;
+        }
+        leaf links {
+          type uint32;
+          description
+            "Number of RFC 8345 directional links created.";
+        }
+        leaf termination-points {
+          type uint32;
+        }
+        leaf srlgs {
+          type uint32;
+          description
+            "Number of SRLG values copied onto directional TE links.";
+        }
+      }
+    }
+  }
+}

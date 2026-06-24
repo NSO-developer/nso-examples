@@ -1,0 +1,20 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>transport-te</name>
+  <package-version>1.0</package-version>
+  <description>SR policy and ODN services</description>
+
+  <ncs-min-version>6.7</ncs-min-version>
+  <required-package>
+    <name>core-network</name>
+  </required-package>
+  <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>cisco-iosxr-netsim-nc.*</supported-ned-id-match>
+  <supported-ned-id-match>juniper-junos-netsim-nc.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>transport_te.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

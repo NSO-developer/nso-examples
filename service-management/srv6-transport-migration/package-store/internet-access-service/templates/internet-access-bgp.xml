@@ -1,0 +1,41 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>DIA-{name}-PASS</name>
+          <value>  pass&#13;&#10;</value>
+        </route-policy>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <bgp>
+            <bgp-no-instance>
+              <id>{$PROVIDER_AS}</id>
+              <neighbor>
+                <id>{$CE_IP}</id>
+                <remote-as>{$CUSTOMER_AS}</remote-as>
+                <update-source>
+                  <GigabitEthernet>{$INTERFACE_NO}</GigabitEthernet>
+                </update-source>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <route-policy>
+                        <direction>in</direction>
+                        <name>DIA-{name}-PASS</name>
+                      </route-policy>
+                      <route-policy>
+                        <direction>out</direction>
+                        <name>DIA-{name}-PASS</name>
+                      </route-policy>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+              </neighbor>
+            </bgp-no-instance>
+          </bgp>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

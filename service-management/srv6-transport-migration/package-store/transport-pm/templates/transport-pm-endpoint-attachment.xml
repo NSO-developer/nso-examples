@@ -1,0 +1,122 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <endpoint>
+            <?if {$ENDPOINT_IPV4}?>
+              <ipv4>
+                <address>{$ENDPOINT_IPV4}</address>
+                <?if {$SOURCE_IPV4}?>
+                  <source-address>
+                    <ipv4>{$SOURCE_IPV4}</ipv4>
+                  </source-address>
+                <?end?>
+                <?if {$DELAY_PROFILE}?>
+                  <delay-measurement>
+                    <delay-profile>
+                      <name>{$DELAY_PROFILE}</name>
+                    </delay-profile>
+                  </delay-measurement>
+                <?end?>
+                <?if {$LIVENESS_PROFILE}?>
+                  <liveness-detection>
+                    <liveness-profile>
+                      <name>{$LIVENESS_PROFILE}</name>
+                    </liveness-profile>
+                  </liveness-detection>
+                <?end?>
+              </ipv4>
+            <?end?>
+            <?if {$ENDPOINT_IPV6}?>
+              <ipv6>
+                <address>{$ENDPOINT_IPV6}</address>
+                <?if {$SOURCE_IPV6}?>
+                  <source-address>
+                    <ipv6>{$SOURCE_IPV6}</ipv6>
+                  </source-address>
+                <?end?>
+                <?if {$DELAY_PROFILE}?>
+                  <delay-measurement>
+                    <delay-profile>
+                      <name>{$DELAY_PROFILE}</name>
+                    </delay-profile>
+                  </delay-measurement>
+                <?end?>
+                <?if {$LIVENESS_PROFILE}?>
+                  <liveness-detection>
+                    <liveness-profile>
+                      <name>{$LIVENESS_PROFILE}</name>
+                    </liveness-profile>
+                  </liveness-detection>
+                <?end?>
+              </ipv6>
+            <?end?>
+          </endpoint>
+        </performance-measurement>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <services>
+            <rpm>
+              <probe>
+                <name>{$ATTACHMENT_NAME}</name>
+                <test>
+                  <name>delay</name>
+                  <probe-type>icmp-ping</probe-type>
+                  <target>
+                    <?if {$ENDPOINT_IPV4}?>
+                      <address>{$ENDPOINT_IPV4}</address>
+                    <?end?>
+                    <?if {$ENDPOINT_IPV6}?>
+                      <inet6-address>{$ENDPOINT_IPV6}</inet6-address>
+                    <?end?>
+                  </target>
+                  <probe-count>5</probe-count>
+                  <probe-interval>1</probe-interval>
+                  <test-interval>60</test-interval>
+                  <?if {$SOURCE_IPV4}?>
+                    <source-address>{$SOURCE_IPV4}</source-address>
+                  <?end?>
+                </test>
+              </probe>
+            </rpm>
+          </services>
+        </configuration>
+        <oam-pm xmlns="http://tail-f.com/ned/alu-sr">
+          <session>
+            <session-name>{$ATTACHMENT_NAME}</session-name>
+            <test-family>ip</test-family>
+            <session-type>proactive</session-type>
+            <description>NSO PM endpoint probe {$ENDPOINT_IPV4}</description>
+            <meas-interval>
+              <interval>1-min</interval>
+              <intervals-stored>10</intervals-stored>
+              <event-mon>
+                <delay-events/>
+                <shutdown>false</shutdown>
+              </event-mon>
+            </meas-interval>
+            <ip>
+              <router-instance>Base</router-instance>
+              <?if {$SOURCE_IPV4}?>
+                <source>{$SOURCE_IPV4}</source>
+              <?end?>
+              <destination>{$ENDPOINT_IPV4}</destination>
+              <source-udp-port>862</source-udp-port>
+              <dest-udp-port>862</dest-udp-port>
+              <twamp-light>
+                <test-id>auto</test-id>
+                <?if {$DELAY_PROFILE}?>
+                  <delay-template>{$DELAY_PROFILE}</delay-template>
+                <?end?>
+                <interval>10</interval>
+                <record-stats>delay</record-stats>
+                <shutdown>false</shutdown>
+              </twamp-light>
+            </ip>
+          </session>
+        </oam-pm>
+      </config>
+    </device>
+  </devices>
+</config-template>

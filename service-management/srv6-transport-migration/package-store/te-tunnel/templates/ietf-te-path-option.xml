@@ -1,0 +1,51 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tunnel-te>
+            <id>{$TUNNEL_ID}</id>
+            <path-option>
+              <preference-priority>{$PREFERENCE}</preference-priority>
+              <?if {$EXPLICIT_PATH}?>
+                <explicit>
+                  <name>{$EXPLICIT_NAME}</name>
+                </explicit>
+              <?else?>
+                <dynamic/>
+                <?if {$USE_PCE}?>
+                  <pce/>
+                <?end?>
+              <?end?>
+            </path-option>
+          </tunnel-te>
+        </interface>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <mpls>
+              <path>
+                <name>{$EXPLICIT_NAME}</name>
+              </path>
+              <label-switched-path>
+                <name>{$TUNNEL_NAME}</name>
+                <?if {$JUNOS_PRIMARY}?>
+                  <primary>
+                    <name>{$EXPLICIT_NAME}</name>
+                    <preference>{$PREFERENCE}</preference>
+                  </primary>
+                <?end?>
+                <?if {$JUNOS_SECONDARY}?>
+                  <secondary>
+                    <name>{$EXPLICIT_NAME}</name>
+                    <preference>{$PREFERENCE}</preference>
+                  </secondary>
+                <?end?>
+              </label-switched-path>
+            </mpls>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -1,0 +1,18 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>closed-loop-srv6</name>
+  <package-version>1.0</package-version>
+  <description>Telemetry-driven closed-loop SRv6 nano service</description>
+
+  <ncs-min-version>6.7</ncs-min-version>
+  <required-package>
+    <name>core-network</name>
+  </required-package>
+  <supported-ned-id-match>cisco-iosxr-netsim-nc.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>closed_loop_srv6.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

@@ -1,0 +1,55 @@
+module te-tunnel-service {
+  yang-version 1.1;
+  namespace
+    "http://tail-f.com/ns/example/srv6-transport-migration/"
+  + "te-tunnel-service";
+  prefix te-svc;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import ietf-te {
+    prefix te;
+    revision-date "2026-03-26";
+  }
+
+  organization "Tail-f Systems";
+  description
+    "NSO-local lifecycle wrapper for IETF TE tunnel data.  The wrapper
+     keeps modeled tunnel intent separate from NSO service lifecycle
+     state.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  container te-tunnel-services {
+    tailf:cli-add-mode;
+    description "NSO lifecycle wrappers for TE tunnel objects.";
+
+    list tunnel-service {
+      key tunnel;
+      uses ncs:service-data;
+      ncs:servicepoint te-tunnel-servicepoint;
+      tailf:validate "te-tunnel-service-validation" {
+        tailf:dependency ".";
+      }
+
+      description
+        "Render a TE tunnel.  The referenced tunnel remains modeled
+         under /te/tunnels/tunnel.";
+
+      leaf tunnel {
+        tailf:info "TE tunnel name";
+        type leafref {
+          path "/te:te/te:tunnels/te:tunnel/te:name";
+        }
+        description "TE tunnel to render.";
+      }
+    }
+  }
+}

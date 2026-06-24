@@ -1,0 +1,62 @@
+module rsvp-underlay {
+  namespace "http://tail-f.com/srlab/rsvp-underlay";
+  prefix rsvp-underlay;
+  yang-version 1.1;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  augment /cor:core-network/cor:services {
+    list rsvp-underlay {
+      description
+        "Multivendor RSVP/MPLS-TE helper service for the
+         srv6-transport-migration lab.
+
+         The service provisions the minimal RSVP and MPLS-TE scaffolding
+         needed by the brownfield transport demos on the selected IOS XR,
+         Junos, and SR OS netsim devices.";
+
+      uses ncs:service-data;
+      ncs:servicepoint rsvp-underlay-service;
+
+      key name;
+      leaf name {
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf-list device {
+        description
+          "Optional device subset. When omitted, all enabled RSVP/MPLS-TE
+           capable devices from core-network are configured.";
+        type leafref {
+          path "/cor:core-network/cor:devices/cor:name";
+        }
+      }
+
+      leaf bandwidth-percent {
+        description
+          "Reservable RSVP bandwidth percentage configured per
+           transport-facing interface.";
+        type uint8 {
+          range "1..100";
+        }
+        default 75;
+      }
+    }
+  }
+}

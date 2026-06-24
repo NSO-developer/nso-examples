@@ -1,0 +1,53 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <delay-profile>
+            <name>
+              <name>{$PROFILE}</name>
+              <advertisement>
+                <periodic>
+                  <interval>{$PERIODIC_INTERVAL}</interval>
+                  <threshold>{$PERIODIC_THRESHOLD}</threshold>
+                </periodic>
+              </advertisement>
+              <probe>
+                <protocol>{$PROTOCOL}</protocol>
+                <measurement-mode>{$MEASUREMENT_MODE}</measurement-mode>
+                <tx-interval>{$TX_INTERVAL}</tx-interval>
+                <computation-interval>
+                  {$COMPUTATION_INTERVAL}
+                </computation-interval>
+                <tos>
+                  <?if {$DSCP}?>
+                    <dscp>{$DSCP}</dscp>
+                  <?end?>
+                  <traffic-class>{$TRAFFIC_CLASS}</traffic-class>
+                </tos>
+              </probe>
+            </name>
+          </delay-profile>
+        </performance-measurement>
+        <oam-pm xmlns="http://tail-f.com/ned/alu-sr">
+          <streaming>
+            <delay-template>
+              <template-id>{$PROFILE}</template-id>
+              <description>NSO PM delay profile {$PROFILE}</description>
+              <fd-avg>
+                <round-trip/>
+              </fd-avg>
+              <ifdv-avg>
+                <round-trip/>
+              </ifdv-avg>
+              <sample-window>{$COMPUTATION_INTERVAL}</sample-window>
+              <window-integrity>90</window-integrity>
+              <shutdown>false</shutdown>
+            </delay-template>
+          </streaming>
+        </oam-pm>
+      </config>
+    </device>
+  </devices>
+</config-template>

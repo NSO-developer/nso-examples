@@ -59,6 +59,8 @@ COPY_TARGETS := \
 	$(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-stats.yang \
 	$(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
 	$(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang \
+	$(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
+	$(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang \
 	$(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang \
 	$(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx-stats.yang \
 	$(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang \
@@ -160,6 +162,12 @@ $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang: $
 $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-ios-xr-stats.yang
 	cp $< $@
 
+$(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr.yang: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang
+	cp $< $@
+
+$(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang
+	cp $< $@
+
 $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang: $(NETSIM_YANG_DIR)/netsim-ned-cisco-nx.yang
 	cp $< $@
 
@@ -187,7 +195,7 @@ clean: clean-iosxr
 	rm -rf $(NETSIM_YANG_DIR)
 
 # Individual device targets for convenience
-.PHONY: a10-acos alu-sr arista-dcs cisco-asa cisco-ios cisco-iosxr cisco-nx dell-ftos
+.PHONY: a10-acos alu-sr arista-dcs cisco-asa cisco-ios cisco-iosxr cisco-iosxr-cli cisco-iosxr-nc cisco-nx dell-ftos juniper-junos
 
 a10-acos: $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos.yang \
 		  $(DEST_BASE)/a10-acos-netsim-cli-1.0/src/yang/netsim-ned-a10-acos-stats.yang
@@ -199,8 +207,12 @@ cisco-asa: $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa.y
 		   $(DEST_BASE)/cisco-asa-netsim-cli-1.0/src/yang/netsim-ned-cisco-asa-stats.yang
 cisco-ios: $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios.yang \
 		   $(DEST_BASE)/cisco-ios-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-stats.yang
-cisco-iosxr: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
+cisco-iosxr: cisco-iosxr-cli cisco-iosxr-nc
+cisco-iosxr-cli: $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
 		   $(DEST_BASE)/cisco-iosxr-netsim-cli-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang
+cisco-iosxr-nc: cisco-iosxr-cli \
+		   $(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr.yang \
+		   $(DEST_BASE)/cisco-iosxr-netsim-nc-1.0/src/yang/netsim-ned-cisco-ios-xr-stats.yang
 cisco-nx: $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx.yang \
 		   $(DEST_BASE)/cisco-nx-netsim-cli-1.0/src/yang/netsim-ned-cisco-nx-stats.yang
 dell-ftos: $(DEST_BASE)/dell-ftos-netsim-cli-1.0/src/yang/netsim-ned-dell-ftos.yang \
@@ -221,6 +233,8 @@ help:
 	@echo "  cisco-asa  - Build Cisco ASA YANG files"
 	@echo "  cisco-ios  - Build Cisco IOS YANG files"
 	@echo "  cisco-iosxr - Build Cisco IOS-XR YANG files"
+	@echo "  cisco-iosxr-cli - Build Cisco IOS-XR CLI YANG files"
+	@echo "  cisco-iosxr-nc - Build Cisco IOS-XR NETCONF YANG files"
 	@echo "  cisco-nx   - Build Cisco NX YANG files"
 	@echo "  dell-ftos  - Build Dell FTOS YANG files"
 	@echo "  juniper-junos - Build Juniper Junos YANG files"

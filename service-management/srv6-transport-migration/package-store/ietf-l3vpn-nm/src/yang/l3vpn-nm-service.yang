@@ -1,0 +1,58 @@
+module l3vpn-nm-service {
+  yang-version 1.1;
+  namespace
+    "http://tail-f.com/ns/example/srv6-transport-migration/"
+  + "l3vpn-nm-service";
+  prefix l3nm-svc;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  organization "Tail-f Systems";
+  description
+    "NSO-local lifecycle wrapper for the standard IETF L3VPN Network
+     Model.  The IETF module remains unchanged; this service points at
+     the IETF service data that should be rendered in the demo.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  container l3vpn-nm-services {
+    tailf:cli-add-mode;
+    description "NSO lifecycle wrappers for IETF L3NM objects.";
+
+    list vpn-node-service {
+      key "vpn-id vpn-node-id";
+      uses ncs:service-data;
+      ncs:servicepoint l3vpn-nm-servicepoint;
+      tailf:validate "l3vpn-nm-vpn-node-validation" {
+        tailf:dependency ".";
+      }
+
+      description
+        "Render one IETF L3NM VPN node.  The referenced IETF VPN service
+         remains modeled under /l3vpn-ntw.";
+
+      leaf vpn-id {
+        tailf:info "IETF L3NM VPN service identifier";
+        type string;
+        description
+          "IETF L3NM VPN service to render.  The callback resolves this
+           identifier under /l3vpn-ntw.";
+      }
+
+      leaf vpn-node-id {
+        tailf:info "IETF L3NM VPN node identifier";
+        type string;
+        description
+          "VPN node within the referenced IETF L3NM VPN service.";
+      }
+    }
+  }
+}

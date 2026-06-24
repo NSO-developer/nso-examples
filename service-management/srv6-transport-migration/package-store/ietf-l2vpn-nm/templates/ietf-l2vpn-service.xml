@@ -1,0 +1,7 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <l2vpn xmlns="http://tail-f.com/srlab/l2vpn-service">
+    <name>{$CHILD_NAME}</name>
+    <customer>{$CUSTOMER}</customer>
+    <ports>{$PORT}</ports>
+  </l2vpn>
+</config-template>

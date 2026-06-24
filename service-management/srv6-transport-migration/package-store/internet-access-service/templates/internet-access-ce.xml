@@ -1,0 +1,65 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$CE}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <GigabitEthernet tags="replace">
+            <id>{$CE_INTERFACE_NO}</id>
+            <description>DIA {name} CE access</description>
+            <ipv4>
+              <address>
+                <ip>{$CE_IP}</ip>
+                <mask>{$SUBNET_MASK}</mask>
+              </address>
+            </ipv4>
+            <shutdown tags="delete"/>
+          </GigabitEthernet>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <?if {$CUSTOMER_AS}?>
+            <bgp>
+              <bgp-no-instance>
+                <id>{$CUSTOMER_AS}</id>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <redistribute>
+                        <connected/>
+                      </redistribute>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+                <neighbor>
+                  <id>{$PE_IP}</id>
+                  <remote-as>{$PROVIDER_AS}</remote-as>
+                  <update-source>
+                    <GigabitEthernet>{$CE_INTERFACE_NO}</GigabitEthernet>
+                  </update-source>
+                  <address-family>
+                    <ipv4>
+                      <unicast/>
+                    </ipv4>
+                  </address-family>
+                </neighbor>
+              </bgp-no-instance>
+            </bgp>
+          <?else?>
+            <static>
+              <address-family>
+                <ipv4>
+                  <unicast>
+                    <routes-ip>
+                      <net>0.0.0.0/0</net>
+                      <address>{$PE_IP}</address>
+                    </routes-ip>
+                  </unicast>
+                </ipv4>
+              </address-family>
+            </static>
+          <?end?>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

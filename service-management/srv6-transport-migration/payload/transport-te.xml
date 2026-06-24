@@ -1,0 +1,57 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <sr-policy xmlns="http://tail-f.com/srlab/transport-te">
+        <name>pe02-to-pe01</name>
+        <head-end>pe-02</head-end>
+        <tail-end-device>pe-01</tail-end-device>
+        <color>2200</color>
+        <path>
+          <preference>100</preference>
+          <dynamic>
+            <metric-type>te</metric-type>
+            <sid-limit>10</sid-limit>
+            <sid-algorithm>128</sid-algorithm>
+          </dynamic>
+        </path>
+        <autoroute/>
+        <srv6>
+          <locator-name>VPNLAB</locator-name>
+        </srv6>
+      </sr-policy>
+      <sr-policy xmlns="http://tail-f.com/srlab/transport-te">
+        <name>pe01-to-pe02</name>
+        <head-end>pe-01</head-end>
+        <tail-end-device>pe-02</tail-end-device>
+        <color>2300</color>
+        <path>
+          <preference>100</preference>
+          <dynamic>
+            <metric-type>te</metric-type>
+            <sid-limit>10</sid-limit>
+            <sid-algorithm>128</sid-algorithm>
+          </dynamic>
+        </path>
+        <autoroute/>
+        <srv6>
+          <locator-name>VPNLAB</locator-name>
+        </srv6>
+      </sr-policy>
+      <odn-template xmlns="http://tail-f.com/srlab/transport-te">
+        <name>tailf-odn</name>
+        <head-end>pe-02</head-end>
+        <head-end>pe-01</head-end>
+        <color>3000</color>
+        <maximum-sid-depth>16</maximum-sid-depth>
+        <dynamic>
+          <metric-type>igp</metric-type>
+          <margin-absolute>30</margin-absolute>
+          <sid-algorithm>128</sid-algorithm>
+        </dynamic>
+        <srv6>
+          <locator-name>VPNLAB</locator-name>
+        </srv6>
+      </odn-template>
+    </services>
+  </core-network>
+</config>

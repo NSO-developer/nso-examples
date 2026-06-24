@@ -1,0 +1,17 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <l3vpn xmlns="http://tail-f.com/srlab/l3vpn-service">
+    <name>{$CHILD_NAME}</name>
+    <customer>{$CUSTOMER}</customer>
+    <link>
+      <link-id>{$LINK_ID}</link-id>
+      <port>{$PORT}</port>
+      <subnet when="{$SUBNET}">{$SUBNET}</subnet>
+      <pe-ip when="{$PE_IP}">{$PE_IP}</pe-ip>
+      <ce-ip when="{$CE_IP}">{$CE_IP}</ce-ip>
+      <bgp-peering when="{$PEER_AS}">
+        <enabled>true</enabled>
+        <peer-as>{$PEER_AS}</peer-as>
+      </bgp-peering>
+    </link>
+  </l3vpn>
+</config-template>

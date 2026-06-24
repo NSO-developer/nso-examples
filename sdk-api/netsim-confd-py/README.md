@@ -39,7 +39,20 @@ Running the Example
 
 To run the steps below in this README from a demo shell script:
 
+    make demo
+
+or:
+
     ./demo.sh
+
+To run the same demo using Python MAAPI calls instead of CLI commands:
+
+    make demo-maapi
+
+The alternative `demo_maapi.py` script uses Python MAAPI for the NSO-side
+configuration, live-status action, and notification checks. It also connects
+directly to the simulated device ConfD IPC port with Python MAAPI for the
+operational data update instead of using `ncs_cmd -o`.
 
 The below steps are similar to the demo script using the NSO J-style CLI
 instead of the C-style CLI.
@@ -137,9 +150,9 @@ Further Reading
 ---------------
 
 + The demo.sh shell script
++ The alternative demo_maapi.py script
 + NSO Operation & Usage Guide chapter Network Simulator
 + NSO ncs-netsim(1) man page
-
 
 
 

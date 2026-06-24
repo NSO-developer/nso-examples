@@ -1,0 +1,405 @@
+module closed-loop-srv6 {
+  yang-version 1.1;
+  namespace "http://tail-f.com/srlab/closed-loop-srv6";
+  prefix cls;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import tailf-ncs-kicker-extension {
+    prefix ncs-kicker;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  organization "Tail-f";
+  description
+    "Telemetry-driven closed-loop SRv6 nano service for the
+     srv6-transport-migration reference example.";
+
+  revision 2026-05-12 {
+    description
+      "Initial revision.";
+  }
+
+  typedef closed-loop-health-state {
+    description "Service health derived from southbound telemetry.";
+    type enumeration {
+      enum unknown {
+        description "The service has not received telemetry evidence yet.";
+      }
+      enum operational {
+        description "The monitored SRv6 resource is present on the device.";
+      }
+      enum degraded {
+        description
+          "Telemetry indicates that the monitored resource is absent.";
+      }
+    }
+  }
+
+  augment /cor:core-network/cor:services {
+    description
+      "Adds a telemetry-driven SRv6 service with continuous health feedback.";
+
+    list closed-loop-srv6-monitor {
+      tailf:info "Closed-loop SRv6 monitored service";
+      description
+        "Nano service that provisions an SRv6 locator and ISIS advertisement,
+         keeps a lifetime YANG-Push subscription and telemetry kicker, and
+         automatically reconciles, repairs, and verifies service-owned locator
+         drift.";
+
+      uses ncs:nano-plan-data;
+      uses ncs:service-data;
+      ncs:servicepoint closed-loop-srv6-servicepoint;
+
+      key name;
+
+      leaf name {
+        tailf:info "Service name";
+        description "Service name.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,64}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf device {
+        tailf:info "IOS XR NETCONF device";
+        description "IOS XR NETCONF device.";
+        mandatory true;
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+
+      leaf locator-name {
+        tailf:info "SRv6 locator name";
+        description "SRv6 locator name.";
+        type string;
+        default "VPNLAB";
+      }
+
+      leaf srv6-prefix {
+        tailf:info "SRv6 locator prefix";
+        description "SRv6 locator prefix.";
+        type inet:ipv6-prefix;
+        default "5f00:0:2::/48";
+      }
+
+      leaf loopback0-prefix {
+        tailf:info "Loopback0 IPv6 prefix";
+        description "Loopback0 IPv6 prefix.";
+        type inet:ipv6-prefix;
+        default "fd00::2/128";
+      }
+
+      leaf loopback1-prefix {
+        tailf:info "Loopback1 IPv6 prefix";
+        description "Loopback1 IPv6 prefix used as SRv6 encapsulation source.";
+        type inet:ipv6-prefix;
+        default "5f00:0:2::1/128";
+      }
+
+      leaf isis-net {
+        tailf:info "ISIS NET";
+        description "ISIS NET identifier used when the locator is advertised.";
+        type string;
+        default "49.0000.0000.0002.00";
+      }
+
+      leaf auto-repair {
+        tailf:info "Automatically repair telemetry-detected drift";
+        description
+          "When enabled, telemetry-detected SRv6 locator drift triggers the
+           nano service closed loop to re-deploy service intent with
+           confirm-network-state so the service out-of-band policy repairs
+           service-owned device drift and verifies that health is operational
+           again.";
+        type boolean;
+        default true;
+      }
+
+      leaf health-state {
+        tailf:info "Telemetry-derived service health";
+        description
+          "Set by the telemetry kicker action when NSO receives YANG-Push
+           updates for the service-owned SRv6 locator.";
+        config false;
+        type closed-loop-health-state;
+        default unknown;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf health-reason {
+        tailf:info "Health reason";
+        description "Short explanation for the current health state.";
+        config false;
+        type string;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf telemetry-events {
+        tailf:info "Telemetry event count";
+        description "Number of telemetry events processed for this service.";
+        config false;
+        type uint32;
+        default 0;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf last-telemetry-update {
+        tailf:info "Last telemetry update";
+        description
+          "Timestamp of the latest telemetry event for this service.";
+        config false;
+        type string;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf last-diff-summary {
+        tailf:info "Last telemetry diff summary";
+        description "Compact summary of the latest telemetry diff.";
+        config false;
+        type string;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf repair-status {
+        tailf:info "Closed-loop repair status";
+        description "Latest closed-loop repair lifecycle status.";
+        config false;
+        type enumeration {
+          enum idle {
+            description "No repair has been requested.";
+          }
+          enum detected {
+            description
+              "Drift has been detected and repair is being scheduled.";
+          }
+          enum reconciling {
+            description
+              "The nano service is evaluating out-of-band policy against the
+               device.";
+          }
+          enum repairing {
+            description
+              "The nano service is re-deploying service intent with
+               confirm-network-state.";
+          }
+          enum verifying {
+            description
+              "The nano service is verifying the repaired device state.";
+          }
+          enum repaired {
+            description
+              "The latest repair completed and service health is operational.";
+          }
+          enum failed {
+            description "The latest repair attempt failed.";
+          }
+        }
+        default idle;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf repair-count {
+        tailf:info "Closed-loop repair count";
+        description "Number of closed-loop repairs completed successfully.";
+        config false;
+        type uint32;
+        default 0;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf last-repair-update {
+        tailf:info "Last repair update";
+        description "Timestamp of the latest closed-loop repair state change.";
+        config false;
+        type string;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      leaf last-repair-message {
+        tailf:info "Last repair message";
+        description "Latest closed-loop repair lifecycle message.";
+        config false;
+        type string;
+        tailf:cdb-oper {
+          tailf:persistent true;
+        }
+      }
+
+      action record-health {
+        tailf:actionpoint closed-loop-srv6-record-health;
+        tailf:info "Record telemetry-derived health";
+        description
+          "Telemetry-kicker target action. It inspects the synthetic telemetry
+           transaction and updates service operational health based on whether
+           the SRv6 locator is present in the device datastore.";
+
+        input {
+          uses ncs-kicker:telemetry-action-input-params;
+        }
+
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf health-state {
+            type closed-loop-health-state;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+
+      action verify-health {
+        tailf:actionpoint closed-loop-srv6-verify-health;
+        tailf:info "Verify health from NSO device state";
+        description
+          "Deterministic lab verification hook. It checks the service-owned
+           SRv6 locator in NSO's device configuration and updates the same
+           health and repair state that the telemetry kicker updates when a
+           YANG-Push event is delivered.";
+
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf health-state {
+            type closed-loop-health-state;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+    }
+  }
+
+  identity service {
+    base ncs:plan-component-type;
+    description "SRv6 device configuration component.";
+  }
+
+  identity telemetry {
+    base ncs:plan-component-type;
+    description "YANG-Push subscription and telemetry kicker component.";
+  }
+
+  identity configured {
+    base ncs:plan-state;
+    description "Service-owned SRv6 configuration has been rendered.";
+  }
+
+  identity verified {
+    base ncs:plan-state;
+    description "Telemetry has verified that the service is operational.";
+  }
+
+  ncs:plan-outline closed-loop-srv6-plan {
+    description
+      "Closed-loop SRv6 nano service plan. Telemetry is installed first and
+       remains service-owned for the full service lifetime. YANG-Push
+       sync-on-start lets the subscription observe the current device state
+       when it starts or reconnects. The service component then provisions
+       SRv6 and waits until telemetry marks the service operational.";
+
+    ncs:component-type "cls:telemetry" {
+      ncs:state "ncs:init" {
+        ncs:create {
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+
+    ncs:component-type "cls:service" {
+      ncs:state "ncs:init";
+      ncs:state "cls:configured" {
+        ncs:create {
+          ncs:pre-condition {
+            ncs:monitor "$SERVICE/plan/component[type='cls:telemetry']" +
+                        "[name='telemetry']/state[name='ncs:ready']" {
+              ncs:trigger-expr "status = 'reached'";
+            }
+          }
+          ncs:nano-callback;
+        }
+      }
+      ncs:state "cls:verified" {
+        ncs:create {
+          ncs:pre-condition {
+            ncs:monitor "$SERVICE" {
+              ncs:trigger-expr "health-state = 'operational'";
+            }
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+
+  ncs:service-behavior-tree closed-loop-srv6-servicepoint {
+    description
+      "Create one telemetry component and one SRv6 service component for each
+       closed-loop SRv6 nano service instance.";
+    ncs:plan-outline-ref "cls:closed-loop-srv6-plan";
+    ncs:selector {
+      ncs:create-component "'telemetry'" {
+        ncs:component-type-ref "cls:telemetry";
+      }
+      ncs:create-component "'service'" {
+        ncs:component-type-ref "cls:service";
+      }
+    }
+  }
+
+  ncs:out-of-band closed-loop-srv6-servicepoint {
+    description
+      "Service out-of-band policy for the closed-loop SRv6 nano service. The
+       service owns the locator identity and prefix, so telemetry-detected
+       drift should be repaired by pushing service intent back to the device.";
+    ncs:policy {
+      ncs:rule "repair-service-owned-srv6-locator" {
+        ncs:path
+          "/ncs:devices/device/config/cisco-ios-xr:segment-routing/srv6"
+        + "/locators/locator";
+        ncs:at-delete sync-to-device;
+      }
+      ncs:rule "repair-service-owned-srv6-locator-prefix" {
+        ncs:path
+          "/ncs:devices/device/config/cisco-ios-xr:segment-routing/srv6"
+        + "/locators/locator/prefix";
+        ncs:at-delete sync-to-device;
+        ncs:at-value-set sync-to-device;
+      }
+    }
+  }
+}

@@ -1,0 +1,1360 @@
+module transport-advisor {
+  namespace "http://tail-f.com/srlab/transport-advisor";
+  prefix ta;
+  yang-version 1.1;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import core-network {
+    prefix cor;
+  }
+  import transport-slice-service {
+    prefix tsm-slice;
+  }
+
+  organization "Tail-f";
+  description
+    "Transport migration advisor actions for the srv6-transport-migration
+     example.  The assessment action is intentionally read-only: it inspects a
+     brownfield slice, topology, PM, assurance, resource allocation, and SRv6
+     readiness, then explains the next NSO lifecycle steps.  The migration
+     action is guarded: it performs the same checks, produces a native dry-run,
+     and only commits when explicitly requested.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef target-transport-profile {
+    type enumeration {
+      enum sr-mpls {
+        description "Assess migration to SR-MPLS color steering.";
+      }
+      enum srv6 {
+        description "Assess migration to SRv6 color steering.";
+      }
+    }
+    description "Candidate target transport profile.";
+  }
+
+  typedef observed-transport-profile {
+    type enumeration {
+      enum rsvp-te {
+        description "Observed RSVP-TE transport health.";
+      }
+      enum sr-mpls {
+        description "Observed SR-MPLS transport health.";
+      }
+      enum srv6 {
+        description "Observed SRv6 transport health.";
+      }
+    }
+    description "Transport profile associated with a service health input.";
+  }
+
+  typedef health-state {
+    type enumeration {
+      enum normal {
+        description "The observed transport object is healthy.";
+      }
+      enum degraded {
+        description
+          "The observed transport object is usable, but degraded.";
+      }
+      enum down {
+        description
+          "The observed transport object must not be used for migration.";
+      }
+    }
+    description "PM or assurance health state.";
+  }
+
+  typedef health-phase {
+    type enumeration {
+      enum always {
+        description "Apply the health input to all migration phases.";
+      }
+      enum pre-check {
+        description "Apply the health input before migration commits.";
+      }
+      enum post-check {
+        description "Apply the health input after migration commits.";
+      }
+    }
+    description "Migration phase where a service health input applies.";
+  }
+
+  typedef color-allocation-backend {
+    type enumeration {
+      enum auto {
+        description
+          "Use Resource Manager 5 when the package and ID pool are available,
+           otherwise use the local demo pool or fallback base.";
+      }
+      enum resource-manager {
+        description
+          "Require Resource Manager 5 and the named ID pool.";
+      }
+      enum local {
+        description
+          "Use only the local transport-resource-pools model or
+           fallback base.";
+      }
+    }
+    description "SR color allocation backend.";
+  }
+
+  augment /cor:core-network/cor:services {
+    container transport-resource-pools {
+      tailf:cli-add-mode;
+      tailf:info "Transport resource pools";
+      description
+        "Small transport resource pools owned by the demo advisor.  They make
+         color steering allocation explicit NSO service state instead of a
+         hard-coded script value.";
+
+      list sr-color-pool {
+        tailf:info "SR color pool";
+        description
+          "SR color pool used by transport migration actions when a candidate
+           NSS connection group has no existing color and no explicit target
+           color was supplied.";
+        key name;
+        must "start-color <= end-color" {
+          error-message "start-color must be less than or equal to end-color";
+        }
+
+        leaf name {
+          tailf:info "Pool name";
+          description "Pool name.";
+          type string {
+            pattern "[A-Za-z0-9_.:-]{3,64}";
+          }
+        }
+
+        leaf start-color {
+          tailf:info "First allocatable SR color";
+          description "First allocatable SR color.";
+          type uint32 {
+            range "1..4294967295";
+          }
+          default 3400;
+        }
+
+        leaf end-color {
+          tailf:info "Last allocatable SR color";
+          description "Last allocatable SR color.";
+          type uint32 {
+            range "1..4294967295";
+          }
+          default 3499;
+        }
+
+        list allocation {
+          tailf:info "Allocated SR color";
+          description
+            "Allocated SR color.  The advisor writes these records during a
+             guarded migration so future assessments and retries reuse the same
+             color.";
+          key color;
+
+          leaf color {
+            tailf:info "Allocated SR color";
+            description "Allocated SR color.";
+            type uint32 {
+              range "1..4294967295";
+            }
+          }
+
+          leaf service-id {
+            tailf:info "Owning NSS slice service";
+            description "Owning NSS slice service.";
+            mandatory true;
+            type string;
+          }
+
+          leaf connection-group {
+            tailf:info "Owning NSS connection group";
+            description "Owning NSS connection group.";
+            mandatory true;
+            type string;
+          }
+
+          leaf target-profile {
+            tailf:info "Allocated target transport profile";
+            description "Allocated target transport profile.";
+            type target-transport-profile;
+          }
+
+          leaf owner {
+            tailf:info "Allocation owner";
+            description "Allocation owner.";
+            type string;
+            default "transport-advisor";
+          }
+
+          leaf reason {
+            tailf:info "Allocation reason";
+            description "Allocation reason.";
+            type string;
+          }
+        }
+      }
+    }
+
+    container transport-health {
+      tailf:cli-add-mode;
+      tailf:info "Transport PM and assurance health inputs";
+      description
+        "Lab-fed PM and assurance health inputs.  In a production system these
+         values would normally be populated by service assurance, PM, or
+         telemetry collectors.  The brownfield demo uses them explicitly so
+         the planner and guarded migration action can make deterministic
+         health-aware decisions.";
+
+      list link {
+        tailf:info "Observed TE link health";
+        description
+          "Observed health for a core-network TE link.  A down link is removed
+           from the planner graph.  A degraded link remains usable but receives
+           a planning penalty and contributes measured delay/loss findings.";
+        key name;
+
+        leaf name {
+          tailf:info "Health input name";
+          description "Health input name.";
+          type string {
+            pattern "[A-Za-z0-9_.:-]{3,96}";
+          }
+        }
+
+        leaf device-a {
+          tailf:info "First endpoint device";
+          description "First endpoint device.";
+          mandatory true;
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf interface-a {
+          tailf:info "First endpoint interface";
+          description "First endpoint interface.";
+          mandatory true;
+          type string;
+        }
+
+        leaf device-b {
+          tailf:info "Second endpoint device";
+          description "Second endpoint device.";
+          mandatory true;
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf interface-b {
+          tailf:info "Second endpoint interface";
+          description "Second endpoint interface.";
+          mandatory true;
+          type string;
+        }
+
+        leaf state {
+          tailf:info "Observed link health state";
+          description "Observed link health state.";
+          type health-state;
+          default normal;
+        }
+
+        leaf measured-delay-microseconds {
+          tailf:info "Measured one-way link delay";
+          description
+            "Measured one-way link delay in microseconds.  Zero means the
+             static TE delay metric is used.";
+          type uint32;
+          default 0;
+        }
+
+        leaf loss-per-million {
+          tailf:info "Measured packet loss per million packets";
+          description
+            "Measured packet loss per million packets.  Non-zero loss creates
+             a health warning and planning penalty.";
+          type uint32;
+          default 0;
+        }
+
+        leaf reason {
+          tailf:info "Collector supplied reason";
+          description "Collector supplied reason.";
+          type string;
+        }
+      }
+
+      list service {
+        tailf:info "Observed slice service canary health";
+        description
+          "Observed canary health for a slice connection group and transport
+           profile.  A pre-check input can block migration before config is
+           changed.  A post-check input can fail the guarded migration and
+           trigger rollback.";
+        key "slice-service connection-group transport-profile phase";
+
+        leaf slice-service {
+          tailf:info "NSS slice service";
+          description "NSS slice service.";
+          type leafref {
+            path "/tsm-slice:network-slice-services/"
+               + "tsm-slice:slice-service/tsm-slice:service-id";
+          }
+        }
+
+        leaf connection-group {
+          tailf:info "NSS connection group";
+          description "NSS connection group.";
+          type string;
+        }
+
+        leaf transport-profile {
+          tailf:info "Observed transport profile";
+          description "Observed transport profile.";
+          type observed-transport-profile;
+        }
+
+        leaf phase {
+          tailf:info "Migration phase";
+          description "Migration phase.";
+          type health-phase;
+        }
+
+        leaf state {
+          tailf:info "Observed service health state";
+          description "Observed service health state.";
+          type health-state;
+          default normal;
+        }
+
+        leaf measured-delay-microseconds {
+          tailf:info "Measured service delay";
+          description
+            "Measured service delay in microseconds.  When present, the
+             advisor compares it with the NSS latency SLO.";
+          type uint32;
+          default 0;
+        }
+
+        leaf loss-per-million {
+          tailf:info "Measured packet loss per million packets";
+          description
+            "Measured packet loss per million packets.  Non-zero loss creates
+             a health warning.";
+          type uint32;
+          default 0;
+        }
+
+        leaf reason {
+          tailf:info "Collector supplied reason";
+          description "Collector supplied reason.";
+          type string;
+        }
+      }
+    }
+
+    action plan-transport-migration {
+      tailf:actionpoint transport-advisor-plan;
+      tailf:info "Plan topology-aware transport migration waves";
+      description
+        "Build a TE-manager style migration plan for one slice or the whole
+         NSS portfolio.  The action is read-only: it inspects NSS service
+         intent, local TE topology metrics, SRLGs, PM and assurance coverage,
+         then recommends staged migration waves before the guarded migration
+         action is used to execute a selected service.";
+
+      input {
+        leaf slice-service {
+          tailf:info "Optional NSS slice service to plan";
+          description
+            "Optional NSS slice service to plan.  If omitted, all slice
+             services are considered.";
+          type leafref {
+            path "/tsm-slice:network-slice-services/"
+               + "tsm-slice:slice-service/tsm-slice:service-id";
+          }
+        }
+
+        leaf connection-group {
+          tailf:info "Optional connection group to plan";
+          description
+            "Optional connection group to plan.  If omitted, all connection
+             groups in the selected slice services are considered.";
+          type string;
+        }
+
+        leaf target-profile {
+          tailf:info "Candidate target transport profile";
+          description "Candidate target transport profile.";
+          type target-transport-profile;
+          default srv6;
+        }
+
+        leaf target-color-base {
+          tailf:info "Base SR color for services without an existing color";
+          description
+            "Fallback base SR color used when a connection group has no
+             existing color and no configured color pool is available. Existing
+             SR-MPLS colors are preserved by default.";
+          type uint32 {
+            range "1..4294967295";
+          }
+          default 3400;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool";
+          description
+            "SR color pool to use for connection groups without an existing
+             color. In auto or resource-manager mode this is a Resource Manager
+             5 ID pool name; in local mode it is a transport-resource-pools
+             sr-color-pool name. If no pool is available in auto/local mode,
+             target-color-base is used as a backward-compatible fallback.";
+          type string;
+          default "transport-sr-colors";
+        }
+
+        leaf color-allocation-backend {
+          tailf:info "SR color allocation backend";
+          description "SR color allocation backend.";
+          type color-allocation-backend;
+          default auto;
+        }
+
+        leaf max-services-per-wave {
+          tailf:info "Maximum migrate recommendations per wave";
+          description "Maximum migrate recommendations per wave.";
+          type uint8 {
+            range "1..32";
+          }
+          default 1;
+        }
+
+        leaf require-srv6-underlay {
+          tailf:info "Require SRv6 underlay before SRv6 migration";
+          description
+            "When true, SRv6 migration candidates are staged until all
+             enabled PE/core nodes have srv6-node service intent.";
+          type boolean;
+          default true;
+        }
+
+        leaf include-no-op {
+          tailf:info "Include already migrated services";
+          description "Include already migrated services in the plan.";
+          type boolean;
+          default false;
+        }
+      }
+
+      output {
+        leaf decision {
+          tailf:info "Planner decision";
+          description "Planner decision.";
+          type enumeration {
+            enum no-candidates {
+              description "No matching slice connection groups were found.";
+            }
+            enum no-op {
+              description "All matching connection groups already match.";
+            }
+            enum ready {
+              description
+                "One or more connection groups are ready to migrate.";
+            }
+            enum stage-underlay-first {
+              description "SRv6 underlay must be staged before migration.";
+            }
+            enum ready-with-warnings {
+              description
+                "A migration plan exists, but warnings should be reviewed.";
+            }
+            enum not-ready {
+              description "Blocking issues prevent one or more migrations.";
+            }
+          }
+        }
+
+        leaf target-profile {
+          tailf:info "Target transport profile";
+          description "Target transport profile.";
+          type string;
+        }
+
+        leaf candidate-count {
+          tailf:info "Candidate connection groups considered";
+          description "Candidate connection groups considered.";
+          type uint32;
+        }
+
+        leaf migrate-count {
+          tailf:info "Connection groups ready to migrate";
+          description "Connection groups ready to migrate.";
+          type uint32;
+        }
+
+        leaf stage-underlay-count {
+          tailf:info "Connection groups waiting for underlay staging";
+          description "Connection groups waiting for underlay staging.";
+          type uint32;
+        }
+
+        leaf blocked-count {
+          tailf:info "Connection groups with blocking issues";
+          description "Connection groups with blocking issues.";
+          type uint32;
+        }
+
+        leaf no-op-count {
+          tailf:info "Connection groups already on target profile";
+          description "Connection groups already on target profile.";
+          type uint32;
+        }
+
+        leaf te-links {
+          tailf:info "Directed TE links in the local topology graph";
+          description "Directed TE links in the local topology graph.";
+          type uint32;
+        }
+
+        leaf srlgs {
+          tailf:info "Directed SRLG assignments in the topology graph";
+          description "Directed SRLG assignments in the topology graph.";
+          type uint32;
+        }
+
+        leaf impaired-links {
+          tailf:info "TE links with degraded or lossy health input";
+          description "TE links with degraded or lossy health input.";
+          type uint32;
+        }
+
+        leaf blocked-links {
+          tailf:info "TE links removed from the graph by down health input";
+          description "TE links removed from the graph by down health input.";
+          type uint32;
+        }
+
+        leaf missing-srv6-devices {
+          tailf:info "Core-network devices that still need SRv6";
+          description "Core-network devices that still need SRv6.";
+          type string;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool used by the plan";
+          description "SR color pool used by the plan.";
+          type string;
+        }
+
+        leaf allocated-colors {
+          tailf:info "Colors allocated in the selected pool";
+          description "Colors allocated in the selected pool.";
+          type uint32;
+        }
+
+        leaf available-colors {
+          tailf:info "Available colors in the selected pool";
+          description "Available colors in the selected pool.";
+          type uint32;
+        }
+
+        leaf summary {
+          tailf:info "Human-readable plan summary";
+          description "Human-readable plan summary.";
+          type string;
+        }
+
+        list recommendation {
+          tailf:info "Per connection-group migration recommendation";
+          description "Per connection-group migration recommendation.";
+          key id;
+
+          leaf id {
+            tailf:info "Recommendation id";
+            description "Recommendation id.";
+            type uint16;
+          }
+
+          leaf wave-id {
+            tailf:info "Recommended migration wave";
+            description
+              "Recommended migration wave.  Wave 0 means the item is a no-op,
+               blocked, or waiting for underlay staging.";
+            type uint16;
+          }
+
+          leaf action {
+            tailf:info "Recommended action";
+            description "Recommended action.";
+            type enumeration {
+              enum migrate;
+              enum stage-underlay;
+              enum no-op;
+              enum block;
+            }
+          }
+
+          leaf service-id {
+            tailf:info "NSS slice service";
+            description "NSS slice service.";
+            type string;
+          }
+
+          leaf connection-group {
+            tailf:info "NSS connection group";
+            description "NSS connection group.";
+            type string;
+          }
+
+          leaf current-profile {
+            tailf:info "Current transport profile";
+            description "Current transport profile.";
+            type string;
+          }
+
+          leaf target-profile {
+            tailf:info "Target transport profile";
+            description "Target transport profile.";
+            type string;
+          }
+
+          leaf recommended-color {
+            tailf:info "Recommended SR color";
+            description "Recommended SR color.";
+            type uint32;
+          }
+
+          leaf color-source {
+            tailf:info "Recommended color source";
+            description
+              "How the recommended color was resolved: explicit input,
+               existing service intent, pool allocation, or fallback base.";
+            type string;
+          }
+
+          leaf color-pool {
+            tailf:info "Recommended color pool";
+            description "Recommended color pool.";
+            type string;
+          }
+
+          leaf pe-devices {
+            tailf:info "PE devices used by selected SDPs";
+            description "PE devices used by selected SDPs.";
+            type string;
+          }
+
+          leaf metric-type {
+            tailf:info "Path metric used for planning";
+            description "Path metric used for planning.";
+            type string;
+          }
+
+          leaf primary-path {
+            tailf:info "Shortest candidate TE path";
+            description "Shortest candidate TE path.";
+            type string;
+          }
+
+          leaf primary-delay-microseconds {
+            tailf:info "Primary path cumulative delay";
+            description "Primary path cumulative delay.";
+            type uint32;
+          }
+
+          leaf backup-path {
+            tailf:info "Backup candidate TE path";
+            description "Backup candidate TE path.";
+            type string;
+          }
+
+          leaf backup-delay-microseconds {
+            tailf:info "Backup path cumulative delay";
+            description "Backup path cumulative delay.";
+            type uint32;
+          }
+
+          leaf srlg-disjoint-backup {
+            tailf:info "Backup path is SRLG-disjoint from primary";
+            description "Backup path is SRLG-disjoint from primary.";
+            type boolean;
+          }
+
+          leaf path-health {
+            tailf:info "Primary path health summary";
+            description "Primary path health summary.";
+            type string;
+          }
+
+          leaf latency-bound-microseconds {
+            tailf:info "SLO latency bound";
+            description "SLO latency bound.";
+            type uint32;
+          }
+
+          leaf readiness-score {
+            tailf:info "Readiness score from 0 to 100";
+            description "Readiness score from 0 to 100.";
+            type uint8 {
+              range "0..100";
+            }
+          }
+
+          leaf reason {
+            tailf:info "Why this recommendation was made";
+            description "Why this recommendation was made.";
+            type string;
+          }
+        }
+
+        list finding {
+          tailf:info "Planner finding";
+          description "Planner finding.";
+          key id;
+
+          leaf id {
+            tailf:info "Finding id";
+            description "Finding id.";
+            type uint16;
+          }
+
+          leaf severity {
+            tailf:info "Finding severity";
+            description "Finding severity.";
+            type enumeration {
+              enum info;
+              enum warning;
+              enum error;
+            }
+          }
+
+          leaf area {
+            tailf:info "Planner area";
+            description "Planner area.";
+            type string;
+          }
+
+          leaf message {
+            tailf:info "Finding message";
+            description "Finding message.";
+            type string;
+          }
+        }
+      }
+    }
+
+    action assess-transport-migration {
+      tailf:actionpoint transport-advisor-assess;
+      tailf:info "Assess a brownfield slice transport migration";
+      description
+        "Assess whether an existing NSS service is ready to move to a target
+         transport profile.  The output highlights missing underlay
+         capability, topology/TE risk, PM and assurance coverage, and the
+         exact NSO CLI steps to perform a safe staged migration.";
+
+      input {
+        leaf slice-service {
+          tailf:info "NSS slice service to assess";
+          description "NSS slice service to assess.";
+          mandatory true;
+          type leafref {
+            path "/tsm-slice:network-slice-services/"
+               + "tsm-slice:slice-service/tsm-slice:service-id";
+          }
+        }
+
+        leaf connection-group {
+          tailf:info "Optional connection group to assess";
+          description
+            "Optional connection group to assess.  If omitted, all connection
+             groups in the slice are considered.";
+          type string;
+        }
+
+        leaf target-profile {
+          tailf:info "Candidate target transport profile";
+          description "Candidate target transport profile.";
+          type target-transport-profile;
+          default srv6;
+        }
+
+        leaf target-color {
+          tailf:info "Candidate SR color";
+          description
+            "Candidate SR color for SR-MPLS or SRv6 steering. If omitted, an
+             existing connection-group color is reused, or a color is selected
+             from color-pool.";
+          type uint32 {
+            range "1..4294967295";
+          }
+        }
+
+        leaf target-color-base {
+          tailf:info "Fallback base SR color";
+          description
+            "Fallback base SR color used when no explicit color, existing
+             service color, or configured color pool is available.";
+          type uint32 {
+            range "1..4294967295";
+          }
+          default 3400;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool";
+          description
+            "SR color pool to use for connection groups without an existing
+             color. In auto or resource-manager mode this is a Resource Manager
+             5 ID pool name; in local mode it is a transport-resource-pools
+             sr-color-pool name. If no pool is available in auto/local mode,
+             target-color-base is used as a backward-compatible fallback.";
+          type string;
+          default "transport-sr-colors";
+        }
+
+        leaf color-allocation-backend {
+          tailf:info "SR color allocation backend";
+          description "SR color allocation backend.";
+          type color-allocation-backend;
+          default auto;
+        }
+
+        leaf include-cli {
+          tailf:info "Include recommended NSO CLI steps";
+          description "Include recommended NSO CLI steps.";
+          type boolean;
+          default true;
+        }
+      }
+
+      output {
+        leaf decision {
+          tailf:info "Advisor decision";
+          description "Advisor decision.";
+          type enumeration {
+            enum no-op {
+              description "The slice already matches the target profile.";
+            }
+            enum ready {
+              description "The slice is ready for the target migration.";
+            }
+            enum stage-underlay-first {
+              description "SRv6 underlay must be enabled before migration.";
+            }
+            enum ready-with-warnings {
+              description
+                "Migration can proceed, but warnings should be reviewed.";
+            }
+            enum not-ready {
+              description "Blocking issues must be fixed before migration.";
+            }
+          }
+        }
+
+        leaf readiness-score {
+          tailf:info "Readiness score from 0 to 100";
+          description "Readiness score from 0 to 100.";
+          type uint8 {
+            range "0..100";
+          }
+        }
+
+        leaf service-id {
+          tailf:info "Assessed slice service";
+          description "Assessed slice service.";
+          type string;
+        }
+
+        leaf current-profile {
+          tailf:info "Current connection-group transport profile summary";
+          description "Current connection-group transport profile summary.";
+          type string;
+        }
+
+        leaf target-profile {
+          tailf:info "Target transport profile";
+          description "Target transport profile.";
+          type string;
+        }
+
+        leaf resolved-color {
+          tailf:info "Resolved SR color";
+          description "Resolved SR color.";
+          type uint32;
+        }
+
+        leaf color-source {
+          tailf:info "Resolved color source";
+          description
+            "How the SR color was resolved: explicit input, existing service
+             intent, pool allocation, or fallback base.";
+          type string;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool";
+          description "SR color pool used for resolution.";
+          type string;
+        }
+
+        leaf sdp-count {
+          tailf:info "Number of selected SDPs";
+          description "Number of selected SDPs.";
+          type uint32;
+        }
+
+        leaf pe-devices {
+          tailf:info "PE devices used by selected SDPs";
+          description "PE devices used by selected SDPs.";
+          type string;
+        }
+
+        leaf srv6-enabled-devices {
+          tailf:info "SRv6-enabled core-network devices";
+          description "SRv6-enabled core-network devices.";
+          type uint32;
+        }
+
+        leaf missing-srv6-devices {
+          tailf:info "Core-network devices that still need SRv6";
+          description "Core-network devices that still need SRv6.";
+          type string;
+        }
+
+        leaf pm-profiles {
+          tailf:info "Matching PM profiles found";
+          description "Matching PM profiles found.";
+          type uint32;
+        }
+
+        leaf assurance-monitors {
+          tailf:info "Matching assurance monitors found";
+          description "Matching assurance monitors found.";
+          type uint32;
+        }
+
+        leaf te-links {
+          tailf:info "Directed TE links in the local topology graph";
+          description "Directed TE links in the local topology graph.";
+          type uint32;
+        }
+
+        leaf srlgs {
+          tailf:info "Directed SRLG assignments in the topology graph";
+          description "Directed SRLG assignments in the topology graph.";
+          type uint32;
+        }
+
+        leaf impaired-links {
+          tailf:info "TE links with degraded or lossy health input";
+          description "TE links with degraded or lossy health input.";
+          type uint32;
+        }
+
+        leaf blocked-links {
+          tailf:info "TE links removed from the graph by down health input";
+          description "TE links removed from the graph by down health input.";
+          type uint32;
+        }
+
+        leaf healthy-te-path {
+          tailf:info "A healthy TE path exists between selected PEs";
+          description "A healthy TE path exists between selected PEs.";
+          type boolean;
+        }
+
+        leaf primary-path {
+          tailf:info "Selected healthy primary path";
+          description "Selected healthy primary path.";
+          type string;
+        }
+
+        leaf primary-delay-microseconds {
+          tailf:info "Selected primary path delay";
+          description "Selected primary path delay.";
+          type uint32;
+        }
+
+        leaf transport-health-state {
+          tailf:info "Worst matching service health input";
+          description "Worst matching service health input.";
+          type string;
+        }
+
+        leaf highest-delay-microseconds {
+          tailf:info "Highest per-link TE delay metric";
+          description "Highest per-link TE delay metric.";
+          type uint32;
+        }
+
+        leaf summary {
+          tailf:info "Human-readable assessment summary";
+          description "Human-readable assessment summary.";
+          type string;
+        }
+
+        list finding {
+          tailf:info "Assessment finding";
+          description "Assessment finding.";
+          key id;
+
+          leaf id {
+            tailf:info "Finding id";
+            description "Finding id.";
+            type uint16;
+          }
+
+          leaf severity {
+            tailf:info "Finding severity";
+            description "Finding severity.";
+            type enumeration {
+              enum info;
+              enum warning;
+              enum error;
+            }
+          }
+
+          leaf area {
+            tailf:info "Assessment area";
+            description "Assessment area.";
+            type string;
+          }
+
+          leaf message {
+            tailf:info "Finding message";
+            description "Finding message.";
+            type string;
+          }
+        }
+
+        list recommended-step {
+          tailf:info "Recommended NSO CLI step";
+          description "Recommended NSO CLI step.";
+          key id;
+
+          leaf id {
+            tailf:info "Step id";
+            description "Step id.";
+            type uint16;
+          }
+
+          leaf command {
+            tailf:info "NSO CLI command";
+            description "NSO CLI command.";
+            type string;
+          }
+
+          leaf reason {
+            tailf:info "Why this step is recommended";
+            description "Why this step is recommended.";
+            type string;
+          }
+        }
+      }
+    }
+
+    action migrate-transport {
+      tailf:actionpoint transport-advisor-migrate;
+      tailf:info "Plan or execute a guarded transport migration";
+      description
+        "Plan or execute a controlled NSS transport migration.  By default the
+         action performs readiness checks and returns native dry-run output
+         without committing.  Set execute=true to let NSO perform the guarded
+         transaction and post-check the resulting service intent.";
+
+      input {
+        leaf slice-service {
+          tailf:info "NSS slice service to migrate";
+          description "NSS slice service to migrate.";
+          mandatory true;
+          type leafref {
+            path "/tsm-slice:network-slice-services/"
+               + "tsm-slice:slice-service/tsm-slice:service-id";
+          }
+        }
+
+        leaf connection-group {
+          tailf:info "Optional connection group to migrate";
+          description
+            "Optional connection group to migrate.  If omitted, all connection
+             groups in the slice are considered.";
+          type string;
+        }
+
+        leaf target-profile {
+          tailf:info "Target transport profile";
+          description "Target transport profile.";
+          type target-transport-profile;
+          default srv6;
+        }
+
+        leaf target-color {
+          tailf:info "Target SR color";
+          description
+            "Target SR color for SR-MPLS or SRv6 steering. If omitted, an
+             existing connection-group color is reused, or a color is selected
+             from color-pool.";
+          type uint32 {
+            range "1..4294967295";
+          }
+        }
+
+        leaf target-color-base {
+          tailf:info "Fallback base SR color";
+          description
+            "Fallback base SR color used when no explicit color, existing
+             service color, or configured color pool is available.";
+          type uint32 {
+            range "1..4294967295";
+          }
+          default 3400;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool";
+          description
+            "SR color pool to use for connection groups without an existing
+             color. In auto or resource-manager mode this is a Resource Manager
+             5 ID pool name; in local mode it is a transport-resource-pools
+             sr-color-pool name. If no pool is available in auto/local mode,
+             target-color-base is used as a backward-compatible fallback.";
+          type string;
+          default "transport-sr-colors";
+        }
+
+        leaf color-allocation-backend {
+          tailf:info "SR color allocation backend";
+          description "SR color allocation backend.";
+          type color-allocation-backend;
+          default auto;
+        }
+
+        leaf execute {
+          tailf:info "Commit the guarded migration";
+          description
+            "Commit the guarded migration.  The default false value only
+             returns the plan and native dry-run.";
+          type boolean;
+          default false;
+        }
+
+        leaf stage-underlay {
+          tailf:info "Stage missing SRv6 underlay first";
+          description
+            "When migrating to SRv6, create missing srv6-node services before
+             changing the customer service transport intent.";
+          type boolean;
+          default true;
+        }
+
+        leaf allow-warnings {
+          tailf:info "Allow non-blocking warnings";
+          description
+            "Allow migration to proceed despite non-underlay warnings.  By
+             default, PM, assurance, topology, and renderer warnings block the
+             guarded migration.";
+          type boolean;
+          default false;
+        }
+
+        leaf rollback-on-failed-post-check {
+          tailf:info "Rollback service intent on failed post-check";
+          description
+            "If execution commits the service transport change but the
+             post-check fails, restore the previous connection-group transport
+             profile and color.";
+          type boolean;
+          default true;
+        }
+      }
+
+      output {
+        leaf status {
+          tailf:info "Migration status";
+          description "Migration status.";
+          type enumeration {
+            enum planned {
+              description "A safe plan and dry-run were produced only.";
+            }
+            enum blocked {
+              description "The migration was blocked by readiness gates.";
+            }
+            enum committed {
+              description "The guarded migration was committed successfully.";
+            }
+            enum no-op {
+              description "The service already matched the target state.";
+            }
+            enum rolled-back {
+              description
+                "The service migration was rolled back after a failed
+                 post-check.";
+            }
+            enum failed {
+              description
+                "The migration action failed while planning or executing.";
+            }
+          }
+        }
+
+        leaf pre-decision {
+          tailf:info "Advisor decision before changes";
+          description "Advisor decision before changes.";
+          type string;
+        }
+
+        leaf post-decision {
+          tailf:info "Advisor decision after committed changes";
+          description "Advisor decision after committed changes.";
+          type string;
+        }
+
+        leaf readiness-score {
+          tailf:info "Final readiness score";
+          description "Final readiness score.";
+          type uint8 {
+            range "0..100";
+          }
+        }
+
+        leaf underlay-changed {
+          tailf:info "SRv6 underlay stage changed config";
+          description "SRv6 underlay stage changed config.";
+          type boolean;
+        }
+
+        leaf service-changed {
+          tailf:info "Service transport stage changed config";
+          description "Service transport stage changed config.";
+          type boolean;
+        }
+
+        leaf resolved-color {
+          tailf:info "Resolved SR color";
+          description "Resolved SR color.";
+          type uint32;
+        }
+
+        leaf color-source {
+          tailf:info "Resolved color source";
+          description "Resolved color source.";
+          type string;
+        }
+
+        leaf color-pool {
+          tailf:info "SR color pool";
+          description "SR color pool used by the guarded migration.";
+          type string;
+        }
+
+        leaf rollback-performed {
+          tailf:info "Rollback transaction was committed";
+          description "Rollback transaction was committed.";
+          type boolean;
+        }
+
+        leaf summary {
+          tailf:info "Human-readable migration summary";
+          description "Human-readable migration summary.";
+          type string;
+        }
+
+        leaf native-dry-run {
+          tailf:info "Native dry-run produced by the guarded transaction";
+          description "Native dry-run produced by the guarded transaction.";
+          type string;
+        }
+
+        list stage {
+          tailf:info "Migration stage";
+          description "Migration stage.";
+          key id;
+
+          leaf id {
+            tailf:info "Stage id";
+            description "Stage id.";
+            type uint16;
+          }
+
+          leaf name {
+            tailf:info "Stage name";
+            description "Stage name.";
+            type string;
+          }
+
+          leaf status {
+            tailf:info "Stage status";
+            description "Stage status.";
+            type enumeration {
+              enum planned;
+              enum dry-run;
+              enum committed;
+              enum skipped;
+              enum blocked;
+              enum failed;
+              enum rolled-back;
+              enum passed;
+            }
+          }
+
+          leaf message {
+            tailf:info "Stage message";
+            description "Stage message.";
+            type string;
+          }
+        }
+
+        list finding {
+          tailf:info "Migration finding";
+          description "Migration finding.";
+          key id;
+
+          leaf id {
+            tailf:info "Finding id";
+            description "Finding id.";
+            type uint16;
+          }
+
+          leaf phase {
+            tailf:info "Assessment phase";
+            description "Assessment phase.";
+            type string;
+          }
+
+          leaf severity {
+            tailf:info "Finding severity";
+            description "Finding severity.";
+            type enumeration {
+              enum info;
+              enum warning;
+              enum error;
+            }
+          }
+
+          leaf area {
+            tailf:info "Assessment area";
+            description "Assessment area.";
+            type string;
+          }
+
+          leaf message {
+            tailf:info "Finding message";
+            description "Finding message.";
+            type string;
+          }
+        }
+      }
+    }
+  }
+}

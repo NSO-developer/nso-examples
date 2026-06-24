@@ -23,6 +23,13 @@ To run the steps below in this README from a demo shell script:
 
     make demo
 
+To run the same demo using Python MAAPI calls instead of CLI commands:
+
+    make demo-maapi
+
+The alternative `demo_maapi.py` script invokes the action and inspects the
+device configuration with the high-level Python MAAPI/maagic API.
+
 The below steps are similar to the demo script using the J-style CLI instead of
 the C-style CLI.
 
@@ -111,6 +118,7 @@ Further Reading
 - NSO Development Guide: Actions
 - NSO Development Guide: Application Timeouts
 - The `demo.sh` script.
+- The alternative `demo_maapi.py` script.
 - Python API reference documentation: `ncs.dp`, `ncs.application`, `ncs.maapi`,
 and `ncs.maagic`.
 - The package in the `./packages/actions` directory.

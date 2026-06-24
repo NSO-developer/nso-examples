@@ -1,6 +1,9 @@
+NCS_CORE_JARS = $(NCS_DIR)/java/jar/*
+
 all:
-	$(MAKE) -C packages/router-nc-1.0/src all
-	$(MAKE) -C packages/cdb/src all
+	for f in packages/*/src; do \
+		$(MAKE) -C $$f all || exit 1; \
+	done
 	$(MAKE) netsim
 	ncs-netsim ncs-xml-init > ncs-cdb/netsim_devices_init.xml
 
@@ -8,10 +11,9 @@ netsim:
 	ncs-netsim create-network ./packages/router-nc-1.0 3 ex --dir ./netsim
 
 clean:
-	for f in packages/*/src; do \
-		$(MAKE) -C $$f clean || exit 1; \
-	done
-	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S}
+	make -C packages/cdb/src clean
+	rm -rf ./netsim logs/* state/* ncs-cdb/*.cdb ncs-cdb/{A,O,S} \
+		ncs-cdb/netsim_devices_init.xml
 
 start: stop
 	ncs-netsim start
@@ -24,3 +26,6 @@ stop:
 
 demo:
 	./demo.sh
+
+demo-maapi:
+	java -classpath "$(NCS_CORE_JARS)" demo_maapi.java

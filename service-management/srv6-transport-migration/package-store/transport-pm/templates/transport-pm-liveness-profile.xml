@@ -1,0 +1,31 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <liveness-profile>
+            <name>
+              <name>{$PROFILE}</name>
+              <liveness-detection>
+                <multiplier>{$MULTIPLIER}</multiplier>
+                <logging>
+                  <state-change/>
+                </logging>
+              </liveness-detection>
+              <probe>
+                <tx-interval>{$TX_INTERVAL}</tx-interval>
+                <burst-interval>{$BURST_INTERVAL}</burst-interval>
+                <?if {$DSCP}?>
+                  <tos>
+                    <dscp>{$DSCP}</dscp>
+                  </tos>
+                <?end?>
+              </probe>
+            </name>
+          </liveness-profile>
+        </performance-measurement>
+      </config>
+    </device>
+  </devices>
+</config-template>

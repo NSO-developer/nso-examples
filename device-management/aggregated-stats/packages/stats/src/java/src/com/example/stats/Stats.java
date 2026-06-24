@@ -21,6 +21,7 @@ import com.tailf.dp.annotations.DataCallback;
 import com.tailf.dp.annotations.TransCallback;
 import com.tailf.dp.proto.DataCBType;
 import com.tailf.dp.proto.TransCBType;
+import com.tailf.examples.router.namespaces.router;
 import com.tailf.maapi.Maapi;
 import com.tailf.navu.NavuContainer;
 import com.tailf.navu.NavuContext;
@@ -33,6 +34,7 @@ import com.tailf.ncs.ns.Ncs;
 
 public class Stats  {
 
+    private static final ConfNamespace ROUTER = new router();
 
     private static Maapi m = null;
     private long staleCounter;
@@ -139,7 +141,7 @@ public class Stats  {
                     list("device").
                     elem(new ConfKey(new ConfBuf[] {(ConfBuf)g})).
                     container("live-status").
-                    namespace("r").container("sys").
+                    container(ROUTER, "sys").
                     container("interfaces").
                     list("interface");
                 for (NavuContainer iface : ifs.elements()) {

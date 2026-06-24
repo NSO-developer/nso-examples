@@ -1,0 +1,378 @@
+module transport-slice-service {
+  yang-version 1.1;
+  namespace
+    "http://tail-f.com/ns/example/srv6-transport-migration/"
+  + "transport-slice-service";
+  prefix tsm-slice;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import inventory {
+    prefix inv;
+  }
+  import service-assurance {
+    prefix sa;
+  }
+
+  organization "Tail-f";
+  description
+    "A compact, executable Network Slice Service model for the
+     srv6-transport-migration NSO example.  The vocabulary follows
+     Network Slice Service concepts, but this module uses a local
+     namespace because it composes demo-specific inventory, SR policy/ODN,
+     L2VPN, L3VPN, PM, and service-assurance services that can run on the
+     bundled multivendor netsim.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef connectivity-type {
+    type enumeration {
+      enum l3vpn {
+        description "Realize the slice as an L3VPN service.";
+      }
+      enum l2vpn {
+        description "Realize the slice as an L2VPN/EVPN service.";
+      }
+    }
+    description "Connectivity service used to realize a slice connection.";
+  }
+
+  typedef transport-mode {
+    type enumeration {
+      enum none {
+        description "Do not create transport steering.";
+      }
+      enum odn-template {
+        description "Create an SR ODN template and steer VPN routes by color.";
+      }
+    }
+    description "Transport steering mode.";
+  }
+
+  typedef transport-profile {
+    type enumeration {
+      enum none {
+        description "No explicit transport binding.";
+      }
+      enum rsvp-te {
+        description "Bind the slice to an existing RSVP-TE transport profile.";
+      }
+      enum sr-mpls {
+        description "Bind the slice to SR-MPLS ODN color steering.";
+      }
+      enum srv6 {
+        description "Bind the slice to SRv6 ODN color steering.";
+      }
+    }
+    description
+      "Transport profile used to realize this connection group.  This keeps
+       customer service intent stable while the transport changes from
+       RSVP-TE/SR-MPLS toward SRv6.";
+  }
+
+  container network-slice-services {
+    tailf:cli-add-mode;
+      description "Network Slice Services.";
+
+    container slo-sle-templates {
+      tailf:cli-add-mode;
+      description "Reusable SLO/SLE templates.";
+
+      list slo-sle-template {
+        tailf:info "SLO/SLE template";
+        description "SLO/SLE template.";
+        key id;
+
+        leaf id {
+          tailf:info "Template identifier";
+          description "Template identifier.";
+          type string {
+            pattern "[A-Za-z0-9_.-]{3,48}";
+          }
+        }
+
+        leaf guaranteed-bandwidth {
+          tailf:info "Guaranteed bandwidth in Mbps";
+          description "Guaranteed bandwidth in Mbps.";
+          type uint32;
+        }
+
+        leaf latency-bound {
+          tailf:info "Latency bound in milliseconds";
+          description "Latency bound in milliseconds.";
+          type uint32;
+        }
+
+        leaf isolation {
+          tailf:info "Isolation level";
+          description "Isolation level.";
+          type enumeration {
+            enum shared;
+            enum dedicated;
+          }
+          default shared;
+        }
+
+        leaf pm-delay-profile {
+          tailf:info "PM delay profile used for slice attachments";
+          description "PM delay profile used for slice attachments.";
+          type string;
+        }
+
+        leaf assurance-profile {
+          tailf:info "Service assurance profile";
+          description "Service assurance profile.";
+          type string;
+        }
+
+        uses sa:service-assurance-config;
+      }
+    }
+
+    list slice-service {
+      tailf:info "Network slice service";
+      description "Network slice service.";
+      uses ncs:service-data;
+      ncs:servicepoint transport-slice-servicepoint;
+
+      key service-id;
+
+      leaf service-id {
+        tailf:info "Slice service identifier";
+        description "Slice service identifier.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf description {
+        tailf:info "Slice description";
+        description "Slice description.";
+        type string;
+      }
+
+      leaf customer {
+        tailf:info "Customer";
+        description "Customer.";
+        mandatory true;
+        type leafref {
+          path "/inv:inventory/inv:customer/inv:name";
+        }
+      }
+
+      leaf assurance-profile {
+        tailf:info "Service assurance profile";
+        description "Service assurance profile.";
+        type string;
+      }
+
+      uses sa:service-assurance-config;
+
+      list sdp {
+        tailf:info "Slice service demarcation point";
+        description "Slice service demarcation point.";
+        key sdp-id;
+        min-elements 2;
+
+        leaf sdp-id {
+          tailf:info "SDP identifier";
+          description "SDP identifier.";
+          type string {
+            pattern "[A-Za-z0-9_.-]{2,48}";
+          }
+        }
+
+        leaf attachment-circuit-id {
+          tailf:info "Inventory port used by this SDP";
+          description "Inventory port used by this SDP.";
+          mandatory true;
+          type leafref {
+            path "/inv:inventory/inv:port/inv:pid";
+          }
+        }
+
+        leaf ipv4-subnet {
+          tailf:info "PE-CE IPv4 subnet for L3 slices";
+          description "PE-CE IPv4 subnet for L3 slices.";
+          type inet:ipv4-prefix;
+        }
+
+        leaf provider-ip-index {
+          tailf:info "Provider host index in ipv4-subnet";
+          description "Provider host index in ipv4-subnet.";
+          type uint16;
+          default 1;
+        }
+
+        leaf customer-ip-index {
+          tailf:info "Customer host index in ipv4-subnet";
+          description "Customer host index in ipv4-subnet.";
+          type uint16;
+          default 2;
+        }
+
+        must "provider-ip-index != customer-ip-index" {
+          error-message "Provider and customer host indexes must differ.";
+        }
+      }
+
+      list connection-group {
+        tailf:info "Slice connection group";
+        description "Slice connection group.";
+        key connection-group-id;
+        min-elements 1;
+
+        leaf connection-group-id {
+          tailf:info "Connection group identifier";
+          description "Connection group identifier.";
+          type string {
+            pattern "[A-Za-z0-9_.-]{2,48}";
+          }
+        }
+
+        leaf connectivity-type {
+          tailf:info "Connectivity type";
+          description "Connectivity type.";
+          type connectivity-type;
+          default l3vpn;
+        }
+
+        leaf-list sdp {
+          tailf:info "SDP participating in this connection group";
+          description "SDP participating in this connection group.";
+          type leafref {
+            path "../../sdp/sdp-id";
+          }
+        }
+
+        leaf slo-sle-template {
+          tailf:info "SLO/SLE template";
+          description "SLO/SLE template.";
+          type leafref {
+            path "../../../slo-sle-templates/slo-sle-template/id";
+          }
+        }
+
+        leaf transport-mode {
+          tailf:info "Transport steering mode";
+          description
+            "Legacy transport steering mode kept for compatibility with
+             earlier example payloads. New examples should use
+             transport-profile.";
+          type transport-mode;
+          default none;
+          status deprecated;
+        }
+
+        leaf transport-profile {
+          tailf:info "Transport profile";
+          description
+            "Explicit transport profile for this connection group.";
+          type transport-profile;
+          default none;
+        }
+
+        container rsvp-te {
+          tailf:info "RSVP-TE transport binding";
+          description "RSVP-TE transport binding.";
+
+          leaf tunnel-id {
+            tailf:info "RSVP-TE tunnel identifier";
+            description
+              "RSVP-TE tunnel identifier. On IOS XR this maps naturally to a
+               tunnel-te interface id; on Junos it identifies the adopted TE
+               LSP service binding.";
+            type uint16 {
+              range "1..65535";
+            }
+            default 1234;
+          }
+        }
+
+        leaf color {
+          tailf:info "SR color used for SR-MPLS or SRv6 ODN steering";
+          description "SR color used for SR-MPLS or SRv6 ODN steering.";
+          type uint32 {
+            range "1..4294967295";
+          }
+        }
+
+        leaf metric-type {
+          tailf:info "Dynamic path metric";
+          description "Dynamic path metric.";
+          type enumeration {
+            enum igp;
+            enum te;
+            enum latency;
+          }
+          default latency;
+        }
+
+        leaf sid-algorithm {
+          tailf:info "SID algorithm";
+          description "SID algorithm.";
+          type uint8;
+          default 128;
+        }
+
+        must
+          "not(transport-profile = 'sr-mpls' or "
+        + "transport-profile = 'srv6' or "
+        + "transport-mode = 'odn-template') or color" {
+          error-message
+            "color is required when SR-MPLS/SRv6 ODN steering is enabled.";
+        }
+      }
+
+      action migration-readiness {
+        tailf:actionpoint transport-slice-migration-readiness;
+        description
+          "Summarize whether this slice has the lifecycle artifacts used in
+           the brownfield transport migration demo: SDPs, transport profile
+           bindings, SRv6-capable nodes, PM profile intent, and assurance
+           monitors.";
+
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf sdp-count {
+            type uint32;
+          }
+          leaf connection-groups {
+            type uint32;
+          }
+          leaf rsvp-te-bindings {
+            type uint32;
+          }
+          leaf sr-color-bindings {
+            type uint32;
+          }
+          leaf srv6-enabled-devices {
+            type uint32;
+          }
+          leaf pm-profiles {
+            type uint32;
+          }
+          leaf assurance-monitors {
+            type uint32;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+    }
+  }
+}

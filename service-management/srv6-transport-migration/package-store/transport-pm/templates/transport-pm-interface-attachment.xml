@@ -1,0 +1,30 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <interface>
+            <name>{$INTERFACE}</name>
+            <next-hop>
+              <?if {$NEXT_HOP_IPV4}?>
+                <ipv4>{$NEXT_HOP_IPV4}</ipv4>
+              <?end?>
+              <?if {$NEXT_HOP_IPV6}?>
+                <ipv6>{$NEXT_HOP_IPV6}</ipv6>
+              <?end?>
+            </next-hop>
+            <delay-measurement>
+              <?if {$DELAY_PROFILE}?>
+                <delay-profile>
+                  <name>{$DELAY_PROFILE}</name>
+                </delay-profile>
+              <?end?>
+              <advertise-delay>{$ADVERTISE_DELAY}</advertise-delay>
+            </delay-measurement>
+          </interface>
+        </performance-measurement>
+      </config>
+    </device>
+  </devices>
+</config-template>

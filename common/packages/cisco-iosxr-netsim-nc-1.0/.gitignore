@@ -1,0 +1,3 @@
+src/*netsim-nc*.yang
+src/ncsc-out
+package-meta-data.xml

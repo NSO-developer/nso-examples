@@ -1,0 +1,21 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <odn-template xmlns="http://tail-f.com/srlab/transport-te">
+        <name>{$ODN_NAME}</name>
+        <head-end>{$HEAD_END}</head-end>
+        <color>{$COLOR}</color>
+        <maximum-sid-depth>16</maximum-sid-depth>
+        <dynamic>
+          <metric-type>{$METRIC_TYPE}</metric-type>
+          <sid-algorithm>{$SID_ALGORITHM}</sid-algorithm>
+        </dynamic>
+        <?if {$SRV6}?>
+          <srv6>
+            <locator-name>VPNLAB</locator-name>
+          </srv6>
+        <?end?>
+      </odn-template>
+    </services>
+  </core-network>
+</config-template>

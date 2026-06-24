@@ -1,0 +1,74 @@
+<compliance-template xmlns="http://tail-f.com/ns/config/1.0"
+                     name="srv6-migration-junos-postcheck">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <policy-options>
+            <community>
+              <name>L3VPN-nss-bf-gold-cg-l3-COLOR</name>
+              <members>color:0:3400</members>
+            </community>
+            <resolution-map>
+              <name>L3VPN-nss-bf-gold-cg-l3-COLOR-MAP</name>
+              <mode>ip-color</mode>
+            </resolution-map>
+            <policy-statement>
+              <name>L3VPN-nss-bf-gold-cg-l3-EXP</name>
+            </policy-statement>
+            <policy-statement>
+              <name>L3VPN-nss-bf-gold-cg-l3-IMP</name>
+            </policy-statement>
+          </policy-options>
+          <protocols>
+            <source-packet-routing>
+              <?set n = 'nss-bf-gold-cg-l3-odn'?>
+              <?set tc = {count(./source-routing-path-template[name=$n])}?>
+              <srv6/>
+              <compute-profile>
+                <name>nss-bf-gold-cg-l3-odn-compute</name>
+                <maximum-segment-list-depth>16</maximum-segment-list-depth>
+                <metric-type>
+                  <delay>
+                    <average/>
+                  </delay>
+                </metric-type>
+              </compute-profile>
+              <source-routing-path-template>
+                <name>nss-bf-gold-cg-l3-odn</name>
+                <use-for-shortcut/>
+                <primary>
+                  <name>nss-bf-gold-cg-l3-odn-dynamic</name>
+                  <compute>
+<compute-profile-name>nss-bf-gold-cg-l3-odn-compute</compute-profile-name>
+                  </compute>
+                </primary>
+              </source-routing-path-template>
+              <?assert {$tc = 1}
+               Expected one Junos source-routing path template?>
+            </source-packet-routing>
+            <bgp>
+              <group>
+                <name>RR</name>
+                <family>
+                  <inet-vpn>
+                    <unicast>
+                      <extended-nexthop-color/>
+                    </unicast>
+                  </inet-vpn>
+                </family>
+              </group>
+            </bgp>
+          </protocols>
+          <routing-instances>
+            <instance>
+              <name>L3VPN-nss-bf-gold-cg-l3</name>
+              <vrf-table-label/>
+            </instance>
+          </routing-instances>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</compliance-template>

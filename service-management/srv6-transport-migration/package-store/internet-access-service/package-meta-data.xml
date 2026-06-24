@@ -1,0 +1,25 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>internet-access-service</name>
+  <package-version>1.0</package-version>
+  <description>Dedicated internet access service</description>
+
+  <ncs-min-version>6.7</ncs-min-version>
+  <required-package>
+    <name>inventory</name>
+  </required-package>
+  <required-package>
+    <name>shared-code</name>
+  </required-package>
+  <required-package>
+    <name>service-assurance</name>
+  </required-package>
+  <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
+  <supported-ned-id-match>cisco-iosxr-netsim-nc.*</supported-ned-id-match>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>internet_access_service.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

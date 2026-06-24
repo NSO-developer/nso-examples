@@ -1,0 +1,19 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>cisco-iosxr-netsim</name>
+  <package-version>1.0</package-version>
+  <description>Cisco IOS XR netsim NETCONF NED</description>
+  <ncs-min-version>6.7</ncs-min-version>
+  <component>
+    <name>cisco-iosxr-netsim</name>
+    <ned>
+      <netconf>
+        <ned-id>to be replaced by build</ned-id>
+      </netconf>
+      <device>
+        <vendor>Tail-f</vendor>
+        <product-family>Tail-f netsim NETCONF 1.0</product-family>
+        <operating-system>netsim</operating-system>
+      </device>
+    </ned>
+  </component>
+</ncs-package>

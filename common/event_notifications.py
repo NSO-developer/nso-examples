@@ -113,6 +113,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
     """
     Print event notifications and sync if needed.
     """
+    event_dict = None
     try:
         event_dict = events.read_notification(event_sock)
         event_type = event_dict['type']
@@ -534,6 +535,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
             print("csocket> " + str(external_e))
         else:
             raise external_e
+    return event_dict
 
 
 def loop(port, event_sock, mask, non_interactive=False, confirm_sync=False):

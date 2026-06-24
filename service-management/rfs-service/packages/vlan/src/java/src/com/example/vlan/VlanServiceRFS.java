@@ -8,6 +8,7 @@ import com.tailf.conf.ConfBool;
 import com.tailf.conf.ConfBuf;
 import com.tailf.conf.ConfKey;
 import com.tailf.conf.ConfNamespace;
+import com.tailf.examples.router.namespaces.router;
 import com.tailf.conf.ConfObject;
 import com.tailf.conf.ConfValue;
 import com.tailf.conf.ConfPath;
@@ -42,6 +43,8 @@ import com.tailf.navu.NavuNode;
  */
 
 public class VlanServiceRFS {
+
+    private static final ConfNamespace ROUTER = new router();
 
     /**
      * Create callback method.
@@ -109,7 +112,7 @@ public class VlanServiceRFS {
             for(NavuContainer deviceContainer : managedDevices.elements()){
 
                 NavuContainer ifs = deviceContainer.container("config").
-                    namespace("r").container("sys").container("interfaces");
+                    container(ROUTER, "sys").container(ROUTER, "interfaces");
 
                 // execute as shared create of the path
                 //   /interfaces/interface[name='x']/unit[name='i']

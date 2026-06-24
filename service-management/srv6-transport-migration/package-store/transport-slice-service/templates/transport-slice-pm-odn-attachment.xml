@@ -1,0 +1,15 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <pm-profile
+        xmlns="http://tail-f.com/srv6-transport-migration/transport-pm">
+        <name>{$PM_NAME}</name>
+        <odn-color-attachment>
+          <device>{$DEVICE}</device>
+          <color>{$COLOR}</color>
+          <delay-profile>{$DELAY_PROFILE}</delay-profile>
+        </odn-color-attachment>
+      </pm-profile>
+    </services>
+  </core-network>
+</config-template>

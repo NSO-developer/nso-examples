@@ -1,0 +1,328 @@
+module transport-te {
+  namespace "http://tail-f.com/srlab/transport-te";
+  prefix tte;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef affinity-mode {
+    type enumeration {
+      enum include-all;
+      enum include-any;
+      enum exclude-any;
+    }
+  }
+
+  typedef metric-type {
+    type enumeration {
+      enum igp;
+      enum te;
+      enum latency;
+      enum hopcount;
+    }
+  }
+
+  typedef protection-type {
+    type enumeration {
+      enum protected-only;
+      enum protected-preferred;
+      enum unprotected;
+      enum unprotected-only;
+      enum unprotected-preferred;
+    }
+  }
+
+  typedef disjoint-type {
+    type enumeration {
+      enum link;
+      enum node;
+      enum srlg;
+      enum srlg-node;
+    }
+  }
+
+  grouping affinity-rules {
+    list affinity-rule {
+      key mode;
+
+      leaf mode {
+        type affinity-mode;
+      }
+
+      leaf-list color {
+        min-elements 1;
+        type string;
+      }
+    }
+  }
+
+  grouping dynamic-policy-options {
+    leaf pce {
+      type boolean;
+      default false;
+    }
+
+    leaf metric-type {
+      type metric-type;
+      default te;
+    }
+
+    leaf sid-limit {
+      type uint8;
+    }
+
+    choice metric-margin {
+      leaf margin-absolute {
+        type uint32;
+      }
+      leaf margin-relative {
+        type uint32;
+      }
+    }
+
+    leaf sid-algorithm {
+      type uint8;
+    }
+
+    leaf protection {
+      type protection-type;
+    }
+
+    container disjoint-path {
+      leaf group-id {
+        type uint16;
+      }
+      leaf type {
+        type disjoint-type;
+      }
+      leaf sub-id {
+        type uint16;
+      }
+    }
+
+    uses affinity-rules;
+  }
+
+  grouping srv6-options {
+    container srv6 {
+      presence "true";
+
+      leaf locator-name {
+        type string;
+        default "VPNLAB";
+      }
+
+      leaf dynamic-binding-sid {
+        type boolean;
+        default true;
+      }
+    }
+  }
+
+  augment /cor:core-network/cor:services {
+    list sr-policy {
+      description
+        "SR policy service rendered on transport head-end nodes.";
+
+      uses ncs:service-data;
+      ncs:servicepoint transport-te-policy-service;
+
+      key name;
+      leaf name {
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf-list head-end {
+        min-elements 1;
+        type leafref {
+          path "/cor:core-network/cor:devices/cor:name";
+        }
+      }
+
+      choice tail-end-choice {
+        mandatory true;
+
+        leaf tail-end-device {
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf end-point {
+          type inet:ip-address;
+        }
+      }
+
+      leaf color {
+        type uint32 {
+          range "1..4294967295";
+        }
+        mandatory true;
+      }
+
+      leaf bandwidth {
+        type uint32;
+      }
+
+      leaf source-address {
+        type inet:ip-address;
+      }
+
+      leaf path-protection {
+        type boolean;
+        default false;
+      }
+
+      container autoroute {
+        presence "true";
+
+        choice metric-choice {
+          leaf constant {
+            type uint32;
+          }
+          leaf relative {
+            type int8 {
+              range "-10..10";
+            }
+          }
+        }
+
+        leaf force-sr-include {
+          type boolean;
+          default true;
+        }
+
+        leaf forward-class {
+          type uint8 {
+            range "0..7";
+          }
+        }
+
+        leaf-list include-prefix {
+          type inet:ipv4-prefix;
+        }
+      }
+
+      uses srv6-options;
+
+      list path {
+        key preference;
+        min-elements 1;
+
+        leaf preference {
+          type uint16 {
+            range "1..65535";
+          }
+        }
+
+        choice path-kind {
+          mandatory true;
+
+          container dynamic {
+            uses dynamic-policy-options;
+          }
+
+          container explicit {
+            leaf weight {
+              type uint32;
+            }
+
+            list segment {
+              key index;
+              min-elements 1;
+
+              leaf index {
+                type uint16 {
+                  range "1..65535";
+                }
+              }
+
+              leaf sid {
+                type string;
+                mandatory true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    list odn-template {
+      description
+        "SR on-demand next-hop template rendered on transport head-end nodes.";
+
+      uses ncs:service-data;
+      ncs:servicepoint transport-te-odn-service;
+
+      key name;
+      leaf name {
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf-list head-end {
+        min-elements 1;
+        type leafref {
+          path "/cor:core-network/cor:devices/cor:name";
+        }
+      }
+
+      leaf color {
+        type uint32 {
+          range "1..4294967295";
+        }
+        mandatory true;
+      }
+
+      leaf maximum-sid-depth {
+        type uint8;
+        default 16;
+      }
+
+      leaf bandwidth {
+        type uint32;
+      }
+
+      leaf pce-group {
+        type string;
+      }
+
+      leaf source-address {
+        type inet:ip-address;
+      }
+
+      container dynamic {
+        presence "true";
+
+        uses dynamic-policy-options;
+
+        leaf flex-alg {
+          type uint16;
+        }
+      }
+
+      uses srv6-options;
+    }
+  }
+}

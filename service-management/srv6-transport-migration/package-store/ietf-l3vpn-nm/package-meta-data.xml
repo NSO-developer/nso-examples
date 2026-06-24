@@ -1,0 +1,23 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ietf-l3vpn-nm</name>
+  <package-version>1.0</package-version>
+  <description>IETF L3VPN network model wrapper</description>
+
+  <ncs-min-version>6.7</ncs-min-version>
+  <required-package>
+    <name>transport-common-models</name>
+  </required-package>
+  <required-package>
+    <name>inventory</name>
+  </required-package>
+  <required-package>
+    <name>l3vpn-service</name>
+  </required-package>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>ietf_l3vpn_nm.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

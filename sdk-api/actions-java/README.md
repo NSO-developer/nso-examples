@@ -16,6 +16,15 @@ To run the steps below in this README from a demo shell script:
 
     make demo
 
+To run a variant that uses Java MAAPI instead of `ncs_cli` for the NSO
+operations:
+
+    make demo-maapi
+
+The alternative `demo_maapi.java` program drives the same action requests with
+Java MAAPI, while keeping the existing Makefile lifecycle steps for building,
+starting, stopping, and cleaning the example.
+
 The below steps are similar to the demo script using the J-style CLI instead of
 the C-style CLI.
 
@@ -83,9 +92,9 @@ Further Reading
 
 + NSO Development Guide: Actions
 + The `demo.sh` script
++ The alternative `demo_maapi.java` script
 + Java API reference documentation: `ncs.dp` and `ncs.maagic`.
 + The package in the `./packages/actions` directory
 + More Java action examples in the NSO example set:
 `find $NCS_DIR/examples.ncs/ -name "*.java" |xargs grep "ActionCBType.ACTION"`
-
 
