@@ -4,12 +4,14 @@ package com.example.syslog;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import com.tailf.conf.ConfNamespace;
 import com.tailf.conf.ConfPath;
 import com.tailf.dp.DpCallbackException;
 import com.tailf.dp.annotations.ServiceCallback;
 import com.tailf.dp.proto.ServiceCBType;
 import com.tailf.dp.services.ServiceContext;
 import com.tailf.maapi.Maapi;
+import com.tailf.examples.router.namespaces.router;
 import com.tailf.navu.NavuContainer;
 import com.tailf.navu.NavuList;
 import com.tailf.navu.NavuNode;
@@ -33,6 +35,8 @@ import com.tailf.navu.NavuNode;
  */
 
 public class SyslogServiceRFS {
+
+    private static final ConfNamespace ROUTER = new router();
 
     /**
      * Create callback method.
@@ -102,7 +106,7 @@ public class SyslogServiceRFS {
             for(NavuContainer deviceContainer : managedDevices.elements()){
 
                 NavuContainer sLog = deviceContainer.container("config").
-                    namespace("r").container("sys").container("syslog");
+                    container(ROUTER, "sys").container(ROUTER, "syslog");
                 NavuList servers = sLog.list("server");
 
                 // delete all previous syslog settings, these previous

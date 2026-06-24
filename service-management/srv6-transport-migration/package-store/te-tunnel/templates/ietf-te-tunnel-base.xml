@@ -1,0 +1,111 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tunnel-te>
+            <id>{$TUNNEL_ID}</id>
+            <?if {$DESCRIPTION}?>
+              <description>{$DESCRIPTION}</description>
+            <?end?>
+            <destination>{$DESTINATION}</destination>
+            <signalled-name>{$TUNNEL_NAME}</signalled-name>
+            <?if {$BANDWIDTH}?>
+              <signalled-bandwidth>
+                <bandwidth>{$BANDWIDTH}</bandwidth>
+              </signalled-bandwidth>
+            <?end?>
+            <?if {$SETUP_PRIORITY}?>
+              <priority>
+                <setup>{$SETUP_PRIORITY}</setup>
+                <?if {$HOLD_PRIORITY}?>
+                  <hold-value>{$HOLD_PRIORITY}</hold-value>
+                <?end?>
+              </priority>
+            <?else?>
+              <?if {$HOLD_PRIORITY}?>
+                <priority>
+                  <hold-value>{$HOLD_PRIORITY}</hold-value>
+                </priority>
+              <?end?>
+            <?end?>
+            <?if {$FAST_REROUTE}?>
+              <fast-reroute/>
+            <?end?>
+            <?if {$PATH_PROTECTION}?>
+              <path-protection/>
+            <?end?>
+            <?if {$DELAY_MEASUREMENT}?>
+              <delay-measurement/>
+            <?end?>
+            <?if {$PATH_SELECTION_METRIC}?>
+              <path-selection>
+                <metric>
+                  <metric-type>{$PATH_SELECTION_METRIC}</metric-type>
+                </metric>
+              </path-selection>
+            <?end?>
+          </tunnel-te>
+        </interface>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <mpls>
+              <label-switched-path>
+                <name>{$TUNNEL_NAME}</name>
+                <?if {$DESCRIPTION}?>
+                  <description>{$DESCRIPTION}</description>
+                <?end?>
+                <from>{$SOURCE}</from>
+                <to>{$DESTINATION}</to>
+                <?if {$BANDWIDTH}?>
+                  <bandwidth>
+                    <per-traffic-class-bandwidth>
+                      {$BANDWIDTH}
+                    </per-traffic-class-bandwidth>
+                  </bandwidth>
+                <?end?>
+                <?if {$SETUP_PRIORITY}?>
+                  <priority>
+                    <setup-priority>{$SETUP_PRIORITY}</setup-priority>
+                    <?if {$HOLD_PRIORITY}?>
+                      <reservation-priority>
+                        {$HOLD_PRIORITY}
+                      </reservation-priority>
+                    <?end?>
+                  </priority>
+                <?else?>
+                  <?if {$HOLD_PRIORITY}?>
+                    <priority>
+                      <reservation-priority>
+                        {$HOLD_PRIORITY}
+                      </reservation-priority>
+                    </priority>
+                  <?end?>
+                <?end?>
+                <?if {$FAST_REROUTE}?>
+                  <fast-reroute/>
+                <?end?>
+                <?if {$PATH_SELECTION_METRIC}?>
+                  <metric-type>
+                    <?if {$PATH_SELECTION_METRIC = 'te'}?>
+                      <te/>
+                    <?end?>
+                    <?if {$PATH_SELECTION_METRIC = 'igp'}?>
+                      <igp/>
+                    <?end?>
+                    <?if {$PATH_SELECTION_METRIC = 'delay'}?>
+                      <delay>
+                        <average/>
+                      </delay>
+                    <?end?>
+                  </metric-type>
+                <?end?>
+              </label-switched-path>
+            </mpls>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

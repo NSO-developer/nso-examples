@@ -1,0 +1,23 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <static>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <routes-ip>
+                    <net>{$CUSTOMER_PREFIX}</net>
+                    <address>{$CE_IP}</address>
+                  </routes-ip>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </static>
+        </router>
+      </config>
+    </device>
+  </devices>
+</config-template>

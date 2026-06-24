@@ -1,0 +1,39 @@
+<compliance-template xmlns="http://tail-f.com/ns/config/1.0"
+                     name="srv6-migration-xr-postcheck">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <segment-routing xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <traffic-eng>
+            <on-demand>
+              <color>
+                <id>3400</id>
+                <maximum-sid-depth>16</maximum-sid-depth>
+                <performance-measurement>
+                  <delay-measurement>
+                    <delay-profile>
+                      <name>bf-delay</name>
+                    </delay-profile>
+                  </delay-measurement>
+                </performance-measurement>
+                <srv6>
+                  <locator>
+                    <name>VPNLAB</name>
+                    <binding-sid>
+                      <dynamic>
+                        <behavior>
+                          <ub6-insert-reduced/>
+                        </behavior>
+                      </dynamic>
+                    </binding-sid>
+                  </locator>
+                </srv6>
+              </color>
+            </on-demand>
+          </traffic-eng>
+        </segment-routing>
+      </config>
+    </device>
+  </devices>
+</compliance-template>

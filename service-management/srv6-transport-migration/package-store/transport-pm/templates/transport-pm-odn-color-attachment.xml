@@ -1,0 +1,35 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <segment-routing xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <traffic-eng>
+            <on-demand>
+              <color>
+                <id>{$COLOR}</id>
+                <performance-measurement>
+                  <?if {$DELAY_PROFILE}?>
+                    <delay-measurement>
+                      <delay-profile>
+                        <name>{$DELAY_PROFILE}</name>
+                      </delay-profile>
+                    </delay-measurement>
+                  <?end?>
+                  <?if {$LIVENESS_PROFILE}?>
+                    <liveness-detection>
+                      <liveness-profile>
+                        <name>{$LIVENESS_PROFILE}</name>
+                      </liveness-profile>
+                      <invalidation-action>down</invalidation-action>
+                    </liveness-detection>
+                  <?end?>
+                </performance-measurement>
+              </color>
+            </on-demand>
+          </traffic-eng>
+        </segment-routing>
+      </config>
+    </device>
+  </devices>
+</config-template>

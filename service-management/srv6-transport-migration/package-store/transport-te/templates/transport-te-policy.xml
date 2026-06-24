@@ -1,0 +1,184 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <segment-routing xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <traffic-eng>
+            <segment-lists when="{path/explicit}">
+              <srv6 when="{srv6}">
+                <sid-format>
+                  <usid-f3216/>
+                </sid-format>
+              </srv6>
+              <segment-list foreach="{path}" when="{explicit}">
+                <name>{/name}-p{preference}</name>
+                <srv6>
+                  <index foreach="{explicit/segment}">
+                    <id>{index}</id>
+                    <sid>{sid}</sid>
+                  </index>
+                </srv6>
+              </segment-list>
+            </segment-lists>
+            <policy>
+              <name>{name}</name>
+              <path-protection when="{path-protection = 'true'}"/>
+              <color>
+                <value>{color}</value>
+                <end-point>
+                  <?if {$ENDPOINT_IPV4}?>
+                    <ipv4>{$ENDPOINT_IPV4}</ipv4>
+                  <?end?>
+                  <?if {$ENDPOINT_IPV6}?>
+                    <ipv6>{$ENDPOINT_IPV6}</ipv6>
+                  <?end?>
+                </end-point>
+              </color>
+              <bandwidth when="{bandwidth}">{bandwidth}</bandwidth>
+              <candidate-paths>
+                <preference foreach="{path}">
+                  <id>{preference}</id>
+                  <dynamic when="{dynamic}">
+                    <pcep when="{dynamic/pce = 'true'}"/>
+                    <metric when="{dynamic}">
+<sid-limit when="{dynamic/sid-limit}">{dynamic/sid-limit}</sid-limit>
+<type when="{dynamic/metric-type}">{dynamic/metric-type}</type>
+                      <?if {dynamic/margin-absolute}?>
+                        <margin>
+                          <absolute>{dynamic/margin-absolute}</absolute>
+                        </margin>
+                      <?end?>
+                      <?if {dynamic/margin-relative}?>
+                        <margin>
+                          <relative>{dynamic/margin-relative}</relative>
+                        </margin>
+                      <?end?>
+                    </metric>
+                  </dynamic>
+                  <explicit when="{explicit}">
+                    <segment-list>
+                      <name>{/name}-p{preference}</name>
+<weight when="{explicit/weight}">{explicit/weight}</weight>
+                    </segment-list>
+                  </explicit>
+                  <constraints when="{dynamic}">
+<segments when="{dynamic/sid-algorithm or dynamic/protection}">
+<sid-algorithm when="{dynamic/sid-algorithm}">
+{dynamic/sid-algorithm}
+</sid-algorithm>
+<protection when="{dynamic/protection}">{dynamic/protection}</protection>
+</segments>
+                    <affinity when="{dynamic/affinity-rule}">
+                      <rule foreach="{dynamic/affinity-rule}">
+                        <name>{mode}</name>
+                        <name-list foreach="{color}">
+                          <color>{current()}</color>
+                          <name/>
+                        </name-list>
+                      </rule>
+                    </affinity>
+                    <disjoint-path when="{dynamic/disjoint-path}">
+                      <group-id>{dynamic/disjoint-path/group-id}</group-id>
+                      <type>{dynamic/disjoint-path/type}</type>
+                      <sub-id when="{dynamic/disjoint-path/sub-id}">
+                        {dynamic/disjoint-path/sub-id}
+                      </sub-id>
+                    </disjoint-path>
+                  </constraints>
+                </preference>
+              </candidate-paths>
+              <autoroute when="{autoroute}">
+                <metric when="{autoroute/constant or autoroute/relative}">
+<constant when="{autoroute/constant}">{autoroute/constant}</constant>
+<relative when="{autoroute/relative}">{autoroute/relative}</relative>
+                </metric>
+                <?if {autoroute/include-prefix}?>
+                  <include>
+                    <ipv4 foreach="{autoroute/include-prefix}">
+                      <prefix>{current()}</prefix>
+                    </ipv4>
+                  </include>
+                <?else?>
+                  <include>
+                    <all/>
+                  </include>
+                <?end?>
+<force-sr-include when="{autoroute/force-sr-include = 'true'}"/>
+                <forward-class when="{autoroute/forward-class}">
+                  {autoroute/forward-class}
+                </forward-class>
+              </autoroute>
+              <srv6 when="{srv6}">
+                <locator>
+                  <name>{srv6/locator-name}</name>
+                  <binding-sid when="{srv6/dynamic-binding-sid = 'true'}">
+                    <dynamic>
+                      <behavior>
+                        <ub6-insert-reduced/>
+                      </behavior>
+                    </dynamic>
+                  </binding-sid>
+                </locator>
+              </srv6>
+              <?if {$SOURCE_IPV4}?>
+                <source-address>
+                  <ipv4>{$SOURCE_IPV4}</ipv4>
+                </source-address>
+              <?end?>
+              <?if {$SOURCE_IPV6}?>
+                <source-address>
+                  <ipv6>{$SOURCE_IPV6}</ipv6>
+                </source-address>
+              <?end?>
+            </policy>
+          </traffic-eng>
+        </segment-routing>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <source-packet-routing>
+              <srv6 when="{srv6}"/>
+              <compute-profile foreach="{path}" when="{dynamic}">
+                <name>{/name}-p{preference}</name>
+                <maximum-segment-list-depth when="{dynamic/sid-limit}">
+                  {dynamic/sid-limit}
+                </maximum-segment-list-depth>
+<algorithm when="{dynamic/sid-algorithm}">{dynamic/sid-algorithm}</algorithm>
+                <metric-type>
+                  <?if {dynamic/metric-type = 'igp'}?>
+                    <igp/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'hopcount'}?>
+                    <igp/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'te'}?>
+                    <te/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'latency'}?>
+                    <delay>
+                      <average/>
+                    </delay>
+                  <?end?>
+                </metric-type>
+              </compute-profile>
+              <source-routing-path>
+                <name>{name}</name>
+                <srv6 when="{srv6}"/>
+                <to>{$ENDPOINT}</to>
+                <from>{$SOURCE}</from>
+                <color>{color}</color>
+                <use-for-shortcut when="{autoroute}"/>
+                <primary foreach="{path}">
+                  <name>{/name}-p{preference}</name>
+                  <compute when="{dynamic}">
+<compute-profile-name>{/name}-p{preference}</compute-profile-name>
+                  </compute>
+                </primary>
+              </source-routing-path>
+            </source-packet-routing>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

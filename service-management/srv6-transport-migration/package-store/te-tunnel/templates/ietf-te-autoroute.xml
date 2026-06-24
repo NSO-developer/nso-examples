@@ -1,0 +1,53 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <tunnel-te>
+            <id>{$TUNNEL_ID}</id>
+            <autoroute>
+              <?if {$AUTOROUTE_ANNOUNCE}?>
+                <announce>
+                  <?if {announce/metric/constant}?>
+                    <metric>
+                      <constant>{announce/metric/constant}</constant>
+                    </metric>
+                  <?end?>
+                  <?if {announce/metric/absolute}?>
+                    <metric>
+                      <absolute>{announce/metric/absolute}</absolute>
+                    </metric>
+                  <?end?>
+                  <?if {announce/metric/relative}?>
+                    <metric>
+                      <relative>{announce/metric/relative}</relative>
+                    </metric>
+                  <?end?>
+                </announce>
+              <?end?>
+              <destination foreach="{destination}">
+                <addr>{address}</addr>
+              </destination>
+            </autoroute>
+          </tunnel-te>
+        </interface>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <isis>
+              <label-switched-path>
+                <name>{$TUNNEL_NAME}</name>
+                <level>
+                  <name>2</name>
+                  <?if {announce/metric/constant}?>
+                    <metric>{announce/metric/constant}</metric>
+                  <?end?>
+                </level>
+              </label-switched-path>
+            </isis>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

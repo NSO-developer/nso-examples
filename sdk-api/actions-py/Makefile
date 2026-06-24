@@ -14,5 +14,8 @@ start:
 stop:
 	-ncs --stop
 
+demo-maapi:
+	python3 demo_maapi.py
+
 demo:
 	./demo.sh

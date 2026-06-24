@@ -1,0 +1,117 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <?if {$APPLY_DEVICE}?>
+          <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+            <Loopback>
+              <id>0</id>
+              <description>RSVP-TE loopback</description>
+              <ipv4>
+                <address>
+                  <ip>{$LOOPBACK_IPV4}</ip>
+                  <mask>255.255.255.255</mask>
+                </address>
+              </ipv4>
+            </Loopback>
+          </interface>
+          <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+            <traffic-eng/>
+          </mpls>
+          <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+            <protocols>
+              <mpls>
+                <traffic-engineering>
+                  <bgp-igp-both-ribs/>
+                </traffic-engineering>
+              </mpls>
+              <rsvp/>
+            </protocols>
+          </configuration>
+          <router xmlns="http://tail-f.com/ned/alu-sr">
+            <router-name>Base</router-name>
+            <mpls>
+              <shutdown>false</shutdown>
+            </mpls>
+            <rsvp>
+              <shutdown>false</shutdown>
+            </rsvp>
+          </router>
+        <?end?>
+
+        <?if {$APPLY_INTERFACE}?>
+          <mpls xmlns="http://tail-f.com/ned/cisco-ios-xr">
+            <traffic-eng>
+              <interface>
+                <name>{$INTERFACE}</name>
+              </interface>
+            </traffic-eng>
+          </mpls>
+          <rsvp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+            <interface>
+              <name>{$INTERFACE}</name>
+              <bandwidth>
+                <percentage/>
+                <total-reservable-percent>
+                  {$BANDWIDTH_PERCENT}
+                </total-reservable-percent>
+                <largest-reservable-flow>
+                  {$BANDWIDTH_PERCENT}
+                </largest-reservable-flow>
+              </bandwidth>
+            </interface>
+          </rsvp>
+          <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+            <interfaces>
+              <interface>
+                <name>{$INTERFACE}</name>
+                <unit>
+                  <name>0</name>
+                  <family>
+                    <mpls/>
+                  </family>
+                </unit>
+              </interface>
+            </interfaces>
+            <protocols>
+              <mpls>
+                <interface>
+                  <name>{$INTERFACE}.0</name>
+                </interface>
+              </mpls>
+              <rsvp>
+                <interface>
+                  <name>{$INTERFACE}.0</name>
+                </interface>
+              </rsvp>
+            </protocols>
+          </configuration>
+          <router xmlns="http://tail-f.com/ned/alu-sr">
+            <router-name>Base</router-name>
+            <interface>
+              <interface-name>{$INTERFACE}</interface-name>
+              <port>{$INTERFACE}</port>
+              <shutdown>false</shutdown>
+            </interface>
+            <mpls>
+              <interface>
+                <name>{$INTERFACE}</name>
+                <shutdown>false</shutdown>
+              </interface>
+              <shutdown>false</shutdown>
+            </mpls>
+            <rsvp>
+              <interface>
+                <name>{$INTERFACE}</name>
+                <subscription>{$BANDWIDTH_PERCENT}</subscription>
+                <shutdown>false</shutdown>
+              </interface>
+              <shutdown>false</shutdown>
+            </rsvp>
+          </router>
+        <?end?>
+      </config>
+    </device>
+  </devices>
+</config-template>

@@ -22,6 +22,13 @@ To run the steps below in this README from a demo shell script:
 
     make demo
 
+To run the same demo using Python MAAPI calls instead of CLI commands:
+
+    make demo-maapi
+
+The alternative `demo_maapi.py` script uses the high-level Python MAAPI/maagic
+API for sync-from, configuration, and operational CDB changes.
+
 The below steps are similar to the demo script using the J-style CLI instead of
 the C-style CLI.
 
@@ -79,5 +86,6 @@ Further Reading
 + NSO Development Guide: Using CDB
 + Python API reference documentation: `ncs.cdb`
 + The `demo.sh` script
++ The alternative `demo_maapi.py` script
 + `packages/cdb/python/plaincdbsub/plaincdbsub.py`
 + `packages/cdb/python/opercdbsub/opercdbsub.py`

@@ -1,0 +1,12 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <l3vpn-nm-services xmlns="http://tail-f.com/ns/example/srv6-transport-migration/l3vpn-nm-service">
+    <vpn-node-service>
+      <vpn-id>l3nm-basic</vpn-id>
+      <vpn-node-id>pe-01</vpn-node-id>
+    </vpn-node-service>
+    <vpn-node-service>
+      <vpn-id>l3nm-basic</vpn-id>
+      <vpn-node-id>pe-02</vpn-node-id>
+    </vpn-node-service>
+  </l3vpn-nm-services>
+</config>

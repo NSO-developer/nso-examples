@@ -1,0 +1,23 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <performance-measurement xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <protocol>
+            <twamp-light>
+              <measurement>
+                <delay>
+                  <unauthenticated>
+                    <querier-src-port>{$QUERIER_SRC_PORT}</querier-src-port>
+                    <querier-dst-port>{$QUERIER_DST_PORT}</querier-dst-port>
+                  </unauthenticated>
+                </delay>
+              </measurement>
+            </twamp-light>
+          </protocol>
+        </performance-measurement>
+      </config>
+    </device>
+  </devices>
+</config-template>

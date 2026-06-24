@@ -25,13 +25,16 @@ The sample network contains eight netsim devices:
 The topology is:
 
 ```
-                 core-5 (IOS-XR RR)
-                  /             \
-     pe-01 --- core-1 ======== core-2 --- pe-02 --- ce-1-3
-    (Junos)   (SR OS)         (IOS-XR)   (IOS-XR)
-                  \             /
-                 core-4 ==== core-3
-                (IOS-XR)    (IOS-XR)
+                core-5 (IOS-XR RR)
+                 /              \
+             core-1 ======== core-2
+            (SR OS)          (IOS-XR)
+            /  ||              ||   \
+     pe-01     ||              ||    pe-02 --- ce-1-3
+    (Junos)    ||              ||   (IOS-XR)  (IOS-XR)
+            \  ||              ||  /
+             core-4 ======== core-3
+            (IOS-XR)        (IOS-XR)
 ```
 
 `pe-01` is dual-homed to `core-1` and `core-4`.
@@ -302,4 +305,8 @@ To stop NSO and the netsim devices and remove generated files:
 Further Reading
 ---------------
 
-+ NSO Development Guide: Implementing Services, Services Deep Dive
+  - NSO Development Guide: Implementing Services
+  - NSO Development Guide: Services Deep Dive
+  - NSO Development Guide: Templates
+  - NSO Development Guide: Actions
+  - NSO Development Guide: YANG

@@ -1,0 +1,277 @@
+module service-assurance {
+  namespace "http://tail-f.com/srlab/service-assurance";
+  prefix sa;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  organization "Tail-f";
+  description
+    "Small service-assurance model for the srv6-transport-migration
+     example. It captures transport assurance concepts customers expect
+     to see: assurance profiles, per-service monitoring intent,
+     telemetry destinations, and model-driven telemetry subscriptions
+     rendered onto the multivendor netsim.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef monitoring-state {
+    type enumeration {
+      enum active {
+        description "Actively monitor the service.";
+      }
+      enum passive {
+        description "Record the service for observability without alarms.";
+      }
+      enum disabled {
+        description "Do not deploy monitoring for this service.";
+      }
+    }
+    description "Requested assurance monitoring state.";
+  }
+
+  typedef preservation-mode {
+    type enumeration {
+      enum current {
+        description "Keep only current assurance state.";
+      }
+      enum historical {
+        description "Preserve historical assurance data.";
+      }
+      enum none {
+        description "Do not preserve service assurance data.";
+      }
+    }
+    description "How assurance observations should be retained.";
+  }
+
+  grouping service-assurance-config {
+    description
+      "Reusable service-level assurance intent.  Other example services import
+       this grouping to keep a common service-assurance shape.";
+
+    container service-assurance {
+      tailf:info "Service assurance settings";
+      description "Service assurance settings.";
+      presence "Enables service assurance for this service.";
+
+      leaf monitoring-state {
+        tailf:info "Assurance monitoring state";
+        description "Assurance monitoring state.";
+        type monitoring-state;
+        default active;
+      }
+
+      leaf profile-name {
+        tailf:info "External assurance profile name";
+        description
+          "Profile name used by external service assurance tooling.";
+        type string;
+        default "transport-default";
+      }
+
+      leaf rule-name {
+        tailf:info "Assurance rule name";
+        description
+          "Rule or policy name associated with this monitored service.";
+        type string;
+        default "transport-reachability";
+      }
+
+      leaf preservation {
+        tailf:info "Assurance data preservation mode";
+        description "Assurance data preservation mode.";
+        type preservation-mode;
+        default current;
+      }
+    }
+  }
+
+  augment /cor:core-network/cor:services {
+    description
+      "Adds service assurance profiles and monitors to the common example
+       service container.";
+
+    list assurance-profile {
+      tailf:info "Service assurance profile";
+      description
+        "Telemetry profile used by service-assurance monitor services.";
+      key name;
+
+      leaf name {
+        tailf:info "Profile name";
+        description "Profile name.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+      }
+
+      leaf destination-address {
+        tailf:info "Telemetry collector IPv4 address";
+        description "Telemetry collector IPv4 address.";
+        type inet:ipv4-address;
+        default "192.0.2.10";
+      }
+
+      leaf destination-port {
+        tailf:info "Telemetry collector port";
+        description "Telemetry collector port.";
+        type inet:port-number;
+        default 57500;
+      }
+
+      leaf encoding {
+        tailf:info "Telemetry encoding";
+        description "Telemetry encoding.";
+        type enumeration {
+          enum gpb;
+          enum self-describing-gpb;
+          enum json;
+        }
+        default self-describing-gpb;
+      }
+
+      leaf sample-interval {
+        tailf:info "Telemetry sample interval in milliseconds";
+        description "Telemetry sample interval in milliseconds.";
+        type uint32 {
+          range "1000..4294967295";
+        }
+        default 30000;
+      }
+
+      leaf source-interface {
+        tailf:info "Source interface for telemetry subscriptions";
+        description "Source interface for telemetry subscriptions.";
+        type string;
+        default "Loopback0";
+      }
+
+      leaf-list sensor-path {
+        tailf:info "Default YANG sensor path";
+        description
+          "Default YANG sensor path.  Vendor-specific paths override this
+           list when present for a device vendor.";
+        min-elements 1;
+        type string;
+      }
+
+      list vendor-sensor-path {
+        tailf:info "Vendor-specific telemetry sensor path";
+        description
+          "Vendor-specific telemetry sensor paths used when a device has a
+           more realistic native telemetry subscription shape than the
+           default path list.";
+        key "vendor path";
+
+        leaf vendor {
+          tailf:info "Device vendor";
+          description "Device vendor.";
+          type enumeration {
+            enum ios-xr {
+              description "Cisco IOS XR.";
+            }
+            enum junos {
+              description "Juniper Junos.";
+            }
+            enum sros {
+              description "Nokia SR OS.";
+            }
+          }
+        }
+
+        leaf path {
+          tailf:info "Vendor telemetry sensor path";
+          description "Vendor telemetry sensor path.";
+          type string;
+        }
+      }
+    }
+
+    list assurance-monitor {
+      tailf:info "Service assurance monitor";
+      description
+        "A service-assurance monitor renders model-driven telemetry or
+         equivalent analytics subscriptions for the devices that participate
+         in a service.";
+      uses ncs:service-data;
+      ncs:servicepoint service-assurance-monitor-service;
+
+      key name;
+
+      leaf name {
+        tailf:info "Monitor name";
+        description "Monitor name.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,64}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf profile {
+        tailf:info "Assurance profile";
+        description "Assurance profile.";
+        mandatory true;
+        type leafref {
+          path "/cor:core-network/cor:services/sa:assurance-profile/sa:name";
+        }
+      }
+
+      leaf-list device {
+        tailf:info "Monitored device";
+        description "Monitored device.";
+        min-elements 1;
+        type leafref {
+          path "/cor:core-network/cor:devices/cor:name";
+        }
+      }
+
+      leaf monitored-service {
+        tailf:info "Human-readable monitored service path";
+        description "Human-readable monitored service path.";
+        type string;
+      }
+
+      uses service-assurance-config;
+
+      action self-test {
+        tailf:actionpoint service-assurance-self-test;
+        description
+          "Validate that all monitor devices have a supported telemetry
+           renderer and that the selected profile provides sensor paths.";
+
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf supported-devices {
+            type uint32;
+          }
+          leaf unsupported-devices {
+            type uint32;
+          }
+          leaf sensor-paths {
+            type uint32;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+    }
+  }
+}

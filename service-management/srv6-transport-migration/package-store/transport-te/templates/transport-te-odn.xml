@@ -1,0 +1,134 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$HEAD_END}</name>
+      <config>
+        <segment-routing xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <traffic-eng>
+            <on-demand>
+              <color>
+                <id>{color}</id>
+                <maximum-sid-depth>{maximum-sid-depth}</maximum-sid-depth>
+                <pce-group when="{pce-group}">{pce-group}</pce-group>
+                <bandwidth when="{bandwidth}">{bandwidth}</bandwidth>
+                <dynamic when="{dynamic}">
+                  <pcep when="{dynamic/pce = 'true'}"/>
+                  <metric when="{dynamic}">
+<type when="{dynamic/metric-type}">{dynamic/metric-type}</type>
+                    <?if {dynamic/margin-absolute}?>
+                      <margin>
+                        <absolute>{dynamic/margin-absolute}</absolute>
+                      </margin>
+                    <?end?>
+                    <?if {dynamic/margin-relative}?>
+                      <margin>
+                        <relative>{dynamic/margin-relative}</relative>
+                      </margin>
+                    <?end?>
+                  </metric>
+                  <disjoint-path when="{dynamic/disjoint-path}">
+                    <group-id>{dynamic/disjoint-path/group-id}</group-id>
+                    <type>{dynamic/disjoint-path/type}</type>
+                    <sub-id when="{dynamic/disjoint-path/sub-id}">
+                      {dynamic/disjoint-path/sub-id}
+                    </sub-id>
+                  </disjoint-path>
+<flex-alg when="{dynamic/flex-alg}">{dynamic/flex-alg}</flex-alg>
+<sid-algorithm when="{dynamic/sid-algorithm}">
+{dynamic/sid-algorithm}
+</sid-algorithm>
+                  <affinity foreach="{dynamic/affinity-rule}">
+                    <name>{mode}</name>
+                    <name-list foreach="{color}">
+                      <color>{current()}</color>
+                      <name/>
+                    </name-list>
+                  </affinity>
+                </dynamic>
+                <constraints when="{dynamic/protection}">
+                  <segments>
+                    <protection>{dynamic/protection}</protection>
+                  </segments>
+                </constraints>
+                <srv6 when="{srv6}">
+                  <locator>
+                    <name>{srv6/locator-name}</name>
+                    <binding-sid when="{srv6/dynamic-binding-sid = 'true'}">
+                      <dynamic>
+                        <behavior>
+                          <ub6-insert-reduced/>
+                        </behavior>
+                      </dynamic>
+                    </binding-sid>
+                  </locator>
+                </srv6>
+                <?if {$SOURCE_IPV4}?>
+                  <source-address>
+                    <ipv4>{$SOURCE_IPV4}</ipv4>
+                  </source-address>
+                <?end?>
+                <?if {$SOURCE_IPV6}?>
+                  <source-address>
+                    <ipv6>{$SOURCE_IPV6}</ipv6>
+                  </source-address>
+                <?end?>
+              </color>
+            </on-demand>
+          </traffic-eng>
+        </segment-routing>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <protocols>
+            <source-packet-routing>
+              <srv6 when="{srv6}"/>
+              <compute-profile>
+                <name>{name}-compute</name>
+                <maximum-segment-list-depth>
+                  {maximum-sid-depth}
+                </maximum-segment-list-depth>
+<algorithm when="{dynamic/sid-algorithm}">{dynamic/sid-algorithm}</algorithm>
+                <metric-type>
+                  <?if {dynamic/metric-type = 'igp'}?>
+                    <igp/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'hopcount'}?>
+                    <igp/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'te'}?>
+                    <te/>
+                  <?end?>
+                  <?if {dynamic/metric-type = 'latency'}?>
+                    <delay>
+                      <average/>
+                    </delay>
+                  <?end?>
+                </metric-type>
+              </compute-profile>
+              <source-routing-path-template>
+                <name>{name}</name>
+                <use-for-shortcut/>
+                <primary>
+                  <name>{name}-dynamic</name>
+                  <compute>
+                    <compute-profile-name>{name}-compute</compute-profile-name>
+                  </compute>
+                </primary>
+              </source-routing-path-template>
+            </source-packet-routing>
+            <bgp>
+              <group>
+                <name>RR</name>
+                <family>
+                  <inet-vpn>
+                    <unicast>
+                      <extended-nexthop-color/>
+                    </unicast>
+                  </inet-vpn>
+                </family>
+              </group>
+            </bgp>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

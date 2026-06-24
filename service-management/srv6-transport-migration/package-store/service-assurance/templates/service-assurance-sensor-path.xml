@@ -1,0 +1,45 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <telemetry xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <model-driven>
+            <sensor-group>
+              <id>{$SENSOR_GROUP}</id>
+              <sensor-path>
+                <name>{$SENSOR_PATH}</name>
+              </sensor-path>
+            </sensor-group>
+          </model-driven>
+        </telemetry>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <services>
+            <analytics>
+              <sensor>
+                <name>{$SENSOR_NAME}</name>
+                <server-name>{$DESTINATION_GROUP}</server-name>
+                <export-name>{$DESTINATION_GROUP}</export-name>
+                <resource>{$SENSOR_PATH}</resource>
+                <subscription-id>{$SUBSCRIPTION_ID}</subscription-id>
+                <reporting-rate>{$SAMPLE_SECONDS}</reporting-rate>
+              </sensor>
+            </analytics>
+          </services>
+        </configuration>
+        <system xmlns="http://tail-f.com/ned/alu-sr">
+          <telemetry>
+            <sensor-groups>
+              <sensor-group>
+                <name>{$SENSOR_GROUP}</name>
+                <path>
+                  <path-string>{$SENSOR_PATH}</path-string>
+                </path>
+              </sensor-group>
+            </sensor-groups>
+          </telemetry>
+        </system>
+      </config>
+    </device>
+  </devices>
+</config-template>

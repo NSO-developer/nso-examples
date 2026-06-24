@@ -1,0 +1,18 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <transport-health xmlns="http://tail-f.com/srlab/transport-advisor">
+        <service>
+          <slice-service>bf-gold</slice-service>
+          <connection-group>cg-l3</connection-group>
+          <transport-profile>srv6</transport-profile>
+          <phase>pre-check</phase>
+          <state>degraded</state>
+          <measured-delay-microseconds>42000</measured-delay-microseconds>
+          <loss-per-million>5</loss-per-million>
+          <reason>Target SRv6 canary exceeds the gold SLO</reason>
+        </service>
+      </transport-health>
+    </services>
+  </core-network>
+</config>

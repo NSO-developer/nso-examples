@@ -1,0 +1,463 @@
+module transport-pm {
+  namespace "http://tail-f.com/srv6-transport-migration/transport-pm";
+  prefix pm;
+  yang-version 1.1;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  import core-network {
+    prefix cor;
+  }
+
+  organization "Tail-f";
+  description
+    "Performance measurement service for the srv6-transport-migration example.
+     The model provides reusable delay/liveness profiles,
+     interface attachments, RSVP-TE tunnel attachments, SR policy attachments,
+     ODN color attachments, and endpoint measurements.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  typedef pm-protocol {
+    type enumeration {
+      enum pm-mpls;
+      enum twamp-light;
+    }
+    description "Performance measurement probe protocol.";
+  }
+
+  typedef measurement-mode {
+    type enumeration {
+      enum loopback;
+      enum one-way;
+      enum two-way;
+    }
+    description "Delay measurement mode.";
+  }
+
+  typedef invalidation-action {
+    type enumeration {
+      enum none;
+      enum down;
+    }
+    description "Action to take when PM liveness invalidates the path.";
+  }
+
+  grouping delay-profile-settings {
+    leaf protocol {
+      tailf:info "Delay measurement protocol";
+      description "Delay measurement protocol.";
+      type pm-protocol;
+      default pm-mpls;
+    }
+
+    leaf measurement-mode {
+      tailf:info "Delay measurement mode";
+      description "Delay measurement mode.";
+      type measurement-mode;
+      default two-way;
+    }
+
+    leaf tx-interval {
+      tailf:info "Probe transmit interval in milliseconds";
+      description "Probe transmit interval in milliseconds.";
+      type uint32 {
+        range "1000..600000";
+      }
+      default 10000;
+    }
+
+    leaf computation-interval {
+      tailf:info "Computation interval in seconds";
+      description "Computation interval in seconds.";
+      type uint16 {
+        range "1..3600";
+      }
+      default 30;
+    }
+
+    leaf periodic-interval {
+      tailf:info "Periodic advertisement interval in seconds";
+      description "Periodic advertisement interval in seconds.";
+      type uint16 {
+        range "1..3600";
+      }
+      default 30;
+    }
+
+    leaf periodic-threshold {
+      tailf:info "Periodic advertisement threshold";
+      description "Periodic advertisement threshold.";
+      type uint8 {
+        range "0..100";
+      }
+      default 10;
+    }
+
+    leaf dscp {
+      tailf:info "TWAMP DSCP value";
+      description "TWAMP DSCP value.";
+      type uint8 {
+        range "0..63";
+      }
+    }
+
+    leaf traffic-class {
+      tailf:info "PM-MPLS traffic class";
+      description "PM-MPLS traffic class.";
+      type uint8 {
+        range "0..7";
+      }
+      default 6;
+    }
+  }
+
+  grouping liveness-profile-settings {
+    leaf tx-interval {
+      tailf:info "Liveness probe transmit interval in milliseconds";
+      description "Liveness probe transmit interval in milliseconds.";
+      type uint32 {
+        range "1000..600000";
+      }
+      default 10000;
+    }
+
+    leaf burst-interval {
+      tailf:info "Liveness burst interval in milliseconds";
+      description "Liveness burst interval in milliseconds.";
+      type uint16 {
+        range "1..60000";
+      }
+      default 3000;
+    }
+
+    leaf multiplier {
+      tailf:info "Liveness failure multiplier";
+      description "Liveness failure multiplier.";
+      type uint8 {
+        range "2..10";
+      }
+      default 3;
+    }
+
+    leaf dscp {
+      tailf:info "Liveness DSCP value";
+      description "Liveness DSCP value.";
+      type uint8 {
+        range "0..63";
+      }
+    }
+  }
+
+  augment /cor:core-network/cor:services {
+    list pm-profile {
+      tailf:info "Performance measurement profile";
+      description
+        "Performance measurement service that renders PM profiles and
+         attachment points on IOS XR nodes.";
+      uses ncs:service-data;
+      ncs:servicepoint transport-pm-profile-service;
+
+      key name;
+
+      leaf name {
+        tailf:info "PM service name";
+        description "PM service name.";
+        type string {
+          pattern "[A-Za-z0-9_.-]{3,48}";
+        }
+        tailf:cli-allow-range;
+      }
+
+      leaf-list device {
+        tailf:info "Device receiving the reusable PM profiles";
+        description "Device receiving the reusable PM profiles.";
+        type leafref {
+          path "/cor:core-network/cor:devices/cor:name";
+        }
+      }
+
+      container protocol-profile {
+        tailf:info "TWAMP-light protocol defaults";
+        description "TWAMP-light protocol defaults.";
+        presence "Enables TWAMP-light protocol configuration.";
+
+        leaf querier-src-port {
+          tailf:info "TWAMP querier source port";
+          description "TWAMP querier source port.";
+          type inet:port-number;
+          default 862;
+        }
+
+        leaf querier-dst-port {
+          tailf:info "TWAMP querier destination port";
+          description "TWAMP querier destination port.";
+          type inet:port-number;
+          default 862;
+        }
+      }
+
+      list delay-profile {
+        tailf:info "Delay profile";
+        description "Delay profile.";
+        key name;
+
+        leaf name {
+          tailf:info "Delay profile name";
+          description "Delay profile name.";
+          type string {
+            pattern "[A-Za-z0-9_.-]{3,48}";
+          }
+        }
+
+        uses delay-profile-settings;
+      }
+
+      list liveness-profile {
+        tailf:info "Liveness profile";
+        description "Liveness profile.";
+        key name;
+
+        leaf name {
+          tailf:info "Liveness profile name";
+          description "Liveness profile name.";
+          type string {
+            pattern "[A-Za-z0-9_.-]{3,48}";
+          }
+        }
+
+        uses liveness-profile-settings;
+      }
+
+      list interface-attachment {
+        tailf:info "Interface PM attachment";
+        description "Interface PM attachment.";
+        key "device interface";
+
+        leaf device {
+          tailf:info "Device";
+          description "Device.";
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf interface {
+          tailf:info "Interface name";
+          description "Interface name.";
+          type string;
+        }
+
+        leaf next-hop {
+          tailf:info "Next-hop address";
+          description "Next-hop address.";
+          mandatory true;
+          type inet:ip-address;
+        }
+
+        leaf delay-profile {
+          tailf:info "Delay profile";
+          description "Delay profile.";
+          type leafref {
+            path "../../delay-profile/name";
+          }
+        }
+
+        leaf advertise-delay {
+          tailf:info "Advertised delay";
+          description "Advertised delay.";
+          type uint32;
+          default 100;
+        }
+      }
+
+      list sr-policy-attachment {
+        tailf:info "SR policy PM attachment";
+        description "SR policy PM attachment.";
+        key "device policy-name";
+
+        leaf device {
+          tailf:info "Device";
+          description "Device.";
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf policy-name {
+          tailf:info "SR policy name";
+          description "SR policy name.";
+          type string;
+        }
+
+        leaf delay-profile {
+          tailf:info "Delay profile";
+          description "Delay profile.";
+          type leafref {
+            path "../../delay-profile/name";
+          }
+        }
+
+        leaf liveness-profile {
+          tailf:info "Liveness profile";
+          description "Liveness profile.";
+          type leafref {
+            path "../../liveness-profile/name";
+          }
+        }
+
+        leaf invalidation-action {
+          tailf:info "Invalidation action";
+          description "Invalidation action.";
+          type invalidation-action;
+          default down;
+        }
+      }
+
+      list odn-color-attachment {
+        tailf:info "ODN color PM attachment";
+        description "ODN color PM attachment.";
+        key "device color";
+
+        leaf device {
+          tailf:info "Device";
+          description "Device.";
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf color {
+          tailf:info "ODN color";
+          description "ODN color.";
+          type uint32 {
+            range "1..4294967295";
+          }
+        }
+
+        leaf delay-profile {
+          tailf:info "Delay profile";
+          description "Delay profile.";
+          type leafref {
+            path "../../delay-profile/name";
+          }
+        }
+
+        leaf liveness-profile {
+          tailf:info "Liveness profile";
+          description "Liveness profile.";
+          type leafref {
+            path "../../liveness-profile/name";
+          }
+        }
+      }
+
+      list rsvp-te-attachment {
+        tailf:info "RSVP-TE tunnel PM attachment";
+        description "RSVP-TE tunnel PM attachment.";
+        key "device tunnel-id";
+
+        leaf device {
+          tailf:info "Device";
+          description "Device.";
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf tunnel-id {
+          tailf:info "Tunnel-te interface id";
+          description "Tunnel-te interface id.";
+          type uint16 {
+            range "1..65535";
+          }
+        }
+      }
+
+      list endpoint-attachment {
+        tailf:info "Endpoint PM attachment";
+        description "Endpoint PM attachment.";
+        key "device address";
+
+        leaf device {
+          tailf:info "Device";
+          description "Device.";
+          type leafref {
+            path "/cor:core-network/cor:devices/cor:name";
+          }
+        }
+
+        leaf address {
+          tailf:info "Endpoint address";
+          description "Endpoint address.";
+          type inet:ip-address;
+        }
+
+        leaf source-address {
+          tailf:info "PM source address";
+          description "PM source address.";
+          type inet:ip-address;
+        }
+
+        leaf delay-profile {
+          tailf:info "Delay profile";
+          description "Delay profile.";
+          type leafref {
+            path "../../delay-profile/name";
+          }
+        }
+
+        leaf liveness-profile {
+          tailf:info "Liveness profile";
+          description "Liveness profile.";
+          type leafref {
+            path "../../liveness-profile/name";
+          }
+        }
+      }
+
+      action self-test {
+        tailf:actionpoint transport-pm-self-test;
+        description
+          "Check how this PM intent is covered by the bundled multivendor
+           netsim. IOS XR receives native delay-measurement objects, Junos
+           receives MPLS PM/RPM probe scaffolding, and SR OS receives OAM-PM
+           delay-template/TWAMP-light scaffolding where configured.";
+
+        output {
+          leaf success {
+            type boolean;
+          }
+          leaf xr-native-devices {
+            type uint32;
+          }
+          leaf junos-native-devices {
+            type uint32;
+          }
+          leaf sros-native-devices {
+            type uint32;
+          }
+          leaf endpoint-attachments {
+            type uint32;
+          }
+          leaf skipped-attachments {
+            type uint32;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+    }
+  }
+}

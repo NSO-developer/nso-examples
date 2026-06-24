@@ -8,7 +8,6 @@
     <name>core-network</name>
   </required-package>
 
-  <supported-ned-id xmlns:id="never-match">id:safely-ignore</supported-ned-id>
   <supported-ned-id-match>cisco-iosxr-netsim-cli.*</supported-ned-id-match>
   <supported-ned-id-match>juniper-junos-netsim-nc.*</supported-ned-id-match>
   <supported-ned-id-match>alu-sr-netsim-cli.*</supported-ned-id-match>

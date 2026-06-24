@@ -1,0 +1,7 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>transport-common-models</name>
+  <package-version>1.0</package-version>
+  <description>Shared IETF YANG modules</description>
+
+  <ncs-min-version>6.7</ncs-min-version>
+</ncs-package>

@@ -1,0 +1,18 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <transport-health xmlns="http://tail-f.com/srlab/transport-advisor">
+        <service>
+          <slice-service>bf-gold</slice-service>
+          <connection-group>cg-l3</connection-group>
+          <transport-profile>srv6</transport-profile>
+          <phase>post-check</phase>
+          <state>down</state>
+          <measured-delay-microseconds>0</measured-delay-microseconds>
+          <loss-per-million>1000000</loss-per-million>
+          <reason>Post-migration SRv6 canary failed after commit</reason>
+        </service>
+      </transport-health>
+    </services>
+  </core-network>
+</config>

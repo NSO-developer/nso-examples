@@ -19,14 +19,9 @@ pause() {
     fi
 }
 
-
 printf "\n${GREEN}##### Python abort action demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
-set +e
-ncs --stop &> /dev/null
-ncs-netsim stop &> /dev/null
-set -e
-make clean
+make stop clean
 
 printf "\n${GREEN}##### Running the Example\n${NC}"
 printf "${PURPLE}##### Build the package and start NSO\n${NC}"

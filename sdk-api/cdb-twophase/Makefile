@@ -26,5 +26,11 @@ start:
 demo:
 	./demo.sh
 
+demo-maapi:
+	python3 demo_maapi.py
+
 demo-nonstop:
 	NONINTERACTIVE=1 ./demo.sh
+
+demo-maapi-nonstop:
+	NONINTERACTIVE=1 python3 demo_maapi.py

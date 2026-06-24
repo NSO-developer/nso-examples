@@ -1,0 +1,26 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <pm-profile
+        xmlns="http://tail-f.com/srv6-transport-migration/transport-pm">
+        <name>{$PM_NAME}</name>
+        <device>{$DEVICE}</device>
+        <delay-profile>
+          <name>{$DELAY_PROFILE}</name>
+          <protocol>pm-mpls</protocol>
+          <measurement-mode>two-way</measurement-mode>
+          <tx-interval>10000</tx-interval>
+          <computation-interval>30</computation-interval>
+          <periodic-interval>30</periodic-interval>
+          <periodic-threshold>{$LATENCY_BOUND}</periodic-threshold>
+        </delay-profile>
+        <endpoint-attachment>
+          <device>{$DEVICE}</device>
+          <address>{$NEXT_HOP}</address>
+          <source-address>{$SOURCE_ADDRESS}</source-address>
+          <delay-profile>{$DELAY_PROFILE}</delay-profile>
+        </endpoint-attachment>
+      </pm-profile>
+    </services>
+  </core-network>
+</config-template>

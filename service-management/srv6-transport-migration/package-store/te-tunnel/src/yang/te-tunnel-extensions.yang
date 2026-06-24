@@ -1,0 +1,443 @@
+module te-tunnel-extensions {
+
+  yang-version 1.1;
+  namespace
+    "http://tail-f.com/ns/example/srv6-transport-migration/"
+  + "te-tunnel-extensions";
+  prefix te-ext;
+
+  import tailf-common { prefix tailf; }
+  import tailf-ncs { prefix ncs; }
+  import tailf-kicker { prefix kicker; }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  /* Import TE base model */
+  import ietf-te {
+    prefix te;
+    revision-date "2026-03-26";
+    reference
+      "draft-ietf-teas-yang-te-44: A YANG Data Model for Traffic
+       Engineering Tunnels, Label Switched Paths, and Interfaces";
+  }
+
+  import ietf-te-types {
+    prefix te-types;
+    revision-date "2026-02-06";
+    reference
+      "draft-ietf-teas-rfc8776-update-22: Common YANG Data Types
+       for Traffic Engineering";
+  }
+
+  description
+    "Example-local NSO augmentations for TE tunnel lifecycle, RSVP-TE
+     rendering hints, and demo compatibility actions.";
+
+  revision 2026-05-07 {
+    description
+      "Initial revision.";
+  }
+
+  grouping redundancy-support {
+    leaf fast-reroute {
+      when "not(../backup)";
+      tailf:info "Specify MPLS tunnel can be fast-rerouted";
+      description "Specify MPLS tunnel can be fast-rerouted";
+      type empty;
+    }
+    container backup {
+      tailf:info "Enable tunnel as a backup tunnel";
+      description "Enable tunnel as a backup tunnel";
+      presence true;
+      list interfaces {
+        tailf:info "List backup interfaces";
+        description "List backup interfaces";
+        key "if-type if-id";
+        leaf if-type {
+          tailf:info "Interface Type";
+          description "Interface Type";
+          type enumeration {
+            enum Bundle-Ether;
+            enum Ethernet;
+            enum FiftyGigE;
+            enum FortyGigE;
+            enum FourHundredGigE;
+            enum GigabitEthernet;
+            enum HundredGigE;
+            enum TenGigE;
+            enum TwentyFiveGigE;
+            enum TwoHundredGigE;
+          }
+        }
+        leaf if-id {
+          tailf:info "Interface Id";
+          description "Interface Id";
+          type string {
+            pattern '[0-9]+(/[0-9]+)*';
+          }
+        }
+      }
+    }
+  }
+
+  grouping performance-measurement-grp {
+    container performance-measurement {
+      tailf:info "Enable default delay measurement profile";
+      description "Enable default delay measurement profile";
+      presence "true";
+    }
+  }
+
+  augment "/te:te/te:tunnels" {
+    list tunnel-plan {
+      config false;
+      tailf:cdb-oper {
+        tailf:persistent true;
+      }
+      key "name";
+      leaf name {
+        type string;
+      }
+      uses ncs:nano-plan-data;
+    }
+
+    container actions {
+      tailf:action cleanup {
+        tailf:actionpoint te-tunnel-cleanup;
+        tailf:info
+          "Clean up RSVP-TE service config and operational data";
+        description
+          "Clean up RSVP-TE service config and operational data.";
+        input {
+          leaf service {
+            type string;
+            mandatory true;
+          }
+          leaf no-networking {
+            tailf:info "Do not send any data to the devices.";
+            description "Do not send any data to the devices.";
+            type boolean;
+            mandatory true;
+          }
+        }
+        output {
+          leaf success {
+            type boolean;
+            mandatory true;
+          }
+          leaf detail {
+            type string;
+          }
+        }
+        tailf:confirm-text "########################\n" +
+          "#        Warning       #\n" +
+          "########################\n" +
+          "You are about to force-clean a transport migration service.\n" +
+          "This affects the deploying service and leaves network devices " +
+          " & NSO out-of-sync (for no-networking=true).\n" +
+          "Are you sure you want to proceed?" {
+            tailf:confirm-default false;
+        }
+      }
+
+      tailf:action error-recovery {
+        tailf:actionpoint te-tunnel-error-recovery;
+        tailf:info
+          "Recover a service after transient device failures";
+        description
+          "Recover a service after transient device connectivity failures.
+           For create/update failures, the action syncs the device and
+           redeploys the service with reconcile. For delete failures, it
+           syncs the device and redeploys zombie services.";
+        input {
+          leaf service {
+            tailf:info "Service to recover";
+            description "Service to recover";
+            type string;
+            mandatory true;
+          }
+          leaf sync-direction {
+            tailf:info "sync device with sync-from or sync-to";
+            description "sync device with sync-from or sync-to";
+            type enumeration {
+              enum sync-from;
+              enum sync-to;
+            }
+            mandatory true;
+          }
+          choice node-type {
+            leaf source {
+              tailf:info "Trigger error recovery for source";
+              description "Trigger error recovery for source";
+              type te-types:te-node-id;
+            }
+            leaf destination {
+              tailf:info "Trigger error recovery for destination";
+              description "Trigger error recovery for destination";
+              type te-types:te-node-id;
+            }
+          }
+        }
+        output {
+          leaf success {
+            type boolean;
+            mandatory true;
+          }
+          leaf detail {
+            type string;
+          }
+        }
+        tailf:confirm-text "########################\n" +
+          "#        Warning       #\n" +
+          "########################\n" +
+          "You are about to recover a transport migration service.\n" +
+          "This will issue a sync on the device.\n" +
+          "Are you sure you want to proceed?" {
+            tailf:confirm-default false;
+        }
+      }
+    }
+  }
+
+  augment "/te:te/te:tunnels/te:tunnel" {
+    uses redundancy-support;
+    uses performance-measurement-grp;
+    leaf head-end {
+      tailf:info "Source device name";
+      description
+        "Source device name. A commit fails unless head-end information
+         is entered.";
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+    leaf tail-end {
+      tailf:info "Destination device name.";
+      description "Destination device name.";
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+    uses tunnel-steering-grouping;
+
+    tailf:action error-recovery {
+      tailf:actionpoint te-tunnel-service-error-recovery;
+      tailf:info
+        "Recover a service after transient device failures";
+      description
+        "Recover a service after transient device connectivity failures.
+         For create/update failures, the action syncs the device and
+         redeploys the service with reconcile. For delete failures, it
+         syncs the device and redeploys zombie services.";
+      input {
+        leaf sync-direction {
+          tailf:info "sync device with sync-from or sync-to";
+          description "sync device with sync-from or sync-to";
+          type enumeration {
+            enum sync-from;
+            enum sync-to;
+          }
+          mandatory true;
+        }
+        choice node-type {
+          leaf source {
+            tailf:info "Trigger error recovery for source";
+            description "Trigger error recovery for source";
+            type te-types:te-node-id;
+          }
+          leaf destination {
+            tailf:info "Trigger error recovery for destination";
+            description "Trigger error recovery for destination";
+            type te-types:te-node-id;
+          }
+        }
+      }
+      output {
+        leaf success {
+          type boolean;
+          mandatory true;
+        }
+        leaf detail {
+          type string;
+        }
+      }
+      tailf:confirm-text "########################\n" +
+        "#        Warning       #\n" +
+        "########################\n" +
+        "You are about to recover a transport migration service.\n" +
+        "This will issue a sync on the device.\n" +
+        "Are you sure you want to proceed?" {
+          tailf:confirm-default false;
+      }
+    }
+    container action {
+      status deprecated;
+      tailf:action self-test {
+        tailf:actionpoint te-tunnel-self-test;
+        input {
+        }
+        output {
+          leaf status {
+            type string;
+          }
+          leaf message {
+            type string;
+          }
+        }
+      }
+    }
+  }
+
+  augment "/te:te" {
+    container te-tunnel-actions {
+      tailf:hidden transport-internal;
+      tailf:action internal-plan-change-handler {
+        tailf:hidden full;
+        tailf:actionpoint te-tunnel-internal-plan-change-handler;
+        input {
+          uses kicker:action-input-params;
+        }
+        output {
+        }
+      }
+      tailf:action update-internal-fp-configurations {
+        tailf:hidden transport-internal;
+        tailf:actionpoint te-tunnel-internal-fp-configurations;
+        tailf:info
+          "Copy external fp-configurations to internal config";
+        description
+          "Copy external fp-configurations to internal config.";
+        input {
+        }
+        output {
+        }
+      }
+    }
+
+    container fp-configurations {
+      list dynamic-device-mapping {
+        tailf:info "Dynamic Device Mapping";
+        description "Dynamic Device Mapping";
+        key "ned-id";
+        leaf ned-id {
+          tailf:info "Device NED ID, eg ned:netconf";
+          description "Device NED ID, eg ned:netconf";
+          type string;
+          tailf:cli-allow-range;
+        }
+        leaf python-impl-class-name {
+          tailf:info "Device Python implementation class, eg module.class";
+          description "Device Python implementation class, eg module.class";
+          type string;
+          mandatory true;
+        }
+      }
+
+      leaf iosxr-default-ned-id {
+        tailf:info "NED ID of the default IOSXR Device.";
+        description "NED ID of the default IOSXR Device.";
+        tailf:hidden transport-internal;
+        type string;
+        default "cisco-iosxr-cli-7.75:cisco-iosxr-cli-7.75";
+      }
+    }
+  }
+
+  grouping tunnel-steering-grouping {
+    container traffic-steering {
+      tailf:info "Steer traffic traffic through the tunnel";
+      description  "Steer traffic traffic through the tunnel";
+      choice steering-choice {
+        // interface tunnel-te* / autoroute
+        default autoroute;
+        case autoroute {
+          container autoroute {
+            tailf:info "Parameters for IGP routing over tunnel";
+            description "Parameters for IGP routing over tunnel";
+
+            // interface tunnel-te* / autoroute announce
+            container announce {
+              tailf:info "Announce tunnel to IGP";
+              description "Announce tunnel to IGP";
+
+              leaf enable{
+                tailf:info "Enable autoroute announce";
+                description "Enable autoroute announce";
+                type boolean;
+                default 'true';
+              }
+              // interface tunnel-te* / autoroute announce / metric
+              container metric {
+                presence true;
+                tailf:info "Specify MPLS tunnel metric";
+                description "Specify MPLS tunnel metric";
+                choice metric-choice {
+                  // tunnel-te* / autoroute announce / metric constant
+                  leaf constant {
+                    tailf:info "<1-2147483647> - Set constant metric";
+                    description "<1-2147483647> - Set constant metric";
+                    type uint32 {
+                      range "1..2147483647";
+                    }
+                  }
+                  // tunnel-te* / autoroute announce / metric absolute
+                  leaf absolute {
+                    tailf:info "<1-2147483647> - Set absolute metric";
+                    description "<1-2147483647> - Set absolute metric";
+                    type uint32 {
+                      range "1..2147483647";
+                    }
+                  }
+                  // tunnel-te* / autoroute announce / metric relative
+                  leaf relative {
+                    tailf:info "<-10,+10> - Set relative metric";
+                    description "<-10,+10> - Set relative metric";
+                    type int8 {
+                      range "-10..10";
+                    }
+                  }
+                }
+              }
+            }
+
+            // interface tunnel-te* / autoroute destination *
+            list destination {
+              tailf:info "Adds static route address A.B.C.D to destination";
+              description "Adds static route address A.B.C.D to destination";
+              key address;
+              leaf address {
+                tailf:info "A.B.C.D - IPv4 Address of static route to add";
+                description "A.B.C.D - IPv4 Address of static route to add";
+                type inet:ipv4-address;
+              }
+            }
+          }
+        }
+        // interface tunnel-te* / forwarding-adjacency
+         case forwarding-adjacency {
+          container forwarding-adjacency {
+            presence "true";
+            tailf:info "Enable tunnel as a forwarding-adjacency";
+            description "Enable tunnel as a forwarding-adjacency";
+
+            // interface tunnel-te* / forwarding-adjacency / holdtime
+            leaf holdtime {
+              tailf:info "<0-20000> - Hold time in ms";
+              description "<0-20000> - Hold time in ms";
+              type uint16 {
+                range "0..20000";
+              }
+            }
+
+            // interface tunnel-te* / forwarding-adjacency / include-ipv6
+            leaf include-ipv6 {
+              tailf:info "Announce tunnel as an IPv6 FA also";
+              description "Announce tunnel as an IPv6 FA also";
+              type empty;
+            }
+          }
+        }
+      }
+    }
+  }
+}

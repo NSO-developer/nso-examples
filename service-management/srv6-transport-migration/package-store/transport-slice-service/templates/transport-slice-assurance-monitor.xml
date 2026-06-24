@@ -1,0 +1,18 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <assurance-monitor xmlns="http://tail-f.com/srlab/service-assurance">
+        <name>{$MONITOR_NAME}</name>
+        <profile>{$PROFILE}</profile>
+        <device>{$DEVICE}</device>
+        <monitored-service>{$MONITORED_SERVICE}</monitored-service>
+        <service-assurance>
+          <monitoring-state>{$MONITORING_STATE}</monitoring-state>
+          <profile-name>{$PROFILE_NAME}</profile-name>
+          <rule-name>{$RULE_NAME}</rule-name>
+          <preservation>{$PRESERVATION}</preservation>
+        </service-assurance>
+      </assurance-monitor>
+    </services>
+  </core-network>
+</config-template>

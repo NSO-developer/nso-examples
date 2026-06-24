@@ -1,0 +1,9 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <rsvp-underlay xmlns="http://tail-f.com/srlab/rsvp-underlay">
+        <name>default</name>
+      </rsvp-underlay>
+    </services>
+  </core-network>
+</config>

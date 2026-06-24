@@ -1,0 +1,7 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <te-tunnel-services xmlns="http://tail-f.com/ns/example/srv6-transport-migration/te-tunnel-service">
+    <tunnel-service>
+      <tunnel>IETF-RSVP-TE</tunnel>
+    </tunnel-service>
+  </te-tunnel-services>
+</config>

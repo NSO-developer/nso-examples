@@ -23,8 +23,7 @@ pause() {
 printf "\n${GREEN}##### Python action demo\n${NC}"
 printf "${PURPLE}##### Reset\n${NC}"
 set +e
-ncs --stop &> /dev/null
-ncs-netsim stop &> /dev/null
+make stop
 set -e
 make clean
 

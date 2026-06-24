@@ -1,0 +1,19 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <transport-health xmlns="http://tail-f.com/srlab/transport-advisor">
+        <link>
+          <name>pe01-core1-pm-degraded</name>
+          <device-a>pe-01</device-a>
+          <interface-a>xe-0/0/0:0</interface-a>
+          <device-b>core-1</device-b>
+          <interface-b>1/1/5</interface-b>
+          <state>degraded</state>
+          <measured-delay-microseconds>60000</measured-delay-microseconds>
+          <loss-per-million>25</loss-per-million>
+          <reason>PM input: pe-01 to core-1 link is lossy and slow</reason>
+        </link>
+      </transport-health>
+    </services>
+  </core-network>
+</config>

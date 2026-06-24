@@ -1,0 +1,33 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <l2vpn-ntw xmlns="urn:ietf:params:xml:ns:yang:ietf-l2vpn-ntw"
+             xmlns:vpn-common="urn:ietf:params:xml:ns:yang:ietf-vpn-common">
+    <vpn-services>
+      <vpn-service>
+        <vpn-id>l2nm-evpn</vpn-id>
+        <vpn-type>vpn-common:vpws-evpn</vpn-type>
+        <vpn-nodes>
+          <vpn-node>
+            <vpn-node-id>pe-01</vpn-node-id>
+            <vpn-network-accesses>
+              <vpn-network-access>
+                <id>pe01-ac</id>
+                <description>Junos access port in the lab</description>
+                <interface-id>pe-01-3</interface-id>
+              </vpn-network-access>
+            </vpn-network-accesses>
+          </vpn-node>
+          <vpn-node>
+            <vpn-node-id>pe-02</vpn-node-id>
+            <vpn-network-accesses>
+              <vpn-network-access>
+                <id>pe02-ac</id>
+                <description>IOS XR access port in the lab</description>
+                <interface-id>pe-02-5</interface-id>
+              </vpn-network-access>
+            </vpn-network-accesses>
+          </vpn-node>
+        </vpn-nodes>
+      </vpn-service>
+    </vpn-services>
+  </l2vpn-ntw>
+</config>

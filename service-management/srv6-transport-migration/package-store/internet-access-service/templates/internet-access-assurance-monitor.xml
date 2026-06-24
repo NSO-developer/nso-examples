@@ -1,0 +1,18 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <core-network xmlns="http://tail-f.com/srlab/corenetwork">
+    <services>
+      <assurance-monitor xmlns="http://tail-f.com/srlab/service-assurance">
+        <name>DIA-{name}</name>
+        <profile>{$ASSURANCE_PROFILE}</profile>
+        <device>{$PE}</device>
+        <monitored-service>{/name}</monitored-service>
+        <service-assurance>
+          <monitoring-state>{$ASSURANCE_MONITORING_STATE}</monitoring-state>
+          <profile-name>{$ASSURANCE_PROFILE_NAME}</profile-name>
+          <rule-name>{$ASSURANCE_RULE_NAME}</rule-name>
+          <preservation>{$ASSURANCE_PRESERVATION}</preservation>
+        </service-assurance>
+      </assurance-monitor>
+    </services>
+  </core-network>
+</config-template>

@@ -1,0 +1,93 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$PE}</name>
+      <config>
+        <extcommunity-set xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <opaque>
+            <name>COLOR_{$ODN_COLOR}</name>
+            <set>
+              <value>{$ODN_COLOR}</value>
+            </set>
+          </opaque>
+        </extcommunity-set>
+        <route-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>L3VPN-{name}-ODN-EXP</name>
+          <value>  set extcommunity color COLOR_{$ODN_COLOR}&#13;
+  pass&#13;
+</value>
+        </route-policy>
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>L3VPN-{$VNI}</name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <export>
+                    <route-policy>L3VPN-{name}-ODN-EXP</route-policy>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <configuration xmlns="http://xml.juniper.net/xnm/1.1/xnm">
+          <policy-options>
+            <community>
+              <name>L3VPN-{name}-COLOR</name>
+              <members>color:0:{$ODN_COLOR}</members>
+            </community>
+            <resolution-map>
+              <name>L3VPN-{name}-COLOR-MAP</name>
+              <mode>ip-color</mode>
+            </resolution-map>
+            <policy-statement>
+              <name>L3VPN-{name}-EXP</name>
+              <term>
+                <name>DIRECT</name>
+                <then>
+                  <community>
+                    <key1>add</key1>
+                    <community-name>L3VPN-{name}-COLOR</community-name>
+                  </community>
+                </then>
+              </term>
+              <term>
+                <name>BGP</name>
+                <then>
+                  <community>
+                    <key1>add</key1>
+                    <community-name>L3VPN-{name}-COLOR</community-name>
+                  </community>
+                </then>
+              </term>
+            </policy-statement>
+            <policy-statement>
+              <name>L3VPN-{name}-IMP</name>
+              <term>
+                <name>VPN-RT</name>
+                <then>
+                  <resolution-map>L3VPN-{name}-COLOR-MAP</resolution-map>
+                </then>
+              </term>
+            </policy-statement>
+          </policy-options>
+          <protocols>
+            <bgp>
+              <group>
+                <name>RR</name>
+                <family>
+                  <inet-vpn>
+                    <unicast>
+                      <extended-nexthop-color/>
+                    </unicast>
+                  </inet-vpn>
+                </family>
+              </group>
+            </bgp>
+          </protocols>
+        </configuration>
+      </config>
+    </device>
+  </devices>
+</config-template>

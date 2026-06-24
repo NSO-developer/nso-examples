@@ -19,9 +19,22 @@ To run the demo shell script:
 
     make demo
 
+To run the same demo using Python MAAPI calls instead of CLI commands:
+
+    make demo-maapi
+
 To run the demo shell script without being prompted to continue:
 
     make demo-nonstop
+
+To run the Python MAAPI demo without being prompted to continue:
+
+    make demo-maapi-nonstop
+
+The alternative `demo_maapi.py` script keeps `event_notifications.py` as the
+event receiver, but drives the NSO configuration, commit queue service changes,
+device call-home, and HA actions through Python MAAPI instead of CLI helper
+commands.
 
 The `event_notifications.py` Python script can be used standalone in a
 development environment to monitor NSO event notifications.
@@ -101,5 +114,6 @@ Further Reading
 
 + The `event_notifications.py` script
 + The `demo.sh` script
++ The alternative `demo_maapi.py` script
 + NSO Development Guide: Low-level Event Notifications
 + NSO SDK API Reference: NSO Python API `_ncs.events` module
