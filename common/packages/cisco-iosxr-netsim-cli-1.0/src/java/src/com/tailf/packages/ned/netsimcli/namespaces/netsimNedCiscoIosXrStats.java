@@ -52,10 +52,10 @@ public class netsimNedCiscoIosXrStats extends ConfNamespace {
     public static final String _local_interface_ = "local-interface";
     public static final int    _pid = 397036642;
     public static final String _pid_ = "pid";
-    public static final int    _form_factor = 605079377;
-    public static final String _form_factor_ = "form-factor";
     public static final int    _instance = 136214150;
     public static final String _instance_ = "instance";
+    public static final int    _form_factor = 605079377;
+    public static final String _form_factor_ = "form-factor";
     public static final int    _sn = 1198281017;
     public static final String _sn_ = "sn";
     public static final int    _Optics = 1744301120;
