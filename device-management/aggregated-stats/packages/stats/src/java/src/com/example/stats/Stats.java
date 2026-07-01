@@ -139,7 +139,7 @@ public class Stats  {
                     list("device").
                     elem(new ConfKey(new ConfBuf[] {(ConfBuf)g})).
                     container("live-status").
-                    namespace("r").container("sys").
+                    namespace("http://example.com/router").container("sys").
                     container("interfaces").
                     list("interface");
                 for (NavuContainer iface : ifs.elements()) {

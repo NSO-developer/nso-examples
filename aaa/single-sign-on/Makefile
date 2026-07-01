@@ -1,4 +1,5 @@
 PKG_DIR = $(NCS_DIR)/packages/auth/cisco-nso-saml2-auth
+IDP_SIGNXML := signxml==4.5.1
 
 .PHONY: all
 all: packages/cisco-nso-saml2-auth \
@@ -22,12 +23,12 @@ flask-saml2: pyvenv.idp
 	git clone https://github.com/mx-moth/flask-saml2.git
 	# Patch flask-saml2 to use SHA-256 by default instead of SHA-1
 	(cd flask-saml2/flask_saml2; sed -i.bak 's/Sha1/Sha256/g' idp/idp.py sp/sp.py)
-	(cd flask-saml2; ../$</bin/pip $(PIP_OPTS) install -e .)
-	$</bin/pip $(PIP_OPTS) install -r flask-saml2/tests/requirements.txt
+	(cd flask-saml2; ../$</bin/pip $(PIP_OPTS) install -e . "$(IDP_SIGNXML)")
+	$</bin/pip $(PIP_OPTS) install -r flask-saml2/tests/requirements.txt "$(IDP_SIGNXML)"
 	# pyOpenSSL 22.0.0 is needed on platforms with OpenSSL 3.0.
 	# Note that flask-saml2 requires pyOpenSSL < 18, but works with newer.
 	# pyOpenSSL <24.3 is needed because crypto.sign is removed in later ver.
-	$</bin/pip $(PIP_OPTS) install "pyopenssl<24.3" --upgrade
+	$</bin/pip $(PIP_OPTS) install "$(IDP_SIGNXML)" "pyopenssl<24.3" --upgrade
 
 cisco-nso-saml2-auth-deps: pyvenv
 	$</bin/pip $(PIP_OPTS) install -r $(PKG_DIR)/requirements.txt

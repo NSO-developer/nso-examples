@@ -19,6 +19,7 @@ JFLAGS = --java-disable-prefix \
 
 javac: fxs
 	cd java && ant -q all
+	@touch -c ../shared-jar/package-ns.jar
 
 SRC = $(wildcard yang/*.yang)
 NFXS = ncsc-out/modules/fxs
@@ -68,7 +69,7 @@ $(NFXS)/netsim-ned-$(DEV_NAME)-stats.fxs: yang/netsim-ned-$(DEV_NAME)-stats.yang
 		$(NED_ID_ARG) &&                                \
 	cp $@ ../load-dir
 
-ncscj:
+ncscj: $(FXS)
 	for f in `echo ../load-dir/*.fxs`; do \
 	    n=`basename $$f | sed 's/\.fxs//'`; \
 	    $(NCSC) $(JFLAGS)/$${n}.java $$f  || exit 1; \

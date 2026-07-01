@@ -138,10 +138,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _pkts_over_127_byte_ = "pkts-over-127-byte";
     public static final int    _throttles = 2085366271;
     public static final String _throttles_ = "throttles";
-    public static final int    _input = 1427240772;
-    public static final String _input_ = "input";
     public static final int    _interface = 221572658;
     public static final String _interface_ = "interface";
+    public static final int    _input = 1427240772;
+    public static final String _input_ = "input";
     public static final int    _collisions = 71575584;
     public static final String _collisions_ = "collisions";
     public static final int    _time_since_last_status_change = 1043251045;

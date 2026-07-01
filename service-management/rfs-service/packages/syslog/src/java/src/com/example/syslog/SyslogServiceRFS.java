@@ -102,7 +102,8 @@ public class SyslogServiceRFS {
             for(NavuContainer deviceContainer : managedDevices.elements()){
 
                 NavuContainer sLog = deviceContainer.container("config").
-                    namespace("r").container("sys").container("syslog");
+                    namespace("http://example.com/router").container("sys").
+                    container("syslog");
                 NavuList servers = sLog.list("server");
 
                 // delete all previous syslog settings, these previous

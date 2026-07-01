@@ -159,10 +159,9 @@ cmd = '''<establish-subscription
 </establish-subscription>
 
 '''
-try:
-    yp_proc.communicate(input=cmd, timeout=0.1)
-except subprocess.TimeoutExpired:
-    pass
+yp_proc.stdin.write(cmd)
+yp_proc.stdin.flush()
+yp_proc.stdin.close()
 
 print(f'\n{OKGREEN}##### Sync with the device and receive the NETCONF base'
       f' notification the config changes generates over the built-in'
@@ -210,6 +209,8 @@ print(f'\n{HEADER}##### Waiting for the YANG push notification for the config'
       f' change{ENDC}')
 while True:
     line = yp_proc.stdout.readline()
+    if not line:
+        break
     print(f'{line}', end="")
     if '</push-update>' in line:
         print(f'{yp_proc.stdout.readline()}')
@@ -301,10 +302,16 @@ cmd = '''<establish-subscription
 </establish-subscription>
 
 '''
-try:
-    yp_proc.communicate(input=cmd, timeout=0.1)
-except subprocess.TimeoutExpired:
-    pass
+yp_proc.stdin.write(cmd)
+yp_proc.stdin.flush()
+yp_proc.stdin.close()
+
+# Wait for the subscription acknowledgment before configuring the card, to
+# ensure the on-change subscription is active before the change is committed.
+for line in yp_proc.stdout:
+    print(f'{line}', end="")
+    if '</rpc-reply>' in line:
+        break
 
 print(f'{OKGREEN}##### Configure the new card and receive the resulting'
       f' notifications on the NETCONF and device-notifications streams'
@@ -372,6 +379,8 @@ print(f'\n{HEADER}##### Waiting for the YANG push notification for the config'
       f' change{ENDC}')
 while True:
     line = yp_proc.stdout.readline()
+    if not line:
+        break
     print(f'{line}', end="")
     if '</push-change-update>' in line:
         print(f'{yp_proc.stdout.readline()}')
