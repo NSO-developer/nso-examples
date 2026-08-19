@@ -198380,7 +198380,6 @@ module netsim-ned-cisco-ios {
       tailf:display-when "not(../../ncs:module) or ../../ncs:module[ncs:name='netsim-ned-cisco-ios']";
       container config-key {
         leaf password-encrypt {
-          tailf:ned-ignore-compare-config;
           type tailf:aes-cfb-128-encrypted-string;
         }
       }
@@ -294769,7 +294768,6 @@ module netsim-ned-cisco-ios {
           type string;
         }
         leaf password {
-          tailf:ned-ignore-compare-config;
           type tailf:aes-cfb-128-encrypted-string;
         }
       }
