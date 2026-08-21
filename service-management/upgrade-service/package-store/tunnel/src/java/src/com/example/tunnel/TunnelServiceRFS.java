@@ -108,7 +108,8 @@ public class TunnelServiceRFS {
             for(NavuContainer deviceContainer : managedDevices.elements()){
 
                 NavuContainer ifs = deviceContainer.container("config").
-                    namespace("r").container("sys").container("interfaces");
+                    namespace("http://example.com/router").container("sys").
+                    container("interfaces");
 
                 // execute as shared create of the path
                 //   /interfaces/interface[name='x']/unit[name='i']

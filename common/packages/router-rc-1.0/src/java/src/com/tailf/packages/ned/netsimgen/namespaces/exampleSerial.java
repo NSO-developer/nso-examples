@@ -48,10 +48,10 @@ public class exampleSerial extends ConfNamespace {
         return ConfNamespace.hashToString(hash);
     }
 
-    public static final int    _authorization = 1275762932;
-    public static final String _authorization_ = "authorization";
     public static final int    _name = 1998270519;
     public static final String _name_ = "name";
+    public static final int    _authorization = 1275762932;
+    public static final String _authorization_ = "authorization";
     public static final int    _authentication = 838318934;
     public static final String _authentication_ = "authentication";
     public static final int    _dns = 577671700;

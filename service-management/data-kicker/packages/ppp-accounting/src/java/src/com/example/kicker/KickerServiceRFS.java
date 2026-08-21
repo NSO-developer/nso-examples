@@ -174,7 +174,8 @@ public class KickerServiceRFS {
             for(NavuContainer dev : managedDevices.elements()){
 
                 NavuList ifList = dev.container("config").
-                    namespace("r").container("sys").namespace("ex").
+                    namespace("http://example.com/router").container("sys").
+                    namespace("ex").
                     container("interfaces").list("serial");
 
                 // Set the accounting leaf in the ppp interface on the

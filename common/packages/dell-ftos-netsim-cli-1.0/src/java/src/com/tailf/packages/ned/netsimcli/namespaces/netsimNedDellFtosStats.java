@@ -58,10 +58,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _underruns_ = "underruns";
     public static final int    _state = 630973766;
     public static final String _state_ = "state";
-    public static final int    _pkts_over_511_byte = 542466306;
-    public static final String _pkts_over_511_byte_ = "pkts-over-511-byte";
     public static final int    _pkts_over_255_byte = 1831081435;
     public static final String _pkts_over_255_byte_ = "pkts-over-255-byte";
+    public static final int    _pkts_over_511_byte = 542466306;
+    public static final String _pkts_over_511_byte_ = "pkts-over-511-byte";
     public static final int    _arp_type = 463658930;
     public static final String _arp_type_ = "arp-type";
     public static final int    _crc = 1279813618;
@@ -118,10 +118,10 @@ public class netsimNedDellFtosStats extends ConfNamespace {
     public static final String _percent_line_rate_ = "percent-line-rate";
     public static final int    _packets_p_sec = 1387428172;
     public static final String _packets_p_sec_ = "packets-p-sec";
-    public static final int    _last_clearing_counter = 2004021148;
-    public static final String _last_clearing_counter_ = "last-clearing-counter";
     public static final int    _discarded = 1973722861;
     public static final String _discarded_ = "discarded";
+    public static final int    _last_clearing_counter = 2004021148;
+    public static final String _last_clearing_counter_ = "last-clearing-counter";
     public static final int    _unicasts = 766465200;
     public static final String _unicasts_ = "unicasts";
     public static final int    _multicasts = 776393491;

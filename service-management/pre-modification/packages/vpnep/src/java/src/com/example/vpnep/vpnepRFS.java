@@ -99,7 +99,8 @@ public class vpnepRFS {
                     container("devices").list("device").
                     elem(device.toString());
                 NavuContainer ifs = deviceContainer.container("config").
-                    namespace("r").container("sys").container("interfaces");
+                    namespace("http://example.com/router").container("sys").
+                    container("interfaces");
 
                 // execute as shared create of the path
                 // /interfaces/interface[name='x']/unit[name='i']
