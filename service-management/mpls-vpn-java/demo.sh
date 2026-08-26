@@ -37,10 +37,6 @@ make start
 
 printf "\n${GREEN}##### VPN service configuration\n${NC}"
 pause
-printf "${PURPLE}##### Sync the configuration from all network devices\n${NC}"
-ncs_cli -n -u admin -C << EOF
-devices sync-from
-EOF
 
 printf "\n\n${PURPLE}##### Configure a VPN network\n${NC}"
 ncs_cli -n -u admin -C << EOF

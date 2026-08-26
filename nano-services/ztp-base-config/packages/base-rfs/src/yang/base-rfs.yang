@@ -1,0 +1,189 @@
+module base-rfs {
+  yang-version 1.1;
+  namespace "http://example.com/base-rfs";
+  prefix brfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Resource-facing staged IOS-XR Day0 base service.";
+
+  revision 2026-07-07 {
+    description "Initial revision.";
+  }
+
+  container base-settings {
+    presence "Enable shared Day0 base settings.";
+    description "Day0 values shared by the onboarded routers.";
+
+    leaf domain-name { type string; default "example.net"; }
+    leaf ntp-server-1 { type inet:ipv4-address; default "192.0.2.10"; }
+    leaf ntp-server-2 { type inet:ipv4-address; default "192.0.2.11"; }
+    leaf ntp-server-3 { type inet:ipv4-address; default "192.0.2.12"; }
+    leaf logging-server-1 { type inet:ipv4-address; default "192.0.2.20"; }
+    leaf logging-server-2 { type inet:ipv4-address; default "192.0.2.21"; }
+    leaf bgp-ao-key-string { type string; default "example-bgp-ao-key"; }
+    leaf isis-auth-key-string { type string; default "example-isis-key"; }
+    leaf macsec-key-id { type string; default "A1B2C3D4E5F60001"; }
+    leaf macsec-key-string {
+      type string;
+      default
+        "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF";
+    }
+    leaf snmpv3-username { type string; default "monitor"; }
+    leaf snmpv3-auth-password {
+      type tailf:aes-256-cfb-128-encrypted-string;
+      tailf:suppress-echo true;
+      mandatory true;
+    }
+    leaf snmpv3-priv-password {
+      type tailf:aes-256-cfb-128-encrypted-string;
+      tailf:suppress-echo true;
+      mandatory true;
+    }
+    leaf grpc-port { type inet:port-number; default 57400; }
+    leaf permanent-username { type string; default "nso"; }
+    leaf permanent-password {
+      type tailf:aes-256-cfb-128-encrypted-string;
+      tailf:suppress-echo true;
+      mandatory true;
+    }
+  }
+
+  list base-rfs {
+    key device;
+
+    uses ncs:nano-plan-data;
+    uses ncs:service-data;
+    ncs:servicepoint "base-rfs-servicepoint";
+
+    description
+      "Resource-facing nano service for one IOS-XR router.";
+
+    leaf device { type string; }
+    leaf address { mandatory true; type inet:host; }
+    leaf port { mandatory true; type inet:port-number; }
+    leaf ned-id { mandatory true; type string; }
+    leaf management-ipv4 { mandatory true; type inet:ipv4-address; }
+    leaf loopback0-ipv4 { mandatory true; type inet:ipv4-address; }
+    leaf loopback0-ipv6 { mandatory true; type inet:ipv6-address; }
+    leaf loopback100-ipv4 { mandatory true; type inet:ipv4-address; }
+    leaf bootstrap-username { mandatory true; type string; }
+    leaf bootstrap-password {
+      mandatory true;
+      type tailf:aes-256-cfb-128-encrypted-string;
+      tailf:suppress-echo true;
+    }
+
+    action reload-device {
+      tailf:actionpoint base-rfs-reload-device;
+      output { leaf result { type boolean; } }
+    }
+  }
+
+  identity onboarded { base ncs:plan-state; }
+  identity config-synced { base ncs:plan-state; }
+  identity hardware-configured { base ncs:plan-state; }
+  identity reloaded { base ncs:plan-state; }
+  identity reload-synced { base ncs:plan-state; }
+  identity base-configured { base ncs:plan-state; }
+  identity credentials-activated { base ncs:plan-state; }
+  identity credentials-disconnected { base ncs:plan-state; }
+  identity credentials-synced { base ncs:plan-state; }
+  identity base-router { base ncs:plan-component-type; }
+
+  ncs:plan-outline base-rfs-plan {
+    ncs:component-type "brfs:base-router" {
+      ncs:state "ncs:init";
+      ncs:state "brfs:onboarded" {
+        ncs:create {
+          ncs:nano-callback;
+          ncs:force-commit;
+        }
+      }
+      ncs:state "brfs:config-synced" {
+        ncs:create {
+          ncs:post-action-node "/ncs:devices/device[name=$DEVICE]" {
+            ncs:action-name "sync-from";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "brfs:hardware-configured" {
+        ncs:create {
+          ncs:nano-callback;
+          ncs:force-commit;
+        }
+      }
+      ncs:state "brfs:reloaded" {
+        ncs:create {
+          ncs:post-action-node "$SERVICE" {
+            ncs:action-name "reload-device";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "brfs:reload-synced" {
+        ncs:create {
+          ncs:post-action-node "/ncs:devices/device[name=$DEVICE]" {
+            ncs:action-name "sync-from";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "brfs:base-configured" {
+        ncs:create {
+          ncs:nano-callback;
+          ncs:force-commit;
+        }
+      }
+      ncs:state "brfs:credentials-activated" {
+        ncs:create {
+          ncs:nano-callback;
+          ncs:force-commit;
+        }
+      }
+      ncs:state "brfs:credentials-disconnected" {
+        ncs:create {
+          ncs:post-action-node "/ncs:devices/device[name=$DEVICE]" {
+            ncs:action-name "disconnect";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "brfs:credentials-synced" {
+        ncs:create {
+          ncs:post-action-node "/ncs:devices/device[name=$DEVICE]" {
+            ncs:action-name "sync-from";
+            ncs:result-expr "result = 'true'";
+            ncs:sync;
+          }
+        }
+      }
+      ncs:state "ncs:ready";
+    }
+  }
+
+  ncs:service-behavior-tree base-rfs-servicepoint {
+    ncs:plan-outline-ref "brfs:base-rfs-plan";
+    ncs:selector {
+      ncs:variable "DEVICE" {
+        ncs:value-expr "current()/device";
+      }
+      ncs:create-component "current()/device" {
+        ncs:component-type-ref "brfs:base-router";
+      }
+    }
+  }
+}

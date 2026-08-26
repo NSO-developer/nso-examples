@@ -41,11 +41,7 @@ commit
 EOF
 
 printf "\n${GREEN}##### VPN service configuration\n${NC}"
-printf "${PURPLE}##### Sync the configuration from all network devices\n${NC}"
 pause
-ncs_cli -n -u admin -C << EOF
-devices sync-from
-EOF
 
 printf "\n\n${PURPLE}##### Configure a VPN network\n${NC}"
 pause

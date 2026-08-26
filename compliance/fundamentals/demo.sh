@@ -46,11 +46,6 @@ make all
 printf "\n\n${PURPLE}##### Start the simulated network and NSO\n${NC}"
 make start
 
-printf "\n\n${PURPLE}##### Sync the configuration from all network devices\n${NC}"
-ncs_cli -n -u admin -C << EOF
-devices sync-from
-EOF
-
 printf "\n\n${PURPLE}##### Deploy services\n${NC}"
 ncs_cli -n -u admin -C << EOF
 vpn l3vpn * re-deploy

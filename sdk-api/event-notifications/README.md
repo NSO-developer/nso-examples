@@ -3,10 +3,11 @@ Event Notifications
 
 This example shows how to use the Python `_ncs.events` low-level module for
 subscribing to and processing NSO event notifications. Typically, the event
-notification API is used by applications that manage NSO using the SDK API
-using, for example, MAAPI or for debug purposes. In addition to subscribing to
-the various events, streams available over other northbound interfaces, such as
-NETCONF, RESTCONF, etc., can be subscribed to.
+notification API is used by NSO MAAPI applications or for debug purposes.
+
+In addition to subscribing to various types of events, streams available over
+other northbound interfaces, such as NETCONF, RESTCONF, etc., can be subscribed
+to.
 
 The `event_notifications.py` Python script used with this example can also be
 used as a standalone application for debugging any NSO instance, not just the

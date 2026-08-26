@@ -1,0 +1,43 @@
+{
+  "server": {
+    "address": "192.0.2.2",
+    "interface": "eth1",
+    "daemon": "isc-dhcp-server"
+  },
+  "classes": {
+    "ncs540": {
+      "vendor-class-prefix": "PXEClient:Arch:00009",
+      "pid-substring": "PID:N540",
+      "user-class": "xr-config",
+      "option-67": "http://127.0.0.1:30604/ztp/ztp-provision.py"
+    }
+  },
+  "netsim-devices": {
+    "xr-1": "SIMXR0001",
+    "xr-2": "SIMXR0002",
+    "xr-3": "SIMXR0003",
+    "xr-4": "SIMXR0004"
+  },
+  "leases": {
+    "SIMXR0001": {
+      "vendor-class-identifier": "PXEClient:Arch:00009:PID:N540-SIM",
+      "user-class": "xr-config",
+      "dhcp-address": "192.0.2.101"
+    },
+    "SIMXR0002": {
+      "vendor-class-identifier": "PXEClient:Arch:00009:PID:N540-SIM",
+      "user-class": "xr-config",
+      "dhcp-address": "192.0.2.102"
+    },
+    "SIMXR0003": {
+      "vendor-class-identifier": "PXEClient:Arch:00009:PID:N540-SIM",
+      "user-class": "xr-config",
+      "dhcp-address": "192.0.2.103"
+    },
+    "SIMXR0004": {
+      "vendor-class-identifier": "PXEClient:Arch:00009:PID:N540-SIM",
+      "user-class": "xr-config",
+      "dhcp-address": "192.0.2.104"
+    }
+  }
+}

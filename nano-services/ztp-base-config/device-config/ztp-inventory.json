@@ -1,0 +1,20 @@
+{
+  "routers": {
+    "SIMXR0001": {
+      "hostname": "xr-1",
+      "management-ipv4": "192.0.2.201"
+    },
+    "SIMXR0002": {
+      "hostname": "xr-2",
+      "management-ipv4": "192.0.2.202"
+    },
+    "SIMXR0003": {
+      "hostname": "xr-3",
+      "management-ipv4": "192.0.2.203"
+    },
+    "SIMXR0004": {
+      "hostname": "xr-4",
+      "management-ipv4": "192.0.2.204"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+hostname xr-4
+domain name example.net
+vrf mgmt
+ description ZTP management VRF
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+interface MgmtEth0/RP0/CPU0/0
+ description ZTP management
+ vrf mgmt
+ no shutdown
+ ipv4 address dhcp
+!
+router static
+ vrf mgmt
+  address-family ipv4 unicast
+   0.0.0.0/0 192.0.2.1
+  !
+ !
+!
+username admin group cisco-support
+username admin group root-lr
+username admin password 0 admin
+ssh server v2
+ssh server vrf mgmt
+line default
+ transport input ssh
+!

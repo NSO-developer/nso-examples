@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>base-rfs</name>
+  <package-version>1.0</package-version>
+  <description>Resource-facing IOS-XR staged base service</description>
+  <ncs-min-version>6.7</ncs-min-version>
+
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>base_rfs.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

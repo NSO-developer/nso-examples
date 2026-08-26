@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>base-cfs</name>
+  <package-version>1.0</package-version>
+  <description>Template-only IOS-XR ZTP CFS and HTTP server</description>
+  <ncs-min-version>6.7</ncs-min-version>
+
+  <component>
+    <name>ztp-http-server</name>
+    <application>
+      <python-class-name>base_cfs.main.Main</python-class-name>
+    </application>
+  </component>
+</ncs-package>

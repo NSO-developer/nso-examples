@@ -72,6 +72,7 @@ clean:
 start:
 	ncs-netsim --async start
 	ncs
+	ncs_cmd -u admin -c 'maction /devices/sync-from'
 .PHONY: start
 
 stop:

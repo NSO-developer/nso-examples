@@ -86,7 +86,12 @@ def get_stream_value(tv, indent, current_path, root_ns):
     # linked list creation/modification
     elif val_type == ncs.C_LIST:
         path = f'{current_path}/{prefix}:{tag}'
-        ll_chars = tv.v.val2str((root_ns, path))
+        try:
+            ll_chars = tv.v.val2str((root_ns, path))
+        except Exception as e:
+            print(f"WARN: val2str failed for {path} with error: {e}",
+                  file=sys.stderr)
+            ll_chars = tv.v.as_pyval()
         val_strs = ''.join(ll_chars).split()
         for val_str in val_strs:
             text += "{}<{}>{}</{}>\n".format(INDENT_STR * indent, tag,
@@ -94,8 +99,13 @@ def get_stream_value(tv, indent, current_path, root_ns):
     # regular leaf creation/modification
     else:
         path = f'{current_path}/{prefix}:{tag}'
-        text += "{}<{}>{}</{}>\n".format(INDENT_STR * indent, tag,
-                                         tv.v.val2str((root_ns, path)), tag)
+        try:
+            val = tv.v.val2str((root_ns, path))
+        except Exception as e:
+            print(f"WARN: val2str failed for {path} with error: {e}",
+                  file=sys.stderr)
+            val = tv.v.as_pyval()
+        text += "{}<{}>{}</{}>\n".format(INDENT_STR * indent, tag, val, tag)
     return text, indent, current_path
 
 
@@ -216,7 +226,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
             elif ptype_num == _ncs.PROGRESS_INFO:
                 ptype = "info"
             else:
-                ptype = f'UNKNOWN TYPE:{ptype}'
+                ptype = f'UNKNOWN TYPE:{ptype_num}'
             timestamp = prog_dict['timestamp']
             dt = datetime.datetime.fromtimestamp(timestamp/1000000)
             dur = ""
@@ -465,7 +475,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
             elif dbfile_num == events.COMPACTION_S_CDB:
                 dbfile = 'S.cdb'
             else:
-                dbfile = f'UNKNOWN DBFILE:{dbfile}'
+                dbfile = f'UNKNOWN DBFILE:{dbfile_num}'
             ctype_num = compact_dict['type']
             if ctype_num == events.COMPACTION_AUTOMATIC:
                 ctype = "automatic"
@@ -509,7 +519,7 @@ def process_event(port, event_sock, mask, confirm_sync=False):
                 et_str = dt_to_str(event_time)
                 et_msg = f',event-time={et_str}'
                 tvs = stream_dict['values']
-                root_ns = _ncs.hash2str(tvs[0].ns)
+                root_ns = tvs[0].ns
                 xml_msg = ",values=\n"
                 indent = 0
                 current_path = ""
@@ -531,34 +541,32 @@ def process_event(port, event_sock, mask, confirm_sync=False):
         else:
             print(f'UNKNOWN EVENT TYPE:{event_type}')
     except (_ncs.error.Error) as external_e:
-        if external_e.ncs_errno is ncs.ERR_EXTERNAL:
+        if getattr(external_e, 'ncs_errno', None) == ncs.ERR_EXTERNAL:
             print("csocket> " + str(external_e))
         else:
             raise external_e
     return event_dict
 
 
-def loop(port, event_sock, mask, non_interactive=False, confirm_sync=False):
+def loop(port, listener, mask, non_interactive=False, confirm_sync=False):
     """
     Waiting for events
     """
     if non_interactive:
-        while True:
-            (readables, _, _) = select.select([event_sock], [], [])
-            for readable in readables:
-                if readable == event_sock:
-                    process_event(port, event_sock, mask)
+        rlist = [listener]
     else:
-        while True:
-            (readables, _, _) = select.select([event_sock, sys.stdin], [], [])
-            for readable in readables:
-                if readable == event_sock:
-                    process_event(port, event_sock, mask, confirm_sync)
-                if readable == sys.stdin:
-                    user_input = sys.stdin.readline().rstrip()
-                    if user_input == "exit":
-                        print("Bye!")
-                        return False
+        rlist = [listener, sys.stdin]
+
+    while True:
+        (readables, _, _) = select.select(rlist, [], [])
+        for readable in readables:
+            if readable == listener:
+                process_event(port, listener, mask, confirm_sync)
+            if readable == sys.stdin:
+                user_input = sys.stdin.readline().rstrip()
+                if user_input == "exit":
+                    print("Bye!")
+                    return False
 
 
 def run(args):
@@ -714,7 +722,6 @@ if __name__ == "__main__":
     """
     Define arguments
     """
-    noexists = _ncs.Value(init=1, type=_ncs.C_NOEXISTS)
     parser = argparse.ArgumentParser(
         description="A simple NSO event notification receiver",
         formatter_class=argparse.RawTextHelpFormatter

@@ -1,0 +1,6 @@
+/netsim/
+/nso/
+/packages/base-cfs/load-dir/
+/packages/base-rfs/load-dir/
+*.pyc
+__pycache__/

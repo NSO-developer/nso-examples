@@ -1,0 +1,137 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <logging xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <hostnameprefix>{$LOGGING_HOSTNAME_PREFIX}</hostnameprefix>
+          <host>
+            <address>{$LOGGING_SERVER_1}</address>
+            <vrf>mgmt</vrf>
+            <severity>info</severity>
+          </host>
+          <host>
+            <address>{$LOGGING_SERVER_2}</address>
+            <vrf>mgmt</vrf>
+            <severity>info</severity>
+          </host>
+          <source-interface-vrf>
+            <source-interface>
+              <vrf>mgmt</vrf>
+              <interface>Loopback100</interface>
+            </source-interface>
+          </source-interface-vrf>
+        </logging>
+        <ntp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server>
+            <vrf tags="replace">
+              <name>mgmt</name>
+              <server-list><name>{$NTP_SERVER_1}</name></server-list>
+              <server-list><name>{$NTP_SERVER_2}</name><prefer /></server-list>
+              <server-list><name>{$NTP_SERVER_3}</name></server-list>
+            </vrf>
+          </server>
+          <source>
+            <vrf tags="replace">
+              <name>mgmt</name>
+              <Loopback>100</Loopback>
+            </vrf>
+          </source>
+        </ntp>
+        <tcp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ao>
+            <keychain>
+              <name>BGP_AO_CHAIN</name>
+              <key><id>0</id><SendID>0</SendID><ReceiveID>0</ReceiveID></key>
+            </keychain>
+          </ao>
+        </tcp>
+        <key xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <chain>
+            <name>BGP_AO_CHAIN</name>
+            <key>
+              <id>0</id>
+              <key-string>
+                <type>clear</type>
+                <password>{$BGP_AO_KEY_STRING}</password>
+              </key-string>
+              <cryptographic-algorithm>AES-128-CMAC-96</cryptographic-algorithm>
+            </key>
+          </chain>
+          <chain>
+            <name>ISIS_AUTH_CHAIN</name>
+            <key>
+              <id>0</id>
+              <key-string>
+                <type>clear</type>
+                <password>{$ISIS_AUTH_KEY_STRING}</password>
+              </key-string>
+              <cryptographic-algorithm>HMAC-SHA-256</cryptographic-algorithm>
+            </key>
+          </chain>
+          <chain>
+            <name>BASE_MACSEC_CHAIN</name>
+            <macsec>
+              <key>
+                <id>{$MACSEC_KEY_ID}</id>
+                <key-string>
+                  <type>clear</type>
+                  <secret>{$MACSEC_KEY_STRING}</secret>
+                  <cryptographic-algorithm
+                    >aes-256-cmac</cryptographic-algorithm>
+                </key-string>
+              </key>
+            </macsec>
+          </chain>
+        </key>
+        <snmp-server xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <ifindex>persist</ifindex>
+          <group><name>BASE-V3</name><v3>priv</v3></group>
+          <user>
+            <username>{$SNMPV3_USERNAME}</username>
+            <groupname>BASE-V3</groupname>
+            <version>v3</version>
+            <auth>
+              <level>sha-256</level>
+              <clear>{$SNMPV3_AUTH_PASSWORD}</clear>
+            </auth>
+            <priv>
+              <aes>256</aes>
+              <clear>{$SNMPV3_PRIV_PASSWORD}</clear>
+            </priv>
+          </user>
+        </snmp-server>
+        <grpc xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <port>{$GRPC_PORT}</port>
+          <no-tls />
+          <address-family>ipv4</address-family>
+          <vrf>mgmt</vrf>
+        </grpc>
+        <macsec-policy xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>base_macsec_policy</name>
+          <security-policy>must-secure</security-policy>
+          <window-size>64</window-size>
+          <cipher-suite>GCM-AES-XPN-256</cipher-suite>
+          <key-server-priority>0</key-server-priority>
+        </macsec-policy>
+        <hw-module xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <profile>
+            <segment-routing>
+              <srv6>
+                <mode>
+                  <micro-segment><format><f3216 /></format></micro-segment>
+                </mode>
+              </srv6>
+            </segment-routing>
+          </profile>
+          <quad-instance>
+            <quad>
+              <id>0</id><location>0/0/CPU0</location><instance>0</instance>
+              <mode>10g</mode>
+            </quad>
+          </quad-instance>
+        </hw-module>
+      </config>
+    </device>
+  </devices>
+</config-template>
