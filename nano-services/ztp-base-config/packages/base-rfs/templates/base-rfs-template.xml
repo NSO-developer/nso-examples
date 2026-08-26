@@ -1,0 +1,97 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+      <name>{$DEVICE}</name>
+      <config>
+        <hostname
+          xmlns="http://tail-f.com/ned/cisco-ios-xr">{$DEVICE}</hostname>
+        <domain xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$DOMAIN_NAME}</name>
+        </domain>
+        <vrf xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <vrf-list>
+            <name>mgmt</name>
+            <description>Management VRF</description>
+            <address-family>
+              <ipv4><unicast /></ipv4>
+              <ipv6><unicast /></ipv6>
+            </address-family>
+          </vrf-list>
+        </vrf>
+        <interface xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <MgmtEth>
+            <id>0/RP0/CPU0/0</id>
+            <description>Management</description>
+            <vrf>mgmt</vrf>
+            <ipv4>
+              <address>
+                <ip>{$MANAGEMENT_IPV4}</ip><mask>255.255.255.0</mask>
+              </address>
+            </ipv4>
+          </MgmtEth>
+          <Loopback>
+            <id>0</id>
+            <description>Router ID</description>
+            <ipv4>
+              <address>
+                <ip>{$LOOPBACK0_IPV4}</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+            <ipv6>
+              <address>
+                <prefix-list>
+                  <prefix>{$LOOPBACK0_IPV6}/128</prefix>
+                </prefix-list>
+              </address>
+            </ipv6>
+          </Loopback>
+          <Loopback>
+            <id>100</id>
+            <vrf>mgmt</vrf>
+            <ipv4>
+              <address>
+                <ip>{$LOOPBACK100_IPV4}</ip>
+                <mask>255.255.255.255</mask>
+              </address>
+            </ipv4>
+          </Loopback>
+        </interface>
+        <router xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <static>
+            <vrf>
+              <name>mgmt</name>
+              <address-family>
+                <ipv4>
+                  <unicast>
+                    <routes-ip>
+                      <net>0.0.0.0/0</net>
+                      <address>{$MANAGEMENT_GATEWAY}</address>
+                    </routes-ip>
+                  </unicast>
+                </ipv4>
+              </address-family>
+            </vrf>
+          </static>
+        </router>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr" tags="delete">
+          <name>{$BOOTSTRAP_USERNAME}</name>
+        </username>
+        <username xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <name>{$PERMANENT_USERNAME}</name>
+          <group><name>cisco-support</name></group>
+          <group><name>root-lr</name></group>
+          <password>
+            <encryption>0</encryption><password>{$PERMANENT_PASSWORD}</password>
+          </password>
+        </username>
+        <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <server><v2 /><vrf><name>mgmt</name></vrf></server>
+        </ssh>
+        <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+          <default><transport><input>ssh</input></transport></default>
+        </line>
+      </config>
+    </device>
+  </devices>
+</config-template>

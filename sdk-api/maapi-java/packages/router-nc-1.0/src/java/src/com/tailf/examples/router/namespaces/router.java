@@ -48,10 +48,10 @@ public class router extends ConfNamespace {
         return ConfNamespace.hashToString(hash);
     }
 
-    public static final int    _selector = 372182622;
-    public static final String _selector_ = "selector";
     public static final int    _transmit = 1705430781;
     public static final String _transmit_ = "transmit";
+    public static final int    _selector = 372182622;
+    public static final String _selector_ = "selector";
     public static final int    _flag = 2035937176;
     public static final String _flag_ = "flag";
     public static final int    _negate = 724559905;
@@ -110,10 +110,10 @@ public class router extends ConfNamespace {
     public static final String _type_ = "type";
     public static final int    _c1 = 926807367;
     public static final String _c1_ = "c1";
-    public static final int    _domain = 2003714718;
-    public static final String _domain_ = "domain";
     public static final int    _ntp = 2125290123;
     public static final String _ntp_ = "ntp";
+    public static final int    _domain = 2003714718;
+    public static final String _domain_ = "domain";
     public static final int    _broadcast = 1767430821;
     public static final String _broadcast_ = "broadcast";
     public static final int    _iburst = 1462625859;

@@ -60,10 +60,10 @@ public class netsimNedCiscoIosXrStats extends ConfNamespace {
     public static final String _platform_ = "platform";
     public static final int    _name = 1998270519;
     public static final String _name_ = "name";
-    public static final int    _port_id = 411479338;
-    public static final String _port_id_ = "port-id";
     public static final int    _oui_number = 1929286621;
     public static final String _oui_number_ = "oui-number";
+    public static final int    _port_id = 411479338;
+    public static final String _port_id_ = "port-id";
     public static final int    _hold_time = 204730640;
     public static final String _hold_time_ = "hold-time";
     public static final int    _chassis_id = 1476535866;

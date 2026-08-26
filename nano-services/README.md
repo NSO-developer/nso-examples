@@ -21,6 +21,15 @@ variant using the NSO RESTCONF interface is also available.
 Illustrates how to design a reactive FASTMAP service using Nano Services.
 Showcased by the NSO Development chapter Guide Graceful Link Migration Example.
 
+### ztp-base-config
+Demonstrates staged zero-touch provisioning and Day0 base configuration for
+simulated Cisco IOS-XR routers. A template-only CFS and a nano-service RFS are
+stacked on one NSO node. The routers simulate NCS 540 DHCP Option 67, download
+and apply bootstrap configuration, and create the CFS service through
+RESTCONF call-home. The RFS then onboards and synchronizes each router,
+configures hardware prerequisites, reloads it, applies the remaining base
+configuration, and completes the permanent credential handover.
+
 ### netsim-vrouter
 A scripted implementation of the NSO Development Guide chapter Nano Services
 for Staged Provisioning. The example extends the `basic-vrouter` example to show

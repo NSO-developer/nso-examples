@@ -1,0 +1,62 @@
+module base-cfs {
+  yang-version 1.1;
+  namespace "http://example.com/base-cfs";
+  prefix bcfs;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "Customer-facing IOS-XR ZTP base service for a single NSO node.";
+
+  revision 2026-07-07 {
+    description "Initial revision.";
+  }
+
+  container bootstrap-inventory {
+    description
+      "Transport and loopback values known before a router calls home.";
+
+    list router {
+      key name;
+
+      leaf name { type string; }
+      leaf address { type inet:host; default "127.0.0.1"; }
+      leaf port { mandatory true; type inet:port-number; }
+      leaf ned-id { mandatory true; type string; }
+      leaf loopback0-ipv4 { mandatory true; type inet:ipv4-address; }
+      leaf loopback0-ipv6 { mandatory true; type inet:ipv6-address; }
+      leaf loopback100-ipv4 { mandatory true; type inet:ipv4-address; }
+    }
+  }
+
+  list base-cfs {
+    key device;
+
+    uses ncs:service-data;
+    ncs:servicepoint "base-cfs-servicepoint";
+
+    description
+      "Northbound service created by the simulated router call-home.";
+
+    leaf device {
+      type leafref {
+        path "/bcfs:bootstrap-inventory/bcfs:router/bcfs:name";
+      }
+    }
+    leaf management-ipv4 { mandatory true; type inet:ipv4-address; }
+    leaf bootstrap-username { mandatory true; type string; }
+    leaf bootstrap-password {
+      mandatory true;
+      type tailf:aes-256-cfb-128-encrypted-string;
+      tailf:suppress-echo true;
+    }
+  }
+}

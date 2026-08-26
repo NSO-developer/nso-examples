@@ -1,0 +1,15 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                 servicepoint="base-cfs-servicepoint">
+  <base-rfs xmlns="http://example.com/base-rfs">
+    <device>{/device}</device>
+    <address>{deref(/device)/../address}</address>
+    <port>{deref(/device)/../port}</port>
+    <ned-id>{deref(/device)/../ned-id}</ned-id>
+    <management-ipv4>{/management-ipv4}</management-ipv4>
+    <loopback0-ipv4>{deref(/device)/../loopback0-ipv4}</loopback0-ipv4>
+    <loopback0-ipv6>{deref(/device)/../loopback0-ipv6}</loopback0-ipv6>
+    <loopback100-ipv4>{deref(/device)/../loopback100-ipv4}</loopback100-ipv4>
+    <bootstrap-username>{/bootstrap-username}</bootstrap-username>
+    <bootstrap-password>{/bootstrap-password}</bootstrap-password>
+  </base-rfs>
+</config-template>

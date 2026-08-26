@@ -32,11 +32,6 @@ pause
 printf "${PURPLE}##### Setup the environment and start the simulated network\n${NC}"
 make all start
 
-printf "\n${PURPLE}##### Sync the configuration from all network devices\n${NC}"
-ncs_cli -n -u admin -C << EOF
-devices sync-from
-EOF
-
 printf "\n\n${GREEN}##### VPN service configuration\n${NC}"
 pause
 printf "${PURPLE}##### Configure a VPN network\n${NC}"
