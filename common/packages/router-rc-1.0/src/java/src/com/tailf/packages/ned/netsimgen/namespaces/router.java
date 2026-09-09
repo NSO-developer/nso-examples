@@ -92,10 +92,10 @@ public class router extends ConfNamespace {
     public static final String _route_ = "route";
     public static final int    _offset = 1966490361;
     public static final String _offset_ = "offset";
-    public static final int    _arp = 2115159070;
-    public static final String _arp_ = "arp";
     public static final int    _archive_path = 1927359332;
     public static final String _archive_path_ = "archive-path";
+    public static final int    _arp = 2115159070;
+    public static final String _arp_ = "arp";
     public static final int    _comparison = 1181373760;
     public static final String _comparison_ = "comparison";
     public static final int    _facility = 419851720;
@@ -138,10 +138,10 @@ public class router extends ConfNamespace {
     public static final String _inet_ = "inet";
     public static final int    _sys = 1280841638;
     public static final String _sys_ = "sys";
-    public static final int    _local_clock = 988804996;
-    public static final String _local_clock_ = "local-clock";
     public static final int    _compress = 1232234516;
     public static final String _compress_ = "compress";
+    public static final int    _local_clock = 988804996;
+    public static final String _local_clock_ = "local-clock";
     public static final int    _version = 1714291735;
     public static final String _version_ = "version";
     public static final int    _result = 401396173;
