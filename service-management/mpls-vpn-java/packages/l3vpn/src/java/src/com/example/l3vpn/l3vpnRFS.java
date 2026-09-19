@@ -115,47 +115,47 @@ public class l3vpnRFS {
 
                 TemplateVariables vpnVar = new TemplateVariables();
 
-                vpnVar.putQuoted("PE",peEndpoint.leaf("device").
+                putQuoted(vpnVar, "PE",peEndpoint.leaf("device").
                                             valueAsString());
-                vpnVar.putQuoted("CE",endpoint.leaf("ce-device").
+                putQuoted(vpnVar, "CE",endpoint.leaf("ce-device").
                                             valueAsString());
-                vpnVar.putQuoted("CE_AS_NUM",endpoint.leaf("as-number").
+                putQuoted(vpnVar, "CE_AS_NUM",endpoint.leaf("as-number").
                         valueAsString());
-                vpnVar.putQuoted("VLAN_ID", vlan.valueAsString());
-                vpnVar.putQuoted("LINK_PE_ADR", getIPAddress(peEndpoint.
+                putQuoted(vpnVar, "VLAN_ID", vlan.valueAsString());
+                putQuoted(vpnVar, "LINK_PE_ADR", getIPAddress(peEndpoint.
                                                     leaf("ip-address").
                                                     valueAsString()));
-                vpnVar.putQuoted("LINK_CE_ADR", getIPAddress(ceEndpoint.
+                putQuoted(vpnVar, "LINK_CE_ADR", getIPAddress(ceEndpoint.
                                                     leaf("ip-address").
                                                     valueAsString()));
-                vpnVar.putQuoted("LINK_MASK", getNetMask(ceEndpoint.
+                putQuoted(vpnVar, "LINK_MASK", getNetMask(ceEndpoint.
                                                     leaf("ip-address").
                                                     valueAsString()));
-                vpnVar.putQuoted("LINK_PREFIX",getIPPrefix(ceEndpoint.
+                putQuoted(vpnVar, "LINK_PREFIX",getIPPrefix(ceEndpoint.
                                     leaf("ip-address").
                                     valueAsString()));
-                vpnVar.putQuoted("PE_INT_NAME", peEndpoint.
+                putQuoted(vpnVar, "PE_INT_NAME", peEndpoint.
                                                  leaf("interface").
                                                  valueAsString());
-                vpnVar.putQuoted("CE_INT_NAME", ceEndpoint.
+                putQuoted(vpnVar, "CE_INT_NAME", ceEndpoint.
                                                 leaf("interface").
                                                 valueAsString());
-                vpnVar.putQuoted("CE_LOCAL_INT_NAME", endpoint.
+                putQuoted(vpnVar, "CE_LOCAL_INT_NAME", endpoint.
                                             leaf("ce-interface").
                                             valueAsString());
-                vpnVar.putQuoted("LOCAL_CE_ADR", getIPAddress(
+                putQuoted(vpnVar, "LOCAL_CE_ADR", getIPAddress(
                                                     getNextIPV4Address(
                                                      endpoint.
                                                      leaf("ip-network").
                                                      valueAsString())));
-                vpnVar.putQuoted("LOCAL_CE_NET", getIPAddress(
+                putQuoted(vpnVar, "LOCAL_CE_NET", getIPAddress(
                                                     endpoint.
                                                     leaf("ip-network").
                                                     valueAsString()));
-                vpnVar.putQuoted("CE_MASK", getNetMask(endpoint.
+                putQuoted(vpnVar, "CE_MASK", getNetMask(endpoint.
                                                 leaf("ip-network").
                                                 valueAsString()));
-                vpnVar.putQuoted("BW", endpoint.leaf("bandwidth").
+                putQuoted(vpnVar, "BW", endpoint.leaf("bandwidth").
                                                     valueAsString());
 
                 peTemplate.apply(service, vpnVar);
@@ -169,18 +169,18 @@ public class l3vpnRFS {
                             List<String>>();
 
                     TemplateVariables qosVar = new TemplateVariables();
-                    qosVar.putQuoted("POLICY_NAME",service.container("qos").
+                    putQuoted(qosVar, "POLICY_NAME",service.container("qos").
                             leaf("qos-policy").valueAsString());
-                    qosVar.putQuoted("CE_INT_NAME", ceEndpoint.
+                    putQuoted(qosVar, "CE_INT_NAME", ceEndpoint.
                             leaf("interface").
                             valueAsString());
-                    qosVar.putQuoted("PE_INT_NAME", peEndpoint.
+                    putQuoted(qosVar, "PE_INT_NAME", peEndpoint.
                             leaf("interface").
                             valueAsString());
-                    qosVar.putQuoted("VLAN_ID", vlan.valueAsString());
-                    qosVar.putQuoted("PE",peEndpoint.leaf("device").
+                    putQuoted(qosVar, "VLAN_ID", vlan.valueAsString());
+                    putQuoted(qosVar, "PE",peEndpoint.leaf("device").
                             valueAsString());
-                    qosVar.putQuoted("CE",endpoint.leaf("ce-device").
+                    putQuoted(qosVar, "CE",endpoint.leaf("ce-device").
                             valueAsString());
 
                     // Find the globally defined QOS policy our service is
@@ -202,30 +202,30 @@ public class l3vpnRFS {
                                             ((NavuLeaf) qosClass).getParent();
 
                         if (cl.leaf("dscp-value").exists()) {
-                            qosVar.putQuoted("CLASS_DSCP",cl.leaf("dscp-value").
-                                valueAsString());
+                            putQuoted(qosVar, "CLASS_DSCP",
+                                cl.leaf("dscp-value").valueAsString());
                             if (cl.leaf("dscp-value").valueAsString().
                                     equals("ef") ||
                                 cl.leaf("dscp-value").valueAsString().
                                     equals("af31")) {
-                                    qosVar.putQuoted("CLASS_PRIORITY","high");
+                                    putQuoted(qosVar, "CLASS_PRIORITY","high");
                             }
                             else {
-                                qosVar.putQuoted("CLASS_PRIORITY","low");
+                                putQuoted(qosVar, "CLASS_PRIORITY","low");
                             }
                         }
                         else {
-                            qosVar.putQuoted("CLASS_PRIORITY","low");
-                            qosVar.putQuoted("CLASS_DSCP", "");
+                            putQuoted(qosVar, "CLASS_PRIORITY","low");
+                            putQuoted(qosVar, "CLASS_DSCP", "");
                         }
 
 
-                        qosVar.putQuoted("CLASS_NAME",c.leaf("qos-class").
+                        putQuoted(qosVar, "CLASS_NAME",c.leaf("qos-class").
                                 valueAsString());
-                        qosVar.putQuoted("CLASS_BW",
+                        putQuoted(qosVar, "CLASS_BW",
                                 c.leaf("bandwidth-percentage").
                                 valueAsString());
-                        qosVar.putQuoted("CLASS_COUNTER",String.
+                        putQuoted(qosVar, "CLASS_COUNTER",String.
                                                 valueOf(classCounter));
 
 
@@ -253,7 +253,7 @@ public class l3vpnRFS {
 
                             TemplateVariables aclVar =
                                     setAclVars(match,"GLOBAL");
-                            aclVar.putQuoted("CE",endpoint.leaf("ce-device").
+                            putQuoted(aclVar, "CE",endpoint.leaf("ce-device").
                                     valueAsString());
                             aclTemplate.apply(service, aclVar);
                         }
@@ -276,7 +276,7 @@ public class l3vpnRFS {
                         }
                         TemplateVariables aclVar = setAclVars(match,namePrefix);
 
-                        aclVar.putQuoted("CE",endpoint.leaf("ce-device").
+                        putQuoted(aclVar, "CE",endpoint.leaf("ce-device").
                                 valueAsString());
                         aclTemplate.apply(service, aclVar);
                     }
@@ -308,43 +308,43 @@ public class l3vpnRFS {
         throws NavuException, UnknownHostException {
         TemplateVariables aclVar = new TemplateVariables();
 
-        aclVar.putQuoted("ACL_NAME", namePrefix + "-" +
+        putQuoted(aclVar, "ACL_NAME", namePrefix + "-" +
                                     match.leaf("name").
                                        valueAsString());
-        aclVar.putQuoted("PROTOCOL", match.leaf("protocol").
+        putQuoted(aclVar, "PROTOCOL", match.leaf("protocol").
             valueAsString());
-        aclVar.putQuoted("SOURCE_IP", match.leaf("source-ip").
+        putQuoted(aclVar, "SOURCE_IP", match.leaf("source-ip").
                 valueAsString());
         if ("any".equals(match.leaf("source-ip").valueAsString())) {
-            aclVar.putQuoted("SOURCE_IP_ADR","any");
-            aclVar.putQuoted("SOURCE_WMASK"," ");
+            putQuoted(aclVar, "SOURCE_IP_ADR","any");
+            putQuoted(aclVar, "SOURCE_WMASK"," ");
         }
         else {
-            aclVar.putQuoted("SOURCE_IP_ADR",
+            putQuoted(aclVar, "SOURCE_IP_ADR",
                     getIPAddress(match.leaf("source-ip").
                             valueAsString()));
-            aclVar.putQuoted("SOURCE_WMASK",
+            putQuoted(aclVar, "SOURCE_WMASK",
                     prefixToWildcardMask(getIPPrefix(
                             match.leaf("source-ip").
                             valueAsString())));
         }
         if ("any".equals(match.leaf("destination-ip").
                 valueAsString())) {
-            aclVar.putQuoted("DEST_IP_ADR","any");
-            aclVar.putQuoted("DEST_WMASK"," ");
+            putQuoted(aclVar, "DEST_IP_ADR","any");
+            putQuoted(aclVar, "DEST_WMASK"," ");
         }
         else {
-            aclVar.putQuoted("DEST_IP_ADR",
+            putQuoted(aclVar, "DEST_IP_ADR",
                     getIPAddress(match.leaf("destination-ip").
                             valueAsString()));
-            aclVar.putQuoted("DEST_WMASK",
+            putQuoted(aclVar, "DEST_WMASK",
                     prefixToWildcardMask(getIPPrefix(
                             match.leaf("destination-ip").
                             valueAsString())));
         }
-        aclVar.putQuoted("PORT_START", match.leaf("port-start").
+        putQuoted(aclVar, "PORT_START", match.leaf("port-start").
                 valueAsString());
-        aclVar.putQuoted("PORT_END", match.leaf("port-end").
+        putQuoted(aclVar, "PORT_END", match.leaf("port-end").
                 valueAsString());
         return aclVar;
     }
@@ -452,6 +452,17 @@ public class l3vpnRFS {
             InetAddress netAddr = InetAddress.getByAddress(bytes);
             return netAddr.getHostAddress();
         }
+
+    /**
+     * Helper method that also handles the null value
+     */
+    private void putQuoted(TemplateVariables vars, String name, String value) {
+        if (value == null) {
+            vars.putQuoted(name, "");
+        } else {
+            vars.putQuoted(name, value);
+        }
+    }
 
     /**
      * Init method for selftest action

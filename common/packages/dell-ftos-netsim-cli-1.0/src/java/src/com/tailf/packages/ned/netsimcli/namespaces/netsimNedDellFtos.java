@@ -264,10 +264,10 @@ public class netsimNedDellFtos extends ConfNamespace {
     public static final String _vlt_peer_lag_ = "vlt-peer-lag";
     public static final int    _stp = 1701853972;
     public static final String _stp_ = "stp";
-    public static final int    _seq = 1774006065;
-    public static final String _seq_ = "seq";
     public static final int    _partition = 885857725;
     public static final String _partition_ = "partition";
+    public static final int    _seq = 1774006065;
+    public static final String _seq_ = "seq";
     public static final int    _log_adjacency_changes = 721748979;
     public static final String _log_adjacency_changes_ = "log-adjacency-changes";
     public static final int    _recurring = 1872811486;
@@ -496,10 +496,10 @@ public class netsimNedDellFtos extends ConfNamespace {
     public static final String _authentication_key_ = "authentication-key";
     public static final int    _last_member_query_interval = 63044616;
     public static final String _last_member_query_interval_ = "last-member-query-interval";
-    public static final int    _hundredGigE = 1727752573;
-    public static final String _hundredGigE_ = "hundredGigE";
     public static final int    _range = 28853268;
     public static final String _range_ = "range";
+    public static final int    _hundredGigE = 1727752573;
+    public static final String _hundredGigE_ = "hundredGigE";
     public static final int    _mac_address = 2110689796;
     public static final String _mac_address_ = "mac-address";
     public static final int    _rate_interval = 1939056472;
