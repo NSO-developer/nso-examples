@@ -512,10 +512,10 @@ public class netsimNedDellFtos extends ConfNamespace {
     public static final String _dot1p_ = "dot1p";
     public static final int    _trap = 529217455;
     public static final String _trap_ = "trap";
-    public static final int    _advertise = 1735966266;
-    public static final String _advertise_ = "advertise";
     public static final int    _number = 146471600;
     public static final String _number_ = "number";
+    public static final int    _advertise = 1735966266;
+    public static final String _advertise_ = "advertise";
     public static final int    _mtu = 1751455506;
     public static final String _mtu_ = "mtu";
     public static final int    _proxy_arp = 676928388;

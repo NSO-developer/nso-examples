@@ -78,10 +78,10 @@ public class netsimNedCiscoIosStats extends ConfNamespace {
     public static final String _up_time_ = "up-time";
     public static final int    _last_reset = 619509748;
     public static final String _last_reset_ = "last-reset";
-    public static final int    _site = 407467135;
-    public static final String _site_ = "site";
     public static final int    _binding = 164810373;
     public static final String _binding_ = "binding";
+    public static final int    _site = 407467135;
+    public static final String _site_ = "site";
     public static final int    _host_uptime = 1065484016;
     public static final String _host_uptime_ = "host-uptime";
     public static final int    _last_event = 1147740485;

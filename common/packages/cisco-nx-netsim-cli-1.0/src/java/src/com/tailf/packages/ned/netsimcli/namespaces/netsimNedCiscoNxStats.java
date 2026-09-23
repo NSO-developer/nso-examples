@@ -566,10 +566,10 @@ public class netsimNedCiscoNxStats extends ConfNamespace {
     public static final String _vtp_ = "vtp";
     public static final int    _beacon = 1482256620;
     public static final String _beacon_ = "beacon";
-    public static final int    _prefix = 1408440115;
-    public static final String _prefix_ = "prefix";
     public static final int    _ctxvtepvpcip = 1861084675;
     public static final String _ctxvtepvpcip_ = "ctxvtepvpcip";
+    public static final int    _prefix = 1408440115;
+    public static final String _prefix_ = "prefix";
     public static final int    _ucast_packets_out = 210345369;
     public static final String _ucast_packets_out_ = "ucast-packets-out";
     public static final int    _mdix = 504734177;

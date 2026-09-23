@@ -66,7 +66,4 @@ References
 
 The TACACS+ RFC 8907: https://datatracker.ietf.org/doc/html/rfc8907
 
-For a description of how to configure the Cisco ISE TACACS+ server, see
-"README-setuptacacs-ise.md" under https://github.com/ygorelik/tacacs-auth/
-
 A very simple TACACS+ server for testing: https://github.com/etnt/etacacs_plus
