@@ -6,8 +6,6 @@
   <python-package>
     <callpoint-model>multiprocessing</callpoint-model>
   </python-package>
-  <templates>vrouter-configured</templates>
-  <template-loading-mode>strict</template-loading-mode>
   <supported-ned-id xmlns:id="http://tail-f.com/ns/ned-id/router-nc-1.1"
     >id:router-nc-1.1</supported-ned-id>
   <required-package>
