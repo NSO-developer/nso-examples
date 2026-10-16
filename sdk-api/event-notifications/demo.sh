@@ -67,7 +67,7 @@ ncs-setup --netsim-dir nso-rundir/netsim --dest nso-rundir
 # Give the d1 simulated device a unique SSH host key
 rm -f nso-rundir/netsim/d/d1/ssh/ssh_host_*
 cd nso-rundir/netsim/d/d1/ssh
-ssh-keygen -m PEM -t ed25519 -N '' -f ssh_host_ed25519_key
+ssh-keygen -t ed25519 -N '' -f ssh_host_ed25519_key
 cd -
 
 printf "\n${PURPLE}##### Start the NSO daemon and simulated devices\n${NC}"

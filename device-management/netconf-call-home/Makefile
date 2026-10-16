@@ -9,7 +9,7 @@ netsim:
 	: # Make sure they have unique ssh host keys
 	rm -f netsim/ex/ex*/ssh/ssh_host_*
 	for d in netsim/ex/ex*/ssh ; do \
-	  ( cd $$d && ssh-keygen -m PEM -t ed25519 -N '' -f ssh_host_ed25519_key ) ; \
+	  ( cd $$d && ssh-keygen -t ed25519 -N '' -f ssh_host_ed25519_key ) ; \
 	done
 
 clean:

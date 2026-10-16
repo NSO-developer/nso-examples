@@ -32,7 +32,7 @@ echo "show ncs-state version | nomore" | ncs_cli -n -u admin -C
 
 if hash ssh 2> /dev/null && hash ssh-keygen 2> /dev/null; then
     printf "\n${PURPLE}##### Create SSH client keys\n${NC}"
-    ssh-keygen -N "" -t ed25519 -m pem -f nso-rundir/id_ed25519
+    ssh-keygen -N "" -t ed25519 -f nso-rundir/id_ed25519
     mkdir -p nso-rundir/admin/.ssh
     cp nso-rundir/id_ed25519.pub nso-rundir/admin/.ssh/authorized_keys
 

@@ -506,10 +506,10 @@ public class netsimNedCiscoNxStats extends ConfNamespace {
     public static final String _vpc_system_prio_ = "vpc-system-prio";
     public static final int    _swt_monitor = 66651593;
     public static final String _swt_monitor_ = "swt-monitor";
-    public static final int    _delay = 200515694;
-    public static final String _delay_ = "delay";
     public static final int    _desc = 1535721889;
     public static final String _desc_ = "desc";
+    public static final int    _delay = 200515694;
+    public static final String _delay_ = "delay";
     public static final int    _secure = 492759260;
     public static final String _secure_ = "secure";
     public static final int    _load_interval1_rx = 1920906719;
@@ -1066,10 +1066,10 @@ public class netsimNedCiscoNxStats extends ConfNamespace {
     public static final String _ctxvtepvpcip_ = "ctxvtepvpcip";
     public static final int    _notificationssent = 1663032423;
     public static final String _notificationssent_ = "notificationssent";
-    public static final int    _mdix = 504734177;
-    public static final String _mdix_ = "mdix";
     public static final int    _prefix = 1408440115;
     public static final String _prefix_ = "prefix";
+    public static final int    _mdix = 504734177;
+    public static final String _mdix_ = "mdix";
     public static final int    _dly = 2059710493;
     public static final String _dly_ = "dly";
     public static final int    _peer_link_id = 1089750388;

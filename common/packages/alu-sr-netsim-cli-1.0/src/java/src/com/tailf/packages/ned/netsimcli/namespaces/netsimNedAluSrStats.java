@@ -148,12 +148,12 @@ public class netsimNedAluSrStats extends ConfNamespace {
     public static final String _per_fp_sap_instance_ = "per-fp-sap-instance";
     public static final int    _dynamic_policers = 549340675;
     public static final String _dynamic_policers_ = "dynamic-policers";
-    public static final int    _usage = 1333989540;
-    public static final String _usage_ = "usage";
     public static final int    _egress_filter = 2008573809;
     public static final String _egress_filter_ = "egress-filter";
     public static final int    _low = 831859092;
     public static final String _low_ = "low";
+    public static final int    _usage = 1333989540;
+    public static final String _usage_ = "usage";
     public static final int    _oper_state_ipv6 = 311955264;
     public static final String _oper_state_ipv6_ = "oper-state-ipv6";
     public static final int    _software_boot_version = 515137660;
