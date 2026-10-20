@@ -1066,10 +1066,10 @@ public class netsimNedCiscoNxStats extends ConfNamespace {
     public static final String _ctxvtepvpcip_ = "ctxvtepvpcip";
     public static final int    _notificationssent = 1663032423;
     public static final String _notificationssent_ = "notificationssent";
-    public static final int    _prefix = 1408440115;
-    public static final String _prefix_ = "prefix";
     public static final int    _mdix = 504734177;
     public static final String _mdix_ = "mdix";
+    public static final int    _prefix = 1408440115;
+    public static final String _prefix_ = "prefix";
     public static final int    _dly = 2059710493;
     public static final String _dly_ = "dly";
     public static final int    _peer_link_id = 1089750388;
